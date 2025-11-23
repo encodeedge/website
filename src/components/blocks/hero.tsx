@@ -8,28 +8,32 @@ import {
 
 import { DashedLine } from "@/components/dashed-line";
 import { Button } from "@/components/ui/button";
-import { GITHUB_URL } from "@/consts";
+import { GITHUB_URL, SITE_TITLE, SITE_DESCRIPTION } from "@/consts";
 
 const features = [
   {
-    title: "Tailored workflows",
-    description: "Track progress across custom issue flows for your team.",
-    icon: CircleDot,
-  },
-  {
-    title: "Cross-team projects",
-    description: "Collaborate across teams and departments.",
-    icon: Blend,
-  },
-  {
-    title: "Milestones",
-    description: "Break projects down into concrete phases.",
+    title: "Algorithms & Data Structures",
+    description:
+      "Clear, example-driven walkthroughs of classic algorithms and data structures with code and visualizations.",
     icon: Diamond,
   },
   {
-    title: "Progress insights",
-    description: "Track scope, velocity, and progress over time.",
+    title: "Machine Learning Projects",
+    description:
+      "Hands-on ML projects that take you from data preprocessing to model evaluation and deployment.",
     icon: ChartNoAxesColumn,
+  },
+  {
+    title: "Deep Learning & Neural Nets",
+    description:
+      "Practical guides to neural network architectures, training techniques, and real-world applications.",
+    icon: Blend,
+  },
+  {
+    title: "Statistics & Evaluation",
+    description:
+      "Statistical concepts and model evaluation techniques to make your ML work robust and reproducible.",
+    icon: CircleDot,
   },
 ];
 
@@ -40,17 +44,23 @@ export const Hero = () => {
         {/* Left side - Main content */}
         <div className="flex-1">
           <h1 className="text-foreground max-w-160 text-3xl tracking-tight md:text-4xl lg:text-5xl xl:whitespace-nowrap">
-            Mainline Astro template
+            Forge Real-World AI Careers
+            <br />Build Skills That Ship
           </h1>
 
           <p className="text-muted-foreground text-1xl mt-5 md:text-3xl">
-            Mainline is an open-source website template built with shadcn/ui,
-            Tailwind 4 & Astro 5
+            Expert-led courses, deep technical articles, and
+            community hackathons — practical pathways from idea to production.
+          </p>
+
+          <p className="text-muted-foreground mt-4 text-sm md:text-base max-w-2xl">
+            Follow step-by-step guides, interactive notebooks, and real-world
+            projects that take you from concept to production-ready results.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-4 lg:flex-nowrap">
             <Button asChild>
-              <a href={GITHUB_URL}>Get template</a>
+              <a href="/social">Follow Us on Socials</a>
             </Button>
             <Button
               variant="outline"
@@ -58,10 +68,10 @@ export const Hero = () => {
               asChild
             >
               <a
-                href="https://shadcnblocks.com"
+                href="/blog"
                 className="max-w-56 truncate text-start md:max-w-none"
               >
-                Built by shadcnblocks.com
+                Explore tutorials 
                 <ArrowRight className="stroke-3" />
               </a>
             </Button>
@@ -82,7 +92,7 @@ export const Hero = () => {
             const Icon = feature.icon;
             return (
               <div key={feature.title} className="flex gap-2.5 lg:gap-5">
-                <Icon className="text-foreground mt-1 size-4 shrink-0 lg:size-5" />
+                <Icon className="text-primary mt-1 size-4 shrink-0 lg:size-5" />
                 <div>
                   <h2 className="font-text text-foreground font-semibold">
                     {feature.title}

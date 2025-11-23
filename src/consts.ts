@@ -1,38 +1,42 @@
 // Place any global data in this file.
 // You can import this data from anywhere in your site by using the `import` keyword.
 
-export const SITE_TITLE = "Mainline - Modern Astro Template";
+export const SITE_TITLE = "EncodeEdge";
 export const SITE_DESCRIPTION =
-  "A modern, fully featured Astro template built with Shadcn/UI, TailwindCSS and TypeScript, perfect for your next web application.";
+  "EncodeEdge demystifies modern Python, Machine Learning, and complex algorithms with clear, project-based tutorials. We turn the hardest concepts into your strongest skills.";
 
 export const GITHUB_URL =
-  "https://github.com/shadcnblocks/mainline-astro-template";
+  "https://github.com/atulkrjha";
 
 export const SITE_METADATA = {
   title: {
-    default: "Mainline - Modern Astro Template",
+    default: "EncodeEdge",
     template: "%s | Mainline",
   },
   description:
-    "A modern Astro template built with shadcn/ui, Tailwind & MDX. Open source - MIT License.",
+    "EncodeEdge demystifies modern Python, Machine Learning, and complex algorithms with clear, project-based tutorials. We turn the hardest concepts into your strongest skills.",
   keywords: [
-    "Astro",
-    "astro template",
-    "astro theme",
-    "astro starter",
-    "shadcn template",
-    "shadcn theme",
-    "shadcn starter",
-    "tailwind template",
-    "tailwind theme",
-    "tailwind starter",
-    "mdx template",
-    "mdx theme",
-    "mdx starter",
+    "Computer Science",
+    "Coding Tutorials",
+    "Programming", 
+    "Python", 
+    "Artificial Intelligence",
+    "Machine Learning", 
+    "Data Science", 
+    "Statistics for ML", 
+    "Neural Networks", 
+    "Deep Learning", 
+    "Algorithms", 
+    "Data Structures", 
+    "Pandas", 
+    "NumPy", 
+    "Scikit-learn", 
+    "TensorFlow", 
+    "EncodeEdge"
   ],
-  authors: [{ name: "shadcnblocks.com" }],
-  creator: "shadcnblocks.com",
-  publisher: "shadcnblocks.com",
+  authors: [{ name: "encodeedge.com" }],
+  creator: "encodeedge.com",
+  publisher: "encodeedge.com",
   robots: {
     index: true,
     follow: true,
@@ -49,25 +53,25 @@ export const SITE_METADATA = {
     shortcut: [{ url: "/favicon/favicon.ico" }],
   },
   openGraph: {
-    title: "Mainline - Modern Astro Template",
+    title: "EncodeEdge",
     description:
-      "A modern Astro template built with shadcn/ui, Tailwind & MDX. Open source - MIT License.",
-    siteName: "Mainline",
+      "EncodeEdge demystifies modern Python, Machine Learning, and complex algorithms with clear, project-based tutorials. We turn the hardest concepts into your strongest skills.",
+    siteName: "EncodeEdge",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Mainline - Modern Astro Template",
+        alt: "EncodeEdge Open Graph Image",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mainline - Modern Astro Template",
+    title: "EncodeEdge",
     description:
-      "A modern Astro template built with shadcn/ui, Tailwind & MDX. Open source - MIT License.",
+      "EncodeEdge demystifies modern Python, Machine Learning, and complex algorithms with clear, project-based tutorials. We turn the hardest concepts into your strongest skills.",
     images: ["/og-image.jpg"],
-    creator: "@ausrobdev",
+    creator: "@encodeedge",
   },
 };

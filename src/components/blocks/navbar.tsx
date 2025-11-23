@@ -43,22 +43,47 @@ export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [pathname, setPathname] = useState("");
+  const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
     setPathname(window.location.pathname);
   }, []);
 
+  useEffect(() => {
+    // percentage of the total scrollable height after which navbar hides
+    const HIDE_AFTER_PERCENT = 20; // change this value to taste (0-100)
+
+    function onScroll() {
+      const doc = document.documentElement;
+      const scrollTop = window.scrollY || doc.scrollTop;
+      const scrollable = doc.scrollHeight - window.innerHeight;
+      if (scrollable <= 0) {
+        setIsHidden(false);
+        return;
+      }
+      const threshold = (HIDE_AFTER_PERCENT / 100) * scrollable;
+      setIsHidden(scrollTop > threshold);
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    // evaluate once on mount
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <section
       className={cn(
-        "bg-background/70 absolute left-1/2 z-50 w-[min(90%,700px)] -translate-x-1/2 rounded-4xl border backdrop-blur-md transition-all duration-300",
+        "bg-background/70 fixed left-1/2 z-50 w-[min(90%,700px)] -translate-x-1/2 rounded-4xl border backdrop-blur-md transition-all duration-300",
+        // hide with a negative translate-y so it slides up smoothly
+        isHidden ? "-translate-y-28 opacity-0 pointer-events-none" : "translate-y-0 opacity-100",
         "top-5 lg:top-12",
       )}
     >
       <div className="flex items-center justify-between px-6 py-3">
         <a href="/" className="flex shrink-0 items-center gap-2">
           <img
-            src="/logo.svg"
+            src="/logos/logo.png"
             alt="logo"
             width={94}
             height={18}

@@ -1,22 +1,22 @@
 {
-  "name": "Mainline",
-  "short_name": "Mainline",
+  "name": "EncodeEdge",
+  "short_name": "EncodeEdge",
   "icons": [
     {
-      "src": "/favicon/web-app-manifest-192x192.png",
+      "src": "/favicon/favicon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/favicon/web-app-manifest-512x512.png",
+      "src": "/favicon/favicon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#09090B",
-  "background_color": "#09090B",
+  "theme_color": "#3533cd",
+  "background_color": "#000000",
   "display": "standalone",
   "start_url": "/"
 }

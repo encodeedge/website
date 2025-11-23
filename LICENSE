@@ -1,14 +1,72 @@
-MIT + Commons Clause License Condition v1.0
+All Rights Reserved.
 
-Copyright (c) 2025 shadcnblocks.com - Rob Austin
+Copyright (c) 2025 EncodeEdge All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, and distribute the Software as part of an application, website, or product, subject to the following conditions:
+No part of this software or associated documentation may be copied, reproduced, modified, published, distributed, sublicensed, sold or otherwise exploited, in whole or in part, without the prior written permission of the copyright holder.
+Definitions
+- "Software" means the source code, binaries, object code, libraries, documentation, sample code, and any other materials provided by the copyright holder.
+- "You" or "Licensee" means the individual or legal entity obtaining rights under this License.
+- "Modify" means to translate, adapt, alter, combine, or create derivative works based on the Software.
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+Grant of Rights
+- Subject to the terms and conditions of this License, the copyright holder grants You a limited, non-exclusive, non-transferable, non-sublicensable, revocable license to:
+    - Use, execute, and display the Software for Your internal business or personal purposes;
+    - Make and use a reasonable number of copies for backup, archival, or testing purposes;
+    - Modify the Software solely for Your internal use.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Permitted Redistribution
+- Redistribution, sublicensing, public distribution, or commercial exploitation of the Software is prohibited unless You obtain the prior express written permission of the copyright holder.
+- Where redistribution is expressly permitted in writing, all redistributed copies (in whole or in part, modified or unmodified) must:
+    - Retain the copyright notice and this License in a conspicuous location;
+    - Include a NOTICE file listing any third-party components and their respective licenses;
+    - Not remove or obscure any proprietary or legal notices or marks.
 
-## Commons Clause Restriction
+Restrictions
+- You may not:
+    - Rent, lease, sublicense, sell, distribute, publicly display, or otherwise transfer the Software (or any copy) to third parties except as expressly authorized;
+    - Reverse engineer, decompile, disassemble, or otherwise attempt to derive the source code of the Software, except to the extent expressly permitted by applicable law;
+    - Remove, alter, or obscure any copyright, trademark, patent, or other proprietary notices contained in the Software;
+    - Use the Software in violation of applicable laws, export control regulations, or for illegal purposes.
 
-You may use this Software, including for commercial purposes, provided that you do not sell the template itself in its original or substantially unmodified form.
-This restriction is intended solely to prevent grifters from reselling this template as-is (or close to) without meaningful customization or added value.
+Contributions and Derivative Works
+- Contributions made by You become part of the Software, and by making contributions You grant the copyright holder a worldwide, perpetual, irrevocable, royalty-free, transferable license to use, reproduce, modify, distribute, sublicense, and otherwise exploit those contributions.
+- Any derivative works based on the Software remain subject to the terms of this License unless otherwise agreed in writing by the copyright holder.
+
+Patents
+- No patent license is granted hereby beyond the rights necessary to use the Software as provided. The copyright holder may, at its discretion, offer separate patent licenses.
+
+Warranty Disclaimer
+- THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT HOLDER DISCLAIMS ALL WARRANTIES, WHETHER EXPRESS, IMPLIED, STATUTORY OR OTHERWISE, INCLUDING, WITHOUT LIMITATION, ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+
+Limitation of Liability
+- TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY OR PUNITIVE DAMAGES ARISING OUT OF OR RELATING TO THE SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. THE COPYRIGHT HOLDER'S AGGREGATE LIABILITY WITH RESPECT TO THE SOFTWARE SHALL BE LIMITED TO THE AMOUNTS ACTUALLY PAID BY YOU FOR THE SOFTWARE, IF ANY; OTHERWISE, THE LIABILITY SHALL BE ZERO.
+
+Indemnity
+- You agree to indemnify, defend and hold harmless the copyright holder from and against any claims, liabilities, damages, losses, and expenses (including reasonable attorneys' fees) arising out of or in any way connected with Your use of the Software, any violation of this License, or any derivative works You distribute.
+
+Termination
+- This License is effective until terminated. The copyright holder may terminate this License immediately if You fail to comply with any of its terms. Upon termination, You must cease all use of the Software and destroy or return all copies in Your possession or control.
+
+Export, Sanctions, and Compliance
+- You shall comply with all applicable export laws and regulations and shall not use or transfer the Software in violation of any such laws, including restrictions related to sanctioned countries, entities, or individuals.
+
+Governing Law and Dispute Resolution
+- This License shall be governed by and construed in accordance with the laws of the jurisdiction specified by the copyright holder. Any disputes arising under or in connection with this License shall be resolved in the competent courts of that jurisdiction unless the parties agree otherwise in writing.
+
+Severability
+- If any provision of this License is found to be invalid, illegal, or unenforceable, the remaining provisions will remain in full force and effect and will be interpreted so as to effectuate the original intent as closely as possible.
+
+Entire Agreement
+- This License constitutes the entire agreement between You and the copyright holder with respect to the Software and supersedes all prior or contemporaneous communications, representations, or agreements, whether oral or written.
+
+Notices
+- All notices required or permitted under this License shall be in writing and sent to the copyright holder at the contact information provided by the copyright holder. For inquiries about permissions, contact: EncodeEdge.
+
+Amendments
+- No amendment or waiver of any provision of this License shall be valid unless in writing and signed by an authorized representative of the copyright holder.
+
+Acknowledgment
+- By using, copying, or modifying the Software, You acknowledge that You have read, understood, and agree to be bound by this License. If You do not agree to the terms of this License, do not use the Software.
+
+Effective Date
+- This License is effective as of the year indicated in the copyright notice above and continues until terminated as set forth herein.

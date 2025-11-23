@@ -8,6 +8,7 @@ import { Hero } from '@/components/blocks/hero';
 import { Logos } from '@/components/blocks/logos';
 import { Pricing } from '@/components/blocks/pricing';
 import { ResourceAllocation } from '@/components/blocks/resource-allocation';
+import LearningRoadmap  from '@/components/blocks/roadmaps';
 import { Testimonials } from '@/components/blocks/testimonials';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 
@@ -19,12 +20,8 @@ import DefaultLayout from '@/layouts/DefaultLayout.astro';
   <Background className="via-muted to-muted/80">
     <Hero />
     <Logos client:only="react"/> 
+    <LearningRoadmap />
     <Features />
     <ResourceAllocation />
-  </Background>
-  <Testimonials client:only='react'/>
-  <Background variant="bottom">
-    <Pricing client:only='react'/>
-    <FAQ client:only='react'/>
   </Background>
 </DefaultLayout>

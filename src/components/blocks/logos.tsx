@@ -1,82 +1,96 @@
 import Marquee from "react-fast-marquee";
+import {
+  Brain,
+  GitBranch,
+  Database,
+  Cpu,
+  Layers,
+  Activity,
+  Code,
+  Sparkles,
+  Server,
+  Monitor, // Placeholder for a generic concept
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+// Define the icon type as a React component
 type Company = {
   name: string;
-  logo: string;
+  icon: React.ElementType; // Icon component from lucide-react
   width: number;
   height: number;
   href: string;
 };
 
 export const Logos = () => {
-  const topRowCompanies = [
+  // --- Thematic Icons representing key concepts/platforms ---
+  const topRowCompanies: Company[] = [
     {
-      name: "Mercury",
-      logo: "/logos/mercury.svg",
-      width: 143,
-      height: 26,
-      href: "https://mercury.com",
+      name: "Algorithm Deep Dives", // Updated
+      icon: Brain,
+      width: 64, // Defines the badge size
+      height: 64,
+      href: "/topics/algorithms",
     },
     {
-      name: "Watershed",
-      logo: "/logos/watershed.svg",
-      width: 154,
-      height: 31,
-      href: "https://watershed.com",
+      name: "AI Agents", // Updated (Focus on MLOps)
+      icon: GitBranch,
+      width: 64,
+      height: 64,
+      href: "/topics/Agents",
     },
     {
-      name: "Retool",
-      logo: "/logos/retool.svg",
-      width: 113,
-      height: 22,
-      href: "https://retool.com",
+      name: "Feature Engineering & Stores", // Updated
+      icon: Database,
+      width: 64,
+      height: 64,
+      href: "/topics/data-engineering",
     },
     {
-      name: "Descript",
-      logo: "/logos/descript.svg",
-      width: 112,
-      height: 27,
-      href: "https://descript.com",
+      name: "Distributed Training", // Updated (Specific ML topic)
+      icon: Cpu,
+      width: 64,
+      height: 64,
+      href: "/topics/training",
     },
   ];
 
-  const bottomRowCompanies = [
+  const bottomRowCompanies: Company[] = [
     {
-      name: "Perplexity",
-      logo: "/logos/perplexity.svg",
-      width: 141,
-      height: 32,
-      href: "https://perplexity.com",
+      name: "PyTorch & TensorFlow", // Updated (Specific frameworks)
+      icon: Code,
+      width: 64,
+      height: 64,
+      href: "/topics/frameworks",
     },
     {
-      name: "Monzo",
-      logo: "/logos/monzo.svg",
-      width: 104,
-      height: 18,
-      href: "https://monzo.com",
+      name: "Orchestration Tools (e.g., Kubeflow)", // Updated (Specific tools)
+      icon: Layers,
+      width: 64,
+      height: 64,
+      href: "/topics/mlops",
     },
     {
-      name: "Ramp",
-      logo: "/logos/ramp.svg",
-      width: 105,
-      height: 28,
-      href: "https://ramp.com",
+      name: "Model Deployment APIs", // Updated (Focus on serving)
+      icon: Server,
+      width: 64,
+      height: 64,
+      href: "/topics/deployment",
     },
     {
-      name: "Raycast",
-      logo: "/logos/raycast.svg",
-      width: 128,
-      height: 33,
-      href: "https://raycast.com",
+      name: "Model Drift & Monitoring", // Updated (Specific MLOps challenge)
+      icon: Activity,
+      width: 64,
+      height: 64,
+      href: "/topics/monitoring",
     },
     {
-      name: "Arc",
-      logo: "/logos/arc.svg",
-      width: 90,
-      height: 28,
-      href: "https://arc.com",
+      name: "LLMs & Prompt Engineering", // Updated (Cutting-edge topic)
+      icon: Sparkles,
+      width: 64,
+      height: 64,
+      href: "/topics/generative-ai",
     },
   ];
 
@@ -85,10 +99,10 @@ export const Logos = () => {
       <div className="container space-y-10 lg:space-y-16">
         <div className="text-center">
           <h2 className="mb-4 text-xl text-balance md:text-2xl lg:text-3xl">
-            Powering the world's best product teams.
+            The end-to-end knowledge hub for MLOps and Production AI.
             <br className="max-md:hidden" />
             <span className="text-muted-foreground">
-              From next-gen startups to established enterprises.
+              Master the concepts, tools, and systems required to ship AI models reliably.
             </span>
           </h2>
         </div>
@@ -122,43 +136,66 @@ const LogoRow = ({ companies, gridClassName, direction }: LogoRowProps) => {
       <div className="hidden md:block">
         <div
           className={cn(
-            "grid items-center justify-items-center gap-x-20 lg:gap-x-28",
+            // Increased gap to accommodate hover scaling (p-4 + scale)
+            "grid items-start justify-items-center gap-x-20 lg:gap-x-28", 
             gridClassName,
           )}
         >
-          {companies.map((company, index) => (
-            <a href={company.href} target="_blank" key={index}>
-              <img
-                src={company.logo}
-                alt={`${company.name} logo`}
-                width={company.width}
-                height={company.height}
-                className="dark:opacity/100 object-contain opacity-50 transition-opacity hover:opacity-70 dark:invert"
-              />
-            </a>
-          ))}
+          {companies.map((company, index) => {
+            const Icon = company.icon;
+            return (
+              <a href={company.href} target="_blank" key={index} 
+                 // The main interactive box with padding (p-4) and rounded edges (rounded-lg)
+                 className="group flex flex-col items-center justify-start text-center p-4 rounded-lg 
+                            transition-all duration-300 ease-in-out hover:scale-[1.15] hover:shadow-xl"
+              >
+                {/* Logo Badge Container */}
+                <div 
+                  className="p-4 rounded-full bg-gray-100 dark:bg-gray-800 shadow-md flex items-center justify-center mb-2"
+                  style={{ width: company.width, height: company.height }}
+                >
+                  <Icon
+                    // Explicitly setting stroke, fill, and hover states
+                    className="h-8 w-8 transition-all duration-300 stroke-2 stroke-indigo-700 fill-none 
+                                group-hover:stroke-indigo-900 group-hover:fill-indigo-200" // Brighter fill on hover
+                  />
+                </div>
+                {/* Company Name - text-xs is smaller for a cleaner look */}
+                <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 max-w-28 transition-colors duration-300 group-hover:text-indigo-800 dark:group-hover:text-indigo-300">
+                    {company.name}
+                </p>
+              </a>
+            );
+          })}
         </div>
       </div>
 
       {/* Mobile marquee version */}
       <div className="md:hidden">
         <Marquee direction={direction} pauseOnHover>
-          {companies.map((company, index) => (
-            <a
-              href={company.href}
-              target="_blank"
-              key={index}
-              className="mx-8 inline-block transition-opacity hover:opacity-70"
-            >
-              <img
-                src={company.logo}
-                alt={`${company.name} logo`}
-                width={company.width}
-                height={company.height}
-                className="object-contain"
-              />
-            </a>
-          ))}
+          {companies.map((company, index) => {
+            const Icon = company.icon;
+            return (
+              <a
+                href={company.href}
+                target="_blank"
+                key={index}
+                className="mx-4 inline-block transition-opacity hover:opacity-90 flex flex-col items-center justify-center text-center space-y-1"
+              >
+                <div 
+                  className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 shadow-sm flex items-center justify-center mb-1"
+                  style={{ width: company.width * 0.7, height: company.height * 0.7 }} // Smaller for mobile marquee
+                >
+                  <Icon
+                    className="text-indigo-700 h-6 w-6 object-contain"
+                  />
+                </div>
+                <p className="text-xs text-gray-700 dark:text-gray-300 font-medium whitespace-nowrap">
+                    {company.name}
+                </p>
+              </a>
+            );
+          })}
         </Marquee>
       </div>
     </>

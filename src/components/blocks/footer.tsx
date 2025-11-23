@@ -5,9 +5,9 @@ import { GITHUB_URL } from "@/consts";
 
 export function Footer() {
   const navigation = [
-    { name: "Product", href: "/#feature-modern-teams" },
+    { name: "Tutorials", href: "/tutorials" },
     { name: "About Us", href: "/about" },
-    { name: "Pricing", href: "/pricing" },
+    { name: "Blogs", href: "/blog" },
     { name: "FAQ", href: "/faq" },
     { name: "Contact", href: "/contact" },
   ];
@@ -23,15 +23,14 @@ export function Footer() {
     <footer className="flex flex-col items-center gap-14 pt-28 lg:pt-32">
       <div className="container space-y-3 text-center">
         <h2 className="text-2xl tracking-tight md:text-4xl lg:text-5xl">
-          Start your free trial today
+          Carefuly crafted content
         </h2>
         <p className="text-muted-foreground mx-auto max-w-xl leading-snug text-balance">
-          Mainline is the fit-for-purpose tool for planning and building modern
-          software products.
+          Straight to your inbox
         </p>
         <div>
           <Button size="lg" className="mt-4" asChild>
-            <a href={GITHUB_URL}>Get template</a>
+            <a href="/subscribe">Subscribe</a>
           </Button>
         </div>
       </div>

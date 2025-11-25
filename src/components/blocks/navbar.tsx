@@ -15,26 +15,55 @@ import {
 import { GITHUB_URL } from "@/consts";
 import { cn } from "@/lib/utils";
 
-const ITEMS = [
+// --- New Structured Topic Data for Horizontal Display ---
+const TOPIC_DROPDOWN_STRUCTURE = [
   {
-    label: "Features",
-    href: "#features",
-    dropdownItems: [
-      {
-        title: "Modern product teams",
-        href: "/#feature-modern-teams",
-        description:
-          "Mainline is built on the habits that make the best product teams successful",
-      },
-      {
-        title: "Resource Allocation",
-        href: "/#resource-allocation",
-        description: "Mainline your resource allocation and execution",
-      },
+    category: "ML Foundations",
+    items: [
+      { title: "Foundations of Data Science", href: "/topics/foundation/data-science", description: "Learn foundations of science of data" },
+      { title: "Statistics", href: "/topics/foundation/statistics", description: "Statistical methods theory and basics." },
+      { title: "Linear Algebra & Calculus", href: "/topics/foundation/linear-algebra", description: "Essential mathematical principles for ML." },
+      { title: "Data Engineering", href: "/topics/foundation/data-engineering", description: "Cleaning, transformation, and feature engineering." },
+      { title: "Code Algorithms & Optimization", href: "/topics/foundation/algorithms", description: "Efficient algorithms and optimization techniques." },
     ],
   },
+  {
+    category: "Deep Learning & Advanced ML",
+    items: [
+      { title: "Deep Learning Tensorflow", href: "/topics/dl/tensorflow", description: "Practical tutorials using Keras/TensorFlow." },
+      { title: "Deep Learning with PyTorch", href: "/topics/dl/pytorch", description: "Implementation and projects using PyTorch." },
+      { title: "Time Series", href: "/topics/dl/time-series", description: "Deep Learning for Time Series Data" },
+      { title: "LSTMs & Neural Net Time Series", href: "/topics/dl/lstm", description: "RNNs for sequential data forecasting." },
+      { title: "Ensemble Learning", href: "/topics/dl/ensemble", description: "Boosting, Bagging, and stacking methods." },
+    ],
+  },
+  {
+    category: "Tools and Applications",
+    items: [
+      { title: "Azure", href: "/topics/cloud/azure", description: "Cloud services for ML and data infrastructure." },
+      { title: "Hugging Face Transformers", href: "/topics/tools-and-applications/hugging-face", description: "Utilizing state-of-the-art transformer models." },
+      { title: "Computer Vision", href: "/topics/tools-and-applications/cv", description: "Image processing and vision tasks using OpenCV." },
+      { title: "ChatGPT & LLM APIs", href: "/topics/tools-and-applications/llms", description: "Integrating and fine-tuning Large Language Models." },
+    ],
+  },
+    {
+    category: "Digital Experience & AI",
+    items: [
+      { title: "Sitecore Foundation", href: "/topics/dxp/sitecore/introduction", description: "Dive into the world of Sitecore DXP." },
+      { title: "Sitecore AI", href: "/topics/dxp/sitecore/sitecore-ai", description: "AI applications and integration with Sitecore." },
+    
+    ],
+  },
+];
+
+const ITEMS = [
+  {
+    label: "Topics",
+    href: "#topics",
+    dropdownStructure: TOPIC_DROPDOWN_STRUCTURE, // Use new structure
+  },
   { label: "About Us", href: "/about" },
-  { label: "Pricing", href: "/pricing" },
+  { label: "Blog", href: "/blog" },
   { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
 ];
@@ -95,31 +124,41 @@ export const Navbar = () => {
         <NavigationMenu className="max-lg:hidden">
           <NavigationMenuList>
             {ITEMS.map((link) =>
-              link.dropdownItems ? (
+              link.dropdownStructure ? ( // Check for new structure property
                 <NavigationMenuItem key={link.label} className="">
                   <NavigationMenuTrigger className="data-[state=open]:bg-accent/50 bg-transparent! px-1.5">
                     {link.label}
                   </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="w-[400px] space-y-2 p-4">
-                      {link.dropdownItems.map((item) => (
-                        <li key={item.title}>
-                          <a
-                            href={item.href}
-                            className="group hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground flex items-center gap-4 rounded-md p-3 leading-none no-underline outline-hidden transition-colors select-none"
-                          >
-                            <div className="space-y-1.5 transition-transform duration-300 group-hover:translate-x-1">
-                              <div className="text-sm leading-none font-medium">
-                                {item.title}
-                              </div>
-                              <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
-                                {item.description}
-                              </p>
-                            </div>
-                          </a>
-                        </li>
+                  <NavigationMenuContent className="left-0"> {/* ADDED left-0 HERE */}
+                    {/* Updated rendering for 4-column horizontal layout */}
+                    <div className="grid w-[800px] grid-cols-4 gap-6 p-4"> {/* CHANGED w-[600px] to w-[800px] AND grid-cols-3 to grid-cols-4 */}
+                      {link.dropdownStructure.map((category, categoryIndex) => (
+                        <div key={categoryIndex} className="space-y-3">
+                          <h4 className="text-primary text-sm font-bold tracking-wider uppercase border-b pb-1 mb-2">
+                            {category.category}
+                          </h4>
+                          <ul className="space-y-1">
+                            {category.items.map((item) => (
+                              <li key={item.title}>
+                                <a
+                                  href={item.href}
+                                  className="group block rounded-md p-2 transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                >
+                                  <div className="space-y-0.5 transition-transform duration-300 group-hover:translate-x-0.5">
+                                    <div className="text-sm leading-none font-medium">
+                                      {item.title}
+                                    </div>
+                                    <p className="text-muted-foreground line-clamp-2 text-xs leading-snug">
+                                      {item.description}
+                                    </p>
+                                  </div>
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
               ) : (
@@ -179,7 +218,7 @@ export const Navbar = () => {
         </div>
       </div>
 
-      {/*  Mobile Menu Navigation */}
+      {/* Mobile Menu Navigation (Using old single column, can be updated later) */}
       <div
         className={cn(
           "bg-background fixed inset-x-0 top-[calc(100%+1rem)] flex flex-col rounded-2xl border p-6 transition-all duration-300 ease-in-out lg:hidden",
@@ -190,7 +229,7 @@ export const Navbar = () => {
       >
         <nav className="divide-border flex flex-1 flex-col divide-y">
           {ITEMS.map((link) =>
-            link.dropdownItems ? (
+            link.dropdownStructure ? ( // Check for new structure property
               <div key={link.label} className="py-4 first:pt-0 last:pb-0">
                 <button
                   onClick={() =>
@@ -217,7 +256,8 @@ export const Navbar = () => {
                   )}
                 >
                   <div className="bg-muted/50 space-y-3 rounded-lg p-4">
-                    {link.dropdownItems.map((item) => (
+                    {/* Mobile menu rendering remains a single list for simplicity */}
+                    {link.dropdownStructure.flatMap(category => category.items).map((item) => (
                       <a
                         key={item.title}
                         href={item.href}

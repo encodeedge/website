@@ -2,50 +2,41 @@ import { DashedLine } from "@/components/dashed-line";
 
 const stats = [
   {
-    value: "$150M",
-    label: "Raised",
+    value: "100+",
+    label: "Practical Tutorials",
   },
   {
-    value: "20K",
-    label: "Companies",
+    value: "10K+",
+    label: "Community Coders",
   },
   {
-    value: "1.3B",
-    label: "Monthly transactions",
+    value: "Python",
+    label: "Primary Language Focus",
   },
   {
-    value: "1.5K",
-    label: "Connections per minute",
+    value: "Keras/PyTorch",
+    label: "Core Frameworks",
   },
 ];
 
 export function AboutHero() {
   return (
-    <section className="">
+    <section className="py-28 lg:py-32">
       <div className="container flex max-w-5xl flex-col justify-between gap-8 md:gap-20 lg:flex-row lg:items-center lg:gap-24 xl:gap-24">
         <div className="flex-[1.5]">
           <h1 className="text-3xl tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-            Democratising quality software
+            Democratizing Practical AI & ML Coding Skills
           </h1>
 
           <p className="text-muted-foreground mt-5 text-2xl md:text-3xl lg:text-4xl">
-            Mainline is bringing modern software to life with AI magic.
+            We provide clear, hands-on, and accessible tutorials to build real-world models.
           </p>
 
           <p className="text-muted-foreground mt-8 hidden max-w-lg space-y-6 text-lg text-balance md:block lg:mt-12">
-            At Mainline, we are dedicated to transforming the way teams plan,
-            execute, and deliver projects. Our mission is to provide our
-            customers with an unbeatable edge over delays, inefficiencies, and
-            disorganisation through actionable insights and seamless
-            collaboration. We’ll stop at nothing to give you the tools you need
-            to get every project across the finish line.
+            At our core, we believe that <strong>coding expertise in Machine Learning</ strong> shouldn't be a gatekept secret. Our mission is to transform complex AI and ML theory into <strong>simple, actionable code recipes</ strong> that anyone can follow. We cut through the jargon and focus exclusively on the practical steps needed to build, evaluate, and optimize functional models.
             <br />
             <br />
-            We’re customer-obsessed — investing the time to understand every
-            aspect of your workflow so that we can help you operate better than
-            ever before. We’re all in this together because your success is our
-            success. In our history as a company, we’ve never lost a customer,
-            because when your projects succeed, so do we.
+            Our commitment is to be the resource we wish we had when we started: a place where you can find complete, working code examples for <strong>every major algorithm and framework</ strong>. Whether you're aiming for your first classification model or deploying a large language model, our goal is to give you the coding confidence and the <strong>direct path to ML mastery</ strong>
           </p>
         </div>
 

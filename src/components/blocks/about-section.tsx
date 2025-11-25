@@ -8,22 +8,22 @@ export const AboutSection = () => {
       <div className="flex flex-col gap-8 lg:gap-16 xl:gap-20">
         <ImageSection
           images={[
-            { src: "/about/1.webp", alt: "Team collaboration" },
-            { src: "/about/2.webp", alt: "Team workspace" },
+            { src: "/about/1.webp", alt: "Data Science concepts visualization" },
+            { src: "/about/2.webp", alt: "Hands-on coding session" },
           ]}
           className="xl:-translate-x-10"
         />
 
         <TextSection
-          title="The team"
+          title="Our Story and Approach"
           paragraphs={[
-            "We started building Mainline in 2019 and launched in 2022. Every endpoint has been designed from the ground up — with no technical debt or legacy systems. We are purpose-built to power project management innovation for the next hundred years.",
-            "We are 100% founder and team-owned, profitable, and we keep our team lean. Over time, this page will become more polished, but for now, we're focused on delivering for developers.",
-            "If you're interested in building the future of PM, check out our open roles below.",
+            "This platform was launched in 2022 out of a need for <strong>clear, executable, and frustration-free ML content</strong>. We found that many resources either stayed too theoretical or provided incomplete code. We are built from the ground up to solve that: every tutorial is designed with a focus on <strong>mastery through implementation</strong>.",
+            "We are committed to keeping the core educational content accessible and free. We operate leanly and are constantly focused on updating our library to reflect the rapid advancements in the AI landscape, particularly in areas like transformer models and ethical AI.",
+            "If you share our passion for technical clarity and accessible ML education, we invite you to contribute or check out how you can join our team below.",
           ]}
           ctaButton={{
-            href: "/careers",
-            text: "View open roles",
+            href: "/contribute",
+            text: "Contribute to our library",
           }}
         />
       </div>
@@ -32,14 +32,14 @@ export const AboutSection = () => {
       <div className="flex flex-col gap-8 lg:gap-16 xl:gap-20">
         <TextSection
           paragraphs={[
-            "At Mainline, we are dedicated to transforming the way teams plan, execute, and deliver projects. Our mission is to provide our customers with an unbeatable edge over delays, inefficiencies, and disorganisation through actionable insights and seamless collaboration. We'll stop at nothing to give you the tools you need to get every project across the finish line.",
-            "We're customer-obsessed — investing the time to understand every aspect of your workflow so that we can help you operate better than ever before. We're all in this together because your success is our success. In our history as a company, we've never lost a customer, because when your projects succeed, so do we.",
+            "Our ultimate goal is to bridge the gap between complex research and practical application. We guide you from setting up your <strong>Python environment</strong> to deploying sophisticated models, always providing the 'why' alongside the executable 'how'. We break down dense topics like <strong>Linear Algebra</strong> and <strong>Deep Learning architectures</strong> into simple steps, ensuring true foundational understanding.",
+            "We are community-driven—actively listening to which algorithms are trending, which frameworks are confusing, and what knowledge gaps exist. Our success is measured by the number of working models you build and the confidence you gain. When our readers succeed in their ML projects and careers, we know we've succeeded.",
           ]}
         />
         <ImageSection
           images={[
-            { src: "/about/3.webp", alt: "Modern workspace" },
-            { src: "/about/4.webp", alt: "Team collaboration" },
+            { src: "/about/3.webp", alt: "Code editor with Python ML code" },
+            { src: "/about/4.webp", alt: "Neural network diagram or model architecture" },
           ]}
           className="hidden lg:flex xl:translate-x-10"
         />
@@ -91,7 +91,8 @@ export function TextSection({
       {title && <h2 className="text-primary text-4xl font-medium">{title}</h2>}
       <div className="text-muted-foreground max-w-xl space-y-6">
         {paragraphs.map((paragraph, index) => (
-          <p key={index}>{paragraph}</p>
+          // In a real React/JSX environment, this HTML will render correctly
+          <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }} /> 
         ))}
       </div>
       {ctaButton && (

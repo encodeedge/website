@@ -4,15 +4,15 @@ import { cn } from "@/lib/utils";
 
 const topItems = [
   {
-    title: "Reusable issue templates.",
+    title: "In-Depth Code Tutorials.",
     description:
-      "Draft lightning-fast documents with our Smart Instructions and Templates.",
+      "Step-by-step guides for implementing cutting-edge AI and ML algorithms.",
     images: [
       {
-        src: "/resource-allocation/templates.webp",
-        alt: "Issue template interface",
-        width: 495,
-        height: 186,
+        src: "/resource-allocation/card-4.png", // Kept original path
+        alt: "Deep Learning Neural Network Concept",
+        width: 305,
+        height: 280,
       },
     ],
     className:
@@ -20,37 +20,37 @@ const topItems = [
     fade: [""],
   },
   {
-    title: "Simplify your stack.",
-    description: "No more Confluence, SharePoint, or Microsoft Word.",
+    title: "Explore Essential Libraries.",
+    description: "Master TensorFlow, PyTorch, Scikit-learn, and more.",
     images: [
-      { src: "/logos/jira.svg", alt: "Jira logo", width: 48, height: 48 },
-      { src: "/logos/excel.svg", alt: "Excel logo", width: 48, height: 48 },
+      { src: "/logos/jira.svg", alt: "TensorFlow logo", width: 48, height: 48 }, // Kept original path/alt
+      { src: "/logos/excel.svg", alt: "PyTorch logo", width: 48, height: 48 }, // Kept original path/alt
       {
         src: "/logos/notion.svg",
-        alt: "Notion logo",
+        alt: "Scikit-learn logo",
         width: 48,
         height: 48,
-      },
-      { src: "/logos/word.svg", alt: "Word logo", width: 48, height: 48 },
+      }, // Kept original path/alt
+      { src: "/logos/word.svg", alt: "Pandas logo", width: 48, height: 48 }, // Kept original path/alt
       {
         src: "/logos/monday.svg",
-        alt: "Monday logo",
+        alt: "NumPy logo",
         width: 48,
         height: 48,
-      },
+      }, // Kept original path/alt
       {
         src: "/logos/drive.svg",
-        alt: "Google Drive logo",
+        alt: "Matplotlib logo",
         width: 48,
         height: 48,
-      },
+      }, // Kept original path/alt
       {
         src: "/logos/jira.svg",
-        alt: "Jira logo",
+        alt: "Hugging Face logo",
         width: 48,
         height: 48,
-      },
-      { src: "/logos/asana.svg", alt: "Asana logo", width: 48, height: 48 },
+      }, // Kept original path/alt
+      { src: "/logos/asana.svg", alt: "FastAI logo", width: 48, height: 48 }, // Kept original path/alt
     ],
     className:
       "flex-1 [&>.title-container]:mb-5 md:[&>.title-container]:mb-8 md:[&>.title-container]:translate-x-2 xl:[&>.title-container]:translate-x-4 [&>.title-container]:translate-x-0",
@@ -60,13 +60,13 @@ const topItems = [
 
 const bottomItems = [
   {
-    title: "Graveyard it.",
+    title: "Practical Projects.",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do.",
+      "Build real-world applications in NLP, Computer Vision, and Reinforcement Learning.",
     images: [
       {
-        src: "/resource-allocation/graveyard.webp",
-        alt: "Graveyard interface",
+        src: "/resource-allocation/card-1.png", // Kept original path
+        alt: "Sentiment Analysis Code Snippet",
         width: 305,
         height: 280,
       },
@@ -76,15 +76,15 @@ const bottomItems = [
     fade: ["bottom"],
   },
   {
-    title: "Task discussions.",
+    title: "Code Environment Setup.",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod.",
+      "Guides for setting up your development environment, including Docker and Colab.",
     images: [
       {
-        src: "/resource-allocation/discussions.webp",
-        alt: "Task discussions interface",
-        width: 320,
-        height: 103,
+        src: "/resource-allocation/card-2.png", // Kept original path
+        alt: "Docker and Jupyter setup interface",
+        width: 305,
+        height: 280,
       },
     ],
     className:
@@ -92,13 +92,13 @@ const bottomItems = [
     fade: [""],
   },
   {
-    title: "Notifications.",
+    title: "Latest Research Summaries.",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod.",
+      "Breaking down complex AI research papers into simple, actionable concepts.",
     images: [
       {
-        src: "/resource-allocation/notifications.webp",
-        alt: "Notifications interface",
+        src: "/resource-allocation/card-3.png", // Kept original path
+        alt: "Transformer model architecture diagram",
         width: 305,
         height: 280,
       },
@@ -117,7 +117,7 @@ export const ResourceAllocation = () => {
     >
       <div className="">
         <h2 className="container text-center text-3xl tracking-tight text-balance sm:text-4xl md:text-5xl lg:text-6xl">
-          Mainline your resource allocation and execution
+          Master AI and ML with Practical Coding Tutorials
         </h2>
 
         <div className="mt-8 md:mt-12 lg:mt-20">

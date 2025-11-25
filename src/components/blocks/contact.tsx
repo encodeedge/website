@@ -1,4 +1,4 @@
-import { Facebook, Linkedin, Twitter } from "lucide-react";
+import { Youtube, Linkedin, Twitter } from "lucide-react";
 
 import { DashedLine } from "../dashed-line";
 
@@ -12,9 +12,9 @@ const contactInfo = [
     title: "Corporate office",
     content: (
       <p className="text-muted-foreground mt-3">
-        1 Carlsberg Close
+        Lane no 6, SantNagar
         <br />
-        1260 Hillview, Australia
+        Pune, Maharashtra 411047
       </p>
     ),
   },
@@ -23,21 +23,21 @@ const contactInfo = [
     content: (
       <div className="mt-3">
         <div>
-          <p className="">Careers</p>
+          <p className="">Support</p>
           <a
-            href="mailto:careers@streamline.com"
+            href="mailto:support@encodeedge.com"
             className="text-muted-foreground hover:text-foreground"
           >
-            careers@streamline.com
+            support@encodeedge.com
           </a>
         </div>
         <div className="mt-1">
-          <p className="">Press</p>
+          <p className="">Submit An Article</p>
           <a
-            href="mailto:press@streamline.com"
+            href="mailto:info@encodeedge.com"
             className="text-muted-foreground hover:text-foreground"
           >
-            press@streamline.com
+            info@encodeedge.com
           </a>
         </div>
       </div>
@@ -47,13 +47,13 @@ const contactInfo = [
     title: "Follow us",
     content: (
       <div className="mt-3 flex gap-6 lg:gap-10">
-        <a href="#" className="text-muted-foreground hover:text-foreground">
-          <Facebook className="size-5" />
+        <a href="https://www.youtube.com/@encodeedge" className="text-muted-foreground hover:text-foreground">
+          <Youtube className="size-5" />
         </a>
-        <a href="#" className="text-muted-foreground hover:text-foreground">
+        <a href="https://x.com/encodeedge" className="text-muted-foreground hover:text-foreground">
           <Twitter className="size-5" />
         </a>
-        <a href="#" className="text-muted-foreground hover:text-foreground">
+        <a href="https://www.linkedin.com/company/encodeedge" className="text-muted-foreground hover:text-foreground">
           <Linkedin className="size-5" />
         </a>
       </div>

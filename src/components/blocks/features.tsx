@@ -6,16 +6,19 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const items = [
   {
-    title: "Purpose-built for product development",
-    image: "/features/triage-card.svg",
+    title: "Purpose-built for AI/ML development",
+    image: "/features/card-1.png", // Kept original path
+    href: "/topics/ai-ml", // Added href property
   },
   {
-    title: "Manage projects end-to-end",
-    image: "/features/cycle-card.svg",
+    title: "Manage coding projects end-to-end",
+    image: "/features/card-2.png", // Kept original path
+    href: "/topics/project-management", // Added href property
   },
   {
-    title: "Build momentum and healthy habits",
-    image: "/features/overview-card.svg",
+    title: "Build consistent coding habits",
+    image: "/features/card-3.png", // Kept original path
+    href: "/topics/system-design", // Added href property
   },
 ];
 
@@ -27,19 +30,19 @@ export const Features = () => {
         <div className="relative flex items-center justify-center">
           <DashedLine className="text-muted-foreground" />
           <span className="bg-muted text-muted-foreground absolute px-3 font-mono text-sm font-medium tracking-wide max-md:hidden">
-            MEASURE TWICE. CUT ONCE.
+            DATA FLOW, SKILLS GROW.
           </span>
         </div>
 
         {/* Content */}
         <div className="mx-auto mt-10 grid max-w-4xl items-center gap-3 md:gap-0 lg:mt-24 lg:grid-cols-2">
           <h2 className="text-2xl tracking-tight md:text-4xl lg:text-5xl">
-            Made for modern product teams
+            Made for aspiring ML engineers and coders
           </h2>
           <p className="text-muted-foreground leading-snug">
-            Mainline is built on the habits that make the best product teams
-            successful: staying focused, moving quickly, and always aiming for
-            high-quality work.
+            Our platform is built on the habits that make the best ML practitioners successful:
+            staying focused on clean code, moving quickly from concept to working model,
+            and always aiming for high-quality, reproducible results.
           </p>
         </div>
 
@@ -59,7 +62,7 @@ export const Features = () => {
                   </div>
 
                   <a
-                    href="#"
+                    href={item.href}
                     className={
                       "group flex items-center justify-between gap-4 pe-4 pt-4 md:pe-6 md:pt-6"
                     }

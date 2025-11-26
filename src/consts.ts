@@ -11,7 +11,7 @@ export const GITHUB_URL =
 export const SITE_METADATA = {
   title: {
     default: "EncodeEdge",
-    template: "%s | Mainline",
+    template: "%s | Encodeedge",
   },
   description:
     "EncodeEdge demystifies modern Python, Machine Learning, and complex algorithms with clear, project-based tutorials. We turn the hardest concepts into your strongest skills.",

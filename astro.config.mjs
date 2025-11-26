@@ -11,6 +11,7 @@ import markdoc from "@astrojs/markdoc";
 // https://astro.build/config
 export default defineConfig({
   site: "https://encodeedge.github.io",
+  base: "/website",
   integrations: [mdx(), sitemap(), react(), markdoc(), keystatic()],
   output: "static",
 

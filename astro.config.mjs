@@ -4,11 +4,14 @@ import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
+import keystatic from '@keystatic/astro'
+import markdoc from "@astrojs/markdoc";
+
 
 // https://astro.build/config
 export default defineConfig({
   site: "https://www.encodeedge.com",
-  integrations: [mdx(), sitemap(), react()],
+  integrations: [mdx(), sitemap(), react(), markdoc(), keystatic()],
   output: "static",
 
   vite: {

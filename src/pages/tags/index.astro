@@ -1,0 +1,62 @@
+---
+// src/pages/topics/index.astro
+import { getCollection } from 'astro:content';
+
+import { Background } from '@/components/background';
+import { SITE_TITLE } from '@/consts';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+
+
+//const topicMap = new Map(TOPIC_OPTIONS.map(t => [t.value, t.label]));
+
+
+const allPosts = await getCollection('blog');
+
+// Calculate counts for each unique topic slug
+const tagCounts = allPosts.reduce((acc, post) => {
+    // Iterate over the array of topics for each post
+    (post.data.tags || []).forEach(tagSlug => {
+        if (!acc[tagSlug]) {
+            acc[tagSlug] = {
+                count: 0,
+                // Use the predefined label for consistent display
+                label: tagSlug, 
+                slug: tagSlug,
+            };
+        }
+        acc[tagSlug].count++;
+    });
+    return acc;
+}, {} as Record<string, { count: number; label: string; slug: string }>);
+
+// Convert to an array and sort by topic name
+const tags = Object.values(tagCounts).sort((a, b) => a.label.localeCompare(b.label));
+
+const title = `All Tags | ${SITE_TITLE}`;
+const description = 'A directory of all AI and ML tags covered on this blog.';
+
+---
+
+<DefaultLayout title={title} description={description}>
+    <Background>
+        <div class="py-28 lg:pt-44 lg:pb-32 max-w-4xl mx-auto px-4">
+            <h1 class="text-5xl font-extrabold text-center mb-4">Explore AI/ML Topics</h1>
+            <p class="text-xl text-center text-gray-600 mb-12">
+                Select a primary topic to view all related articles.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {tags.map(tag => (
+                    <a href={`/tags/${tag.slug}`} class="block p-6 border border-gray-200 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 bg-white">
+                        <h2 class="text-2xl font-semibold text-blue-600">
+                            {tag.label}
+                        </h2>
+                        <p class="mt-2 text-gray-600">
+                            {tag.count} {tag.count === 1 ? 'article' : 'articles'}
+                        </p>
+                    </a>
+                ))}
+            </div>
+        </div>
+    </Background>
+</DefaultLayout>

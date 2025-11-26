@@ -1,0 +1,56 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+import { Background } from '@/components/background';
+import { BlogPosts } from '@/components/blocks/blog-posts';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+
+
+export async function getStaticPaths() {
+    const allPosts = await getCollection('blog');
+
+    const allTags = allPosts.flatMap(post => post.data.tags || []);
+    const uniqueTags = [...new Set(allTags)];
+
+    // 2. Map unique topics to dynamic paths
+    return uniqueTags.map(tagSlug => {
+        // Filter: Post is included if its 'topics' array includes the current 'topicSlug'
+        const posts = allPosts
+            .filter(post => post.data.tags && post.data.tags.includes(tagSlug))
+            .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+        // Get the human-readable label
+        const tagLabel = tagSlug;
+
+        return {
+            params: { tag: tagSlug }, // Creates the URL slug (e.g., /topics/machine-learning)
+            props: { posts, tagLabel },
+        };
+    });
+}
+
+// 3. Define the expected properties for the page
+interface TagProps {
+    posts: CollectionEntry<'blog'>[]; 
+    tagLabel: string; 
+}
+
+const { posts, tagLabel } = Astro.props as TagProps;
+
+const title = `Tag: ${tagLabel}`;
+const description = `All blog posts related to the core Tag: ${tagLabel}.`;
+
+---
+
+<DefaultLayout title={title} description={description}>
+    <Background>
+        <div class="py-28 lg:pt-44 lg:pb-32">
+            <h1 class="text-5xl font-extrabold text-center mb-4">Articles on: {tagLabel}</h1>
+            <p class="text-xl text-center text-gray-600 mb-12">
+                Content that is categorized under <strong>{tagLabel}</strong>.
+            </p>
+            {/* Reuses your existing BlogPosts component for rendering the list */}
+            <BlogPosts posts={posts} client:only='react' />
+        </div>
+    </Background>
+</DefaultLayout>

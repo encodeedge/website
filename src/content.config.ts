@@ -20,13 +20,14 @@ const blog = defineCollection({
     description: z.string(),
     // Transform string to Date object
     pubDate: z.coerce.date(),
-    updatedDate: z.coerce.date().optional(),
+    updatedDate: z.coerce.date(),
     readTime: z.number().optional(),
     image: z.string().optional(),
     authorImage: z.string().optional(),
     authorName: z.string().optional(),
     topics: z.array(TOPIC_SLUGS), 
     tags: z.array(z.string()).optional(), 
+    featured: z.boolean().optional(),
   }),
 });
 

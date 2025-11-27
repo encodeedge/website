@@ -17,8 +17,9 @@ export default config({
         title: fields.slug({ name: { label: 'Title' } }),
         description: fields.text({ label: 'Description' , validation: { isRequired: true }} ),
         pubDate: fields.date({ label: 'Publication Date', validation: { isRequired: true } }),
-        updatedDate: fields.date({ label: 'Updated Date' }),
+        updatedDate: fields.date({ label: 'Updated Date', validation: { isRequired: true } }),
         readTime: fields.number({ label: 'Estimated Read Time (minutes)' }),
+        featured: fields.checkbox({ label: 'Featured Post', description: 'Mark this post as featured to highlight it on the homepage.' }),
         tags: fields.array(
           fields.text({ label: 'Tag' }),
           {

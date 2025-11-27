@@ -1,12 +1,19 @@
 ---
 title: 'Welcome to EncodeEdge : Your Path to Practical AI Mastery'
-description: dummy
+description: >-
+  Welcome to EncodeEdge! This inaugural post introduces our mission to demystify
+  AI and ML and promising practical, code-backed tutorials for real-world
+  impact. Discover what's next as we dive into foundational concepts.
 pubDate: 2025-11-27
 updatedDate: 2025-11-27
 readTime: 4
 featured: true
-tags: []
-topics: []
+tags:
+  - first-post
+  - encodeedge
+topics:
+  - machine-learning
+  - deep-learning
 image: /assets/welcome-to-encode-edge-your-path-to-practical-ai-mastery/image.png
 authorImage: >-
   /assets/welcome-to-encode-edge-your-path-to-practical-ai-mastery/authorImage.png

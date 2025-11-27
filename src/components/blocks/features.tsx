@@ -41,7 +41,7 @@ export const Features = () => {
             {featuredPosts.map((item, i) => (
               <div key={i} className="flex flex-1 max-md:flex-col">
                 <div className="flex-1 p-4 pe-0! md:p-6">
-                  <div className="relative aspect-[1.28/1] overflow-hidden">
+                  <div className="relative aspect-[1.28/1] overflow-hidden ">
                     <img
                       src={item.data.image}
                       alt={`${item.data.title} interface`}
@@ -51,7 +51,7 @@ export const Features = () => {
                   </div>
 
                   <a
-                    href={item.id}
+                    href={`/blog/${item.id}`}
                     className={
                       "group flex items-center justify-between gap-4 pe-4 pt-4 md:pe-6 md:pt-6"
                     }

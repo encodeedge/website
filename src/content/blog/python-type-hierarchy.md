@@ -89,6 +89,43 @@ A callable is anything that can be **invoked** or **called** using the parenthes
 
 These are unique objects that exist independently or serve special purposes:
 
-* ***None***\*\*:\*\* A singleton object representing the absence of a value. Any variable set to *None* always points back to the same memory address for the *None* object.
-* ***NotImplemented***\*\*:\*\* A special value used, for example, when defining comparison methods (*\_\_lt\_\_*, *\_\_gt\_\_*) in classes to indicate that a comparison between two different types is not supported.
-* **Ellipsis Operator (*...*):** An operator (represented as *Ellipsis()* in memory) that can be used for things like slicing, especially in advanced sequence types or libraries like NumPy.
+* ***None*** : A singleton object representing the absence of a value. Any variable set to *None* always points back to the same memory address for the *None* object.
+* ***NotImplemented*** :  A special value used, for example, when defining comparison methods (*\_\_lt\_\_*, *\_\_gt\_\_*) in classes to indicate that a comparison between two different types is not supported.
+* **Ellipsis Operator (*...*) :** An operator (represented as *Ellipsis()* in memory) that can be used for things like slicing, especially in advanced sequence types or libraries like NumPy.
+
+
+
+## Statically typed and Dynamically typed
+
+
+
+Statically typed languages, such as **Java**, **C++**, and **Swift**, require a variable's data type to be explicitly declared at the time of creation, and this type cannot be changed later. For example, in a statically typed language, if a variable named `myVar` is declared as a `String` (e.g., `String myVar = "hello";`), it can only hold string values. Attempting to assign an integer value, like `myVar = 10;`, would result in a type error because the variable has been declared as a `String` and is incompatible with the integer type. However, assigning another string value, like `myVar = "abc";`, is acceptable.
+
+
+
+In contrast, **Python** is a dynamically typed language. In Python, variables are simply **references** or pointers to objects in memory, and the variables themselves do not have a fixed, inherent type. For instance, when you write `my_var = 'hello'`, the variable `my_var` is just referencing a string object with the value `'hello'`. This flexibility allows the same variable to later reference an object of a completely different type without causing an error. For example, executing `my_var = 10` is perfectly valid; the variable `my_var` simply stops pointing to the string object and starts pointing to an integer object with the value `10`. To determine the type of the object a variable is currently referencing, Python provides the built-in `type()` function, which looks up the object at the memory location the variable is pointing to and returns that object's type.
+
+
+
+```python
+# Lets assign string to variable a and check its type
+a = "hello"
+print("Type of a is : ", type(a))
+
+# Lets reassign variable a to a number and check its type
+a = 10
+print("Type of a is : ",type(a))
+
+# Now lets assign a lambda function to variable a and check its type
+a = lambda x: x**2
+a(2)
+print("Type of a is : ",type(a))
+```
+
+
+
+```
+Type of a is :  <class 'str'>
+Type of a is :  <class 'int'>
+Type of a is :  <class 'function'>
+```

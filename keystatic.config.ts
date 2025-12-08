@@ -38,6 +38,7 @@ export default config({
                 { label: 'Natural Language Processing', value: 'nlp' },
                 { label: 'Computer Vision', value: 'computer-vision' },
                 { label: 'Web Development', value: 'web-dev' },
+                { label: 'Python', value: 'python' },
             ]
         }),
         image: fields.image({ 
@@ -53,7 +54,14 @@ export default config({
           directory: '/public/assets/',
         }),
         authorName: fields.text({ label: 'Author Name', validation: { isRequired: true } }),
-        content: fields.mdx({ label: 'Content', extension: 'md' }),
+        content: fields.mdx({ label: 'Content', extension: 'md', 
+        options: {
+        image: {
+          directory: '/public/assets/', // For images embedded within MDX content
+          publicPath: '/assets/', // Use an alias for easier referencing
+        },
+      },
+        }),
       },
     }),
   },

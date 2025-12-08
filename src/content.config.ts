@@ -9,6 +9,7 @@ const TOPIC_SLUGS = z.enum([
     'nlp',
     'computer-vision',
     'web-dev',
+    'python',
 ]);
 
 const blog = defineCollection({

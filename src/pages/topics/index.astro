@@ -14,6 +14,7 @@ const TOPIC_OPTIONS = [
     { label: 'Natural Language Processing', value: 'nlp' },
     { label: 'Computer Vision', value: 'computer-vision' },
     { label: 'Astro/Web Development', value: 'web-dev' },
+    { label: 'Python', value: 'python' },
 ];
 const topicMap = new Map(TOPIC_OPTIONS.map(t => [t.value, t.label]));
 
@@ -51,6 +52,7 @@ const getIcon = (slug: string) => {
         case 'nlp': return '🗣️';
         case 'computer-vision': return '👁️';
         case 'web-dev': return '💻';
+        case 'python': return '🐍';
         default: return '📖';
     }
 };

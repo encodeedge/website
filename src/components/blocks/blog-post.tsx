@@ -103,7 +103,7 @@ const BlogPost = ({
         </div>
       </div>
       <div className="container">
-        <div className="prose mx-auto max-w-3xl">{children}</div>
+        <div className="prose dark:prose-invert mx-auto max-w-3xl">{children}</div>
       </div>
     </section>
   );

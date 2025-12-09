@@ -353,3 +353,64 @@ tup_1 : ([9, 10, 21, 9], [1, 40, 7]) has id :  0x10c1fb6c0
 Check that the contents of **list\_1** and **list\_2** changed. Thus immutability can't just be thought as object whose value doesn't change, it has it's own nuance. In the example, tuple **tup\_1** didn't change, but as the objects it reference **list\_1** and **list\_2** are themselves mutable, it appears though the tuple has changed.&#x20;
 
 It is a subtle nuance, but one that is absolutely critical to understand.
+
+#### Function Arguments
+
+Now let's look at how variables will be impacted when we pass them as arguments to a function. Let's say we have a string var\_str = "EncodeEdge" and we pass it to a function and perform some concatenation, will it change the string value? and what happens when the argument passed is a mutable object.
+
+When we pass a variable as argument to the function, it is passed by reference. As in the below code, when we pass
+
+```python
+def concat(str_input):
+    print('str_input addr : {0}'.format(hex(id(str_input))))
+    str_input = 'Welcome to ' + str_input
+    print('Addr of str_input after concatenation :  {0}'.format(hex(id(str_input))))
+
+str = 'EncodeEdge'
+print('Addr of str = {0}'.format(hex(id(str))))
+
+concat(str)
+
+print('Addr of str after function call = {0}'.format(hex(id(str))))
+```
+
+```
+Addr of str = 0x107098670
+str_input addr : 0x107098670
+Addr of str_input after concatenation :  0x1070eaad0
+Addr of str after function call = 0x107098670
+```
+
+
+
+Let's see how this works with mutable objects:
+
+
+
+```python
+def change_list(item):
+    print('Address of item array : {0}'.format(hex(id(item))))
+    if len(item) > 1:
+        item[1] = item[0] * 2
+    item.append(15)
+    print('Address of items array after change {0}'.format(hex(id(item))))
+
+sample_list = [15, 4, 8]
+print('Address of sample_list : {0}'.format(hex(id(sample_list))))
+change_list(sample_list)
+
+print(sample_list)
+print('Address of sample_list {0}'.format(hex(id(sample_list))))
+```
+
+```
+Address of sample_list : 0x1070d6480
+Address of item array : 0x1070d6480
+Address of items array after change 0x1070d6480
+[15, 30, 8, 15]
+Address of sample_list 0x1070d6480
+```
+
+
+
+As we can see, the memory address referenced by *sample\_list* is same throughout the execution and we are simply modifying the internal state of the item. Also remember the caveat with immutable objects containing mutable collections as we have discussed in the case of tuple above.

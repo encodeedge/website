@@ -12,7 +12,7 @@ tags:
   - Garbage Collector
 topics:
   - python
-image: /assets/python-variables-and-memory-references/image.png
+image: /assets/python-variables-and-memory-references/image.jpg
 authorImage: /assets/python-variables-and-memory-references/authorImage.png
 authorName: Atul Jha
 ---

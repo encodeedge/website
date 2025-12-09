@@ -120,7 +120,7 @@ print(ref_count(var_id))
 
 Remember that **reference counting** is Python's core mechanism for memory management as objects are created. Python keeps track of the number of active **references** to every object in memory. This count can be one, two, or more. Critically, as soon as that reference count drops to **zero**, the Python memory manager immediately destroys the object and reclaims the memory. This system, however, fails to detect and clean up objects involved in **circular references**, where objects reference each other, preventing their count from reaching zero. This is where the garbage collector comes in.&#x20;
 
-The **Garbage Collector** (GC) is a standard Python module that addresses the limitation of reference counting by managing memory associated with circular references. By default, the GC is **turned on** and runs **periodically** on its own. We can control its behavior programmatically using the built-in ***gc***\*\* module\*\*, allowing us to call it manually or perform custom cleanup tasks. Although possible to **turn the GC off** if we're certain our code avoids circular references, this is generally advised against due to the risk of memory leaks.
+The **Garbage Collector** (GC) is a standard Python module that addresses the limitation of reference counting by managing memory associated with circular references. By default, the GC is **turned on** and runs **periodically** on its own. We can control its behavior programmatically using the built-in ***gc*** **module**, allowing us to call it manually or perform custom cleanup tasks. Although possible to **turn the GC off** if we're certain our code avoids circular references, this is generally advised against due to the risk of memory leaks.
 
 ```python
 import ctypes
@@ -225,3 +225,131 @@ refcount(b) = 0
 a: Not found
 b: Not found
 ```
+
+## Variable Re-assignment and Object Mutability
+
+As we have discussed earlier, whenever we assign a value to a variable, such as *var\_1 = 10*0, an integer object is created at a specific memory address and var\_1 is a reference that points to the object. A common misconception arises when we reassign that variable, for example by writing *var\_2 = 120*. In this scenario, Python does not overwrite the value *100* at the original memory address. Instead, it instantiates a completely distinct integer object with the value *120* at a *new* memory address. The variable *var\_1* simply updates its reference to point to this new location.
+
+```python
+var_1 = 100
+print("id of var_1 : ",hex(id(var_1)))
+
+# Reassigning var_1 to another value
+var_1 = 120
+print("id of var_1 after reassignemnt: ",hex(id(var_1)))
+
+var_2 = 120
+var_3 = 120
+print("id of var_2 : ", hex(id(var_2)))
+print("id of var_3 : ", hex(id(var_3)))
+```
+
+```
+id of var_1 :  0x100a1d5d0
+id of var_1 after reassignemnt:  0x100a1d850
+id of var_2 :  0x100a1d850
+id of var_3 :  0x100a1d850
+```
+
+As we can see the memory address of ***var\_1*** is changed after reassignment, similarly if two different variables are assigned same value, the variables may point to same memory address as in case of ***var\_2***.
+
+### Object Mutability
+
+An object in Python can be thought of as having an internal state (data), and a specific memory address. "Modifying" an object specifically refers to altering its internal state without changing its location in memory.&#x20;
+
+Let's take an example, if we have a ***my\_account*** variable pointing to a Bank Account object at a specific memory address with a balance of 150, updating that balance to 500 changes the data *inside* the object, but the variable still points to the exact same memory address.&#x20;
+
+This differs from the example of  immutable types like integers which we saw in previous section, where assigning a new value (e.g., changing 10 to 15) forces the variable to point to a completely new object at a different address. This ability to change data in-place is called **mutation**, leading to the fundamental definition that objects whose state can be modified are **mutable**, while those that cannot be altered after creation are **immutable**.
+
+Some of Python's built-in data types are **mutable**. That is, the internal contents (state) of the object can be modified without changing the memory address for example, list.
+
+```python
+# A new dummy_list is created
+dummy_list = [3, 5, 3]
+print(dummy_list)
+print(hex(id(dummy_list)))
+
+#Value 4 is appended to the existing list
+dummy_list.append(4)
+print(dummy_list)
+print(hex(id(dummy_list)))
+```
+
+```
+[3, 5, 3]
+0x106d84100
+[3, 5, 3, 4]
+0x106d84100
+```
+
+In the above example, we can see we have declared a new variable dummy\_list = \[3, 5, 3]. After appending the the value 4 to the same list, the memory address of *dummy\_list* has **not** changed whereas, the **contents** has.
+
+```python
+dummy_list_2 = [14, 3, 1]
+print(dummy_list_2)
+print(hex(id(dummy_list_2)))
+
+# Concatenating 4 to the list, this creates a new list at different memory location
+dummy_list_2 = dummy_list_2 + [4]
+print(dummy_list_2)
+print(hex(id(dummy_list_2)))
+
+# What about +=? This also does inplace
+dummy_list_2 += [6]
+print(dummy_list_2)
+print(hex(id(dummy_list_2)))
+```
+
+```
+[14, 3, 1]
+0x10c215a40
+[14, 3, 1, 4]
+0x106cdbd00
+[14, 3, 1, 4, 6]
+0x106cdbd00
+```
+
+Now let's take **tuple** as an example, which is of immutable sequence type. As tuple type is of immutable nature, addition, updation removal, can't be done on tuples.&#x20;
+
+```python
+tup_1 = (1, 2, 3)
+```
+
+In the example above, the tuple tup\_1 will not change as long as the variable points to same reference.
+
+```python
+list_1 = [9, 10, 21]
+list_2 = [1, 40]
+tup_1 = (list_1, list_2)
+
+print("list_1 : {0} has id : ".format(list_1), hex(id(list_1)))
+print("list_2 : {0} has id : ".format(list_2), hex(id(list_2)))
+print("tup_1 : {0} has id : ".format(tup_1), hex(id(tup_1)))
+```
+
+```
+list_1 : [9, 10, 21] has id :  0x10c215440
+list_1 : [1, 40] has id :  0x10c210f80
+list_1 : ([9, 10, 21], [1, 40]) has id :  0x10c1fb6c0
+```
+
+Now, if we assign tup\_1 to a tuple of mutable type, things get interesting. Here, **tup\_1** is still immutable, i.e. It's reference to **list\_1** and **list\_2** will never change unless it is reassigned. However the object it points are themselves **mutable.**
+
+```python
+list_1.append(9)
+list_2.append(7)
+
+print("list_1 : {0} has id : ".format(list_1), hex(id(list_1)))
+print("list_2 : {0} has id : ".format(list_2), hex(id(list_2)))
+print("tup_1 : {0} has id : ".format(tup_1), hex(id(tup_1)))
+```
+
+```
+list_1 : [9, 10, 21, 9] has id :  0x10c215440
+list_2 : [1, 40, 7] has id :  0x10c210f80
+tup_1 : ([9, 10, 21, 9], [1, 40, 7]) has id :  0x10c1fb6c0
+```
+
+Check that the contents of **list\_1** and **list\_2** changed. Thus immutability can't just be thought as object whose value doesn't change, it has it's own nuance. In the example, tuple **tup\_1** didn't change, but as the objects it reference **list\_1** and **list\_2** are themselves mutable, it appears though the tuple has changed.&#x20;
+
+It is a subtle nuance, but one that is absolutely critical to understand.

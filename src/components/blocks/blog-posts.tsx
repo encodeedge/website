@@ -64,7 +64,7 @@ const BlogPosts = ({ posts }: { posts: any[] }) => {
                     ))}
 
                     {/* Tags (Secondary Keywords) */}
-                    {(post.data.tags || []).slice(0, 1).map((tag: string) => (
+                    {(post.data.tags || []).slice(0, 3).map((tag: string) => (
                       <a 
                         key={tag} 
                         href={`/tags/${normalizeTagSlug(tag)}`} // 👈 Link to the dynamic tag page

@@ -10,9 +10,6 @@ const { title, description } = Astro.props;
   <head>
     <BaseHead title={title} description={description} />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.css" />
-            {
-            import.meta.env.PROD && (
-            <>
                 <script is:inline type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=G-5WBXFR71Y5"></script>
 
                 <script is:inline type="text/partytown">
@@ -40,8 +37,6 @@ const { title, description } = Astro.props;
                         });
                     }
                 </script>
-            </>
-        )}
   </head>
   <body class={`h-screen antialiased`}>
     <Navbar client:only='react' />

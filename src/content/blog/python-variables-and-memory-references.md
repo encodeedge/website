@@ -381,11 +381,7 @@ Addr of str_input after concatenation :  0x1070eaad0
 Addr of str after function call = 0x107098670
 ```
 
-
-
 Let's see how this works with mutable objects:
-
-
 
 ```python
 def change_list(item):
@@ -411,6 +407,96 @@ Address of items array after change 0x1070d6480
 Address of sample_list 0x1070d6480
 ```
 
-
-
 As we can see, the memory address referenced by *sample\_list* is same throughout the execution and we are simply modifying the internal state of the item. Also remember the caveat with immutable objects containing mutable collections as we have discussed in the case of tuple above.
+
+#### Shared references, Mutability and Variable equality
+
+***Shared Reference*** is used to indicate, two variables referencing same object in memory (that is having the same memory address).
+
+In some cases with immutable types, Python's memory manager reuses the memory references. This is safe, since for immutable types like numbers, string, the values will not change in-place.
+
+```python
+var_1 = 'EncodeEdge'
+var_2 = var_1
+
+print("Var_1 : {0}, has id : {1}".format(var_1, hex(id(var_1))))
+print("Var_2 : {0}, has id : {1}".format(var_2, hex(id(var_2))))
+
+# Now if we change var_2
+
+var_2 = 'Welcome To ' + var_2
+print("Values after var_2 is changed : ")
+print("Var_1 : {0}, has id : {1}".format(var_1, hex(id(var_1))))
+print("Var_2 : {0}, has id : {1}".format(var_2, hex(id(var_2))))
+```
+
+```
+Var_1 : EncodeEdge, has id : 0x105b16f70
+Var_2 : EncodeEdge, has id : 0x105b16f70
+Values after var_2 is changed : 
+Var_1 : EncodeEdge, has id : 0x105b16f70
+Var_2 : Welcome To EncodeEdge, has id : 0x105b5d580
+```
+
+As in the example above, ***var\_1***, ***var\_2*** both references same memory address, when ***var\_2*** is changed, ***var\_2*** now points to a different memory address pointing to the new value.
+
+Be careful in case of Mutable types, as if variables are referring same memory address, changing one will impact the other one.
+
+
+
+```python
+list_1 = [11, 2, 7]
+list_2 = list_1
+
+print("list_1 : {0}, has id : {1}".format(list_1, hex(id(list_1))))
+print("list_2 : {0}, has id : {1}".format(list_2, hex(id(list_2))))
+
+# Now if we change list_2
+
+list_2.append(14)
+print("Values after var_2 is changed : ")
+print("list_1 : {0}, has id : {1}".format(list_1, hex(id(list_1))))
+print("list_2 : {0}, has id : {1}".format(list_2, hex(id(list_2))))
+```
+
+```
+list_1 : [11, 2, 7], has id : 0x105b3fb80
+list_2 : [11, 2, 7], has id : 0x105b3fb80
+Values after var_2 is changed : 
+list_1 : [11, 2, 7, 14], has id : 0x105b3fb80
+list_2 : [11, 2, 7, 14], has id : 0x105b3fb80
+```
+
+
+
+In case when both the mutable variables are assigned same value, will the share same reference?
+
+
+
+```python
+
+v1 = 10
+v2 = 10
+
+print("v1 : {0}, has id : {1}".format(v1, hex(id(v1))))
+print("v2 : {0}, has id : {1}".format(v2, hex(id(v2))))
+
+list_1 = [11, 2, 7]
+list_2 = [11, 2, 7]
+
+print("list_1 : {0}, has id : {1}".format(list_1, hex(id(list_1))))
+print("list_2 : {0}, has id : {1}".format(list_2, hex(id(list_2))))
+
+```
+
+```
+v1 : 10, has id : 0x1029d2a50
+v2 : 10, has id : 0x1029d2a50
+list_1 : [11, 2, 7], has id : 0x105b39480
+list_2 : [11, 2, 7], has id : 0x105b3d080
+```
+
+
+
+As we can see above for ***immutable*** types like integer, Python memory manager has assigned same reference for both ***v1*** and ***v2***. Whereas for mutable type like list, Python memory manager will never do this.
+

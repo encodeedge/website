@@ -14,11 +14,64 @@ image: /assets/python-type-hierarchy/image.png
 authorImage: /assets/python-type-hierarchy/authorImage.png
 authorName: Atul Jha
 ---
-The fundamentals of Python programming for machine learning and AI.
-
 # Type Hierarchy
 
-Type hierarchy defines what data types are supported by Python. Data types define the what type of data are supported. We will have a look at a subset of them which are most commonly used.
+Type hierarchy defines what data types are supported by Python. Data types define the different type of data that can be created in Python. We will have a look at a subset of them which are most commonly used.
+
+Before that lets have a look at one of the most important concept, that is throughout this course we will see many data types like int, float, dictionary, None etc, many constructs like Operators ('+', '\*'), functions, Classes etc. But one thing is common, i.e they are all objects (instance of classes). That means they all have a memory address.
+
+```python
+def fun(a):
+    return a*2
+
+class b :
+    abc = "xyz"
+
+print("Type of function fun is : {0} and it's address is {1}".format(type(fun), id(fun)))
+print("Type of class b is : {0} and it's address is {1}".format(type(b), id(b)))
+print("Type of function fun is : {0} and it's address is {1}".format(type(type), id(type)))
+```
+
+```
+Type of function fun is : <class 'function'> and it's address is 4357881712
+Type of class b is : <class 'type'> and it's address is 5471267584
+Type of function fun is : <class 'type'> and it's address is 4320241760
+```
+
+As we can see above each of these is an object of a certain class. In Python 3, every class implicitly inherits from ***object***. Whether it is a built-in type like ***int*** or ***str***, or a custom class we define ourself, if we trace the inheritance tree all the way to the root, we will find ***object***. The method \_\_mro\_\_ (method resolution order) can be used to trace the order.
+
+
+
+```python
+
+print("The full type lineage of int is ", int.__bases__)
+
+print("The full type lineage of int is ", bool.__bases__)
+
+# Let's define a CustomType:
+class MyCustomType:
+    pass
+
+print(MyCustomType.__mro__)
+
+x = 10
+s = "Hello"
+def my_func(): pass
+
+print("{0} is an instance of {1} and it's full lineage is {2}".format(x, isinstance(x, object), type(x).__mro__))
+print("{0} is an instance of {1} and it's full lineage is {2}".format(x, isinstance(s, object), type(s).__mro__))
+print("{0} is an instance of {1} and it's full lineage is {2}".format(x, isinstance(my_func, object), type(my_func).__mro__))
+
+```
+
+```
+The full type lineage of int is  (<class 'object'>,)
+The full type lineage of int is  (<class 'int'>,)
+(<class '__main__.MyCustomType'>, <class 'object'>)
+10 is an instance of True and it's full lineage is (<class 'int'>, <class 'object'>)
+10 is an instance of True and it's full lineage is (<class 'str'>, <class 'object'>)
+10 is an instance of True and it's full lineage is (<class 'function'>, <class 'object'>)
+```
 
 ## Numbers
 
@@ -26,14 +79,25 @@ Numeric types are broadly divided into two main categories: **Integral** and **N
 
 #### Integral Numbers
 
-These represent whole numbers.
+These represent integers i.e positive and negative numbers.
 
-* **Integers (int):** Standard whole numbers, like 1, 2, or 3.
-* **Booleans (*bool*):** Represent *True* or *False*. Interestingly, in Python, booleans are actually a subclass of integers.
+* **Integers (int):** positive and negative numbers, like -3, -2, -1, 1, 2, or 3.
+* **Booleans (*bool*):** Stores truthy and falsy value (True or False). Interestingly, in Python, booleans are actually a subclass of integers.
+
+```python
+flag = True
+print("flag is of type : ",type(flag))
+print("flag is an instance of : ",isinstance(flag, int))
+```
+
+```
+flag is of type :  <class 'bool'>
+flag is an instance of :  True
+```
 
 #### Non-Integral Numbers
 
-These are used to represent numbers that are not integers, typically with a fractional component or special mathematical properties.
+Numbers which are not integer i.e have fraction component or like complex numbers.
 
 * **Floats (*float*):** The most common non-integral type, used for real numbers like $3.14$. They are usually implemented as C doubles in the underlying C language.
 * **Complex (*complex*):** Numbers that have both a real and an imaginary part, such as $1 + 2j$.
@@ -93,19 +157,11 @@ These are unique objects that exist independently or serve special purposes:
 * ***NotImplemented*** :  A special value used, for example, when defining comparison methods (*\_\_lt\_\_*, *\_\_gt\_\_*) in classes to indicate that a comparison between two different types is not supported.
 * **Ellipsis Operator (*...*) :** An operator (represented as *Ellipsis()* in memory) that can be used for things like slicing, especially in advanced sequence types or libraries like NumPy.
 
-
-
 ## Statically typed and Dynamically typed
-
-
 
 Statically typed languages, such as **Java**, **C++**, and **Swift**, require a variable's data type to be explicitly declared at the time of creation, and this type cannot be changed later. For example, in a statically typed language, if a variable named `myVar` is declared as a `String` (e.g., `String myVar = "hello";`), it can only hold string values. Attempting to assign an integer value, like `myVar = 10;`, would result in a type error because the variable has been declared as a `String` and is incompatible with the integer type. However, assigning another string value, like `myVar = "abc";`, is acceptable.
 
-
-
 In contrast, **Python** is a dynamically typed language. In Python, variables are simply **references** or pointers to objects in memory, and the variables themselves do not have a fixed, inherent type. For instance, when you write `my_var = 'hello'`, the variable `my_var` is just referencing a string object with the value `'hello'`. This flexibility allows the same variable to later reference an object of a completely different type without causing an error. For example, executing `my_var = 10` is perfectly valid; the variable `my_var` simply stops pointing to the string object and starts pointing to an integer object with the value `10`. To determine the type of the object a variable is currently referencing, Python provides the built-in `type()` function, which looks up the object at the memory location the variable is pointing to and returns that object's type.
-
-
 
 ```python
 # Lets assign string to variable a and check its type
@@ -121,8 +177,6 @@ a = lambda x: x**2
 a(2)
 print("Type of a is : ",type(a))
 ```
-
-
 
 ```
 Type of a is :  <class 'str'>

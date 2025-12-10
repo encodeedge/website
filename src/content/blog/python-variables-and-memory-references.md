@@ -442,8 +442,6 @@ As in the example above, ***var\_1***, ***var\_2*** both references same memory 
 
 Be careful in case of Mutable types, as if variables are referring same memory address, changing one will impact the other one.
 
-
-
 ```python
 list_1 = [11, 2, 7]
 list_2 = list_1
@@ -467,11 +465,7 @@ list_1 : [11, 2, 7, 14], has id : 0x105b3fb80
 list_2 : [11, 2, 7, 14], has id : 0x105b3fb80
 ```
 
-
-
 In case when both the mutable variables are assigned same value, will the share same reference?
-
-
 
 ```python
 
@@ -496,7 +490,90 @@ list_1 : [11, 2, 7], has id : 0x105b39480
 list_2 : [11, 2, 7], has id : 0x105b3d080
 ```
 
-
-
 As we can see above for ***immutable*** types like integer, Python memory manager has assigned same reference for both ***v1*** and ***v2***. Whereas for mutable type like list, Python memory manager will never do this.
 
+#### Variable Equality
+
+Comparing two variable can be though of in two different ways :&#x20;
+
+1. Comparing the memory address
+2. Comparing the data (internal state) of the variable
+
+In python we can use the identity operator ("is") to compare the memory address and equality operator ("==") to compare the values.
+
+```python
+var_1 = 34
+var_2 = 34
+
+print("Memory address of var_1 : ",hex(id(var_1)))
+print("Memory address of var_2 : ", hex(id(var_2)))
+
+print("var_1 is var_2: ", var_1 is var_2)
+print("var_1 == var_2:", var_1 == var_2)
+
+list_1 = [1, 2, 3]
+list_2 = [1, 2, 3]
+
+print("Memory address of list_1 : ",hex(id(list_1)))
+print("Memory address of list_2 : ",hex(id(list_2)))
+
+print("list_1 is list_2: ", list_1 is list_2)
+print("list_1 == list_2", list_1 == list_2)
+```
+
+```
+Memory address of var_1 :  0x100586d50
+Memory address of var_2 :  0x100586d50
+var_1 is var_2:  True
+var_1 == var_2: True
+Memory address of list_1 :  0x1030248c0
+Memory address of list_2 :  0x1030cfe40
+list_1 is list_2:  False
+list_1 == list_2 True
+```
+
+##### **NoneType**
+
+It is a built-in variable of type "NoneType" and is a reference to an object instance of NoneType. Python's memory manager will use shared reference as NoneType objects are immutable.
+
+While `None` is used to represent an "empty" value or missing data (similar to a null pointer), it remains a real object within Python's memory. Consequently, the memory manager handles every assignment to `None` by using a shared reference to the same object instance.
+
+```python
+print(None, "is of Type {0}, It's Hex is is : {1}".format(type(None), hex(id(None))))
+
+var_1 = None
+print("var_1 is of Type {0}, It's Hex is is : {1}".format(type(var_1), hex(id(var_1))))
+
+var_2 = None
+print("var_2 is of Type {0}, It's Hex is is : {1}".format(type(var_2), hex(id(var_2))))
+
+print("var_1 == var_2 : ", var_1 == var_2)
+print("var_1 is var_2 : ", var_1 is var_2)
+```
+
+```
+None is of Type <class 'NoneType'>, It's Hex is is : 0x100f53a50
+var_1 is of Type <class 'NoneType'>, It's Hex is is : 0x100f53a50
+var_2 is of Type <class 'NoneType'>, It's Hex is is : 0x100f53a50
+var_1 == var_2 :  True
+var_1 is var_2 :  True
+```
+
+For collections, an empty one does have the same collection type, instead of None Type.
+
+```python
+str_1 = ""
+list_1 = []
+tup_1 = ()
+
+print("str_1 is of Type {0}".format(type(str_1)))
+print("list_1 is of Type {0}".format(type(list_1)))
+print("tup_1 is of Type {0}".format(type(tup_1)))
+
+```
+
+```
+str_1 is of Type <class 'str'>
+list_1 is of Type <class 'list'>
+tup_1 is of Type <class 'tuple'>
+```

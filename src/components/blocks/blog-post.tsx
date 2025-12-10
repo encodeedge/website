@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import React from "react";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import  PostComments from "@/components/ui/PostComments.tsx";
 
 // 🚨 Define a basic type for post data to ensure type safety and include topics/tags
 interface PostData {
@@ -104,7 +105,9 @@ const BlogPost = ({
       </div>
       <div className="container">
         <div className="prose dark:prose-invert mx-auto max-w-3xl">{children}</div>
+        <PostComments />
       </div>
+      
     </section>
   );
 };

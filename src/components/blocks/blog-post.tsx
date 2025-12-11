@@ -179,7 +179,7 @@ const BlogPost = ({
         </div>
       </div>
       <div className="w-full">
-        <div className="grid w-full max-w-12xl mx-auto px-8 grid-cols-1 gap-8 lg:grid-cols-[14rem_minmax(0,80ch)_14rem] items-start justify-center">
+        <div className="grid w-full max-w-12xl mx-auto px-8 grid-cols-1 gap-8 lg:grid-cols-[14rem_minmax(0,100ch)_14rem] items-start justify-center">
           {/* Left side: section navigation */}
           <aside className="hidden lg:block sticky top-24 h-fit">
             <div className="bg-gradient-to-b from-muted/5 via-transparent to-background/60 border border-border rounded-xl p-4 shadow-lg max-h-[calc(100vh-6rem)] overflow-auto backdrop-blur-sm">

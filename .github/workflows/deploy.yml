@@ -1,41 +1,43 @@
-name: Deploy to site repository
+name: Deploy to GitHub Pages
 
 on:
-  # Trigger the workflow every time you push to the `master` branch
+  # Trigger the workflow every time you push to the `main` branch
+  # Using a different branch name? Replace `main` with your branch’s name
   push:
     branches: [ master ]
   # Allows you to run this workflow manually from the Actions tab on GitHub.
   workflow_dispatch:
 
+# Allow this job to clone the repo and create a page deployment
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source repository
+      - name: Checkout your repository using git
         uses: actions/checkout@v4
 
-      - name: Install Node dependencies
-        run: npm install
+      - name: Install dependencies
+        run: npm install  # Install dependencies before building the site
       
       - name: Build Astro site
         run: npm run build
-      
-      - name: Copy CNAME file
-        run: cp CNAME .vercel/output/static/CNAME
-      
-      - name: Check build output
-        run: ls -la .vercel/output/static/ | head -20
-      
-      - name: Deploy to site repository
-        run: |
-          cd .vercel/output/static
-          touch .nojekyll
-          git init
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Deploy: $(date +'%Y-%m-%d %H:%M:%S')"
-          git push -f https://${{ secrets.SITE_REPO_TOKEN }}@github.com/encodeedge/site.git HEAD:gh-pages
+  
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .vercel/output/static
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

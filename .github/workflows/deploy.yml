@@ -25,7 +25,7 @@ jobs:
       
       - name: Deploy to site repository
         run: |
-          cd .vercel/output/static
+          cd dist
           git init
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

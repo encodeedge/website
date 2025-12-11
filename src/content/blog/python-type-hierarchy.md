@@ -16,9 +16,9 @@ authorName: Atul Jha
 ---
 # Type Hierarchy
 
-Type hierarchy defines what data types are supported by Python. Data types define the different type of data that can be created in Python. We will have a look at a subset of them which are most commonly used.
+Type hierarchy defines what data types are supported by Python. Data types define the different type of data that can be created in Python.
 
-Before that lets have a look at one of the most important concept, that is throughout this course we will see many data types like int, float, dictionary, None etc, many constructs like Operators ('+', '\*'), functions, Classes etc. But one thing is common, i.e they are all objects (instance of classes). That means they all have a memory address.
+Before that lets have a look at one of the most important concept, In this course we will see many data types like int, float, dictionary, None etc, many constructs like Operators ('+', '\*'), functions, Classes etc. But one thing is common, i.e they are all objects (instance of classes). That means they all have a memory address.
 
 ```python
 def fun(a):
@@ -39,8 +39,6 @@ Type of function fun is : <class 'type'> and it's address is 4320241760
 ```
 
 As we can see above each of these is an object of a certain class. In Python 3, every class implicitly inherits from ***object***. Whether it is a built-in type like ***int*** or ***str***, or a custom class we define ourself, if we trace the inheritance tree all the way to the root, we will find ***object***. The method \_\_mro\_\_ (method resolution order) can be used to trace the order.
-
-
 
 ```python
 
@@ -73,15 +71,17 @@ The full type lineage of int is  (<class 'int'>,)
 10 is an instance of True and it's full lineage is (<class 'function'>, <class 'object'>)
 ```
 
+Let's have a look at a subset of data type which are most commonly used.
+
 ## Numbers
 
 Numeric types are broadly divided into two main categories: **Integral** and **Non-Integral**.
 
 #### Integral Numbers
 
-These represent integers i.e positive and negative numbers.
+These represent integers, bool etc
 
-* **Integers (int):** positive and negative numbers, like -3, -2, -1, 1, 2, or 3.
+* **Integers (int):** positive and negative numbers, like -3, -1, 1, 2, 3.
 * **Booleans (*bool*):** Stores truthy and falsy value (True or False). Interestingly, in Python, booleans are actually a subclass of integers.
 
 ```python
@@ -99,10 +99,10 @@ flag is an instance of :  True
 
 Numbers which are not integer i.e have fraction component or like complex numbers.
 
-* **Floats (*float*):** The most common non-integral type, used for real numbers like $3.14$. They are usually implemented as C doubles in the underlying C language.
-* **Complex (*complex*):** Numbers that have both a real and an imaginary part, such as $1 + 2j$.
-* **Decimals (*Decimal*):** Provide greater **precision** and control over floating-point arithmetic compared to standard floats. This is crucial for financial calculations.
-* **Fractions (*Fraction*):** Represent **rational numbers** as a fraction (numerator and denominator). They are essential when you need **exact arithmetic**, for instance, ensuring $\frac\{1}\{3} + \frac\{1}\{3} + \frac\{1}\{3}$ is precisely equal to 1, which standard floats cannot guarantee due to their finite precision.
+* **Floats (*float*):** The most common non-integral type, used for real numbers like **3.14**. They are usually implemented as C doubles in the underlying C language.
+* **Complex (*complex*):** Numbers that have both a real and an imaginary part, such as **1 + 2j**.
+* **Decimals (*Decimal*):** Provide greater **precision** and control over floating-point arithmetic compared to standard floats.
+* **Fractions (*Fraction*):** Represent **rational numbers** as a fraction (numerator and denominator). These are used when we need **exact arithmetic**, for instance, ensuring $\frac\{1}\{3} + \frac\{1}\{3} + \frac\{1}\{3}$ is precisely equal to 1, which standard floats cannot guarantee due to their finite precision.
 
 ![Python-Type-Hierarchy-Integrals](/assets/python-type-hierarchy/Python-Type-Hierarchy-Integrals.png)
 
@@ -157,6 +157,52 @@ These are unique objects that exist independently or serve special purposes:
 * ***NotImplemented*** :  A special value used, for example, when defining comparison methods (*\_\_lt\_\_*, *\_\_gt\_\_*) in classes to indicate that a comparison between two different types is not supported.
 * **Ellipsis Operator (*...*) :** An operator (represented as *Ellipsis()* in memory) that can be used for things like slicing, especially in advanced sequence types or libraries like NumPy.
 
+##### **NoneType**
+
+It is a built-in variable of type "NoneType" and is a reference to an object instance of NoneType. Python's memory manager will use shared reference as NoneType objects are immutable.
+
+While `None` is used to represent an "empty" value or missing data (similar to a null pointer), it remains a real object within Python's memory. Consequently, the memory manager handles every assignment to `None` by using a shared reference to the same object instance.
+
+```python
+print(None, "is of Type {0}, It's Hex is is : {1}".format(type(None), hex(id(None))))
+
+var_1 = None
+print("var_1 is of Type {0}, It's Hex is is : {1}".format(type(var_1), hex(id(var_1))))
+
+var_2 = None
+print("var_2 is of Type {0}, It's Hex is is : {1}".format(type(var_2), hex(id(var_2))))
+
+print("var_1 == var_2 : ", var_1 == var_2)
+print("var_1 is var_2 : ", var_1 is var_2)
+```
+
+```
+None is of Type <class 'NoneType'>, It's Hex is is : 0x100f53a50
+var_1 is of Type <class 'NoneType'>, It's Hex is is : 0x100f53a50
+var_2 is of Type <class 'NoneType'>, It's Hex is is : 0x100f53a50
+var_1 == var_2 :  True
+var_1 is var_2 :  True
+```
+
+For collections, an empty one does have the same collection type, instead of None Type.
+
+```python
+str_1 = ""
+list_1 = []
+tup_1 = ()
+
+print("str_1 is of Type {0}".format(type(str_1)))
+print("list_1 is of Type {0}".format(type(list_1)))
+print("tup_1 is of Type {0}".format(type(tup_1)))
+
+```
+
+```
+str_1 is of Type <class 'str'>
+list_1 is of Type <class 'list'>
+tup_1 is of Type <class 'tuple'>
+```
+
 ## Statically typed and Dynamically typed
 
 Statically typed languages, such as **Java**, **C++**, and **Swift**, require a variable's data type to be explicitly declared at the time of creation, and this type cannot be changed later. For example, in a statically typed language, if a variable named `myVar` is declared as a `String` (e.g., `String myVar = "hello";`), it can only hold string values. Attempting to assign an integer value, like `myVar = 10;`, would result in a type error because the variable has been declared as a `String` and is incompatible with the integer type. However, assigning another string value, like `myVar = "abc";`, is acceptable.
@@ -183,3 +229,4 @@ Type of a is :  <class 'str'>
 Type of a is :  <class 'int'>
 Type of a is :  <class 'function'>
 ```
+

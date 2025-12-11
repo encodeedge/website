@@ -15,7 +15,7 @@ import partytown from "@astrojs/partytown";
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://www.encodeedge.com",
+	site: "https://encodeedge.github.io",
 	integrations: [
 		mdx({ remarkPlugins: [remarkMath, remarkUnescapeBracesMath], rehypePlugins: [rehypeUnescapeBracesMath, rehypeKatex] }),
 		sitemap(),

@@ -8,27 +8,34 @@ import keystatic from '@keystatic/astro'
 import markdoc from "@astrojs/markdoc";
 import vercel from "@astrojs/vercel";
 import remarkMath from 'remark-math'
+import remarkUnescapeBracesMath from './src/remark/remark-unescape-braces-math.js'
 import rehypeKatex from 'rehype-katex'
+import rehypeUnescapeBracesMath from './src/rehype/rehype-unescape-braces-math.js'
 import partytown from "@astrojs/partytown";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://encodeedge.github.io",
-  integrations: [mdx(), sitemap(), react(), markdoc(), keystatic(), partytown({ config: { forward: ['dataLayer.push'] } })],
+	site: "https://encodeedge.github.io",
+	integrations: [
+		mdx({ remarkPlugins: [remarkMath, remarkUnescapeBracesMath], rehypePlugins: [rehypeUnescapeBracesMath, rehypeKatex] }),
+		sitemap(),
+		react(),
+		markdoc(),
+		keystatic(),
+		partytown({ config: { forward: ['dataLayer.push'] } }),
+	],
   output: "static",
   adapter: vercel(),
   vite: {
     plugins: [tailwindcss()],
   },
   	markdown: {
-		remarkPlugins: [remarkMath],
+		remarkPlugins: [remarkMath, remarkUnescapeBracesMath],
 		rehypePlugins: [
-			[
-				rehypeKatex,
-				{
-					// Katex plugin options
-				}
-			]
+			rehypeUnescapeBracesMath,
+			[rehypeKatex, {
+				// Katex plugin options
+			}]
 		]
 	}
 });

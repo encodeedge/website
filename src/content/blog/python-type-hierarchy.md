@@ -100,7 +100,7 @@ flag is an instance of :  True
 Numbers which are not integer i.e have fraction component or like complex numbers.
 
 * **Floats (*float*):** The most common non-integral type, used for real numbers like **3.14**. They are usually implemented as C doubles in the underlying C language.
-* **Complex (*complex*):** Numbers that have both a real and an imaginary part, such as **1 + 2j**.
+* **Complex (*complex*):** Numbers that have both a real and an imaginary part, such as $1 + 2j$.
 * **Decimals (*Decimal*):** Provide greater **precision** and control over floating-point arithmetic compared to standard floats.
 * **Fractions (*Fraction*):** Represent **rational numbers** as a fraction (numerator and denominator). These are used when we need **exact arithmetic**, for instance, ensuring $\frac\{1}\{3} + \frac\{1}\{3} + \frac\{1}\{3}$ is precisely equal to 1, which standard floats cannot guarantee due to their finite precision.
 
@@ -229,4 +229,3 @@ Type of a is :  <class 'str'>
 Type of a is :  <class 'int'>
 Type of a is :  <class 'function'>
 ```
-

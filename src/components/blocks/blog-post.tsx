@@ -179,7 +179,7 @@ const BlogPost = ({
         </div>
       </div>
       <div className="w-full">
-        <div className="grid w-full max-w-11xl mx-auto px-8 grid-cols-1 gap-8 lg:grid-cols-[14rem_1fr_14rem] items-start">
+        <div className="grid w-full max-w-12xl mx-auto px-8 grid-cols-1 gap-8 lg:grid-cols-[14rem_minmax(0,80ch)_14rem] items-start justify-center">
           {/* Left side: section navigation */}
           <aside className="hidden lg:block sticky top-24 h-fit">
             <div className="bg-gradient-to-b from-muted/5 via-transparent to-background/60 border border-border rounded-xl p-4 shadow-lg max-h-[calc(100vh-6rem)] overflow-auto backdrop-blur-sm">
@@ -214,7 +214,10 @@ const BlogPost = ({
 
           {/* Right side: featured posts */}
           <aside className="hidden lg:block sticky top-24 h-fit">
-            <div className="bg-gradient-to-b from-background/60 via-transparent to-muted/5 border border-border rounded-xl p-4 shadow-lg max-h-[calc(100vh-6rem)] overflow-auto backdrop-blur-sm">
+            <div
+              className="bg-gradient-to-b from-background/60 via-transparent to-muted/5 border border-border rounded-xl p-4 shadow-lg overflow-auto backdrop-blur-sm"
+              style={{ maxHeight: 'min(calc(100vh - 6rem), 36rem)' }}
+            >
               <div className="font-semibold mb-3 text-sm uppercase tracking-wide text-muted-foreground">Featured</div>
               <ul className="space-y-3 list-none">
                 {featured && featured.length > 0 ? (

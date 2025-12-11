@@ -18,12 +18,13 @@ const post = Astro.props;
 const { title, description, pubDate, updatedDate } = post.data;
 const { Content } = await render(post);
 
-// Gather featured posts (other recent posts) to show in the right sidebar
+// Gather featured posts (explicitly those marked `featured: true`) to show in the right sidebar
 const allPosts = await getCollection('blog');
 const featured = allPosts
-	.filter((p) => p.id !== post.id)
-	.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
-	.slice(0, 5);
+    .filter((p) => p.data?.featured)
+    .filter((p) => p.id !== post.id) 
+    .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
+    .slice(0, 5);
 
 ---
 <DefaultLayout>

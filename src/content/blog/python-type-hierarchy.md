@@ -6,7 +6,6 @@ updatedDate: 2025-11-30
 readTime: 50
 featured: true
 tags:
-  - Python
   - Foundation
 topics:
   - python

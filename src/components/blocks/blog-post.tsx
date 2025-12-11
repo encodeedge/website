@@ -115,6 +115,9 @@ const BlogPost = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, [headings]);
 
+  // limit to max 5 featured items for display
+  const displayedFeatured = (featured || []).slice(0, 5);
+
   return (
     <section>
       {/* Progress bar */}
@@ -218,10 +221,12 @@ const BlogPost = ({
               className="bg-gradient-to-b from-background/60 via-transparent to-muted/5 border border-border rounded-xl p-4 shadow-lg overflow-auto backdrop-blur-sm"
               style={{ maxHeight: 'min(calc(100vh - 6rem), 36rem)' }}
             >
-              <div className="font-semibold mb-3 text-sm uppercase tracking-wide text-muted-foreground">Featured</div>
+              <div className="flex items-center justify-between">
+                <div className="font-semibold mb-3 text-sm uppercase tracking-wide text-muted-foreground">Featured</div>
+              </div>
               <ul className="space-y-3 list-none">
-                {featured && featured.length > 0 ? (
-                  featured.map((f: any) => (
+                {displayedFeatured && displayedFeatured.length > 0 ? (
+                  displayedFeatured.map((f: any) => (
                     <li key={f.id}>
                       <a
                         href={`/blog/${f.id}`}

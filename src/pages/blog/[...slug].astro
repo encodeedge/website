@@ -18,10 +18,17 @@ const post = Astro.props;
 const { title, description, pubDate, updatedDate } = post.data;
 const { Content } = await render(post);
 
+// Gather featured posts (other recent posts) to show in the right sidebar
+const allPosts = await getCollection('blog');
+const featured = allPosts
+	.filter((p) => p.id !== post.id)
+	.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
+	.slice(0, 5);
+
 ---
 <DefaultLayout>
 	<div class="py-28 lg:pt-44 lg:pb-32">
-		<BlogPost post={post} client:only='react' >
+		<BlogPost post={post} featured={featured} client:only='react' >
 			<Content />
 		</BlogPost>
 	</div>

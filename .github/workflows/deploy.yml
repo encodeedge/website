@@ -23,9 +23,12 @@ jobs:
       - name: Build Astro site
         run: npm run build
       
+      - name: Check build output
+        run: ls -la .vercel/output/static/ | head -20
+      
       - name: Deploy to site repository
         run: |
-          cd dist
+          cd .vercel/output/static
           git init
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

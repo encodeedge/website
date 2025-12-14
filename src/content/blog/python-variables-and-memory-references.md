@@ -6,10 +6,10 @@ updatedDate: 2025-12-08
 readTime: 18
 featured: true
 tags:
-  - Variables
-  - Memory References
-  - Foundation
-  - Garbage Collector
+  - variables
+  - memory-references
+  - foundation
+  - garbage-collector
 topics:
   - python
 image: /assets/python-variables-and-memory-references/image.jpg

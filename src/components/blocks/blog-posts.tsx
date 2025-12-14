@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { slugify } from '@/utils/slugs';
 
 // Helper function to format topic slug into a human-readable name
 const formatSlug = (slug: string) => 
@@ -97,7 +98,7 @@ const BlogPosts = ({ posts }: { posts: any[] }) => {
                             </AvatarFallback>
                         </Avatar>
                         <span className="text-sm font-medium">
-                            {post.data.authorName}
+                          <a href={`/authors/${slugify(post.data.authorName)}`} className="font-semibold">{post.data.authorName}</a>
                         </span>
                         </div>
                         <Badge variant="secondary" className="h-fit">

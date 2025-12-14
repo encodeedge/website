@@ -78,6 +78,57 @@ export const Features = () => {
             ))}
           </CardContent>
         </Card>
+
+        <div className="relative flex items-center justify-center">
+          <DashedLine className="text-muted-foreground" />
+          <span className="bg-muted text-muted-foreground absolute px-3 font-mono text-lg font-large tracking-wide max-md:hidden">
+            <strong>Latest Posts</ strong>
+          </span>
+        </div>
+
+        {/* Latest Card */}
+        <Card className="mt-8 rounded-3xl md:mt-12 lg:mt-20">
+          <CardContent className="flex p-0 max-md:flex-col">
+            {latestPosts.map((item, i) => (
+              <div key={i} className="flex flex-1 max-md:flex-col">
+                <div className="flex-1 p-4 pe-0! md:p-6">
+                  <div className="relative overflow-hidden ">
+                    <img
+                      src={item.data.image}
+                      alt={`${item.data.title} interface`}
+                      className="object-cover object-left-top ps-4 pt-2 max-w-[90%]"
+                    />
+                    <div className="from-background absolute inset-0 z-10 bg-linear-to-t via-transparent to-transparent" />
+                  </div>
+
+                  <a
+                    href={`/blog/${item.id}`}
+                    className={
+                      "group flex items-center justify-between gap-4 pe-4 pt-4 md:pe-6 md:pt-6"
+                    }
+                  >
+                    <h3 className="font-display max-w-60 text-2xl leading-tight font-bold tracking-tight">
+                      {item.data.title}
+                    </h3>
+                    <div className="rounded-full border p-2">
+                      <ChevronRight className="size-6 transition-transform group-hover:translate-x-1 lg:size-9" />
+                    </div>
+                  </a>
+                </div>
+                {i < featuredPosts.length - 1 && (
+                  <div className="relative hidden md:block">
+                    <DashedLine orientation="vertical" />
+                  </div>
+                )}
+                {i < featuredPosts.length - 1 && (
+                  <div className="relative block md:hidden">
+                    <DashedLine orientation="horizontal" />
+                  </div>
+                )}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
         <br />
         <br />
         

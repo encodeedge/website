@@ -1,0 +1,91 @@
+---
+import { getCollection } from 'astro:content';
+
+import { Background } from '@/components/background';
+import { SITE_TITLE } from '@/consts';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+
+const allPosts = await getCollection('blog');
+
+// Helper to create URL-safe slugs
+const slugify = (text: string) => {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-');
+};
+
+// Calculate counts and gather metadata for each author
+const authorStats = allPosts.reduce((acc, post) => {
+    const name = post.data.authorName;
+    if (!name) return acc; // Skip posts without an author
+
+    if (!acc[name]) {
+        acc[name] = {
+            count: 0,
+            label: name,
+            slug: slugify(name),
+            // Grab the image from the first post found for this author
+            image: post.data.authorImage || null
+        };
+    }
+    acc[name].count++;
+    
+    // If we didn't have an image before but this post has one, update it
+    if (!acc[name].image && post.data.authorImage) {
+        acc[name].image = post.data.authorImage;
+    }
+
+    return acc;
+}, {} as Record<string, { count: number; label: string; slug: string; image: string | null }>);
+
+// Convert to an array and sort by Author name
+const authors = Object.values(authorStats).sort((a, b) => a.label.localeCompare(b.label));
+
+const title = `All Authors | ${SITE_TITLE}`;
+const description = 'Meet the experts and contributors behind our blog.';
+
+---
+
+<DefaultLayout title={title} description={description}>
+    <Background>
+        <div class="py-28 lg:pt-44 lg:pb-32 max-w-4xl mx-auto px-4">
+            <h1 class="text-5xl font-extrabold text-center mb-4">Our Authors</h1>
+            <p class="text-xl text-center text-gray-600 mb-12">
+                Browse articles by our team of experts and contributors.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {authors.map(author => (
+                    <a href={`/authors/${author.slug}`} class="group flex flex-col items-center text-center p-6 border border-gray-200 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 bg-white">
+                        
+                        {/* Author Avatar */}
+                        <div class="relative w-20 h-20 mb-4 rounded-full overflow-hidden bg-gray-100 border border-gray-200 group-hover:border-blue-500 transition-colors">
+                            {author.image ? (
+                                <img src={author.image} alt={author.label} class="w-full h-full object-cover" />
+                            ) : (
+                                // Fallback placeholder if no image exists
+                                <div class="flex items-center justify-center w-full h-full text-gray-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            )}
+                        </div>
+
+                        <h2 class="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                            {author.label}
+                        </h2>
+                        
+                        <p class="mt-2 text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                            {author.count} {author.count === 1 ? 'Article' : 'Articles'}
+                        </p>
+                    </a>
+                ))}
+            </div>
+        </div>
+    </Background>
+</DefaultLayout>

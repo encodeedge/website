@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import  PostComments from "@/components/ui/PostComments.tsx";
+import { slugify } from '@/utils/slugs';
 
 // 🚨 Define a basic type for post data to ensure type safety and include topics/tags
 interface PostData {
@@ -139,7 +140,7 @@ const BlogPost = ({
               <AvatarFallback>{authorName.charAt(0)}</AvatarFallback>
             </Avatar>
             <span>
-              <a href="#" className="font-semibold">
+              <a href={`/authors/${slugify(authorName)}`} className="font-semibold">
                 {authorName}
               </a>
               <span className="ml-1">on {format(pubDate, "MMMM d, yyyy")}</span>

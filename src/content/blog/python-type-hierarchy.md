@@ -6,7 +6,7 @@ updatedDate: 2025-11-30
 readTime: 50
 featured: true
 tags:
-  - Foundation
+  - foundation
 topics:
   - python
 image: /assets/python-type-hierarchy/image.png

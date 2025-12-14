@@ -1,0 +1,78 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+import { Background } from '@/components/background';
+import { BlogPosts } from '@/components/blocks/blog-posts';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+
+export async function getStaticPaths() {
+    // 1. Define slugify INSIDE getStaticPaths so it is visible
+    const slugify = (text: string) => {
+        return text
+            .toString()
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, '-')     // Replace spaces with -
+            .replace(/[^\w-]+/g, '')  // Remove all non-word chars
+            .replace(/--+/g, '-');    // Replace multiple - with single -
+    };
+
+    const allPosts = await getCollection('blog');
+
+    // 2. Get all unique author names (filter out undefined)
+    const allAuthors = allPosts.flatMap(post => post.data.authorName || []);
+    const uniqueAuthors = [...new Set(allAuthors)];
+
+    // 3. Map unique authors to dynamic paths
+    return uniqueAuthors.map(authorName => {
+        const authorSlug = slugify(authorName);
+
+        // Filter: Post is included if its authorName matches
+        const posts = allPosts
+            .filter(post => post.data.authorName === authorName)
+            .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+        return {
+            params: { author: authorSlug },
+            props: { posts, authorName },
+        };
+    });
+}
+
+// 4. Define props
+interface AuthorProps {
+    posts: CollectionEntry<'blog'>[]; 
+    authorName: string; 
+}
+
+const { posts, authorName } = Astro.props as AuthorProps;
+
+const title = `Author: ${authorName}`;
+const description = `All blog posts written by ${authorName}.`;
+
+// Extract the author's image from the first post to use as a header avatar
+const authorImage = posts[0]?.data.authorImage;
+---
+
+<DefaultLayout title={title} description={description}>
+    <Background>
+        <div class="py-28 lg:pt-44 lg:pb-32">
+            <div class="flex flex-col items-center mb-12">
+                {authorImage && (
+                    <img 
+                        src={authorImage} 
+                        alt={authorName} 
+                        class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg mb-4"
+                    />
+                )}
+                <h1 class="text-5xl font-extrabold text-center mb-4">Articles by {authorName}</h1>
+                <p class="text-xl text-center text-gray-600">
+                    Read the latest insights and tutorials from <strong>{authorName}</strong>.
+                </p>
+            </div>
+            
+            {/* Reuses your existing BlogPosts component */}
+            <BlogPosts posts={posts} client:only='react' />
+        </div>
+    </Background>
+</DefaultLayout>

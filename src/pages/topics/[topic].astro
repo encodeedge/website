@@ -62,7 +62,7 @@ const description = `All blog posts related to the core topic: ${topicLabel}.`;
         <div class="py-28 lg:pt-44 lg:pb-32">
             <h1 class="text-5xl font-extrabold text-center mb-4">Articles on: {topicLabel}</h1>
             <p class="text-xl text-center text-gray-600 mb-12">
-                Content that is categorized under **{topicLabel}**.
+                Content that is categorized under <strong>{topicLabel} </strong>.
             </p>
             {/* Reuses your existing BlogPosts component for rendering the list */}
             <BlogPosts posts={posts} client:only='react' />

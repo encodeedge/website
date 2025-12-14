@@ -1,0 +1,210 @@
+---
+import { getCollection } from 'astro:content';
+import { Background } from '@/components/background';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { SITE_TITLE } from '@/consts';
+import { ChevronRight } from 'lucide-react';
+
+// 1. Fetch all posts
+const allPosts = await getCollection('blog');
+
+// 2. Helper to get specific posts by their IDs
+const getCuratedPosts = (ids: string[]) => {
+    return allPosts
+        .filter(post => ids.includes(post.id))
+        .sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id)); 
+};
+
+// --- CONFIGURATION: DEFINE YOUR CURRICULUM HERE ---
+
+const curriculum = [
+    {
+        title: "The Foundations",
+        description: "Before diving into algorithms, you need to master the tools and the terminology.",
+        stepNumber: "1",
+        color: "blue", 
+        groups: [
+            {
+                subtitle: "Python for Machine Learning",
+                // YOU CAN NOW ADD HTML LINKS HERE
+                description: "Learn the essential syntax, <a href='/tags/python' class='text-blue-600 hover:underline'>Python structure</a>, and memory management specifically for data science.",
+                posts: getCuratedPosts([
+                    'python-type-hierarchy',
+                    'python-variables-and-memory-references',
+                    'introduction-to-machine-learning', 
+                ])
+            },
+            {
+                subtitle: "Machine Learning Concepts",
+                description: "Understand the high-level concepts, types of learning, and how to <a href='/blog/eval-metrics' class='text-blue-600 hover:underline'>evaluate your models</a>.",
+                posts: getCuratedPosts([
+                    'introduction-to-machine-learning', 
+                    'statistics-for-ml',     
+                ])
+            }
+        ]
+    },
+    {
+        title: "Core Algorithms",
+        description: "Master the 'Hello World' algorithms of ML to build intuition.",
+        stepNumber: "2",
+        color: "purple",
+        groups: [
+            {
+                subtitle: "Supervised Learning",
+                description: "Algorithms that learn from <a href='https://en.wikipedia.org/wiki/Labeled_data' target='_blank' class='text-purple-600 hover:underline'>labeled data</a> to predict outcomes.",
+                posts: getCuratedPosts([
+                    'linear-regression-explained',
+                    'decision-trees-tutorial',
+                    'k-nearest-neighbors',
+                ])
+            },
+            {
+                subtitle: "Unsupervised Learning",
+                description: "Finding hidden patterns and structures in unlabeled data.",
+                posts: getCuratedPosts([
+                    'k-means-clustering', 
+                    'pca-explained'       
+                ])
+            }
+        ]
+    },
+    {
+        title: "Deep Learning",
+        description: "Ready for the cutting edge? Dive into Neural Networks.",
+        stepNumber: "3",
+        color: "teal",
+        groups: [
+            {
+                subtitle: "Neural Network Basics",
+                description: "Build your first neurons and understand forward and backward propagation.",
+                posts: getCuratedPosts([
+                    'intro-to-neural-networks',
+                    'pytorch-vs-tensorflow',
+                ])
+            },
+            {
+                subtitle: "Computer Vision (CNNs)",
+                description: "Teach computers to 'see' using Convolutional Neural Networks.",
+                posts: getCuratedPosts([
+                    'first-cnn-project',
+                    'image-augmentation-guide' 
+                ])
+            }
+        ]
+    }
+];
+
+const title = `Start Here | ${SITE_TITLE}`;
+const description = "New to Machine Learning? Follow this step-by-step guide to master the basics.";
+
+// Helper to generate dynamic color classes
+const getColorClasses = (color: string) => {
+    const colors: Record<string, { bg: string, text: string, border: string, darkBg: string, darkText: string, iconColor: string }> = {
+        blue:   { bg: 'bg-blue-100', text: 'text-blue-700', border: 'hover:border-blue-500', darkBg: 'dark:bg-blue-900/30', darkText: 'dark:text-blue-300', iconColor: 'text-blue-600 dark:text-blue-400' },
+        purple: { bg: 'bg-purple-100', text: 'text-purple-700', border: 'hover:border-purple-500', darkBg: 'dark:bg-purple-900/30', darkText: 'dark:text-purple-300', iconColor: 'text-purple-600 dark:text-purple-400' },
+        teal:   { bg: 'bg-teal-100', text: 'text-teal-700', border: 'hover:border-teal-500', darkBg: 'dark:bg-teal-900/30', darkText: 'dark:text-teal-300', iconColor: 'text-teal-600 dark:text-teal-400' },
+    };
+    return colors[color] || colors.blue;
+};
+---
+
+<DefaultLayout title={title} description={description}>
+    <Background>
+        <div class="py-20 lg:pt-32 lg:pb-24 max-w-6xl mx-auto px-4">
+            
+            {/* --- HERO --- */}
+            <div class="max-w-3xl mx-auto text-center mb-20">
+                <h1 class="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight text-slate-900 dark:text-white">
+                    Get Started with Applied <span class="text-blue-600 dark:text-blue-400">Machine Learning</span>
+                </h1>
+                <p class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
+                    A curated path from beginner to practitioner. Follow the modules below in order.
+                </p>
+            </div>
+
+            {/* --- DYNAMIC SECTIONS LOOP --- */}
+            {curriculum.map((section) => {
+                const colors = getColorClasses(section.color);
+                
+                return (
+                    <section class="mb-20">
+                        {/* MAIN SECTION HEADER */}
+                        <div class="flex flex-row items-center gap-6 mb-8 border-b border-slate-200 dark:border-slate-800 pb-6">
+                            <div class={`flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-xl ${colors.bg} ${colors.text} ${colors.darkBg} ${colors.darkText} font-bold text-2xl shadow-sm`}>
+                                {section.stepNumber}
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{section.title}</h2>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">
+                                    {section.description}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* SUB-GROUPS LOOP */}
+                        <div class="pl-2 md:pl-4 space-y-10">
+                            {section.groups.map((group) => (
+                                <div>
+                                    {/* Sub-group Header */}
+                                    <div class="mb-5">
+                                        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-1">
+                                            {group.subtitle}
+                                        </h3>
+                                        
+                                        {/* RENDER DESCRIPTION WITH HTML LINKS SUPPORT */}
+                                        {group.description && (
+                                            <p 
+                                                class="text-sm text-slate-500 dark:text-slate-400 max-w-3xl"
+                                                set:html={group.description}
+                                            />
+                                        )}
+                                    </div>
+
+                                    {/* 3 COLUMN GRID */}
+                                    <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                                        {group.posts.length > 0 ? (
+                                            group.posts.map((post, index) => (
+                                                <a href={`/blog/${post.id}`} class={`group flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg hover:shadow-md ${colors.border} dark:hover:border-slate-600 transition-all duration-200`}>
+                                                    
+                                                    <div class="flex items-center gap-3 min-w-0">
+                                                        {/* Small Step Badge */}
+                                                        <span class={`flex-shrink-0 text-[10px] font-bold uppercase tracking-wider py-1 px-2 rounded-md bg-slate-100 dark:bg-slate-800 ${colors.iconColor}`}>
+                                                            {index + 1}
+                                                        </span>
+                                                        
+                                                        {/* Title */}
+                                                        <h4 class="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                            {post.data.title}
+                                                        </h4>
+                                                    </div>
+
+                                                    {/* Arrow Icon */}
+                                                    <ChevronRight className="flex-shrink-0 w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" />
+                                                </a>
+                                            ))
+                                        ) : (
+                                            <p class="text-slate-400 italic text-sm py-2 col-span-full">Tutorials for this section are coming soon.</p>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                );
+            })}
+
+            {/* --- CTA --- */}
+            <div class="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center mt-20">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Want the full curriculum?</h3>
+                <p class="text-slate-500 dark:text-slate-400 mb-6 text-sm">
+                    Subscribe to get the PDF roadmap and weekly project ideas.
+                </p>
+                <a href="/subscribe" class="inline-flex items-center justify-center bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 font-medium py-2 px-6 rounded-lg transition-colors duration-200 text-sm">
+                    Get the Roadmap
+                </a>
+            </div>
+
+        </div>
+    </Background>
+</DefaultLayout>

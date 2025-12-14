@@ -7,13 +7,11 @@ description: >-
 pubDate: 2025-11-27
 updatedDate: 2025-11-27
 readTime: 4
-featured: true
+featured: false
 tags:
   - first-post
   - encodeedge
-topics:
-  - machine-learning
-  - deep-learning
+topics: []
 image: /assets/welcome-to-encode-edge-your-path-to-practical-ai-mastery/image.png
 authorImage: >-
   /assets/welcome-to-encode-edge-your-path-to-practical-ai-mastery/authorImage.png

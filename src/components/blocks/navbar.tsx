@@ -18,52 +18,28 @@ import { cn } from "@/lib/utils";
 // --- New Structured Topic Data for Horizontal Display ---
 const TOPIC_DROPDOWN_STRUCTURE = [
   {
-    category: "ML Foundations",
+    category: "Foundation",
     items: [
-      { title: "Foundations of Data Science", href: "/topics/foundation/data-science", description: "Learn foundations of science of data" },
-      { title: "Statistics", href: "/topics/foundation/statistics", description: "Statistical methods theory and basics." },
-      { title: "Linear Algebra & Calculus", href: "/topics/foundation/linear-algebra", description: "Essential mathematical principles for ML." },
-      { title: "Data Engineering", href: "/topics/foundation/data-engineering", description: "Cleaning, transformation, and feature engineering." },
-      { title: "Code Algorithms & Optimization", href: "/topics/foundation/algorithms", description: "Efficient algorithms and optimization techniques." },
+      { title: "Python for Machine Learning", href: "/topics/python", description: "Basics of Python" },
     ],
   },
   {
-    category: "Deep Learning & Advanced ML",
+    category: "Machine Learning",
     items: [
-      { title: "Deep Learning Tensorflow", href: "/topics/dl/tensorflow", description: "Practical tutorials using Keras/TensorFlow." },
-      { title: "Deep Learning with PyTorch", href: "/topics/dl/pytorch", description: "Implementation and projects using PyTorch." },
-      { title: "Time Series", href: "/topics/dl/time-series", description: "Deep Learning for Time Series Data" },
-      { title: "LSTMs & Neural Net Time Series", href: "/topics/dl/lstm", description: "RNNs for sequential data forecasting." },
-      { title: "Ensemble Learning", href: "/topics/dl/ensemble", description: "Boosting, Bagging, and stacking methods." },
-    ],
-  },
-  {
-    category: "Tools and Applications",
-    items: [
-      { title: "Azure", href: "/topics/cloud/azure", description: "Cloud services for ML and data infrastructure." },
-      { title: "Hugging Face Transformers", href: "/topics/tools-and-applications/hugging-face", description: "Utilizing state-of-the-art transformer models." },
-      { title: "Computer Vision", href: "/topics/tools-and-applications/cv", description: "Image processing and vision tasks using OpenCV." },
-      { title: "ChatGPT & LLM APIs", href: "/topics/tools-and-applications/llms", description: "Integrating and fine-tuning Large Language Models." },
-    ],
-  },
-    {
-    category: "Digital Experience & AI",
-    items: [
-      { title: "Sitecore Foundation", href: "/topics/dxp/sitecore/introduction", description: "Dive into the world of Sitecore DXP." },
-      { title: "Sitecore AI", href: "/topics/dxp/sitecore/sitecore-ai", description: "AI applications and integration with Sitecore." },
-    
+      { title: "Machine Learning Tutorials", href: "/topics/machine-learning", description: "Practical Machine Learning tutorials" },
     ],
   },
 ];
 
 const ITEMS = [
+  { label: "Get Started", href: "/start-here" },
   {
     label: "Topics",
     href: "#topics",
-    dropdownStructure: TOPIC_DROPDOWN_STRUCTURE, // Use new structure
+    dropdownStructure: TOPIC_DROPDOWN_STRUCTURE,
   },
-  { label: "About Us", href: "/about" },
   { label: "Blog", href: "/blog" },
+  { label: "About", href: "/about" },
   { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
 ];

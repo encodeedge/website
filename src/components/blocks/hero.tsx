@@ -178,9 +178,9 @@ export const Hero = () => {
 
             {/* Card 1 - Tutorials - TOP LEFT */}
             <a href="/tutorials" aria-label="Go to Tutorials" className={`group text-[${PRIMARY_COLOR}] hover:text-[${HOVER_COLOR}] transition-colors duration-300`}>
-              <g filter="url(#shadow)" transform="translate(30, 30)" 
+              <g filter="url(#shadow)" transform="translate(90, 30)" 
                  className="transition-transform duration-300 ease-out group-hover:scale-[1.03] group-hover:-translate-y-2 cursor-pointer">
-                <rect width="450" height="170" rx="12" fill="url(#gA)" />
+                <rect width="350" height="140" rx="12" fill="url(#gA)" />
                 <use href="#MonitorIcon" transform="translate(30, 30)" />
                 <text x="65" y="50" fontSize="20" fontWeight="700" fill="#0f172a">Tutorials & Deep Dives</text>
                 
@@ -191,7 +191,7 @@ export const Hero = () => {
                 </text>
 
                 {/* Icon positioned at the bottom right */}
-                <use href="#brandedArrow" transform="translate(410, 130)" />
+                <use href="#brandedArrow" transform="translate(320, 110)" />
               </g>
             </a>
 
@@ -199,7 +199,7 @@ export const Hero = () => {
             <a href="/blog" aria-label="Read the blog" className={`group text-[${PRIMARY_COLOR}] hover:text-[${HOVER_COLOR}] transition-colors duration-300`}>
               <g filter="url(#shadow)" transform="translate(520, 30)" 
                  className="transition-transform duration-300 ease-out group-hover:scale-[1.03] group-hover:-translate-y-2 cursor-pointer">
-                <rect width="450" height="170" rx="12" fill="url(#gB)" />
+                <rect width="350" height="140" rx="12" fill="url(#gB)" />
                 <use href="#BookIcon" transform="translate(30, 30)" />
                 <text x="65" y="50" fontSize="20" fontWeight="700" fill="#0f172a">Expert Blog Articles</text>
                 
@@ -210,15 +210,15 @@ export const Hero = () => {
                 </text>
 
                 {/* Icon positioned at the bottom right */}
-                <use href="#brandedArrow" transform="translate(410, 130)" />
+                <use href="#brandedArrow" transform="translate(320, 110)" />
               </g>
             </a>
 
             {/* Card 3 - Notebooks - BOTTOM LEFT */}
             <a href="/notebooks" aria-label="Open notebooks" className={`group text-[${PRIMARY_COLOR}] hover:text-[${HOVER_COLOR}] transition-colors duration-300`}>
-              <g filter="url(#shadow)" transform="translate(30, 230)" 
+              <g filter="url(#shadow)" transform="translate(90, 230)" 
                  className="transition-transform duration-300 ease-out group-hover:scale-[1.03] group-hover:-translate-y-2 cursor-pointer">
-                <rect width="450" height="170" rx="12" fill="#ffffff" stroke={LIGHT_PRIMARY} />
+                <rect width="350" height="140" rx="12" fill="#ffffff" stroke={LIGHT_PRIMARY} />
                 <use href="#NotebookIcon" transform="translate(30, 30)" />
                 <text x="65" y="50" fontSize="20" fontWeight="700" fill="#0f172a">Interactive Notebooks</text>
                 
@@ -229,7 +229,7 @@ export const Hero = () => {
                 </text>
 
                 {/* Icon positioned at the bottom right */}
-                <use href="#brandedArrow" transform="translate(410, 130)" />
+                <use href="#brandedArrow" transform="translate(320, 110)" />
               </g>
             </a>
 
@@ -237,7 +237,7 @@ export const Hero = () => {
             <a href="/subscribe" aria-label="Join newsletter" className={`group text-[${PRIMARY_COLOR}] hover:text-[${HOVER_COLOR}] transition-colors duration-300`}>
               <g filter="url(#shadow)" transform="translate(520, 230)" 
                  className="transition-transform duration-300 ease-out group-hover:scale-[1.03] group-hover:-translate-y-2 cursor-pointer">
-                <rect width="450" height="170" rx="12" fill="url(#gA)" stroke={LIGHT_PRIMARY} />
+                <rect width="350" height="140" rx="12" fill="url(#gA)" stroke={LIGHT_PRIMARY} />
                 <use href="#MailIcon" transform="translate(30, 30)" />
                 <text x="65" y="50" fontSize="20" fontWeight="700" fill="#0f172a">Subscribe</text>
                 
@@ -248,7 +248,7 @@ export const Hero = () => {
                 </text>
 
                 {/* Icon positioned at the bottom right */}
-                <use href="#brandedArrow" transform="translate(410, 130)" />
+                <use href="#brandedArrow" transform="translate(320, 110)" />
               </g>
             </a>
           </svg>

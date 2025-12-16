@@ -531,3 +531,95 @@ Memory address of list_2 :  0x1030cfe40
 list_1 is list_2:  False
 list_1 == list_2 True
 ```
+
+### Python Optimisation : Interning
+
+As we saw earlier, for some values shared references are created automatically by Python.
+
+```python
+var_1 = 115
+var_2 = 115
+print("Id of var_1 : ",id(var_1))
+print("Id of var_2 : ",id(var_2))
+
+var_3 = 257
+var_4 = 257
+print("Id of var_3 : ",id(var_3))
+print("Id of var_4 : ",id(var_4))
+```
+
+```
+Id of var_1 :  4343191472
+Id of var_2 :  4343191472
+Id of var_3 :  4569186256
+Id of var_4 :  4569185648
+```
+
+In the above example, for value of 115, both the variables share the same memory address. whereas when we see for value of 257, it is different.
+
+This is because python pre caches, values between \[-5, 256]. This is called **interning**. Python pre caches or interns the mentioned values (these are singleton objects).
+
+Similarly for strings, python interns certain strings like identifiers (variable, function, class name etc.)&#x20;
+
+```python
+str_1 = 'welcome_to_encodeedge'
+str_2 = 'welcome_to_encodeedge'
+print("Id of str_1 : ",id(str_1))
+print("Id of str_2 : ",id(str_2))
+```
+
+```
+Id of str_1 :  4382792960
+Id of str_2 :  4382792960
+```
+
+The variables str\_1, str\_2 are also interned, this is because the values looks like an identifier.
+
+
+
+```python
+str_1 = 'welcome to encodeedge'
+str_2 = 'welcome to encodeedge'
+print("Id of str_1 : ",id(str_1))
+print("Id of str_2 : ",id(str_2))
+```
+
+```
+Id of str_1 :  4382738432
+Id of str_2 :  4382740352
+```
+
+
+
+To force a string to be intern by sing the method ***intern()*** in ***sys*** module.
+
+
+
+```python
+import sys
+
+str_1 = sys.intern('welcome to encodeedge')
+str_2 = sys.intern('welcome to encodeedge')
+str_3 = 'welcome to encodeedge'
+print("ID of str_1 (this is manually interned): ",id(str_1))
+print("ID of str_2 (this is manually interned) : ",id(str_2))
+print("ID of str_3  : ",id(str_3))
+
+print('str_1 is str_2 :', str_1 is str_2)
+print('str_1 is str_3 :', str_1 is str_3)
+```
+
+
+
+```
+ID of str_1 (this is manually interned):  4357757088
+ID of str_2 (this is manually interned) :  4357757088
+ID of str_3  :  4382826288
+str_1 is str_2 : True
+str_1 is str_3 : False
+```
+
+Notice here that str\_3 has a different memory address and is not interned by default neither manually.
+
+
+

@@ -1,8 +1,10 @@
 ---
 title: 'Python : Type Hierarchy'
-description: The fundamentals of Python programming for machine learning and AI.
+description: >-
+  The fundamentals of Python programming for machine learning and AI. Learn the
+  basic of type hierarchy in python.
 pubDate: 2025-11-30
-updatedDate: 2025-11-30
+updatedDate: 2025-12-16
 readTime: 50
 featured: true
 tags:
@@ -15,9 +17,9 @@ authorName: Atul Jha
 ---
 # Type Hierarchy
 
-Type hierarchy defines what data types are supported by Python. Data types define the different type of data that can be created in Python.
+Type hierarchy defines what data types are supported by Python, i.e different type of data that can be created and stored in Python.
 
-Before that lets have a look at one of the most important concept, In this course we will see many data types like int, float, dictionary, None etc, many constructs like Operators ('+', '\*'), functions, Classes etc. But one thing is common, i.e they are all objects (instance of classes). That means they all have a memory address.
+Before that lets have a look at one of the most important concept of objects in python. In this course we will see many data types, operators like int, float, dictionary, None, ('+', '\*'), functions, Classes etc. But one thing is common, i.e they are all objects (instance of classes) in python. That means they all have a memory address.
 
 ```python
 def fun(a):
@@ -37,7 +39,7 @@ Type of class b is : <class 'type'> and it's address is 5471267584
 Type of function fun is : <class 'type'> and it's address is 4320241760
 ```
 
-As we can see above each of these is an object of a certain class. In Python 3, every class implicitly inherits from ***object***. Whether it is a built-in type like ***int*** or ***str***, or a custom class we define ourself, if we trace the inheritance tree all the way to the root, we will find ***object***. The method \_\_mro\_\_ (method resolution order) can be used to trace the order.
+As we can see above each of the function or class created is an object of a certain class. In Python 3, every class implicitly inherits from ***object***. Whether it is a built-in type like ***int*** or ***str***, or a custom class we define ourself, if we trace the inheritance tree all the way to the root, we will find ***object***. The method \_\_mro\_\_ (method resolution order) can be used to trace the order.
 
 ```python
 
@@ -76,25 +78,134 @@ Let's have a look at a subset of data type which are most commonly used.
 
 Numeric types are broadly divided into two main categories: **Integral** and **Non-Integral**.
 
-#### Integral Numbers
+### Integral Numbers
 
-These represent integers, bool etc
+These represent integers, bool etc.&#x20;
 
 * **Integers (int):** positive and negative numbers, like -3, -1, 1, 2, 3.
 * **Booleans (*bool*):** Stores truthy and falsy value (True or False). Interestingly, in Python, booleans are actually a subclass of integers.
 
+Integers are objects of ***int*** class. These are of variable length and take variable size of memory based on the size of the integer.
+
+If we look at the variable int\_1 which references value 0. we can see it requires an overhead of 24 bytes.
+
+```python
+import sys
+print("Size of int 0 : ", sys.getsizeof(0))
+```
+
+```
+Size of int 0 :  24
+```
+
+
+
+Similarly if we look at value of ***flag*** and ***flag\_false*** which is of bool type. The objects is an instance of int type and consume memory that of integer 0 and 1.
+
+
+
 ```python
 flag = True
+flag_false = False
 print("flag is of type : ",type(flag))
 print("flag is an instance of : ",isinstance(flag, int))
+print("Size of bool True : ", sys.getsizeof(flag))
+print("Size of bool True : ", sys.getsizeof(flag_false))
+
 ```
 
 ```
 flag is of type :  <class 'bool'>
 flag is an instance of :  True
+Size of bool True :  28
+Size of bool True :  24
 ```
 
-#### Non-Integral Numbers
+
+
+#### Operations on Integer
+
+We can perform various mathematical operations on int variable. Some of these like, Addition, Subtraction, Multiplication, exponentiation (positive exp.) results in int values. whereas division result in a float.
+
+
+
+```python
+print("Addition : ",type(12 + 7), "\nSubtraction : ", type(1 - 9), "\nMultiplication : ", type(7 * 4), "\nDivision : ", type(9 / 3))
+```
+
+```
+Addition :  <class 'int'> 
+Subtraction :  <class 'int'> 
+Multiplication :  <class 'int'> 
+Division :  <class 'float'>
+```
+
+
+
+***int*** class has 2 constructor, which are described below :&#x20;
+
+```python
+help(int)
+```
+
+```
+Help on class int in module builtins:
+
+class int(object)
+ |  int([x]) -> integer
+ |  int(x, base=10) -> integer
+ |  
+ |  Convert a number or string to an integer, or return 0 if no arguments
+ |  are given.  If x is a number, return x.__int__().  For floating point
+ |  numbers, this truncates towards zero.
+ |  
+ |  If x is not a number or if base is given, then x must be a string,
+ |  bytes, or bytearray instance representing an integer literal in the
+ |  given base.  The literal can be preceded by '+' or '-' and be surrounded
+ |  by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
+ |  Base 0 means to interpret the base from the string as an integer literal.
+ |  >>> int('0b100', base=0)
+```
+
+
+
+```python
+print(int(11.5))
+print(int("1001"))
+```
+
+```
+11
+1001
+```
+
+The second constructor can be used to convert string based on a given base by default it is base 10.
+
+```python
+int("1010", base=2)
+```
+
+```
+10
+```
+
+
+
+There are some built in methods that can be used to convert these from one to the other e.g. ***bin***, ***oct*** and ***hex***
+
+```python
+print("Convert to Binary : ",bin(10), "\nConvert to Octal : ", oct(10), "\nConvert to Hexadecimal : ", hex(10))
+```
+
+```
+Convert to Binary :  0b1010 
+Convert to Octal :  0o12 
+Convert to Hexadecimal :  0xa
+```
+
+
+
+### Non-Integral Numbers
 
 Numbers which are not integer i.e have fraction component or like complex numbers.
 

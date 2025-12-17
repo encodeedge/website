@@ -98,11 +98,7 @@ print("Size of int 0 : ", sys.getsizeof(0))
 Size of int 0 :  24
 ```
 
-
-
 Similarly if we look at value of ***flag*** and ***flag\_false*** which is of bool type. The objects is an instance of int type and consume memory that of integer 0 and 1.
-
-
 
 ```python
 flag = True
@@ -121,13 +117,9 @@ Size of bool True :  28
 Size of bool True :  24
 ```
 
-
-
 #### Operations on Integer
 
 We can perform various mathematical operations on int variable. Some of these like, Addition, Subtraction, Multiplication, exponentiation (positive exp.) results in int values. whereas division result in a float.
-
-
 
 ```python
 print("Addition : ",type(12 + 7), "\nSubtraction : ", type(1 - 9), "\nMultiplication : ", type(7 * 4), "\nDivision : ", type(9 / 3))
@@ -139,8 +131,6 @@ Subtraction :  <class 'int'>
 Multiplication :  <class 'int'> 
 Division :  <class 'float'>
 ```
-
-
 
 ***int*** class has 2 constructor, which are described below :&#x20;
 
@@ -167,8 +157,6 @@ class int(object)
  |  >>> int('0b100', base=0)
 ```
 
-
-
 ```python
 print(int(11.5))
 print(int("1001"))
@@ -189,8 +177,6 @@ int("1010", base=2)
 10
 ```
 
-
-
 There are some built in methods that can be used to convert these from one to the other e.g. ***bin***, ***oct*** and ***hex***
 
 ```python
@@ -203,16 +189,178 @@ Convert to Octal :  0o12
 Convert to Hexadecimal :  0xa
 ```
 
-
-
 ### Non-Integral Numbers
 
 Numbers which are not integer i.e have fraction component or like complex numbers.
 
 * **Floats (*float*):** The most common non-integral type, used for real numbers like **3.14**. They are usually implemented as C doubles in the underlying C language.
+
+
+
+To represent real number, we can use ***float*** class in python. Let's have a look at the help method to see how to define float values
+
+```python
+help(float)
+```
+
+```
+Help on class float in module builtins:
+
+class float(object)
+ |  float(x) -> floating point number
+ |  
+ |  Convert a string or number to a floating point number, if possible.
+ |  
+ |  Methods defined here:
+ |  
+ |  __abs__(self, /)
+ |      abs(self)
+ |  
+ |  __add__(self, value, /)
+ |      Return self+value.
+ |  
+ |  __bool__(self, /)
+ |      self != 0
+ |  
+ |  __divmod__(self, value, /)
+ |      Return divmod(self, value).
+ |  
+ |  __eq__(self, value, /)
+ |      Return self==value.
+ |  
+ |  __float__(self, /)
+...
+
+```
+
+the ***float*** class uses one constructor that takes a number or string and then tries to convert it to a floating point number.
+
+```python
+print("float(10) = ", float(10), "\nfloat('10') = ", float("10"), "\nfloat('10.5') = ", float("10.5"))
+
+print("0.3 = ", 0.3)
+print("0.3 upto 25 decimal point ",format(0.3, '.25f'))
+```
+
+```
+float(10) =  10.0 
+float('10') =  10.0 
+float('10.5') =  10.5
+0.3 =  0.3
+0.3 upto 25 decimal point  0.2999999999999999888977698
+```
+
+
+
+Although some fractions are not stored exactly when using floats and for those cases we can either using Fraction or Decimal to store these.
+
+
+
 * **Complex (*complex*):** Numbers that have both a real and an imaginary part, such as $1 + 2j$.
 * **Decimals (*Decimal*):** Provide greater **precision** and control over floating-point arithmetic compared to standard floats.
 * **Fractions (*Fraction*):** Represent **rational numbers** as a fraction (numerator and denominator). These are used when we need **exact arithmetic**, for instance, ensuring $\frac\{1}\{3} + \frac\{1}\{3} + \frac\{1}\{3}$ is precisely equal to 1, which standard floats cannot guarantee due to their finite precision.
+
+We can use ***Fraction*** class from module ***fraction** to implement **rational numbers.*** Using the help method on the Fraction class we can have a peek on how to use it.
+
+```python
+help(Fraction)
+```
+
+```
+Help on class Fraction in module fractions:
+
+class Fraction(numbers.Rational)
+ |  This class implements rational numbers.
+ |  
+ |  In the two-argument form of the constructor, Fraction(8, 6) will
+ |  produce a rational number equivalent to 4/3. Both arguments must
+ |  be Rational. The numerator defaults to 0 and the denominator
+ |  defaults to 1 so that Fraction(3) == 3 and Fraction() == 0.
+ |  
+ |  Fractions can also be constructed from:
+ |  
+ |    - numeric strings similar to those accepted by the
+ |      float constructor (for example, '-2.3' or '1e10')
+ |  
+ |    - strings of the form '123/456'
+ |  
+ |    - float and Decimal instances
+ |  
+ |    - other Rational instances (including integers)
+ |  
+ |  Method resolution order:
+ |      Fraction
+ |      numbers.Rational
+ |      numbers.Real
+```
+
+As we can see we can pass the input in variety of ways to get a Fraction object.&#x20;
+
+```python
+from fractions import Fraction
+
+# Using integers
+print("fraction of int 1 : ", Fraction(1))
+print("fraction of int 1/3 : ", Fraction(1, 3))
+
+# Using rational numbers (i.e numerator/denominator)
+x = Fraction(6, 5)
+y = Fraction(3, 2)
+# 6/5 / 3/2 --> 6/5 * 2/3 --> 4/5
+print("fraction of 6/5 / 3/2 : ", Fraction(x, y))
+    
+# Using floats
+print("fraction of float 0.125 : ", Fraction(0.125))
+```
+
+```
+fraction of int 1 :  1
+fraction of int 1/3 :  1/3
+fraction of 6/5 / 3/2 :  4/5
+fraction of float 0.0.125 :  1/8
+```
+
+The numerator and denominator can be looked at by using below.
+
+```python
+x = Fraction(22, 7)
+print("Numerator of x is : ", x.numerator)
+print("Denominator of x is : ", x.denominator)
+```
+
+```
+Numerator of x is :  22
+Denominator of x is :  7
+```
+
+
+
+In case when the value passed in not a finite value, then the Fraction class will approximate the values, we have another method i.e limit\_denominator, that can be used to limit the denominator to a desired value.
+
+For example. for value of pi $\pi$, if we don't restrict the denominator the value returned will try to be exactly equal to the decimal value. But we can restrict the denominator to be below 7 and that will return us $\frac\{22}\{7}$
+
+
+
+```python
+import math
+
+frac_1 = Fraction(math.pi)
+print("Value of pi, without limiting the denominator", frac_1)
+print(format(float(frac_1), '.25f'))
+
+frac_2 = Fraction(math.pi).limit_denominator(10)
+print("Value of pi, limiting the denominator to 10 :", frac_2)
+print(format(float(frac_2), '.25f'))
+```
+
+```
+Value of pi, without limiting the denominator 884279719003555/281474976710656
+3.1415926535897931159979635
+Value of pi, limiting the denominator to 10 : 22/7
+3.1428571428571427937015414
+```
+
+
 
 ![Python-Type-Hierarchy-Integrals](/assets/python-type-hierarchy/Python-Type-Hierarchy-Integrals.png)
 

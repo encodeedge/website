@@ -73,18 +73,25 @@ const BlogPost = ({
       .join('');
   };
 
-  useEffect(() => {
+useEffect(() => {
     const el = contentRef.current;
     if (!el) return;
-    const nodes = Array.from(el.querySelectorAll('h2, h3')) as HTMLElement[];
+    
+    // 1. Update selector to include h1 and h4
+    const nodes = Array.from(el.querySelectorAll('h1, h2, h3')) as HTMLElement[];
+    
     const items = nodes.map((node) => {
       let id = node.id;
       if (!id) {
         id = slugify(node.textContent || 'heading');
         node.id = id;
       }
-      return { id, text: node.textContent || '', level: node.tagName === 'H2' ? 2 : 3 };
+
+      const level = parseInt(node.tagName.substring(1));
+
+      return { id, text: node.textContent || '', level };
     });
+    
     setHeadings(items);
   }, [children]);
 

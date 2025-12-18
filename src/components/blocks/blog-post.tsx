@@ -78,7 +78,7 @@ useEffect(() => {
     if (!el) return;
     
     // 1. Update selector to include h1 and h4
-    const nodes = Array.from(el.querySelectorAll('h1, h2, h3, h4')) as HTMLElement[];
+    const nodes = Array.from(el.querySelectorAll('h1, h2, h3')) as HTMLElement[];
     
     const items = nodes.map((node) => {
       let id = node.id;

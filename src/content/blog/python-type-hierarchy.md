@@ -83,7 +83,6 @@ Numeric types are broadly divided into two main categories: **Integral** and **N
 These represent integers, bool etc.&#x20;
 
 * **Integers (int):** positive and negative numbers, like -3, -1, 1, 2, 3.
-* **Booleans (*bool*):** Stores truthy and falsy value (True or False). Interestingly, in Python, booleans are actually a subclass of integers.
 
 Integers are objects of ***int*** class. These are of variable length and take variable size of memory based on the size of the integer.
 
@@ -187,6 +186,87 @@ print("Convert to Binary : ",bin(10), "\nConvert to Octal : ", oct(10), "\nConve
 Convert to Binary :  0b1010 
 Convert to Octal :  0o12 
 Convert to Hexadecimal :  0xa
+```
+
+* **Booleans (*bool*):** Stores truthy and falsy value (True or False). Interestingly, in Python, booleans are actually a subclass of integers.
+
+  ```python
+  print("type of bool value True is : ",type(True), "it's id is ",id(True), " and it's int equivalent is :",int(True))
+  ```
+
+```
+type of bool value True is :  <class 'bool'> it's id is  4347331776  and it's int equivalent is : 1
+
+```
+
+Internally the truthiness of an object is determined as per how it implements the  \_\_bool\_\_() method.
+
+```python
+help(bool)
+```
+
+```
+Help on class bool in module builtins:
+
+class bool(int)
+ |  bool(x) -> bool
+ |  
+ |  Returns True when the argument x is true, False otherwise.
+ |  The builtins True and False are the only two instances of the class bool.
+ |  The class bool is a subclass of the class int, and cannot be subclassed.
+ |  
+ |  Method resolution order:
+ |      bool
+ |      int
+ |      object
+```
+
+So, as per the resolution order, truthy nature will be determined based on **\_\_bool\_\_()** or **\_\_len\_\_()** implementation in the class or parent one.
+
+```python
+# Any non-zero numeric value is truthy.
+from fractions import Fraction
+from decimal import Decimal
+print("-----Any Non-zero numeric value is truthy:----")
+print("boolean of 120 :",bool(120), "\nboolean of 21.6 : ", bool(21.6), "\nboolean of Fraction(7, 8) : ", bool(Fraction(7, 8)), "\nboolean of Decimal('0.9') : ", bool(Decimal('0.9')))
+
+#Any zero numeric value is falsy:
+print("-----Any Zero numeric value is falsy:----")
+print("Boolean of 0 is :",bool(0), "\nBoolean of 0.0 is :",bool(0.0), "\nBoolean of Fraction(0,1) is :",bool(Fraction(0,1)), "\nBoolean of Decimal('0') is :",bool(Decimal('0')), "\nBoolean of 0j is :",bool(0j))
+
+# For Sequence and Collection types, empty containers are falsy, non-empty containers are truthy.
+print("-----Empty containers are falsy----")
+print("Boolean of '' ",bool(''), "\nBoolean of ()",bool(()), "\nBoolean of []", bool([]), "\nBoolean of {}", bool({}), "\nBoolean of set()", bool(set()), "\nBoolean of frozenset()", bool(frozenset()))
+print("-----Non-empty containers are truthy----")
+print("Boolean of 'Hello'", bool('Hello'),"\nBoolean of (1,2)", bool((1,2)),"\nBoolean of [3,4]", bool([3,4]),"\nBoolean of {'a':1}", bool({'a':1}), "\nBoolean of {1,2}",bool({1,2}), "\nBoolean of frozenset([3,4])",bool(frozenset([3,4])))
+```
+
+```
+-----Any Non-zero numeric value is truthy:----
+boolean of 120 : True 
+boolean of 21.6 :  True 
+boolean of Fraction(7, 8) :  True 
+boolean of Decimal('0.9') :  True
+-----Any Zero numeric value is falsy:----
+Boolean of 0 is : False 
+Boolean of 0.0 is : False 
+Boolean of Fraction(0,1) is : False 
+Boolean of Decimal('0') is : False 
+Boolean of 0j is : False
+-----Empty containers are falsy----
+Boolean of ''  False 
+Boolean of () False 
+Boolean of [] False 
+Boolean of {} False 
+Boolean of set() False 
+Boolean of frozenset() False
+-----Non-empty containers are truthy----
+Boolean of 'Hello' True 
+Boolean of (1,2) True 
+Boolean of [3,4] True 
+Boolean of {'a':1} True 
+Boolean of {1,2} True 
+Boolean of frozenset([3,4]) True
 ```
 
 ### Non-Integral Numbers
@@ -328,6 +408,24 @@ var_3 = var_4: True
 ```
 
 * **Complex (*complex*):** Numbers that have both a real and an imaginary part, such as $1 + 2j$.
+
+Python's built in class provides support for complex numbers. We can create a variable of complex type, either by defining the real and imaginary part of the number or by providing the imaginary number itself.
+
+```python
+comx_1 = complex(1, 2)
+comx_2 = 1 + 2j
+
+print("real part of complex number : ",comx_1.real, "is of type ",type(comx_1.real))
+print("imaginary part of complex number : ",comx_2.imag, "is of type ",type(comx_2.imag))
+```
+
+```
+real part of complex number :  1.0 is of type  <class 'float'>
+imaginary part of complex number :  2.0 is of type  <class 'float'>
+```
+
+Since the numbers of a complex type is stored as float, do remember the caveat of the same as discussed in this article under floats and decimal section.
+
 * **Decimals (*Decimal*):** Provide greater **precision** and control over floating-point arithmetic compared to standard floats. Decimals are useful in situations where we need precision and exact representation of decimal values.
 
 While working with the Decimal module in python, it provides a context that is used to adjust how we work with the module. majorly, we can set the precision, rounding algorithm while working with arithmetic operations. Context can be local or global.

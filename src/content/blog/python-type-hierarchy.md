@@ -82,7 +82,9 @@ Numeric types are broadly divided into two main categories: **Integral** and **N
 
 These represent integers, bool etc.&#x20;
 
-* **Integers (int):** positive and negative numbers, like -3, -1, 1, 2, 3.
+#### **Integers (int):**&#x20;
+
+Integers are positive and negative numbers, like -3, -1, 1, 2, 3.
 
 Integers are objects of ***int*** class. These are of variable length and take variable size of memory based on the size of the integer.
 
@@ -188,11 +190,13 @@ Convert to Octal :  0o12
 Convert to Hexadecimal :  0xa
 ```
 
-* **Booleans (*bool*):** Stores truthy and falsy value (True or False). Interestingly, in Python, booleans are actually a subclass of integers.
+#### **Booleans (*bool*):**&#x20;
 
-  ```python
-  print("type of bool value True is : ",type(True), "it's id is ",id(True), " and it's int equivalent is :",int(True))
-  ```
+Stores truthy and falsy value (True or False). Interestingly, in Python, booleans are actually a subclass of integers.
+
+```python
+print("type of bool value True is : ",type(True), "it's id is ",id(True), " and it's int equivalent is :",int(True))
+```
 
 ```
 type of bool value True is :  <class 'bool'> it's id is  4347331776  and it's int equivalent is : 1
@@ -273,7 +277,9 @@ Boolean of frozenset([3,4]) True
 
 Numbers which are not integer i.e have fraction component or like complex numbers.
 
-* **Floats (*float*):** The most common non-integral type, used for real numbers like **3.14**. They are usually implemented as C doubles in the underlying C language.
+#### **Floats (*float*):**&#x20;
+
+The most common non-integral type, used for real numbers like **3.14**. They are usually implemented as C doubles in the underlying C language.
 
 To represent real number, we can use ***float*** class in python. Let's have a look at the help method to see how to define float values
 
@@ -407,7 +413,9 @@ var_1 = var_2: True
 var_3 = var_4: True
 ```
 
-* **Complex (*complex*):** Numbers that have both a real and an imaginary part, such as $1 + 2j$.
+#### **Complex (*complex*):**&#x20;
+
+Numbers that have both a real and an imaginary part, such as $1 + 2j$.
 
 Python's built in class provides support for complex numbers. We can create a variable of complex type, either by defining the real and imaginary part of the number or by providing the imaginary number itself.
 
@@ -426,7 +434,9 @@ imaginary part of complex number :  2.0 is of type  <class 'float'>
 
 Since the numbers of a complex type is stored as float, do remember the caveat of the same as discussed in this article under floats and decimal section.
 
-* **Decimals (*Decimal*):** Provide greater **precision** and control over floating-point arithmetic compared to standard floats. Decimals are useful in situations where we need precision and exact representation of decimal values.
+#### **Decimals (*Decimal*):**&#x20;
+
+Provide greater **precision** and control over floating-point arithmetic compared to standard floats. Decimals are useful in situations where we need precision and exact representation of decimal values.
 
 While working with the Decimal module in python, it provides a context that is used to adjust how we work with the module. majorly, we can set the precision, rounding algorithm while working with arithmetic operations. Context can be local or global.
 
@@ -542,7 +552,9 @@ var_1 size stored as float : 24
 var_2 size stored as Decimal : 104
 ```
 
-* **Fractions (*Fraction*):** Represent **rational numbers** as a fraction (numerator and denominator). These are used when we need **exact arithmetic**, for instance, ensuring $\frac\{1}\{3} + \frac\{1}\{3} + \frac\{1}\{3}$ is precisely equal to 1, which standard floats cannot guarantee due to their finite precision.
+#### **Fractions (*Fraction*):**&#x20;
+
+Represent **rational numbers** as a fraction (numerator and denominator). These are used when we need **exact arithmetic**, for instance, ensuring $\frac\{1}\{3} + \frac\{1}\{3} + \frac\{1}\{3}$ is precisely equal to 1, which standard floats cannot guarantee due to their finite precision.
 
 We can use ***Fraction*** class from module ***fraction** to implement **rational numbers.*** Using the help method on the Fraction class we can have a peek on how to use it.
 

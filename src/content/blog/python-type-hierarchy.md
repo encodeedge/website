@@ -195,8 +195,6 @@ Numbers which are not integer i.e have fraction component or like complex number
 
 * **Floats (*float*):** The most common non-integral type, used for real numbers like **3.14**. They are usually implemented as C doubles in the underlying C language.
 
-
-
 To represent real number, we can use ***float*** class in python. Let's have a look at the help method to see how to define float values
 
 ```python
@@ -211,29 +209,11 @@ class float(object)
  |  
  |  Convert a string or number to a floating point number, if possible.
  |  
- |  Methods defined here:
- |  
- |  __abs__(self, /)
- |      abs(self)
- |  
- |  __add__(self, value, /)
- |      Return self+value.
- |  
- |  __bool__(self, /)
- |      self != 0
- |  
- |  __divmod__(self, value, /)
- |      Return divmod(self, value).
- |  
- |  __eq__(self, value, /)
- |      Return self==value.
- |  
- |  __float__(self, /)
 ...
 
 ```
 
-the ***float*** class uses one constructor that takes a number or string and then tries to convert it to a floating point number.
+the ***float*** class uses one constructor that takes a number or string and then tries to convert it to a floating point number.\\
 
 ```python
 print("float(10) = ", float(10), "\nfloat('10') = ", float("10"), "\nfloat('10.5') = ", float("10.5"))
@@ -250,14 +230,220 @@ float('10.5') =  10.5
 0.3 upto 25 decimal point  0.2999999999999999888977698
 ```
 
+Although some fractions are not stored exactly when using floats and for those cases we can either using Fraction or Decimal to store these.&#x20;
 
+This can cause equality issues since not all real numbers have an exact float representation, as described below\\
 
-Although some fractions are not stored exactly when using floats and for those cases we can either using Fraction or Decimal to store these.
+```python
+var_1 = 0.1 + 0.1 + 0.1
+var_2 = 0.3
+print("Is var_1 == var_2 : ", var_1 == var_2)
 
+print('0.1 --> {0:.25f}'.format(0.1))
+print('var_1 --> {0:.25f}'.format(var_1))
+print('var_2 --> {0:.25f}'.format(var_2))
+```
 
+```
+Is var_1 == var_2 : False
+0.1 --> 0.1000000000000000055511151
+var_1 --> 0.3000000000000000444089210
+var_2 --> 0.2999999999999999888977698
+```
+
+In cases when the numbers have an exact float representation, this works fine.
+
+```python
+var_1 = 0.125 + 0.125 + 0.125
+var_2 = 0.375
+print("Is var_1 == var_2\n", var_1 == var_2)
+
+print('0.125 --> {0:.25f}'.format(0.125))
+print('var_1 --> {0:.25f}'.format(var_1))
+print('var_2 --> {0:.25f}'.format(var_2))
+```
+
+```
+Is var_1 == var_2
+ True
+0.125 --> 0.1250000000000000000000000
+var_1 --> 0.3750000000000000000000000
+var_2 --> 0.3750000000000000000000000
+```
+
+Thus we have to be careful when doing, arithmetic operations on decimal numbers.
+
+To compare equality when using floats, we can make use of ***isclose()*** method from math library.
+
+```python
+from math import isclose
+help(isclose)
+```
+
+```
+Help on built-in function isclose in module math:
+
+isclose(a, b, *, rel_tol=1e-09, abs_tol=0.0)
+    Determine whether two floating point numbers are close in value.
+    
+      rel_tol
+        maximum difference for being considered "close", relative to the
+        magnitude of the input values
+      abs_tol
+        maximum difference for being considered "close", regardless of the
+        magnitude of the input values
+    
+    Return True if a is close in value to b, and False otherwise.
+    
+    For the values to be considered close, the difference between them
+    must be smaller than at least one of the tolerances.
+    
+    -inf, inf and NaN behave similarly to the IEEE 754 Standard.  That
+    is, NaN is not close to anything, even itself.  inf and -inf are
+    only close to themselves.
+
+```
+
+The ***isclose*** method accepts two optional parameters to fine-tune your comparison: ***rel\_tol*** and ***abs\_tol***.
+
+1. ***rel\_tol (Relative Tolerance):*** This scales based on the magnitude of the input values. It is best used when you want to check if two numbers are close within a certain percentage (e.g., "within 5% of each other").
+2. ***abs\_tol (Absolute Tolerance):*** This is a fixed threshold independent of the input size. It is essential when comparing numbers very close to zero, where relative comparison can fail.
+
+In general, we can use ***isclose()*** method as defined below :&#x20;
+
+```python
+var_1 = 0.0000001
+var_2 = 0.0000002
+
+var_3 = 263547364.01
+var_4 = 263547364.02
+
+print('var_1 = var_2:', isclose(var_1, var_2, abs_tol=0.0001, rel_tol=0.01))
+print('var_3 = var_4:', isclose(var_3, var_4, abs_tol=0.0001, rel_tol=0.01))
+```
+
+```
+var_1 = var_2: True
+var_3 = var_4: True
+```
 
 * **Complex (*complex*):** Numbers that have both a real and an imaginary part, such as $1 + 2j$.
-* **Decimals (*Decimal*):** Provide greater **precision** and control over floating-point arithmetic compared to standard floats.
+* **Decimals (*Decimal*):** Provide greater **precision** and control over floating-point arithmetic compared to standard floats. Decimals are useful in situations where we need precision and exact representation of decimal values.
+
+While working with the Decimal module in python, it provides a context that is used to adjust how we work with the module. majorly, we can set the precision, rounding algorithm while working with arithmetic operations. Context can be local or global.
+
+Let's look at how to work with the decimal module in python
+
+```python
+# import the decimal module and check the default global context
+
+import decimal
+global_ctx  = decimal.getcontext()
+print("precision by default for the global context is : ",global_ctx.prec)
+print("rounding by default for the global context is : ",global_ctx.rounding)
+
+# We set these values as per our requirement
+
+global_ctx.prec = 6
+global_ctx.rounding = decimal.ROUND_CEILING
+print("Updated precision for the global context is : ",global_ctx.prec)
+print("Updated rounding for the global context is : ",global_ctx.rounding)
+
+```
+
+```
+precision by default for the global context is :  28
+rounding by default for the global context is :  ROUND_HALF_EVEN
+Updated precision for the global context is :  6
+Updated rounding for the global context is :  ROUND_CEILING
+```
+
+&#x20;when using the local context we can make use of the ***with*** command.
+
+```python
+with decimal.localcontext() as context:
+    context.prec = 10
+    print('local prec = {0}, global prec = {1}'.format(context.prec, global_ctx.prec))
+```
+
+```
+local prec = 10, global prec = 6
+```
+
+Let's look at how to use Decimal module in practice. We have set the precision at 2. Now when we create two new variable of Decimal type, the values are stored as is with the exact precision. Only when we perform any arithmetic operation, the precision kicks in and the result will be in the desired precision value.
+
+```python
+decimal.getcontext().prec = 2
+var_1 = Decimal('0.23489')
+var_2 = Decimal('0.71287')
+print("var_1 : ", var_1)
+print("var_2 : ", var_2)
+print("var_1 + var_2 = ", var_1 + var_2)
+```
+
+```
+var_1 :  0.23489
+var_2 :  0.71287
+var_1 + var_2 =  0.95
+```
+
+The Decimal constructor can convert a variety of values. When converting values it's better to avoid using floats and use string instead as for values for which we don't have exact representation in base 2, will be captured as is by decimal. look at the below example of '0.3'.\\
+
+```python
+import decimal
+from decimal import Decimal
+
+print("Decimal constructor with integer value : ",Decimal(15))
+print("Decimal constructor with string value : ",Decimal('15.67'))
+# Don't use float value to construct Decimal, as it may lead to precision issues. Best way is to use string value.
+print("Decimal constructor with float value : ",Decimal(0.3))
+print("Decimal constructor with string value : ",Decimal('0.3'))
+
+```
+
+```
+Decimal constructor with integer value :  15
+Decimal constructor with string value :  15.67
+Decimal constructor with float value :  0.299999999999999988897769753748434595763683319091796875
+Decimal constructor with string value :  0.3
+```
+
+The Decimal class implement variety of mathematical function and we should use that when performing any mathematical functions. We could use the one's from math library also, but it will convert the decimal type to float and will perform the operation, which will be contrary to why we are suing the Decimal class. So best to avoid it and use the ones defined with the Decimal class.
+
+```python
+var_1 = Decimal('4.2')
+print("var_1.log10() : ", var_1.log10())  # base 10 logarithm
+print("var_1.ln() : ", var_1.ln())     # natural logarithm (base e)
+print("var_1.exp() : ", var_1.exp())    # e**a
+print("var_1.sqrt() : ", var_1.sqrt())   # square root
+```
+
+```
+var_1.log10() :  0.6232492903979004632209830566
+var_1.ln() :  1.435084525289322621899838647
+var_1.exp() :  66.68633104092514164502173465
+var_1.sqrt() :  2.049390153191919676644207736
+```
+
+**Drawbacks :**&#x20;
+
+Apart from the ones already covered, using Decimal class takes up more memory than floats and also is slower than floats operations and is noticeable when performing large operations.
+
+```python
+import sys
+from decimal import Decimal
+
+var_1 = 0.3
+var_2 = Decimal('0.3')
+print("var_1 size stored as float :",sys.getsizeof(var_1))
+print("var_2 size stored as Decimal :",sys.getsizeof(var_2))
+```
+
+```
+var_1 size stored as float : 24
+var_2 size stored as Decimal : 104
+```
+
 * **Fractions (*Fraction*):** Represent **rational numbers** as a fraction (numerator and denominator). These are used when we need **exact arithmetic**, for instance, ensuring $\frac\{1}\{3} + \frac\{1}\{3} + \frac\{1}\{3}$ is precisely equal to 1, which standard floats cannot guarantee due to their finite precision.
 
 We can use ***Fraction*** class from module ***fraction** to implement **rational numbers.*** Using the help method on the Fraction class we can have a peek on how to use it.
@@ -333,13 +519,9 @@ Numerator of x is :  22
 Denominator of x is :  7
 ```
 
-
-
 In case when the value passed in not a finite value, then the Fraction class will approximate the values, we have another method i.e limit\_denominator, that can be used to limit the denominator to a desired value.
 
 For example. for value of pi $\pi$, if we don't restrict the denominator the value returned will try to be exactly equal to the decimal value. But we can restrict the denominator to be below 7 and that will return us $\frac\{22}\{7}$
-
-
 
 ```python
 import math
@@ -359,8 +541,6 @@ Value of pi, without limiting the denominator 884279719003555/281474976710656
 Value of pi, limiting the denominator to 10 : 22/7
 3.1428571428571427937015414
 ```
-
-
 
 ![Python-Type-Hierarchy-Integrals](/assets/python-type-hierarchy/Python-Type-Hierarchy-Integrals.png)
 

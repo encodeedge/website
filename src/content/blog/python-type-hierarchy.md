@@ -709,7 +709,7 @@ These are unique objects that exist independently or serve special purposes:
 
 It is a built-in variable of type "NoneType" and is a reference to an object instance of NoneType. Python's memory manager will use shared reference as NoneType objects are immutable.
 
-While `None` is used to represent an "empty" value or missing data (similar to a null pointer), it remains a real object within Python's memory. Consequently, the memory manager handles every assignment to `None` by using a shared reference to the same object instance.
+While ***None*** is used to represent an "empty" value or missing data (similar to a null pointer), it remains a real object within Python's memory. Consequently, the memory manager handles every assignment to ***None*** by using a shared reference to the same object instance.
 
 ```python
 print(None, "is of Type {0}, It's Hex is is : {1}".format(type(None), hex(id(None))))
@@ -753,9 +753,9 @@ tup_1 is of Type <class 'tuple'>
 
 ## Statically typed and Dynamically typed
 
-Statically typed languages, such as **Java**, **C++**, and **Swift**, require a variable's data type to be explicitly declared at the time of creation, and this type cannot be changed later. For example, in a statically typed language, if a variable named `myVar` is declared as a `String` (e.g., `String myVar = "hello";`), it can only hold string values. Attempting to assign an integer value, like `myVar = 10;`, would result in a type error because the variable has been declared as a `String` and is incompatible with the integer type. However, assigning another string value, like `myVar = "abc";`, is acceptable.
+Statically typed languages, such as **Java**, **C++**, and **Swift**, require a variable's data type to be explicitly declared at the time of creation, and this type cannot be changed later. For example, in a statically typed language, if a variable named ***myVar*** is declared as a ***String*** (e.g., ***String myVar = "hello";***), it can only hold string values. Attempting to assign an integer value, like ***myVar = 10,*** would result in a type error because the variable has been declared as a ***String*** and is incompatible with the integer type. However, assigning another string value, like ***myVar = "abc",*** is acceptable.
 
-In contrast, **Python** is a dynamically typed language. In Python, variables are simply **references** or pointers to objects in memory, and the variables themselves do not have a fixed, inherent type. For instance, when you write `my_var = 'hello'`, the variable `my_var` is just referencing a string object with the value `'hello'`. This flexibility allows the same variable to later reference an object of a completely different type without causing an error. For example, executing `my_var = 10` is perfectly valid; the variable `my_var` simply stops pointing to the string object and starts pointing to an integer object with the value `10`. To determine the type of the object a variable is currently referencing, Python provides the built-in `type()` function, which looks up the object at the memory location the variable is pointing to and returns that object's type.
+In contrast, **Python** is a dynamically typed language. In Python, variables are simply **references** or pointers to objects in memory, and the variables themselves do not have a fixed, inherent type. For instance, when you write ***my\_var = 'hello'***, the variable ***my\_var*** is just referencing a string object with the value ***'hello'***. This flexibility allows the same variable to later reference an object of a completely different type without causing an error. For example, executing ***my\_var = 10*** is perfectly valid; the variable ***my\_var*** simply stops pointing to the string object and starts pointing to an integer object with the value ***10***. To determine the type of the object a variable is currently referencing, Python provides the built-in ***type()*** function, which looks up the object at the memory location the variable is pointing to and returns that object's type.
 
 ```python
 # Lets assign string to variable a and check its type

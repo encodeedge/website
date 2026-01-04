@@ -4,7 +4,7 @@ description: Introduction to Machine Learning
 pubDate: 2025-12-14
 updatedDate: 2025-12-14
 readTime: 10
-featured: true
+featured: false
 tags:
   - foundation
 topics:

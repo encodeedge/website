@@ -1,0 +1,2 @@
+py -m  nbconvert .\src\notebooks\Probability_Theory_3.ipynb --to html
+node public/scripts/html_to_astro.js .\src\notebooks\Probability_Theory_3.html

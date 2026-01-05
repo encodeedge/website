@@ -5,13 +5,58 @@ pubDate: 2025-12-14
 updatedDate: 2025-12-14
 readTime: 10
 featured: false
-tags:
-  - foundation
+tags: []
 topics:
   - machine-learning
 image: /assets/introduction-to-machine-learning/image.png
 authorImage: /assets/introduction-to-machine-learning/authorImage.png
 authorName: Atul Jha
+faqs:
+  - question: What is Machine Learning?
+    answer: >-
+      Machine Learning is a subset of Artificial Intelligence that focuses on
+      the development of algorithms that allows computers to learn from and make
+      predictions or decisions based on data.
+    category: Machine Learning
+  - question: Why we need Machine Learning?
+    answer: >-
+      Instead of explicitly programming rules (as in expert systems), ML
+      algorithms identify patterns in data and improve performance over time. 
+      In short, Machine Learning is similar to a mathematical function, it takes
+      input data, predicts an output and provides a response.
+    category: Machine Learning
+  - question: What are different types of Machine Learning?
+    answer: >-
+      Machine Learning can be broadly divided into Supervised, Unsupervised and
+      Reinforcement Learning
+    category: General
+references:
+  - title: 'Understanding Machine Learning: From Theory to Algorithms'
+    url: https://amzn.to/3NgGaln
+    description: Textbook by Shai Ben-David and Shai Shalev-Shwartz
+    type: book
+    affiliate: https://amzn.to/3NgGaln
+    image: /assets/introduction-to-machine-learning/references/0/image.jpg
+  - title: Pattern Recognition And Machine Learning (Pb 2009)
+    url: https://amzn.to/4jqz0qN
+    description: Book by Christopher Bishop
+    type: book
+    affiliate: https://amzn.to/4jqz0qN
+    image: /assets/introduction-to-machine-learning/references/1/image.jpg
+  - title: Deep Learning
+    url: https://amzn.to/44WCuLP
+    description: Textbook by Aaron Courville, Ian Goodfellow, and Yoshua Bengio
+    type: book
+    affiliate: https://amzn.to/44WCuLP
+    image: /assets/introduction-to-machine-learning/references/2/image.jpg
+  - title: >-
+      Hands-On Machine Learning with Scikit-Learn and TensorFlow: Concepts,
+      Tools, and Techniques to Build Intelligent Systems
+    url: https://amzn.to/494wO4M
+    description: Book by Aurelien Geron
+    type: book
+    affiliate: https://amzn.to/494wO4M
+    image: /assets/introduction-to-machine-learning/references/3/image.jpg
 ---
 # Introduction to Machine Learning
 

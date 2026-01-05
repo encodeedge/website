@@ -125,3 +125,5 @@ export const FAQ = ({
     </section>
   );
 };
+
+export default FAQ;

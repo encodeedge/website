@@ -26,10 +26,21 @@ const blog = defineCollection({
     image: z.string().optional(),
     authorImage: z.string().optional(),
     authorName: z.string().optional(),
+    faqs: z.array(z.object({ question: z.string(), answer: z.string(), category: z.string().optional() })).optional(),
+    references: z.array(z.object({ title: z.string(), url: z.string(), description: z.string().optional(), type: z.string().optional(), affiliate: z.string().optional(), image: z.string().optional() })).optional(),
     topics: z.array(TOPIC_SLUGS), 
     tags: z.array(z.string()).optional(), 
     featured: z.boolean().optional(),
   }),
 });
 
-export const collections = { blog };
+const faqs = defineCollection({
+  loader: glob({ base: "./src/content/faqs", pattern: "**/*.{md,mdx}" }),
+  schema: z.object({
+    question: z.string(),
+    answer: z.string(),
+    category: z.string().optional(),
+  }),
+});
+
+export const collections = { blog, faqs };

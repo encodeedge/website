@@ -4,6 +4,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import  PostComments from "@/components/ui/PostComments.tsx";
 import { slugify } from '@/utils/slugs';
+import FAQs from '@/components/blocks/faqs';
+import References from '@/components/blocks/references';
 
 // 🚨 Define a basic type for post data to ensure type safety and include topics/tags
 interface PostData {
@@ -13,6 +15,8 @@ interface PostData {
   image?: string;
   authorImage?: string;
   authorName: string;
+  faqs?: { question: string; answer: string; category?: string }[];
+  references?: { title: string; url: string; description?: string; type?: string; affiliate?: string }[];
   // Topics is an array of predefined slugs
   topics?: string[];
   // Tags is an array of free-form strings
@@ -44,6 +48,8 @@ const BlogPost = ({
     // 🚨 Destructure the new fields: topics and tags
     topics,
     tags,
+    faqs,
+    references,
   } = post.data;
 
   // Helper function to format topic slug into a human-readable name
@@ -220,6 +226,16 @@ useEffect(() => {
           {/* Main content */}
           <main className="w-full" ref={contentRef}>
             <div className="prose dark:prose-invert mx-auto max-w-none w-full">{children}</div>
+            {faqs && faqs.length > 0 && (
+              <div className="mt-8">
+                <FAQs items={faqs} />
+              </div>
+            )}
+            {references && references.length > 0 && (
+              <div className="mt-8">
+                <References items={references} />
+              </div>
+            )}
             <PostComments />
           </main>
 

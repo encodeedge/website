@@ -1,0 +1,152 @@
+---
+import { getCollection } from 'astro:content';
+import { format } from 'date-fns';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+const title = "Introduction-to-functions";
+const description = "Introduction-to-functions — Notebook export";
+// Static metadata used to render the hero + featured sidebar (edit as needed)
+const authorName = 'Atul Jha';
+const authorImage = '/assets/introduction-to-machine-learning/authorImage.png';
+const pubDate = '2025-01-01';
+const tags = ['notebook'];
+const topics = ['sample-topic', 'example-topic'];
+const image = '';
+const featured = [{ id: 'linear-regression', data: { title: 'Linear Regression', pubDate: '2025-01-01', image: '' } }];
+
+const _allPosts = await getCollection('blog');
+const featuredPosts = _allPosts.filter((p) => p.data?.featured).sort((a,b)=> new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()).slice(0,5);
+const content = "\r\n\r\n<div class=\"jp-Cell jp-MarkdownCell jp-Notebook-cell\" id=\"cell-id=3aedd155\">\r\n<div class=\"jp-Cell-inputWrapper\" tabindex=\"0\">\r\n<div class=\"jp-Collapser jp-InputCollapser jp-Cell-inputCollapser\">\r\n</div>\r\n<div class=\"jp-InputArea jp-Cell-inputArea\"><div class=\"jp-InputPrompt jp-InputArea-prompt\">\r\n</div><div class=\"jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput\" data-mime-type=\"text/markdown\">\r\n<h1 id=\"Functions\">Functions<a class=\"anchor-link\" href=\"#Functions\">¶</a></h1><p>At its core, a function is a reusable block of code that performs a specific task. In Python, we define a function using the def keyword.</p>\r\n<pre class=\"shiki github-dark\" style=\"background-color: #24292e\"><code><span class=\"line\"><span style=\"color: #F97583\">def</span><span style=\"color: #E1E4E8\"> </span><span style=\"color: #B392F0\">function_name</span><span style=\"color: #E1E4E8\">(parameters):</span></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">    </span><span style=\"color: #9ECBFF\">&quot;&quot;&quot;Optional docstring explaining what the function does.&quot;&quot;&quot;</span></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">    </span><span style=\"color: #6A737D\"># The code to run goes here</span></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">    </span><span style=\"color: #F97583\">return</span><span style=\"color: #E1E4E8\"> result</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">    </span></span>\n<span class=\"line\"></span></code></pre>\r\n<p>A function becomes much more powerful when it can handle dynamic data. We can do this using parameters.</p>\r\n<h2 id=\"Arguments-and-Parameters\">Arguments and Parameters<a class=\"anchor-link\" href=\"#Arguments-and-Parameters\">¶</a></h2><pre class=\"shiki github-dark\" style=\"background-color: #24292e\"><code><span class=\"line\"><span style=\"color: #F97583\">def</span><span style=\"color: #E1E4E8\"> </span><span style=\"color: #B392F0\">func</span><span style=\"color: #E1E4E8\">(a, b):</span></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">    </span><span style=\"color: #F97583\">pass</span></span>\n<span class=\"line\"></span></code></pre>\r\n<p>The values that are passed to the function are called as parameters. In this context, a and b are called parameters of func. Also a and b are variables that are local to func.</p>\r\n<pre class=\"shiki github-dark\" style=\"background-color: #24292e\"><code><span class=\"line\"><span style=\"color: #E1E4E8\">x </span><span style=\"color: #F97583\">=</span><span style=\"color: #E1E4E8\"> </span><span style=\"color: #79B8FF\">10</span></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">y </span><span style=\"color: #F97583\">=</span><span style=\"color: #E1E4E8\"> </span><span style=\"color: #9ECBFF\">&#39;a&#39;</span></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">func(x, y)</span></span>\n<span class=\"line\"></span></code></pre>\r\n<p>x and y are called the arguments of func, also in python x and y are passed by reference, i.e. the memory addresses of x and y are passed</p>\r\n<h2 id=\"Positional-Arguments\">Positional Arguments<a class=\"anchor-link\" href=\"#Positional-Arguments\">¶</a></h2><p>The most common way of assigning arguments to parameters: via the order in which they are passed\r\ni.e. their position</p>\r\n<pre class=\"shiki github-dark\" style=\"background-color: #24292e\"><code><span class=\"line\"><span style=\"color: #F97583\">def</span><span style=\"color: #E1E4E8\"> </span><span style=\"color: #B392F0\">my_func</span><span style=\"color: #E1E4E8\">(a, b):</span></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">    </span><span style=\"color: #F97583\">pass</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">my_func(</span><span style=\"color: #79B8FF\">10</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #79B8FF\">20</span><span style=\"color: #E1E4E8\">)</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color: #6A737D\"># here a = 10; b = 20</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">my_func(</span><span style=\"color: #79B8FF\">20</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #79B8FF\">10</span><span style=\"color: #E1E4E8\">)</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color: #6A737D\"># here a = 20, b = 10</span></span>\n<span class=\"line\"></span></code></pre>\r\n<h2 id=\"Default-Value\">Default Value<a class=\"anchor-link\" href=\"#Default-Value\">¶</a></h2><p>A positional arguments can be made optional by specifying a default value for the corresponding parameter.\r\nKeep in mind that if a positional parameter is defined with a default value every positional parameter after it must also be given a default value.</p>\r\n<pre class=\"shiki github-dark\" style=\"background-color: #24292e\"><code><span class=\"line\"><span style=\"color: #F97583\">def</span><span style=\"color: #E1E4E8\"> </span><span style=\"color: #B392F0\">my_func</span><span style=\"color: #E1E4E8\">(a, b</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">5</span><span style=\"color: #E1E4E8\">, c</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">10</span><span style=\"color: #E1E4E8\">):</span></span>\n<span class=\"line\"><span style=\"color: #6A737D\"># code …</span></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">my_func(</span><span style=\"color: #79B8FF\">1</span><span style=\"color: #E1E4E8\">)</span></span>\n<span class=\"line\"><span style=\"color: #6A737D\">#a = 1, b = 5, c = 10</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">my_func(</span><span style=\"color: #79B8FF\">1</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #79B8FF\">2</span><span style=\"color: #E1E4E8\">)</span></span>\n<span class=\"line\"><span style=\"color: #6A737D\">#a = 1, b = 2, c = 10</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">my_func(</span><span style=\"color: #79B8FF\">1</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #79B8FF\">2</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #79B8FF\">3</span><span style=\"color: #E1E4E8\">)</span></span>\n<span class=\"line\"><span style=\"color: #6A737D\">#a = 1, b = 2, c = 3</span></span>\n<span class=\"line\"></span></code></pre>\r\n<h2 id=\"Keyword-Arguments\">Keyword Arguments<a class=\"anchor-link\" href=\"#Keyword-Arguments\">¶</a></h2><p>But what if we want to specify the 1st and 3rd arguments, but omit the 2nd argument? i.e. we want to specify values for a and c, but let b take on its default value?</p>\r\n<p>Positional arguments can, optionally, be specified by using the parameter name whether or not the parameters have default values. Keep in mind, once we use a named argument, all arguments thereafter must be named too</p>\r\n<pre class=\"shiki github-dark\" style=\"background-color: #24292e\"><code><span class=\"line\"><span style=\"color: #F97583\">def</span><span style=\"color: #E1E4E8\"> </span><span style=\"color: #B392F0\">my_func</span><span style=\"color: #E1E4E8\">(a, b, c)</span></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">my_func(</span><span style=\"color: #79B8FF\">1</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #79B8FF\">2</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #79B8FF\">3</span><span style=\"color: #E1E4E8\">)</span></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">my_func(</span><span style=\"color: #79B8FF\">1</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #79B8FF\">2</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #FFAB70\">c</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">3</span><span style=\"color: #E1E4E8\">)</span></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">my_func(</span><span style=\"color: #FFAB70\">a</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">1</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #FFAB70\">b</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">2</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #FFAB70\">c</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">3</span><span style=\"color: #E1E4E8\">)</span></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">my_func(</span><span style=\"color: #FFAB70\">c</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">3</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #FFAB70\">a</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">1</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #FFAB70\">b</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">2</span><span style=\"color: #E1E4E8\">)</span></span>\n<span class=\"line\"></span></code></pre>\r\n</div>\r\n</div>\r\n</div>\r\n</div><div class=\"jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs\" id=\"cell-id=73f0b032\">\r\n<div class=\"jp-Cell-inputWrapper\" tabindex=\"0\">\r\n<div class=\"jp-Collapser jp-InputCollapser jp-Cell-inputCollapser\">\r\n</div>\r\n<div class=\"jp-InputArea jp-Cell-inputArea\">\r\n<div class=\"jp-InputPrompt jp-InputArea-prompt\">In [1]:</div>\r\n<div class=\"jp-CodeMirrorEditor jp-Editor jp-InputArea-editor\" data-type=\"inline\">\r\n<div class=\"cm-editor cm-s-jupyter\">\r\n<pre class=\"shiki github-dark\" style=\"background-color: #24292e\"><code><span class=\"line\"><span style=\"color: #F97583\">def</span><span style=\"color: #E1E4E8\"> </span><span style=\"color: #B392F0\">my_func</span><span style=\"color: #E1E4E8\">(a, b</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">2</span><span style=\"color: #E1E4E8\">, c</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">3</span><span style=\"color: #E1E4E8\">):</span></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">    </span><span style=\"color: #79B8FF\">print</span><span style=\"color: #E1E4E8\">(</span><span style=\"color: #9ECBFF\">&quot;a=</span><span style=\"color: #79B8FF\">{0}</span><span style=\"color: #9ECBFF\">, b=</span><span style=\"color: #79B8FF\">{1}</span><span style=\"color: #9ECBFF\">, c=</span><span style=\"color: #79B8FF\">{2}</span><span style=\"color: #9ECBFF\">&quot;</span><span style=\"color: #E1E4E8\">.format(a, b, c))</span></span>\n<span class=\"line\"></span></code></pre>\r\n</div>\r\n</div>\r\n</div>\r\n</div>\r\n</div><div class=\"jp-Cell jp-CodeCell jp-Notebook-cell\" id=\"cell-id=f38c8fc4\">\r\n<div class=\"jp-Cell-inputWrapper\" tabindex=\"0\">\r\n<div class=\"jp-Collapser jp-InputCollapser jp-Cell-inputCollapser\">\r\n</div>\r\n<div class=\"jp-InputArea jp-Cell-inputArea\">\r\n<div class=\"jp-InputPrompt jp-InputArea-prompt\">In [2]:</div>\r\n<div class=\"jp-CodeMirrorEditor jp-Editor jp-InputArea-editor\" data-type=\"inline\">\r\n<div class=\"cm-editor cm-s-jupyter\">\r\n<pre class=\"shiki github-dark\" style=\"background-color: #24292e\"><code><span class=\"line\"><span style=\"color: #6A737D\"># Note that once a keyword argument has been used,</span></span>\n<span class=\"line\"><span style=\"color: #6A737D\">#  all arguments thereafter must also be named:</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">my_func(</span><span style=\"color: #79B8FF\">10</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #FFAB70\">c</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">30</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #FFAB70\">b</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">20</span><span style=\"color: #E1E4E8\">)</span></span>\n<span class=\"line\"></span></code></pre>\r\n</div>\r\n</div>\r\n</div>\r\n</div>\r\n<div class=\"jp-Cell-outputWrapper\">\r\n<div class=\"jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser\">\r\n</div>\r\n<div class=\"jp-OutputArea jp-Cell-outputArea\">\r\n<div class=\"jp-OutputArea-child\">\r\n<div class=\"jp-OutputPrompt jp-OutputArea-prompt\"></div>\r\n<div class=\"jp-RenderedText jp-OutputArea-output\" data-mime-type=\"text/plain\" tabindex=\"0\">\r\n<pre>a=10, b=20, c=30\r\n</pre>\r\n</div>\r\n</div>\r\n</div>\r\n</div>\r\n</div><div class=\"jp-Cell jp-CodeCell jp-Notebook-cell\" id=\"cell-id=6f0fff29\">\r\n<div class=\"jp-Cell-inputWrapper\" tabindex=\"0\">\r\n<div class=\"jp-Collapser jp-InputCollapser jp-Cell-inputCollapser\">\r\n</div>\r\n<div class=\"jp-InputArea jp-Cell-inputArea\">\r\n<div class=\"jp-InputPrompt jp-InputArea-prompt\">In [3]:</div>\r\n<div class=\"jp-CodeMirrorEditor jp-Editor jp-InputArea-editor\" data-type=\"inline\">\r\n<div class=\"cm-editor cm-s-jupyter\">\r\n<pre class=\"shiki github-dark\" style=\"background-color: #24292e\"><code><span class=\"line\"><span style=\"color: #E1E4E8\">my_func(</span><span style=\"color: #79B8FF\">10</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #FFAB70\">b</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">20</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #79B8FF\">30</span><span style=\"color: #E1E4E8\">)</span></span>\n<span class=\"line\"></span></code></pre>\r\n</div>\r\n</div>\r\n</div>\r\n</div>\r\n<div class=\"jp-Cell-outputWrapper\">\r\n<div class=\"jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser\">\r\n</div>\r\n<div class=\"jp-OutputArea jp-Cell-outputArea\">\r\n<div class=\"jp-OutputArea-child\">\r\n<div class=\"jp-OutputPrompt jp-OutputArea-prompt\"></div>\r\n<div class=\"jp-RenderedText jp-OutputArea-output\" data-mime-type=\"application/vnd.jupyter.stderr\" tabindex=\"0\">\r\n<pre>\r\n  <span class=\"ansi-cyan-fg\">Cell</span><span class=\"ansi-cyan-fg\"> </span><span class=\"ansi-green-fg\">In[3]</span><span class=\"ansi-green-fg\">, line 1</span>\r\n<span class=\"ansi-red-fg\">    </span><span class=\"ansi-red-fg\">my_func(10, b=20, 30)</span>\r\n                        ^\r\n<span class=\"ansi-red-fg\">SyntaxError</span><span class=\"ansi-red-fg\">:</span> positional argument follows keyword argument\r\n</pre>\r\n</div>\r\n</div>\r\n</div>\r\n</div>\r\n</div><div class=\"jp-Cell jp-CodeCell jp-Notebook-cell\" id=\"cell-id=1eec05f4\">\r\n<div class=\"jp-Cell-inputWrapper\" tabindex=\"0\">\r\n<div class=\"jp-Collapser jp-InputCollapser jp-Cell-inputCollapser\">\r\n</div>\r\n<div class=\"jp-InputArea jp-Cell-inputArea\">\r\n<div class=\"jp-InputPrompt jp-InputArea-prompt\">In [4]:</div>\r\n<div class=\"jp-CodeMirrorEditor jp-Editor jp-InputArea-editor\" data-type=\"inline\">\r\n<div class=\"cm-editor cm-s-jupyter\">\r\n<pre class=\"shiki github-dark\" style=\"background-color: #24292e\"><code><span class=\"line\"><span style=\"color: #6A737D\"># However, if a parameter has a default value,</span></span>\n<span class=\"line\"><span style=\"color: #6A737D\"># it can be omitted from the argument list, named or not:</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">my_func(</span><span style=\"color: #79B8FF\">10</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #FFAB70\">c</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">30</span><span style=\"color: #E1E4E8\">)</span></span>\n<span class=\"line\"><span style=\"color: #E1E4E8\">my_func(</span><span style=\"color: #FFAB70\">a</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">30</span><span style=\"color: #E1E4E8\">, </span><span style=\"color: #FFAB70\">c</span><span style=\"color: #F97583\">=</span><span style=\"color: #79B8FF\">10</span><span style=\"color: #E1E4E8\">)</span></span>\n<span class=\"line\"></span></code></pre>\r\n</div>\r\n</div>\r\n</div>\r\n</div>\r\n<div class=\"jp-Cell-outputWrapper\">\r\n<div class=\"jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser\">\r\n</div>\r\n<div class=\"jp-OutputArea jp-Cell-outputArea\">\r\n<div class=\"jp-OutputArea-child\">\r\n<div class=\"jp-OutputPrompt jp-OutputArea-prompt\"></div>\r\n<div class=\"jp-RenderedText jp-OutputArea-output\" data-mime-type=\"text/plain\" tabindex=\"0\">\r\n<pre>a=10, b=2, c=30\r\na=30, b=2, c=10\r\n</pre>\r\n</div>\r\n</div>\r\n</div>\r\n</div>\r\n</div>\r\n<div class=\"jp-Cell jp-MarkdownCell jp-Notebook-cell\" id=\"cell-id=e0042b8d\">\r\n<div class=\"jp-Cell-inputWrapper\" tabindex=\"0\">\r\n<div class=\"jp-Collapser jp-InputCollapser jp-Cell-inputCollapser\">\r\n</div>\r\n<div class=\"jp-InputArea jp-Cell-inputArea\"><div class=\"jp-InputPrompt jp-InputArea-prompt\">\r\n</div><div class=\"jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput\" data-mime-type=\"text/markdown\">\r\n</div>\r\n</div>\r\n</div>\r\n</div>\r\n\r\n";
+---
+<DefaultLayout title={title} description={description}>
+  <div class="py-28 lg:pt-44 lg:pb-32">
+    <!-- Hero: title, description, author, tags, cover image -->
+    <div class="container">
+      <div class="mx-auto flex max-w-5xl flex-col items-center gap-4 text-center">
+        <h1 class="max-w-3xl text-4xl font-bold md:text-5xl">{title}</h1>
+        <h3 class="text-muted-foreground max-w-4xl">{description}</h3>
+        <div class="flex items-center gap-3 text-sm md:text-base">
+          {authorImage ? (
+            <img src={authorImage} alt={authorName} class="h-8 w-8 rounded-full border" />
+          ) : (
+            <div class="h-8 w-8 rounded-full bg-muted-foreground/10 flex items-center justify-center text-xs font-semibold text-muted-foreground">{authorName ? authorName.charAt(0) : ''}</div>
+          )}
+          <span>
+            <a href={'/authors/' + (authorName ? authorName.replace(/\s+/g, '-').toLowerCase() : '')} class="font-semibold">{authorName}</a>
+            <span class="ml-1">on {format(new Date(pubDate), 'MMM d, yyyy')}</span>
+          </span>
+        </div>
+        <div class="flex flex-wrap justify-center gap-2 mt-4 mb-4">
+          {tags && tags.map((tag) => (<a href={'/tags/' + tag} class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-200 rounded-full hover:bg-gray-300 transition">{tag}</a>))}
+          {topics && topics.map((topic) => (<a href={'/topics/' + topic} class="px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 transition">{topic}</a>))}
+        </div>
+        {image ? <img src={image} alt={title} class="mt-0 mb-8 aspect-video w-full rounded-lg border object-cover" /> : null}
+      </div>
+    </div>
+
+    <div class="w-full">
+      <div id="notebook-progress" class="fixed top-0 left-0 right-0 h-1 bg-muted z-50">
+        <div id="notebook-progress-bar" class="h-full bg-gradient-to-r from-sidebar-primary via-sidebar-primary to-blue-500 transition-all duration-300" style="width:0%"></div>
+      </div>
+
+      <div class="grid w-full max-w-12xl mx-auto px-8 grid-cols-1 gap-8 lg:grid-cols-[14rem_minmax(0,100ch)_14rem] items-start justify-center">
+        <!-- Left side: section navigation (populated by client script) -->
+        <aside class="hidden lg:block sticky top-24 h-fit">
+          <div class="bg-gradient-to-b from-muted/5 via-transparent to-background/60 border border-border rounded-xl p-4 shadow-lg max-h-[calc(100vh-6rem)] overflow-auto backdrop-blur-sm">
+            <div class="font-semibold mb-3 text-sm uppercase tracking-wide text-muted-foreground">On this page</div>
+            <ul id="notebook-toc" class="space-y-1 list-none pl-0">
+              <li class="text-sm text-muted-foreground">(No sections)</li>
+            </ul>
+          </div>
+        </aside>
+
+        <main class="w-full">
+          <div class="prose dark:prose-invert mx-auto max-w-none w-full notebook-embed" set:html={content} />
+        </main>
+
+        <!-- Right side: featured (placeholder) -->
+        <aside class="hidden lg:block sticky top-24 h-fit">
+            <div class="bg-gradient-to-b from-background/60 via-transparent to-muted/5 border border-border rounded-xl p-4 shadow-lg overflow-auto backdrop-blur-sm" style="max-height: min(calc(100vh - 6rem), 36rem);">
+              <div class="font-semibold mb-3 text-sm uppercase tracking-wide text-muted-foreground">Featured</div>
+              <ul id="notebook-featured" class="space-y-3 list-none">
+                {featuredPosts && featuredPosts.length > 0 ? (
+                  featuredPosts.map((f) => (
+                    <li>
+                      <a href={'/blog/' + f.id} class="flex items-start gap-3 rounded-lg p-3 hover:bg-muted/5 transition-shadow duration-150"> 
+                        {f.data.image ? (
+                          <img src={f.data.image} alt={f.data.title} class="h-12 w-14 rounded-md object-cover border shrink-0" />
+                        ) : (
+                          <div class="h-12 w-12 rounded-md bg-muted-foreground/10 flex items-center justify-center text-xs font-semibold text-muted-foreground shrink-0">{f.data.title ? f.data.title.charAt(0) : ''}</div>
+                        )}
+                        <div class="flex-1 min-w-0">
+                          <div class="text-sm font-semibold text-foreground line-clamp-2">{f.data.title}</div>
+                          <div class="text-xs text-muted-foreground">{format(new Date(f.data.pubDate), 'MMM d, yyyy')}</div>
+                        </div>
+                      </a>
+                    </li>
+                  ))
+                ) : (
+                  <li class="text-sm text-muted-foreground">(No featured posts)</li>
+                )}
+              </ul>
+            </div>
+        </aside>
+      </div>
+    </div>
+
+    <script type="module">
+      const slugify = (text) =>
+        text.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
+
+      const buildToc = () => {
+        const container = document.getElementById('notebook-toc');
+        const content = document.querySelector('.notebook-embed');
+        if (!container || !content) return;
+        const nodes = Array.from(content.querySelectorAll('h1, h2, h3')); 
+        container.innerHTML = "";
+        if (nodes.length === 0) {
+          container.innerHTML = '<li class="text-sm text-muted-foreground">(No sections)</li>';
+          return;
+        }
+        nodes.forEach((node) => {
+          let id = node.id || slugify(node.textContent || 'heading');
+          if (!node.id) node.id = id;
+          const li = document.createElement("li");
+          if (node.tagName.toLowerCase() === 'h3') li.className = 'pl-3';
+          const a = document.createElement("a");
+          a.href = `#${id}`;
+          a.className = 'block text-sm md:text-base rounded-lg px-3 py-2 transition-all duration-150 text-muted-foreground hover:text-foreground hover:bg-muted/5';
+          a.textContent = node.textContent || id;
+          li.appendChild(a);
+          container.appendChild(li);
+        });
+      };
+
+      const updateActiveToc = () => {
+        const links = Array.from(document.querySelectorAll('#notebook-toc a')); 
+        const headings = links.map((l) => document.getElementById(l.getAttribute("href").slice(1))).filter(Boolean);
+        if (headings.length === 0) return;
+        let active = links[0];
+        for (let i = 0; i < headings.length; i++) {
+          const rect = headings[i].getBoundingClientRect();
+          if (rect.top < window.innerHeight / 3) active = links[i];
+        }
+        links.forEach((l) => l.classList.remove('bg-sidebar-primary/10', 'text-sidebar-primary', 'font-semibold')); 
+        if (active) active.classList.add('bg-sidebar-primary/10', 'text-sidebar-primary', 'font-semibold');
+      };
+
+      const updateProgress = () => {
+        const bar = document.getElementById('notebook-progress-bar');
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollTop = window.scrollY;
+        const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        if (bar) bar.style.width = pct + "%";
+      };
+
+      window.addEventListener('load', () => { buildToc(); updateActiveToc(); updateProgress(); });
+      window.addEventListener('scroll', () => { updateActiveToc(); updateProgress(); });
+      const observer = new MutationObserver(() => buildToc());
+      const embed = document.querySelector('.notebook-embed');
+      if (embed) observer.observe(embed, { childList: true, subtree: true });
+    </script>
+  </div>
+</DefaultLayout>

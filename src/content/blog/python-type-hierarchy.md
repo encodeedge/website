@@ -14,6 +14,13 @@ topics:
 image: /assets/python-type-hierarchy/image.png
 authorImage: /assets/python-type-hierarchy/authorImage.png
 authorName: Atul Jha
+faqs:
+  - question: What are Python Type Hierarchy
+    answer: >-
+      Type hierarchy defines what data types are supported by Python, i.e
+      different type of data that can be created and stored in Python.
+    category: General
+references: []
 ---
 # Type Hierarchy
 

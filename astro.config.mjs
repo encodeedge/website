@@ -14,6 +14,9 @@ import rehypeUnescapeBracesMath from './src/rehype/rehype-unescape-braces-math.j
 import partytown from "@astrojs/partytown";
 import cloudflare from "@astrojs/cloudflare";
 
+
+const isCloudflare = process.env.DEPLOY_TARGET === 'cloudflare';
+
 // https://astro.build/config
 export default defineConfig({
 	site: "https://encodeedge.github.io",
@@ -25,9 +28,8 @@ export default defineConfig({
 		keystatic(),
 		partytown({ config: { forward: ['dataLayer.push'] } }),
 	],
-  output: "static",
-    adapter: cloudflare({
-  }),
+  output: isCloudflare ? 'server' : 'static',
+  adapter: isCloudflare ? cloudflare() : vercel(),
   vite: {
     plugins: [tailwindcss()],
   },

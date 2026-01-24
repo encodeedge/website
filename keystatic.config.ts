@@ -4,7 +4,8 @@ import { updateScrollPosition } from 'astro/virtual-modules/transitions-router.j
 
 export default config({
   storage: {
-    kind: 'local',
+    kind: 'github',
+    repo: 'encodeedge/website',
   },
 
   collections: {

@@ -12,6 +12,7 @@ import remarkUnescapeBracesMath from './src/remark/remark-unescape-braces-math.j
 import rehypeKatex from 'rehype-katex'
 import rehypeUnescapeBracesMath from './src/rehype/rehype-unescape-braces-math.js'
 import partytown from "@astrojs/partytown";
+import cloudflare from "@astrojs/cloudflare";
 
 // https://astro.build/config
 export default defineConfig({
@@ -25,7 +26,8 @@ export default defineConfig({
 		partytown({ config: { forward: ['dataLayer.push'] } }),
 	],
   output: "static",
-  adapter: vercel(),
+    adapter: cloudflare({
+  }),
   vite: {
     plugins: [tailwindcss()],
   },

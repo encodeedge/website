@@ -1,5 +1,5 @@
 {
-  "name": "EncodeEdge",
+  "name": "encodeedge",
   "compatibility_date": "2026-01-24",
   "assets": {
     "directory": "./dist"

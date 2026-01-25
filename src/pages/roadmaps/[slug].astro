@@ -72,6 +72,10 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
       <button class="filter-btn" data-filter="advanced">Advanced</button>
     </div>
 
+    <div class="instructions">
+      <p><strong>Tip:</strong> Left-click a tile or use "Details" to view more info. Right-click or use "Mark Complete" to track progress.</p>
+    </div>
+
     {roadmap.data.nodes?.map(section => (
       <div class="section">
         <h2 class="section-title">{section.title}</h2>
@@ -81,6 +85,10 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
               <div class={`difficulty ${topic.difficulty}`}></div>
               <div class="topic-name">{topic.name}</div>
               <div class="topic-desc">{topic.description}</div>
+              <div class="topic-actions">
+                <button class="action-btn details-btn">Details</button>
+                <button class="action-btn complete-btn">Mark Complete</button>
+              </div>
             </div>
           ))}
         </div>
@@ -217,6 +225,8 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .topic:hover {
@@ -242,6 +252,7 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   font-size: 0.85em;
   opacity: 0.8;
   line-height: 1.4;
+  flex-grow: 1;
 }
 
 .topic.clicked .topic-desc {
@@ -323,6 +334,42 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   color: white;
 }
 
+.instructions {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 0.95em;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.topic-actions {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85em;
+  font-weight: 500;
+  color: #4b5563;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #111827;
+}
+
 @media (max-width: 768px) {
   .header h1 {
     font-size: 2em;
@@ -350,6 +397,10 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   completedTopicsSet.forEach((index) => {
     if (topics[index]) {
       topics[index].classList.add("clicked");
+      const btn = topics[index].querySelector('.complete-btn');
+      if (btn) {
+        btn.textContent = "Completed";
+      }
     }
   });
 
@@ -377,13 +428,30 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   updateProgress();
 
   topics.forEach((topic, index) => {
+    const detailsBtn = topic.querySelector('.details-btn');
+    const completeBtn = topic.querySelector('.complete-btn');
+
+    const toggleComplete = () => {
+      topic.classList.toggle("clicked");
+
+      if (topic.classList.contains("clicked")) {
+        completedTopicsSet.add(index);
+        if (completeBtn) completeBtn.textContent = "Completed";
+      } else {
+        completedTopicsSet.delete(index);
+        if (completeBtn) completeBtn.textContent = "Mark Complete";
+      }
+
+      updateProgress();
+    };
+
     // Left Click: Open Details Drawer
     topic.addEventListener("click", function (event) {
-      if (event.target.tagName === 'A') {
+      if (event.target.tagName === 'A' || event.target.closest('.action-btn')) {
         return;
       }
       
-      const topicData = JSON.parse(this.dataset.topic);
+      const topicData = JSON.parse(topic.dataset.topic);
 
       window.dispatchEvent(new CustomEvent('roadmap:open-drawer', { detail: topicData }));
     });
@@ -391,17 +459,23 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
     // Right Click: Toggle Completion Status
     topic.addEventListener("contextmenu", function (event) {
       event.preventDefault();
-      
-      this.classList.toggle("clicked");
-
-      if (this.classList.contains("clicked")) {
-        completedTopicsSet.add(index);
-      } else {
-        completedTopicsSet.delete(index);
-      }
-
-      updateProgress();
+      toggleComplete();
     });
+
+    if (detailsBtn) {
+      detailsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const topicData = JSON.parse(topic.dataset.topic);
+        window.dispatchEvent(new CustomEvent('roadmap:open-drawer', { detail: topicData }));
+      });
+    }
+
+    if (completeBtn) {
+      completeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleComplete();
+      });
+    }
   });
 
   const filterButtons = document.querySelectorAll(".filter-btn");

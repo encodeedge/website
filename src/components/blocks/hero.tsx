@@ -215,7 +215,7 @@ export const Hero = () => {
             </a>
 
             {/* Card 3 - Notebooks - BOTTOM LEFT */}
-            <a href="https://github.com/atulkrjha/Machine-Learning/" aria-label="Open notebooks" className={`group text-[${PRIMARY_COLOR}] hover:text-[${HOVER_COLOR}] transition-colors duration-300`}>
+            <a href="/notebooks" aria-label="Open notebooks" className={`group text-[${PRIMARY_COLOR}] hover:text-[${HOVER_COLOR}] transition-colors duration-300`}>
               <g filter="url(#shadow)" transform="translate(90, 230)" 
                  className="transition-transform duration-300 ease-out group-hover:scale-[1.03] group-hover:-translate-y-2 cursor-pointer">
                 <rect width="350" height="140" rx="12" fill="#ffffff" stroke={LIGHT_PRIMARY} />

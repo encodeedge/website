@@ -23,7 +23,7 @@ const latestPosts = sortedPosts
 
 export const Features = () => {
   return (
-    <section id="features" className="py-24 lg:py-32">
+    <section id="features" className="pt-6 pb-24 lg:pt-10 lg:pb-32">
       <div className="container">
         
         {/* Featured Section Header */}

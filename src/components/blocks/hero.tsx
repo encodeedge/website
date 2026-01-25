@@ -1,9 +1,13 @@
 import {
   ArrowRight,
   Blend,
+  BookOpen,
   ChartNoAxesColumn,
   CircleDot,
   Diamond,
+  FileCode,
+  Mail,
+  Monitor,
 } from "lucide-react";
 
 import { DashedLine } from "@/components/dashed-line";
@@ -44,9 +48,36 @@ const features = [
   },
 ];
 
+const heroCards = [
+  {
+    title: "Tutorials & Deep Dives",
+    description: "Project-based, step-by-step walkthroughs with runnable code and visuals.",
+    href: "/topics",
+    icon: Monitor,
+  },
+  {
+    title: "Expert Blog Articles",
+    description: "In-depth research explainers, trending tech and deep tech analysis.",
+    href: "/blog",
+    icon: BookOpen,
+  },
+  {
+    title: "Interactive Notebooks",
+    description: "Runnable Jupyter & Colab environments for every project and lesson.",
+    href: "/notebooks",
+    icon: FileCode,
+  },
+  {
+    title: "Subscribe",
+    description: "Weekly tips, deep dives, project updates, and live stream schedules.",
+    href: "/subscribe",
+    icon: Mail,
+  },
+];
+
 export const Hero = () => {
   return (
-    <section className="py-28 lg:py-32 lg:pt-44">
+    <section className="pt-28 pb-6 lg:pt-44 lg:pb-10">
       <div className="container flex flex-col justify-between gap-8 md:gap-14 lg:flex-row lg:gap-20">
         {/* Left side - Main content */}
         <div className="flex-1">
@@ -114,146 +145,27 @@ export const Hero = () => {
         </div>
       </div>
 
-      <div className="mt-12 max-lg:ml-6 max-lg:h-[550px] max-lg:overflow-hidden md:mt-20 lg:container lg:mt-24">
-        <div className="relative w-full">
-          {/* Clickable informative SVG with hotspots linking to site sections */}
-          <svg
-            viewBox="0 0 1000 420"
-            preserveAspectRatio="xMidYMid meet"
-            className="w-full rounded-2xl shadow-lg"
-            role="img"
-            aria-labelledby="heroSvgTitle heroSvgDesc"
+      <div className="container mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-24 lg:gap-6">
+        {heroCards.map((card) => (
+          <a
+            key={card.title}
+            href={card.href}
+            className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-border/50 bg-background/50 p-6 transition-all hover:border-primary/20 hover:bg-muted/30 hover:shadow-lg md:p-8"
           >
-            <title id="heroSvgTitle">EncodeEdge highlights</title>
-            <desc id="heroSvgDesc">Quick links: Tutorials, Blog, Notebooks, Newsletter</desc>
-
-            <defs>
-              {/* Gradient A: Light primary tone */}
-              <linearGradient id="gA" x1="0" x2="1">
-                <stop offset="0" stopColor="#f0f4ff" />
-                <stop offset="1" stopColor="#e0e7ff" />
-              </linearGradient>
-              {/* Gradient B: Complementary light tone (Slightly warmer off-white) */}
-              <linearGradient id="gB" x1="0" x2="1">
-                <stop offset="0" stopColor="#ffffff" />
-                <stop offset="1" stopColor="#f8fafc" />
-              </linearGradient>
-              <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="#000000" floodOpacity="0.06" />
-                <feDropShadow dx="0" dy="10" stdDeviation="15" floodColor="#3533cd" floodOpacity="0.04" />
-              </filter>
-              
-              {/* Branded Arrow Icon (Call to Action) - Uses currentColor */}
-              <g id="brandedArrow">
-                <circle r="18" fill="currentColor" opacity="0.15"/>
-                {/* Arrow path (simple right-facing arrow) */}
-                <path d="M-6 0 L6 0 M2 -4 L6 0 L2 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-              </g>
-
-              {/* Card Icons (Uses currentColor) */}
-              <g id="MonitorIcon" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="5" width="20" height="15" rx="2" />
-                <path d="M7 23 L15 23 M11 20 L11 23" />
-              </g>
-              
-              <g id="BookIcon" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 19 L4 7 C4 5.9 4.9 5 6 5 H20 V19 C20 20.1 19.1 21 18 21 H6 C4.9 21 4 20.1 4 19 Z M12 5 V21" />
-              </g>
-              
-              <g id="NotebookIcon" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="2" width="18" height="20" rx="2" />
-                <path d="M7 2 L7 22 M12 2 L12 22 M16 2 L16 22" />
-              </g>
-              
-              <g id="MailIcon" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="M2 4 L12 12 L22 4" />
-              </g>
-
-            </defs>
-
-            {/* Background rectangle adjusted to fit the new grid dimensions (1000x420 viewBox) */}
-            <rect x="0" y="0" width="1000" height="420" fill="none" rx="18" />
-
-            {/* Card Size: 450x170. */}
-
-            {/* Card 1 - Tutorials - TOP LEFT */}
-            <a href="/topics" aria-label="Go to Tutorials" className={`group text-[${PRIMARY_COLOR}] hover:text-[${HOVER_COLOR}] transition-colors duration-300`}>
-              <g filter="url(#shadow)" transform="translate(90, 30)" 
-                 className="transition-transform duration-300 ease-out group-hover:scale-[1.03] group-hover:-translate-y-2 cursor-pointer">
-                <rect width="350" height="140" rx="16" fill="url(#gA)" stroke="#c7d2fe" strokeWidth="1" />
-                <use href="#MonitorIcon" transform="translate(30, 30)" />
-                <text x="65" y="50" fontSize="20" fontWeight="700" fill="#0f172a">Tutorials & Deep Dives</text>
-                
-                {/* Description with manual line wrapping using tspan */}
-                <text x="30" y="90" fontSize="12" fill="#334155" opacity="0.9">
-                  <tspan x="30" dy="0">Project-based, step-by-step walkthroughs</tspan>
-                  <tspan x="30" dy="16">with runnable code and visuals.</tspan>
-                </text>
-
-                {/* Icon positioned at the bottom right */}
-                <use href="#brandedArrow" transform="translate(320, 110)" />
-              </g>
-            </a>
-
-            {/* Card 2 - Blog - TOP RIGHT */}
-            <a href="/blog" aria-label="Read the blog" className={`group text-[${PRIMARY_COLOR}] hover:text-[${HOVER_COLOR}] transition-colors duration-300`}>
-              <g filter="url(#shadow)" transform="translate(520, 30)" 
-                 className="transition-transform duration-300 ease-out group-hover:scale-[1.03] group-hover:-translate-y-2 cursor-pointer">
-                <rect width="350" height="140" rx="16" fill="url(#gB)" stroke="#e2e8f0" strokeWidth="1" />
-                <use href="#BookIcon" transform="translate(30, 30)" />
-                <text x="65" y="50" fontSize="20" fontWeight="700" fill="#0f172a">Expert Blog Articles</text>
-                
-                {/* Description with manual line wrapping using tspan */}
-                <text x="30" y="90" fontSize="12" fill="#334155" opacity="0.9">
-                  <tspan x="30" dy="0">In-depth research explainers, trending tech</tspan>
-                  <tspan x="30" dy="16">and deep tech analysis.</tspan>
-                </text>
-
-                {/* Icon positioned at the bottom right */}
-                <use href="#brandedArrow" transform="translate(320, 110)" />
-              </g>
-            </a>
-
-            {/* Card 3 - Notebooks - BOTTOM LEFT */}
-            <a href="/notebooks" aria-label="Open notebooks" className={`group text-[${PRIMARY_COLOR}] hover:text-[${HOVER_COLOR}] transition-colors duration-300`}>
-              <g filter="url(#shadow)" transform="translate(90, 230)" 
-                 className="transition-transform duration-300 ease-out group-hover:scale-[1.03] group-hover:-translate-y-2 cursor-pointer">
-                <rect width="350" height="140" rx="16" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1" />
-                <use href="#NotebookIcon" transform="translate(30, 30)" />
-                <text x="65" y="50" fontSize="20" fontWeight="700" fill="#0f172a">Interactive Notebooks</text>
-                
-                {/* Description with manual line wrapping using tspan */}
-                <text x="30" y="90" fontSize="12" fill="#334155" opacity="0.9">
-                  <tspan x="30" dy="0">Runnable Jupyter & Colab environments</tspan>
-                  <tspan x="30" dy="16">for every project and lesson.</tspan>
-                </text>
-
-                {/* Icon positioned at the bottom right */}
-                <use href="#brandedArrow" transform="translate(320, 110)" />
-              </g>
-            </a>
-
-            {/* Card 4 - Newsletter - BOTTOM RIGHT */}
-            <a href="/subscribe" aria-label="Join newsletter" className={`group text-[${PRIMARY_COLOR}] hover:text-[${HOVER_COLOR}] transition-colors duration-300`}>
-              <g filter="url(#shadow)" transform="translate(520, 230)" 
-                 className="transition-transform duration-300 ease-out group-hover:scale-[1.03] group-hover:-translate-y-2 cursor-pointer">
-                <rect width="350" height="140" rx="16" fill="url(#gA)" stroke="#c7d2fe" strokeWidth="1" />
-                <use href="#MailIcon" transform="translate(30, 30)" />
-                <text x="65" y="50" fontSize="20" fontWeight="700" fill="#0f172a">Subscribe</text>
-                
-                {/* Description with manual line wrapping using tspan */}
-                <text x="30" y="90" fontSize="12" fill="#334155" opacity="0.9">
-                  <tspan x="30" dy="0">Weekly tips, deep dives, project updates,</tspan>
-                  <tspan x="30" dy="16">and live stream schedules.</tspan>
-                </text>
-
-                {/* Icon positioned at the bottom right */}
-                <use href="#brandedArrow" transform="translate(320, 110)" />
-              </g>
-            </a>
-          </svg>
-        </div>
+            <div className="mb-4 flex items-center gap-4">
+              <div className="rounded-full bg-primary/10 p-3 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                <card.icon className="size-6" />
+              </div>
+              <h3 className="font-bold text-xl">{card.title}</h3>
+            </div>
+            <p className="text-muted-foreground mb-6 text-base leading-relaxed">
+              {card.description}
+            </p>
+            <div className="flex items-center text-sm font-semibold text-primary">
+              Explore <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
+            </div>
+          </a>
+        ))}
       </div>
     </section>
   );

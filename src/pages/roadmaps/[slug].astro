@@ -446,17 +446,22 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
 
 .sticky-header {
   position: sticky;
-  top: 80px; /* Adjust based on your Navbar height */
-  z-index: 40;
-  background: rgba(255, 255, 255, 0.9);
+  top: 115px;
+  z-index: 30;
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(229, 231, 235, 0.5);
   border-radius: 16px;
-  margin: 0 auto 40px auto;
+  margin: 20px auto 40px auto;
   max-width: 800px;
   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   transition: all 0.3s ease;
+}
+
+.sticky-header.scrolled {
+  top: 115px;
+  margin-top: 0;
 }
 
 .sticky-content {
@@ -490,16 +495,22 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
 }
 
 .sticky-progress-track {
-  width: 100%;
-  height: 4px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
   background: #f3f4f6;
 }
 
 .sticky-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #10b981 0%, #667eea 100%);
-  transition: width 0.3s ease;
-  width: 0%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  background: linear-gradient(to top, #10b981 0%, #667eea 100%);
+  transition: height 0.3s ease;
 }
 
 .percentage-text {
@@ -638,6 +649,70 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
     right: auto !important;
   }
 }
+
+@media (min-width: 1024px) {
+  .sticky-header {
+    position: fixed;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    width: 100px;
+    margin: 0;
+    max-width: none;
+  }
+
+  .sticky-header.scrolled {
+    top: 50%;
+    margin-top: 0;
+  }
+
+  .sticky-content {
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 8px 24px 14px;
+    gap: 20px;
+  }
+
+  .sticky-stats {
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .stat-item {
+    flex-direction: column;
+    gap: 4px;
+    text-align: center;
+  }
+
+  .stat-item .stat-label {
+    font-size: 0.75rem;
+  }
+
+  .stat-item .stat-value {
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .percentage-text {
+    margin-left: 0;
+    font-size: 0.8rem;
+  }
+
+  .sticky-reset-btn {
+    width: 100%;
+    margin-top: 4px;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+  }
+
+  .container {
+    margin-left: 140px;
+    width: calc(100% - 160px);
+  }
+}
 </style>
 
 <script define:vars={{ slug: roadmap.id }}>
@@ -649,6 +724,17 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   let skippedTopicsSet = new Set(
     JSON.parse(localStorage.getItem(`skippedTopics_${slug}`) || "[]")
   );
+
+  const stickyHeader = document.querySelector('.sticky-header');
+  if (stickyHeader) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 100) {
+        stickyHeader.classList.add('scrolled');
+      } else {
+        stickyHeader.classList.remove('scrolled');
+      }
+    });
+  }
 
   const topics = document.querySelectorAll(".topic");
   const totalTopics = topics.length;
@@ -715,7 +801,7 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
       document.getElementById("completedTopics").textContent = completed;
     }
     if (document.getElementById("progressFill")) {
-      document.getElementById("progressFill").style.width = percentage + "%";
+      document.getElementById("progressFill").style.height = percentage + "%";
     }
     if (document.getElementById("progressPercentage")) {
       document.getElementById("progressPercentage").textContent = `(${percentage}%)`;

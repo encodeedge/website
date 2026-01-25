@@ -55,6 +55,35 @@ nodes:
         optional: false
         links: []
         references: []
+  - title: Python for Data Science
+    id: python-data-science
+    description: Essential libraries for data analysis and machine learning.
+    topics:
+      - name: NumPy
+        description: The fundamental package for scientific computing with Python.
+        difficulty: intermediate
+        optional: false
+        takeaways:
+          - "N-dimensional array objects"
+          - "Broadcasting functions"
+        links:
+          - title: NumPy Documentation
+            url: https://numpy.org/
+      - name: Pandas
+        description: Powerful data structures for data analysis, time series, and statistics.
+        difficulty: intermediate
+        optional: false
+        codeSnippet: |
+          import pandas as pd
+          df = pd.read_csv('data.csv')
+          print(df.describe())
+      - name: Scikit-Learn
+        description: Simple and efficient tools for predictive data analysis.
+        difficulty: advanced
+        optional: false
+        links:
+          - title: Scikit-Learn Documentation
+            url: https://scikit-learn.org/stable/user_guide.html
       - name: Dictionaries
         description: Understand key-value pairs and how to use them efficiently.
         difficulty: intermediate
@@ -69,7 +98,9 @@ nodes:
               "role": "Developer"
           }
           print(user.get("name"))
-        links: []
+        links:
+          - title: Python Dictionaries (Real Python)
+            url: https://realpython.com/python-dicts/
         references: []
   - title: Advanced Concepts
     id: advanced-concepts
@@ -87,6 +118,8 @@ nodes:
         description: Understand how to use generators for memory-efficient iteration.
         difficulty: advanced
         optional: false
-        links: []
+        links:
+          - title: Python Generators (Wiki)
+            url: https://wiki.python.org/moin/Generators
         references: []
 ---

@@ -139,6 +139,17 @@ export default config({
                   defaultValue: 'beginner',
                 }),
                 optional: fields.checkbox({ label: 'Optional', description: 'Is this topic optional?' }),
+                duration: fields.text({ label: 'Duration', description: 'Estimated time to complete (e.g., "2 hours")' }),
+                prerequisites: fields.array(
+                  fields.text({ label: 'Prerequisite' }),
+                  { label: 'Prerequisites', itemLabel: props => props.value }
+                ),
+                takeaways: fields.array(
+                  fields.text({ label: 'Key Takeaway' }),
+                  { label: 'Key Takeaways', itemLabel: props => props.value }
+                ),
+                codeSnippet: fields.text({ label: 'Code Example', multiline: true, description: 'Optional code snippet' }),
+                videoUrl: fields.text({ label: 'Video Tutorial URL' }),
                 links: fields.array(
                   fields.object({
                     title: fields.text({ label: 'Title' }),

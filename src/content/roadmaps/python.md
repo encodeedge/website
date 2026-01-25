@@ -15,6 +15,20 @@ nodes:
           floats, strings, and booleans.
         difficulty: beginner
         optional: false
+        duration: "45 minutes"
+        prerequisites:
+          - "Basic computer literacy"
+          - "Text editor installed"
+        takeaways:
+          - "How to declare variables"
+          - "Difference between int, float, and string"
+        codeSnippet: |
+          name = "Alice"
+          age = 30
+          height = 5.8
+          is_student = True
+          print(f"{name} is {age} years old.")
+        videoUrl: "https://www.youtube.com/watch?v=khKv-8q7YmY"
         links:
           - title: Python Variables
             url: https://www.w3schools.com/python/python_variables.asp
@@ -45,6 +59,16 @@ nodes:
         description: Understand key-value pairs and how to use them efficiently.
         difficulty: intermediate
         optional: false
+        duration: "1 hour"
+        takeaways:
+          - "Key-value pair structure"
+          - "Dictionary methods (.get, .items, .keys)"
+        codeSnippet: |
+          user = {
+              "name": "Bob",
+              "role": "Developer"
+          }
+          print(user.get("name"))
         links: []
         references: []
   - title: Advanced Concepts

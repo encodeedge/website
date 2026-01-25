@@ -70,7 +70,7 @@ export const Logos = () => {
   ];
 
   return (
-    <section className="py-24 lg:py-32">
+    <section className="py-2 lg:py-5">
       <div className="container">
         <div className="text-center">
           <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">

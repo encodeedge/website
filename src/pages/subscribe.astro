@@ -1,0 +1,11 @@
+---
+import Layout from '@/layouts/DefaultLayout.astro';
+import { Newsletter } from '@/components/blocks/newsletter';
+import { Pricing } from '@/components/blocks/pricing';
+import { Testimonials } from '@/components/blocks/testimonials';
+import { FAQ } from '@/components/blocks/faq';
+---
+
+<Layout title="Subscribe | EncodeEdge" description="Subscribe to our newsletter and premium plans for AI and MLOps mastery.">
+  <Newsletter client:load />
+</Layout>

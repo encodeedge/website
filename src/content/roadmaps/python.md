@@ -38,13 +38,13 @@ nodes:
       - name: Lists and Tuples
         description: Learn to work with ordered collections of items.
         difficulty: beginner
-        optional: true
+        optional: false
         links: []
         references: []
       - name: Dictionaries
         description: Understand key-value pairs and how to use them efficiently.
         difficulty: intermediate
-        optional: true
+        optional: false
         links: []
         references: []
   - title: Advanced Concepts

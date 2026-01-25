@@ -8,19 +8,19 @@ import { Hero } from '@/components/blocks/hero';
 import { Logos } from '@/components/blocks/logos';
 import { Pricing } from '@/components/blocks/pricing';
 import { ResourceAllocation } from '@/components/blocks/resource-allocation';
-import LearningRoadmap  from '@/components/blocks/roadmaps';
 import { Testimonials } from '@/components/blocks/testimonials';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 
 
 
+import { RoadmapTeaser } from '@/components/blocks/roadmap-teaser';
 ---
 
 <DefaultLayout title={SITE_TITLE} description={SITE_DESCRIPTION} >
   <Background className="via-muted to-muted/80">
     <Hero />
     <Features />
-    <Logos client:only="react"/> 
-    <LearningRoadmap />
+    <Logos client:only="react"/>
+    <RoadmapTeaser client:only="react" />
   </Background>
 </DefaultLayout>

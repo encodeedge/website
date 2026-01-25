@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import RoadmapLayout from '@/layouts/RoadmapLayout.astro';
+import type { CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const roadmaps = await getCollection('roadmaps');
+  return roadmaps.map((roadmap) => ({
+    params: { slug: roadmap.id },
+    props: { roadmap },
+  }));
+}
+
+interface Props {
+	roadmap: CollectionEntry<'roadmaps'>;
+}
+
+const { roadmap } = Astro.props;
+---
+
+<RoadmapLayout title={roadmap.data.title} description={roadmap.data.description}>
+  <div class="container max-w-3xl">
+    {roadmap.data.nodes?.map((node) => (
+      <div class="mb-8">
+        <h3 class="text-lg font-semibold">{node.title}</h3>
+        <p class="text-muted-foreground">{node.description}</p>
+        {node.url && <a href={node.url} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline text-sm">Learn more</a>}
+      </div>
+    ))}
+  </div>
+</RoadmapLayout>

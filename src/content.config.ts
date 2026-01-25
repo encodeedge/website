@@ -43,4 +43,18 @@ const faqs = defineCollection({
   }),
 });
 
-export const collections = { blog, faqs };
+const roadmaps = defineCollection({
+  loader: glob({ base: "./src/content/roadmaps", pattern: "**/*.{md,mdx}" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    featured: z.boolean().optional(),
+    nodes: z.array(z.object({
+      title: z.string(),
+      description: z.string(),
+      url: z.string().optional(),
+    })).optional(),
+  }),
+});
+
+export const collections = { blog, faqs, roadmaps };

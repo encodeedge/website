@@ -1,0 +1,34 @@
+---
+import { getCollection } from 'astro:content';
+
+import { Background } from '@/components/background';
+import { Roadmaps } from '@/components/blocks/roadmaps';
+import { SITE_TITLE, SITE_DESCRIPTION } from '@/consts';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+
+const roadmaps = (await getCollection('roadmaps')).sort(
+	(a, b) => a.data.title.localeCompare(b.data.title),
+).map((roadmap) => {
+  const { render, ...rest } = roadmap as any;
+  return { ...rest, slug: roadmap.id };
+});
+---
+
+<DefaultLayout title={`Roadmaps - ${SITE_TITLE}`} description="Learn and master various topics with our curated roadmaps." >
+	<Background>
+		<div class="py-28 lg:pt-44 lg:pb-32">
+		<section>
+        <div class="container max-w-5xl space-y-4 text-center">
+          <h1 class="text-2xl font-semibold tracking-tight md:text-4xl lg:text-5xl">
+            Roadmaps
+          </h1>
+
+          <p class="text-muted-foreground max-w-md leading-snug font-medium lg:mx-auto">
+            Learn and master various topics with our curated roadmaps.
+          </p>
+        </div>
+      </section>
+			<Roadmaps roadmaps={roadmaps} client:only='react' />
+		</div>
+	</Background>
+</DefaultLayout>

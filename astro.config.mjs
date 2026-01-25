@@ -26,7 +26,11 @@ export default defineConfig({
 		react(),
 		markdoc(),
 		keystatic(),
-		partytown({ config: { forward: ['dataLayer.push'] } }),
+		partytown({
+			config: {
+				forward: ["dataLayer.push", "gtag"],
+			},
+		}),
 	],
   output: isCloudflare ? 'server' : 'static',
   adapter: isCloudflare ? cloudflare() : vercel(),

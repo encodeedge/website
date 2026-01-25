@@ -50,9 +50,16 @@ const roadmaps = defineCollection({
     description: z.string(),
     featured: z.boolean().optional(),
     nodes: z.array(z.object({
+      id: z.string(),
       title: z.string(),
       description: z.string(),
       url: z.string().optional(),
+      dependsOn: z.array(z.string()).optional(),
+      topics: z.array(z.object({
+        name: z.string(),
+        description: z.string(),
+        difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
+      })).optional(),
     })).optional(),
   }),
 });

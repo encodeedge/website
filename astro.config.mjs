@@ -32,6 +32,11 @@ export default defineConfig({
   adapter: isCloudflare ? cloudflare() : vercel(),
   vite: {
     plugins: [tailwindcss()],
+    build: {
+      rollupOptions: {
+        external: ['sharp'],
+      },
+    },
   },
   	markdown: {
 		remarkPlugins: [remarkMath, remarkUnescapeBracesMath],

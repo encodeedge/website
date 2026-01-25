@@ -16,16 +16,396 @@ interface Props {
 }
 
 const { roadmap } = Astro.props;
+
+const totalTopics = roadmap.data.nodes?.reduce((acc, section) => acc + (section.topics?.length ?? 0), 0) ?? 0;
+const totalCategories = roadmap.data.nodes?.length ?? 0;
 ---
 
 <RoadmapLayout title={roadmap.data.title} description={roadmap.data.description}>
-  <div class="container max-w-3xl">
-    {roadmap.data.nodes?.map((node) => (
-      <div class="mb-8">
-        <h3 class="text-lg font-semibold">{node.title}</h3>
-        <p class="text-muted-foreground">{node.description}</p>
-        {node.url && <a href={node.url} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline text-sm">Learn more</a>}
+<div class="container">
+  <div class="header">
+    <h1>{roadmap.data.title}</h1>
+    <p>{roadmap.data.description}</p>
+        <div class="progress-bar">
+      <div class="progress-text">Your Progress <span id="progressPercentage">0%</span></div>
+      <div class="progress">
+        <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat-box">
+        <div class="stat-number" id="totalTopicsDisplay">{totalTopics}</div>
+        <div class="stat-label">Total Topics</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number">{totalCategories}</div>
+        <div class="stat-label">Categories</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number" id="completedTopics">0</div>
+        <div class="stat-label">Completed</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="roadmap">
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-box beginner"></div>
+        <span>Beginner</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box intermediate"></div>
+        <span>Intermediate</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box advanced"></div>
+        <span>Advanced</span>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <button class="filter-btn active" data-filter="all">All Topics</button>
+      <button class="filter-btn" data-filter="beginner">Beginner</button>
+      <button class="filter-btn" data-filter="intermediate">Intermediate</button>
+      <button class="filter-btn" data-filter="advanced">Advanced</button>
+    </div>
+
+    {roadmap.data.nodes?.map(section => (
+      <div class="section">
+        <h2 class="section-title">{section.title}</h2>
+        <div class="topics">
+          {section.topics?.map(topic => (
+            <div class="topic" data-difficulty={topic.difficulty}>
+              <div class={`difficulty ${topic.difficulty}`}></div>
+              <div class="topic-name">{topic.name}</div>
+              <div class="topic-desc">{topic.description}</div>
+            </div>
+          ))}
+        </div>
       </div>
     ))}
+
+
   </div>
+</div>
 </RoadmapLayout>
+
+<style>
+  * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  text-align: center;
+  color: #1f2937;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  font-size: 3em;
+  margin-bottom: 10px;
+}
+
+.header p {
+  font-size: 1.2em;
+  opacity: 0.9;
+}
+
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.stat-box {
+  background: white;
+  color: #333;
+  padding: 15px 30px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.stat-number {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.stat-label {
+  font-size: 0.9em;
+  opacity: 0.9;
+}
+
+.roadmap {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9em;
+}
+
+.legend-box {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid #ddd;
+}
+
+.legend-box.beginner {
+  background: #10b981;
+}
+
+.legend-box.intermediate {
+  background: #3b82f6;
+}
+
+.legend-box.advanced {
+  background: #8b5cf6;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 1.8em;
+  color: #667eea;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid #667eea;
+}
+
+.topics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 15px;
+}
+
+.topic {
+  background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
+  padding: 15px 20px;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.topic:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  border-color: #667eea;
+}
+
+.topic.clicked {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+}
+
+.topic-name {
+  font-weight: 600;
+  font-size: 1.05em;
+  margin-bottom: 5px;
+  padding-right: 20px;
+}
+
+.topic-desc {
+  font-size: 0.85em;
+  opacity: 0.8;
+  line-height: 1.4;
+}
+
+.topic.clicked .topic-desc {
+  opacity: 0.95;
+}
+
+.difficulty {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.difficulty.beginner {
+  background: #10b981;
+}
+
+.difficulty.intermediate {
+  background: #3b82f6;
+}
+
+.difficulty.advanced {
+  background: #8b5cf6;
+}
+
+.progress-bar {
+  margin-top: 30px;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.progress-text {
+  font-size: 1.1em;
+  margin-bottom: 10px;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.progress {
+  height: 30px;
+  background: #e5e7eb;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #667eea 100%);
+  transition: width 0.5s ease;
+}
+
+.filter-section {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.filter-btn {
+  background: white;
+  border: 2px solid #667eea;
+  color: #667eea;
+  padding: 8px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  margin: 5px;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.filter-btn:hover {
+  background: #667eea;
+  color: white;
+}
+
+.filter-btn.active {
+  background: #667eea;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 2em;
+  }
+
+  .topics {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<script define:vars={{ slug: roadmap.id }}>
+let completedTopicsSet = new Set(
+  JSON.parse(localStorage.getItem(`completedTopics_${slug}`) || "[]")
+);
+
+const topics = document.querySelectorAll(".topic");
+const totalTopics = topics.length;
+
+if (document.getElementById("totalTopicsDisplay")) {
+  document.getElementById("totalTopicsDisplay").textContent = totalTopics;
+}
+
+
+completedTopicsSet.forEach((index) => {
+  if (topics[index]) {
+    topics[index].classList.add("clicked");
+  }
+});
+
+function updateProgress() {
+  const completed = completedTopicsSet.size;
+  const percentage = totalTopics > 0 ? Math.round((completed / totalTopics) * 100) : 0;
+
+  if (document.getElementById("completedTopics")) {
+    document.getElementById("completedTopics").textContent = completed;
+  }
+  if (document.getElementById("progressFill")) {
+    document.getElementById("progressFill").style.width = percentage + "%";
+  }
+  if (document.getElementById("progressPercentage")) {
+    document.getElementById("progressPercentage").textContent = percentage + "%";
+  }
+  
+
+  localStorage.setItem(
+    `completedTopics_${slug}`,
+    JSON.stringify([...completedTopicsSet])
+  );
+}
+
+updateProgress();
+
+topics.forEach((topic, index) => {
+  topic.addEventListener("click", function () {
+    this.classList.toggle("clicked");
+
+    if (this.classList.contains("clicked")) {
+      completedTopicsSet.add(index);
+    } else {
+      completedTopicsSet.delete(index);
+    }
+
+    updateProgress();
+  });
+});
+
+const filterButtons = document.querySelectorAll(".filter-btn");
+
+filterButtons.forEach((button) => {
+  button.addEventListener("click", function () {
+    filterButtons.forEach((btn) => btn.classList.remove("active"));
+    this.classList.add("active");
+
+    const filter = this.getAttribute("data-filter");
+
+    topics.forEach((topic) => {
+      if (filter === "all") {
+        topic.style.display = "block";
+      } else {
+        const difficulty = topic.getAttribute("data-difficulty");
+        topic.style.display = difficulty === filter ? "block" : "none";
+      }
+    });
+  });
+});
+</script>

@@ -23,19 +23,13 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
 ---
 
 <RoadmapLayout title={roadmap.data.title} description={roadmap.data.description}>
+<div class="fixed-progress-bar">
+  <div class="fixed-progress-fill" id="progressFill" style="width: 0%;"></div>
+</div>
 <div class="container">
   <div class="header">
     <h1>{roadmap.data.title}</h1>
     <p>{roadmap.data.description}</p>
-        <div class="progress-bar">
-      <div class="progress-header">
-        <div class="progress-text">Your Progress <span id="progressPercentage">0%</span></div>
-        <button id="clearProgressBtn" class="clear-btn" title="Reset all progress">Clear History</button>
-      </div>
-      <div class="progress">
-        <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
-      </div>
-    </div>
     <div class="stats">
       <div class="stat-box">
         <div class="stat-number" id="totalTopicsDisplay">{totalTopics}</div>
@@ -46,10 +40,14 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
         <div class="stat-label">Categories</div>
       </div>
       <div class="stat-box">
-        <div class="stat-number" id="completedTopics">0</div>
+        <div class="stat-number">
+          <span id="completedTopics">0</span>
+          <span id="progressPercentage" class="percentage-text">(0%)</span>
+        </div>
         <div class="stat-label">Completed</div>
       </div>
     </div>
+    <button id="clearProgressBtn" class="clear-btn-small">Reset Progress</button>
   </div>
 
   <div class="roadmap">
@@ -438,53 +436,45 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   background: #8b5cf6;
 }
 
-.progress-bar {
-  margin-top: 30px;
-  padding: 20px;
-  border-radius: 12px;
-  text-align: center;
+.fixed-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: rgba(229, 231, 235, 0.3);
+  z-index: 9999;
 }
 
-.progress-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.progress-text {
-  font-size: 1.1em;
-  color: #667eea;
-  font-weight: 600;
-}
-
-.clear-btn {
-  background: transparent;
-  border: 1px solid #ef4444;
-  color: #ef4444;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.8em;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.clear-btn:hover {
-  background: #ef4444;
-  color: white;
-}
-
-.progress {
-  height: 30px;
-  background: #e5e7eb;
-  border-radius: 15px;
-  overflow: hidden;
-}
-
-.progress-fill {
+.fixed-progress-fill {
   height: 100%;
   background: linear-gradient(90deg, #10b981 0%, #667eea 100%);
-  transition: width 0.5s ease;
+  transition: width 0.3s ease;
+  width: 0%;
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+}
+
+.percentage-text {
+  font-size: 0.5em;
+  color: #667eea;
+  vertical-align: middle;
+  margin-left: 5px;
+}
+
+.clear-btn-small {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.clear-btn-small:hover {
+  color: #ef4444;
 }
 
 .filter-section {
@@ -680,7 +670,7 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
       document.getElementById("progressFill").style.width = percentage + "%";
     }
     if (document.getElementById("progressPercentage")) {
-      document.getElementById("progressPercentage").textContent = percentage + "%";
+      document.getElementById("progressPercentage").textContent = `(${percentage}%)`;
     }
     
 

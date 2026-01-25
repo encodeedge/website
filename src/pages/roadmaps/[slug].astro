@@ -209,12 +209,29 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 3px solid #667eea;
+  text-align: center;
+  position: relative;
 }
 
 .topics {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 15px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 20px 0;
+}
+
+/* Central Line */
+.topics::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 4px;
+  background: #e5e7eb;
+  transform: translateX(-50%);
+  border-radius: 2px;
+  z-index: 0;
 }
 
 .topic {
@@ -227,6 +244,68 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   position: relative;
   display: flex;
   flex-direction: column;
+  width: 45%;
+  margin-bottom: 40px;
+  z-index: 1;
+  animation: fadeInUp 0.5s ease forwards;
+  opacity: 0;
+}
+
+/* Alignment Styles */
+.topic[data-alignment="left"] {
+  align-self: flex-start;
+  margin-right: auto;
+}
+
+.topic[data-alignment="right"] {
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+/* Connector Dots */
+.topic::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border: 4px solid #e5e7eb;
+  border-radius: 50%;
+  z-index: 2;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 4px white;
+}
+
+.topic[data-alignment="left"]::before {
+  right: -11.2%; /* Approx distance to center */
+  transform: translateX(50%);
+}
+
+.topic[data-alignment="right"]::before {
+  left: -11.2%;
+  transform: translateX(-50%);
+}
+
+/* Connector Lines */
+.topic::after {
+  content: '';
+  position: absolute;
+  top: 30px;
+  height: 4px;
+  background: #e5e7eb;
+  transition: all 0.3s ease;
+  z-index: 0;
+}
+
+.topic[data-alignment="left"]::after {
+  right: -11.2%;
+  width: 11.2%;
+}
+
+.topic[data-alignment="right"]::after {
+  left: -11.2%;
+  width: 11.2%;
 }
 
 .topic:hover {
@@ -235,10 +314,29 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   border-color: #667eea;
 }
 
+/* Hover & Active States for Connectors */
+.topic:hover::before, .topic.clicked::before {
+  border-color: #667eea;
+  background: #667eea;
+}
+
+.topic:hover::after, .topic.clicked::after {
+  background: #667eea;
+}
+
 .topic.clicked {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border-color: #667eea;
+}
+
+.topic.clicked::before {
+  border-color: #10b981;
+  background: #10b981;
+}
+
+.topic.clicked::after {
+  background: #10b981;
 }
 
 .topic-name {
@@ -370,13 +468,42 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   color: #111827;
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 768px) {
   .header h1 {
     font-size: 2em;
   }
 
-  .topics {
-    grid-template-columns: 1fr;
+  .topics::before {
+    left: 20px;
+  }
+
+  .topic {
+    width: calc(100% - 50px);
+    margin-left: 50px !important;
+    align-self: flex-end !important;
+  }
+
+  .topic::before {
+    left: -30px !important;
+    right: auto !important;
+    transform: translateX(-50%);
+  }
+
+  .topic::after {
+    left: -30px !important;
+    width: 30px !important;
+    right: auto !important;
   }
 }
 </style>
@@ -388,6 +515,15 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
 
   const topics = document.querySelectorAll(".topic");
   const totalTopics = topics.length;
+
+  // Function to update layout alignment (Left/Right) based on visibility
+  function updateLayout() {
+    const visibleTopics = Array.from(topics).filter(t => t.style.display !== 'none');
+    visibleTopics.forEach((topic, index) => {
+      topic.setAttribute('data-alignment', index % 2 === 0 ? 'left' : 'right');
+      topic.style.animationDelay = `${index * 0.1}s`; // Stagger animation
+    });
+  }
 
   if (document.getElementById("totalTopicsDisplay")) {
     document.getElementById("totalTopicsDisplay").textContent = totalTopics;
@@ -426,6 +562,7 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   }
 
   updateProgress();
+  updateLayout(); // Initial layout calculation
 
   topics.forEach((topic, index) => {
     const detailsBtn = topic.querySelector('.details-btn');
@@ -495,6 +632,7 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
           topic.style.display = difficulty === filter ? "block" : "none";
         }
       });
+      updateLayout(); // Recalculate tree structure after filtering
     });
   });
 </script>

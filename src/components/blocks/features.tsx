@@ -1,8 +1,6 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ArrowUpRight } from "lucide-react";
+import { format } from "date-fns";
 
-import { DashedLine } from "../dashed-line";
-
-import { Card, CardContent } from "@/components/ui/card";
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 
@@ -25,109 +23,97 @@ const latestPosts = sortedPosts
 
 export const Features = () => {
   return (
-    <section id="feature-modern-teams" className="pb-28 lg:pb-32">
+    <section id="features" className="py-24 lg:py-32">
       <div className="container">
-        {/* Top dashed line with text */}
-        <div className="relative flex items-center justify-center">
-          <DashedLine className="text-muted-foreground" />
-          <span className="bg-muted text-muted-foreground absolute px-3 font-mono text-lg font-large tracking-wide max-md:hidden">
-            <strong>Featured Posts</ strong>
-          </span>
-        </div>
-
-        {/* Features Card */}
-        <Card className="mt-8 rounded-3xl md:mt-12 lg:mt-20">
-          <CardContent className="flex p-0 max-md:flex-col">
-            {featuredPosts.map((item, i) => (
-              <div key={i} className="flex flex-1 max-md:flex-col">
-                <a
-                  href={`/blog/${item.id}`}
-                  className="flex-1 p-4 pe-0! md:p-6 block hover:bg-muted/30 transition rounded-2xl"
-                  style={{ textDecoration: "none", color: "inherit" }}
-                >
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={item.data.image}
-                      alt={`${item.data.title} interface`}
-                      className="object-cover object-left-top ps-4 pt-2 max-w-[90%]"
-                    />
-                    <div className="from-background absolute inset-0 z-10 bg-linear-to-t via-transparent to-transparent" />
-                  </div>
-                  <div className="group flex items-center justify-between gap-4 pe-4 pt-4 md:pe-6 md:pt-6">
-                    <h3 className="font-display max-w-60 text-2xl leading-tight font-bold tracking-tight">
-                      {item.data.title}
-                    </h3>
-                    <div className="rounded-full border p-2">
-                      <ChevronRight className="size-6 transition-transform group-hover:translate-x-1 lg:size-9" />
-                    </div>
-                  </div>
-                </a>
-                {i < featuredPosts.length - 1 && (
-                  <div className="relative hidden md:block">
-                    <DashedLine orientation="vertical" />
-                  </div>
-                )}
-                {i < featuredPosts.length - 1 && (
-                  <div className="relative block md:hidden">
-                    <DashedLine orientation="horizontal" />
-                  </div>
-                )}
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <div className="relative flex items-center justify-center">
-          <DashedLine className="text-muted-foreground" />
-          <span className="bg-muted text-muted-foreground absolute px-3 font-mono text-lg font-large tracking-wide max-md:hidden">
-            <strong>Latest Posts</ strong>
-          </span>
-        </div>
-
-        {/* Latest Card */}
-        <Card className="mt-8 rounded-3xl md:mt-12 lg:mt-20">
-          <CardContent className="flex p-0 max-md:flex-col">
-            {latestPosts.map((item, i) => (
-              <div key={i} className="flex flex-1 max-md:flex-col">
-                <a
-                  href={`/blog/${item.id}`}
-                  className="flex-1 p-4 pe-0! md:p-6 block hover:bg-muted/30 transition rounded-2xl"
-                  style={{ textDecoration: "none", color: "inherit" }}
-                >
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={item.data.image}
-                      alt={`${item.data.title} interface`}
-                      className="object-cover object-left-top ps-4 pt-2 max-w-[90%]"
-                    />
-                    <div className="from-background absolute inset-0 z-10 bg-linear-to-t via-transparent to-transparent" />
-                  </div>
-                  <div className="group flex items-center justify-between gap-4 pe-4 pt-4 md:pe-6 md:pt-6">
-                    <h3 className="font-display max-w-60 text-2xl leading-tight font-bold tracking-tight">
-                      {item.data.title}
-                    </h3>
-                    <div className="rounded-full border p-2">
-                      <ChevronRight className="size-6 transition-transform group-hover:translate-x-1 lg:size-9" />
-                    </div>
-                  </div>
-                </a>
-                {i < latestPosts.length - 1 && (
-                  <div className="relative hidden md:block">
-                    <DashedLine orientation="vertical" />
-                  </div>
-                )}
-                {i < latestPosts.length - 1 && (
-                  <div className="relative block md:hidden">
-                    <DashedLine orientation="horizontal" />
-                  </div>
-                )}
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-        <br />
-        <br />
         
+        {/* Featured Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+          <div className="space-y-1">
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Featured Insights</h2>
+            <p className="text-muted-foreground text-lg">Deep dives and tutorials hand-picked for you.</p>
+          </div>
+          <a href="/blog" className="group flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary/80 transition-colors">
+            View all posts <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </a>
+        </div>
+
+        {/* Featured Grid */}
+        <div className="grid gap-6 md:grid-cols-3 lg:gap-8">
+          {featuredPosts.map((item, i) => (
+            <a 
+              key={i} 
+              href={`/blog/${item.id}`}
+              className="group relative flex flex-col overflow-hidden rounded-3xl border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary/20"
+            >
+              <div className="aspect-[16/10] overflow-hidden bg-muted">
+                <img
+                  src={item.data.image}
+                  alt={item.data.title}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+              <div className="flex flex-1 flex-col justify-between p-6">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full">Featured</span>
+                    <span>•</span>
+                    <span>{format(item.data.pubDate, "MMM d, yyyy")}</span>
+                  </div>
+                  <h3 className="font-bold text-xl leading-tight group-hover:text-primary transition-colors">
+                    {item.data.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm line-clamp-2">
+                    {item.data.description}
+                  </p>
+                </div>
+                <div className="mt-6 flex items-center text-sm font-semibold text-primary">
+                  Read Article <ChevronRight className="ml-1 size-4 transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        {/* Latest Section Header */}
+        <div className="mt-24 mb-10">
+          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Latest Updates</h2>
+        </div>
+
+        {/* Latest Grid */}
+        <div className="grid gap-6 md:grid-cols-3 lg:gap-8">
+          {latestPosts.map((item, i) => (
+            <a 
+              key={i} 
+              href={`/blog/${item.id}`}
+              className="group relative flex flex-col overflow-hidden rounded-3xl border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary/20"
+            >
+              <div className="aspect-[16/10] overflow-hidden bg-muted">
+                <img
+                  src={item.data.image}
+                  alt={item.data.title}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+              <div className="flex flex-1 flex-col justify-between p-6">
+                <div className="space-y-3">
+                  <div className="text-xs font-medium text-muted-foreground">
+                    {format(item.data.pubDate, "MMM d, yyyy")}
+                  </div>
+                  <h3 className="font-bold text-xl leading-tight group-hover:text-primary transition-colors">
+                    {item.data.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm line-clamp-2">
+                    {item.data.description}
+                  </p>
+                </div>
+                <div className="mt-6 flex items-center text-sm font-semibold text-primary">
+                  Read Article <ChevronRight className="ml-1 size-4 transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+
       </div>
     </section>
   );

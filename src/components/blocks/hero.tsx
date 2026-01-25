@@ -130,16 +130,17 @@ export const Hero = () => {
             <defs>
               {/* Gradient A: Light primary tone */}
               <linearGradient id="gA" x1="0" x2="1">
-                <stop offset="0" stopColor={LIGHT_PRIMARY} />
-                <stop offset="1" stopColor={LIGHTER_PRIMARY} />
+                <stop offset="0" stopColor="#f0f4ff" />
+                <stop offset="1" stopColor="#e0e7ff" />
               </linearGradient>
               {/* Gradient B: Complementary light tone (Slightly warmer off-white) */}
               <linearGradient id="gB" x1="0" x2="1">
-                <stop offset="0" stopColor="#fdfcff" />
-                <stop offset="1" stopColor="#f7faff" />
+                <stop offset="0" stopColor="#ffffff" />
+                <stop offset="1" stopColor="#f8fafc" />
               </linearGradient>
               <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="6" stdDeviation="12" floodColor="#0b0b0b" floodOpacity="0.08" />
+                <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="#000000" floodOpacity="0.06" />
+                <feDropShadow dx="0" dy="10" stdDeviation="15" floodColor="#3533cd" floodOpacity="0.04" />
               </filter>
               
               {/* Branded Arrow Icon (Call to Action) - Uses currentColor */}
@@ -172,7 +173,7 @@ export const Hero = () => {
             </defs>
 
             {/* Background rectangle adjusted to fit the new grid dimensions (1000x420 viewBox) */}
-            <rect x="0" y="0" width="1000" height="420" fill="#fbfbff" rx="18" />
+            <rect x="0" y="0" width="1000" height="420" fill="none" rx="18" />
 
             {/* Card Size: 450x170. */}
 
@@ -180,7 +181,7 @@ export const Hero = () => {
             <a href="/topics" aria-label="Go to Tutorials" className={`group text-[${PRIMARY_COLOR}] hover:text-[${HOVER_COLOR}] transition-colors duration-300`}>
               <g filter="url(#shadow)" transform="translate(90, 30)" 
                  className="transition-transform duration-300 ease-out group-hover:scale-[1.03] group-hover:-translate-y-2 cursor-pointer">
-                <rect width="350" height="140" rx="12" fill="url(#gA)" />
+                <rect width="350" height="140" rx="16" fill="url(#gA)" stroke="#c7d2fe" strokeWidth="1" />
                 <use href="#MonitorIcon" transform="translate(30, 30)" />
                 <text x="65" y="50" fontSize="20" fontWeight="700" fill="#0f172a">Tutorials & Deep Dives</text>
                 
@@ -199,7 +200,7 @@ export const Hero = () => {
             <a href="/blog" aria-label="Read the blog" className={`group text-[${PRIMARY_COLOR}] hover:text-[${HOVER_COLOR}] transition-colors duration-300`}>
               <g filter="url(#shadow)" transform="translate(520, 30)" 
                  className="transition-transform duration-300 ease-out group-hover:scale-[1.03] group-hover:-translate-y-2 cursor-pointer">
-                <rect width="350" height="140" rx="12" fill="url(#gB)" />
+                <rect width="350" height="140" rx="16" fill="url(#gB)" stroke="#e2e8f0" strokeWidth="1" />
                 <use href="#BookIcon" transform="translate(30, 30)" />
                 <text x="65" y="50" fontSize="20" fontWeight="700" fill="#0f172a">Expert Blog Articles</text>
                 
@@ -218,7 +219,7 @@ export const Hero = () => {
             <a href="/notebooks" aria-label="Open notebooks" className={`group text-[${PRIMARY_COLOR}] hover:text-[${HOVER_COLOR}] transition-colors duration-300`}>
               <g filter="url(#shadow)" transform="translate(90, 230)" 
                  className="transition-transform duration-300 ease-out group-hover:scale-[1.03] group-hover:-translate-y-2 cursor-pointer">
-                <rect width="350" height="140" rx="12" fill="#ffffff" stroke={LIGHT_PRIMARY} />
+                <rect width="350" height="140" rx="16" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1" />
                 <use href="#NotebookIcon" transform="translate(30, 30)" />
                 <text x="65" y="50" fontSize="20" fontWeight="700" fill="#0f172a">Interactive Notebooks</text>
                 
@@ -237,7 +238,7 @@ export const Hero = () => {
             <a href="/subscribe" aria-label="Join newsletter" className={`group text-[${PRIMARY_COLOR}] hover:text-[${HOVER_COLOR}] transition-colors duration-300`}>
               <g filter="url(#shadow)" transform="translate(520, 230)" 
                  className="transition-transform duration-300 ease-out group-hover:scale-[1.03] group-hover:-translate-y-2 cursor-pointer">
-                <rect width="350" height="140" rx="12" fill="url(#gA)" stroke={LIGHT_PRIMARY} />
+                <rect width="350" height="140" rx="16" fill="url(#gA)" stroke="#c7d2fe" strokeWidth="1" />
                 <use href="#MailIcon" transform="translate(30, 30)" />
                 <text x="65" y="50" fontSize="20" fontWeight="700" fill="#0f172a">Subscribe</text>
                 

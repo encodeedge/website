@@ -113,6 +113,17 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   </div>
 </div>
 <RoadmapDrawer client:load />
+
+<div id="confirmationModal" class="modal-overlay">
+  <div class="modal-content">
+    <h3>Reset Progress?</h3>
+    <p>Are you sure you want to clear all progress for this roadmap? This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button id="cancelResetBtn" class="modal-btn cancel">Cancel</button>
+      <button id="confirmResetBtn" class="modal-btn confirm">Yes, Reset</button>
+    </div>
+  </div>
+</div>
 </RoadmapLayout>
 
 <style>
@@ -729,6 +740,90 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
     width: calc(100% - 160px);
   }
 }
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal-content {
+  transform: scale(1);
+}
+
+.modal-content h3 {
+  font-size: 1.5rem;
+  color: #1f2937;
+  margin-bottom: 10px;
+}
+
+.modal-content p {
+  color: #6b7280;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.modal-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.modal-btn.cancel {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.modal-btn.cancel:hover {
+  background: #e5e7eb;
+}
+
+.modal-btn.confirm {
+  background: #ef4444;
+  color: white;
+}
+
+.modal-btn.confirm:hover {
+  background: #dc2626;
+}
 </style>
 
 <script define:vars={{ slug: roadmap.id }}>
@@ -789,23 +884,46 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   }
 
   const clearBtn = document.getElementById('clearProgressBtn');
-  if (clearBtn) {
+  const modal = document.getElementById('confirmationModal');
+  const confirmBtn = document.getElementById('confirmResetBtn');
+  const cancelBtn = document.getElementById('cancelResetBtn');
+
+  function closeModal() {
+    if (modal) modal.classList.remove('active');
+  }
+
+  if (clearBtn && modal) {
     clearBtn.addEventListener('click', () => {
-      if(confirm('Are you sure you want to clear all progress for this roadmap?')) {
-        completedTopicsSet.clear();
-        skippedTopicsSet.clear();
-        localStorage.removeItem(`completedTopics_${slug}`);
-        localStorage.removeItem(`skippedTopics_${slug}`);
-        topics.forEach(t => {
-          t.classList.remove('clicked');
-          t.classList.remove('skipped');
-          const btn = t.querySelector('.complete-btn');
-          if(btn) btn.textContent = "Mark Complete";
-          const sBtn = t.querySelector('.skip-btn');
-          if(sBtn) sBtn.textContent = "Skip";
-        });
-        updateProgress();
-      }
+      modal.classList.add('active');
+    });
+  }
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', closeModal);
+  }
+
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+  }
+
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', () => {
+      completedTopicsSet.clear();
+      skippedTopicsSet.clear();
+      localStorage.removeItem(`completedTopics_${slug}`);
+      localStorage.removeItem(`skippedTopics_${slug}`);
+      topics.forEach(t => {
+        t.classList.remove('clicked');
+        t.classList.remove('skipped');
+        const btn = t.querySelector('.complete-btn');
+        if(btn) btn.textContent = "Mark Complete";
+        const sBtn = t.querySelector('.skip-btn');
+        if(sBtn) sBtn.textContent = "Skip";
+      });
+      updateProgress();
+      closeModal();
     });
   }
 

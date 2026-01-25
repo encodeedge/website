@@ -47,7 +47,7 @@ nodes:
         difficulty: intermediate
         optional: false
         links:
-          - title: CS231n: CNNs for Visual Recognition
+          - title: "CS231n: CNNs for Visual Recognition"
             url: https://cs231n.github.io/
       - name: Transfer Learning
         description: Using pre-trained models (ResNet, VGG, EfficientNet) for new tasks.

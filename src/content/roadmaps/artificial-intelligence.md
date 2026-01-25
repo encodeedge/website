@@ -13,7 +13,7 @@ nodes:
         difficulty: beginner
         optional: false
         links:
-          - title: AI: A Modern Approach (Book Site)
+          - title: "AI: A Modern Approach (Book Site)"
             url: http://aima.cs.berkeley.edu/
       - name: Search Algorithms
         description: Solving problems by searching through state spaces.

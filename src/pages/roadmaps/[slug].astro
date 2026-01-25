@@ -89,6 +89,7 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
       <div class="section">
         <h2 class="section-title">{section.title}</h2>
         <div class="topics">
+          <div class="central-line-active"></div>
           {section.topics?.map(topic => (
             <div class={`topic ${topic.optional ? 'optional' : ''}`} data-difficulty={topic.difficulty} data-topic={JSON.stringify(topic)}>
               <div class={`difficulty ${topic.difficulty}`}></div>
@@ -247,6 +248,18 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   z-index: 0;
 }
 
+.central-line-active {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 4px;
+  background: #667eea;
+  transform: translateX(-50%);
+  border-radius: 2px;
+  z-index: 1;
+  transition: height 0.5s ease;
+}
+
 .topic {
   background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
   padding: 15px 20px;
@@ -346,10 +359,13 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
 .topic.clicked::before {
   border-color: #10b981;
   background: #10b981;
+  border-color: #667eea;
+  background: #667eea;
 }
 
 .topic.clicked::after {
   background: #10b981;
+  background: #667eea;
 }
 
 .topic.optional {
@@ -748,6 +764,26 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
     });
   }
 
+  function updateVerticalLines() {
+    document.querySelectorAll('.topics').forEach(section => {
+      const line = section.querySelector('.central-line-active');
+      const sectionTopics = Array.from(section.querySelectorAll('.topic'));
+      const visibleTopics = sectionTopics.filter(t => t.style.display !== 'none');
+      let lastActiveTopic = null;
+
+      visibleTopics.forEach(topic => {
+         if (topic.classList.contains('clicked') || topic.classList.contains('skipped')) {
+           lastActiveTopic = topic;
+         }
+      });
+
+      if (line) {
+         const isLastActive = lastActiveTopic && lastActiveTopic === visibleTopics[visibleTopics.length - 1];
+         line.style.height = isLastActive ? '100%' : (lastActiveTopic ? (lastActiveTopic.offsetTop + 32) + 'px' : '0px');
+      }
+    });
+  }
+
   if (document.getElementById("totalTopicsDisplay")) {
     document.getElementById("totalTopicsDisplay").textContent = totalTopics;
   }
@@ -816,6 +852,7 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
       `skippedTopics_${slug}`,
       JSON.stringify([...skippedTopicsSet])
     );
+    updateVerticalLines();
   }
 
   updateProgress();
@@ -929,6 +966,7 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
         }
       });
       updateLayout(); // Recalculate tree structure after filtering
+      updateVerticalLines();
     });
   });
 </script>

@@ -5,7 +5,7 @@ import { Drawer as DrawerPrimitive } from "vaul"
 
 import { cn } from "@/lib/utils"
 
-function Drawer({
+function VaulDrawer({
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
   return <DrawerPrimitive.Root data-slot="drawer" {...props} />
@@ -122,7 +122,7 @@ function DrawerDescription({
 }
 
 export {
-  Drawer,
+  VaulDrawer as Drawer,
   DrawerPortal,
   DrawerOverlay,
   DrawerTrigger,

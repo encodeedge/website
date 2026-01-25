@@ -1,43 +1,44 @@
 ---
-title: "Python Roadmap"
-description: "A roadmap for learning Python."
-featured: true
+title: "Python Developer"
+description: "A comprehensive roadmap to becoming a Python developer, covering basics to advanced topics."
 nodes:
-  - id: "intro"
-    title: "Introduction to Python"
-    description: "Learn the basics of Python programming."
-    url: "/introduction"
+  - title: "Fundamentals"
+    id: "fundamentals"
+    description: "Core building blocks of Python programming."
     topics:
-      - name: "Hello, World!"
-        description: "Your first Python program."
-        difficulty: "beginner"
       - name: "Variables and Data Types"
-        description: "Learn about different data types in Python."
+        description: "Understand how to store and manipulate data using variables, integers, floats, strings, and booleans."
         difficulty: "beginner"
-      - name: "Operators"
-        description: "Learn about arithmetic and logical operators."
-        difficulty: "intermediate"
-  - id: "data-structures"
-    title: "Data Structures"
-    description: "Learn about lists, tuples, dictionaries, and sets."
-    url: "/data-structures"
-    dependsOn: ["intro"]
+        links:
+          - title: "Python Variables"
+            url: "https://www.w3schools.com/python/python_variables.asp"
+      - name: "Control Flow"
+        description: "Master logic flow with if statements, for loops, and while loops."
+        difficulty: "beginner"
+        references:
+          - title: "Python Control Flow"
+            url: "https://docs.python.org/3/tutorial/controlflow.html"
+  - title: "Data Structures"
+    id: "data-structures"
+    description: "Essential structures for organizing and storing data."
     topics:
-      - name: "Lists"
-        description: "Learn how to use lists."
+      - name: "Lists and Tuples"
+        description: "Learn to work with ordered collections of items."
         difficulty: "beginner"
       - name: "Dictionaries"
-        description: "Learn about key-value pairs."
+        description: "Understand key-value pairs and how to use them efficiently."
         difficulty: "intermediate"
-  - id: "oop"
-    title: "Object-Oriented Programming"
-    description: "Understand classes, objects, and inheritance."
-    url: "/oop"
-    dependsOn: ["data-structures"]
-  - id: "django"
-    title: "Web Development with Django"
-    description: "Build web applications with the Django framework."
-    url: "/django"
-    dependsOn: ["oop"]
-
+  - title: "Advanced Concepts"
+    id: "advanced-concepts"
+    description: "Deep dive into Python's powerful features."
+    topics:
+      - name: "Decorators"
+        description: "Learn how to modify the behavior of functions or classes."
+        difficulty: "advanced"
+        links:
+          - title: "Primer on Decorators"
+            url: "https://realpython.com/primer-on-python-decorators/"
+      - name: "Generators"
+        description: "Understand how to use generators for memory-efficient iteration."
+        difficulty: "advanced"
 ---

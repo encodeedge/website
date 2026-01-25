@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import RoadmapLayout from '@/layouts/RoadmapLayout.astro';
 import type { CollectionEntry } from 'astro:content';
+import { RoadmapDrawer } from '@/components/RoadmapDrawer';
 
 export async function getStaticPaths() {
   const roadmaps = await getCollection('roadmaps');
@@ -76,7 +77,7 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
         <h2 class="section-title">{section.title}</h2>
         <div class="topics">
           {section.topics?.map(topic => (
-            <div class="topic" data-difficulty={topic.difficulty}>
+            <div class="topic" data-difficulty={topic.difficulty} data-topic={JSON.stringify(topic)}>
               <div class={`difficulty ${topic.difficulty}`}></div>
               <div class="topic-name">{topic.name}</div>
               <div class="topic-desc">{topic.description}</div>
@@ -89,6 +90,7 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
 
   </div>
 </div>
+<RoadmapDrawer client:load />
 </RoadmapLayout>
 
 <style>
@@ -333,78 +335,92 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
 </style>
 
 <script define:vars={{ slug: roadmap.id }}>
-let completedTopicsSet = new Set(
-  JSON.parse(localStorage.getItem(`completedTopics_${slug}`) || "[]")
-);
-
-const topics = document.querySelectorAll(".topic");
-const totalTopics = topics.length;
-
-if (document.getElementById("totalTopicsDisplay")) {
-  document.getElementById("totalTopicsDisplay").textContent = totalTopics;
-}
-
-
-completedTopicsSet.forEach((index) => {
-  if (topics[index]) {
-    topics[index].classList.add("clicked");
-  }
-});
-
-function updateProgress() {
-  const completed = completedTopicsSet.size;
-  const percentage = totalTopics > 0 ? Math.round((completed / totalTopics) * 100) : 0;
-
-  if (document.getElementById("completedTopics")) {
-    document.getElementById("completedTopics").textContent = completed;
-  }
-  if (document.getElementById("progressFill")) {
-    document.getElementById("progressFill").style.width = percentage + "%";
-  }
-  if (document.getElementById("progressPercentage")) {
-    document.getElementById("progressPercentage").textContent = percentage + "%";
-  }
-  
-
-  localStorage.setItem(
-    `completedTopics_${slug}`,
-    JSON.stringify([...completedTopicsSet])
+  let completedTopicsSet = new Set(
+    JSON.parse(localStorage.getItem(`completedTopics_${slug}`) || "[]")
   );
-}
 
-updateProgress();
+  const topics = document.querySelectorAll(".topic");
+  const totalTopics = topics.length;
 
-topics.forEach((topic, index) => {
-  topic.addEventListener("click", function () {
-    this.classList.toggle("clicked");
+  if (document.getElementById("totalTopicsDisplay")) {
+    document.getElementById("totalTopicsDisplay").textContent = totalTopics;
+  }
 
-    if (this.classList.contains("clicked")) {
-      completedTopicsSet.add(index);
-    } else {
-      completedTopicsSet.delete(index);
+
+  completedTopicsSet.forEach((index) => {
+    if (topics[index]) {
+      topics[index].classList.add("clicked");
     }
-
-    updateProgress();
   });
-});
 
-const filterButtons = document.querySelectorAll(".filter-btn");
+  function updateProgress() {
+    const completed = completedTopicsSet.size;
+    const percentage = totalTopics > 0 ? Math.round((completed / totalTopics) * 100) : 0;
 
-filterButtons.forEach((button) => {
-  button.addEventListener("click", function () {
-    filterButtons.forEach((btn) => btn.classList.remove("active"));
-    this.classList.add("active");
+    if (document.getElementById("completedTopics")) {
+      document.getElementById("completedTopics").textContent = completed;
+    }
+    if (document.getElementById("progressFill")) {
+      document.getElementById("progressFill").style.width = percentage + "%";
+    }
+    if (document.getElementById("progressPercentage")) {
+      document.getElementById("progressPercentage").textContent = percentage + "%";
+    }
+    
 
-    const filter = this.getAttribute("data-filter");
+    localStorage.setItem(
+      `completedTopics_${slug}`,
+      JSON.stringify([...completedTopicsSet])
+    );
+  }
 
-    topics.forEach((topic) => {
-      if (filter === "all") {
-        topic.style.display = "block";
-      } else {
-        const difficulty = topic.getAttribute("data-difficulty");
-        topic.style.display = difficulty === filter ? "block" : "none";
+  updateProgress();
+
+  topics.forEach((topic, index) => {
+    // Left Click: Open Details Drawer
+    topic.addEventListener("click", function (event) {
+      if (event.target.tagName === 'A') {
+        return;
       }
+      
+      const topicData = JSON.parse(this.dataset.topic);
+
+      window.dispatchEvent(new CustomEvent('roadmap:open-drawer', { detail: topicData }));
+    });
+
+    // Right Click: Toggle Completion Status
+    topic.addEventListener("contextmenu", function (event) {
+      event.preventDefault();
+      
+      this.classList.toggle("clicked");
+
+      if (this.classList.contains("clicked")) {
+        completedTopicsSet.add(index);
+      } else {
+        completedTopicsSet.delete(index);
+      }
+
+      updateProgress();
     });
   });
-});
+
+  const filterButtons = document.querySelectorAll(".filter-btn");
+
+  filterButtons.forEach((button) => {
+    button.addEventListener("click", function () {
+      filterButtons.forEach((btn) => btn.classList.remove("active"));
+      this.classList.add("active");
+
+      const filter = this.getAttribute("data-filter");
+
+      topics.forEach((topic) => {
+        if (filter === "all") {
+          topic.style.display = "block";
+        } else {
+          const difficulty = topic.getAttribute("data-difficulty");
+          topic.style.display = difficulty === filter ? "block" : "none";
+        }
+      });
+    });
+  });
 </script>

@@ -14,7 +14,7 @@ nodes:
           Understand how to store and manipulate data using variables, integers,
           floats, strings, and booleans.
         difficulty: beginner
-        optional: false
+        optional: true
         duration: "45 minutes"
         prerequisites:
           - "Basic computer literacy"
@@ -40,7 +40,7 @@ nodes:
       - name: Control Flow
         description: Master logic flow with if statements, for loops, and while loops.
         difficulty: beginner
-        optional: false
+        optional: true
         links: []
         references:
           - title: Python Control Flow

@@ -59,6 +59,7 @@ const roadmaps = defineCollection({
         name: z.string(),
         description: z.string(),
         difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
+        optional: z.boolean().optional(),
         links: z.array(z.object({
           title: z.string(),
           url: z.string(),

@@ -111,5 +111,56 @@ export default config({
         category: fields.text({ label: 'Category', description: 'Optional grouping/category for the question' }),
       },
     }),
+    roadmaps: collection({
+      label: 'Roadmaps',
+      slugField: 'title',
+      path: 'src/content/roadmaps/*',
+      format: { contentField: 'content' },
+      schema: {
+        title: fields.slug({ name: { label: 'Title' } }),
+        description: fields.text({ label: 'Description', validation: { isRequired: true } }),
+        featured: fields.checkbox({ label: 'Featured', description: 'Highlight this roadmap' }),
+        nodes: fields.array(
+          fields.object({
+            title: fields.text({ label: 'Section Title' }),
+            id: fields.text({ label: 'Section ID' }),
+            description: fields.text({ label: 'Section Description' }),
+            topics: fields.array(
+              fields.object({
+                name: fields.text({ label: 'Topic Name' }),
+                description: fields.text({ label: 'Topic Description' }),
+                difficulty: fields.select({
+                  label: 'Difficulty',
+                  options: [
+                    { label: 'Beginner', value: 'beginner' },
+                    { label: 'Intermediate', value: 'intermediate' },
+                    { label: 'Advanced', value: 'advanced' },
+                  ],
+                  defaultValue: 'beginner',
+                }),
+                optional: fields.checkbox({ label: 'Optional', description: 'Is this topic optional?' }),
+                links: fields.array(
+                  fields.object({
+                    title: fields.text({ label: 'Title' }),
+                    url: fields.text({ label: 'URL' }),
+                  }),
+                  { label: 'Links', itemLabel: props => props.fields.title.value }
+                ),
+                references: fields.array(
+                  fields.object({
+                    title: fields.text({ label: 'Title' }),
+                    url: fields.text({ label: 'URL' }),
+                  }),
+                  { label: 'References', itemLabel: props => props.fields.title.value }
+                ),
+              }),
+              { label: 'Topics', itemLabel: props => props.fields.name.value }
+            ),
+          }),
+          { label: 'Nodes', itemLabel: props => props.fields.title.value }
+        ),
+        content: fields.mdx({ label: 'Content', extension: 'md', description: 'Optional content for the roadmap page' }),
+      },
+    }),
   },
 });

@@ -28,7 +28,10 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
     <h1>{roadmap.data.title}</h1>
     <p>{roadmap.data.description}</p>
         <div class="progress-bar">
-      <div class="progress-text">Your Progress <span id="progressPercentage">0%</span></div>
+      <div class="progress-header">
+        <div class="progress-text">Your Progress <span id="progressPercentage">0%</span></div>
+        <button id="clearProgressBtn" class="clear-btn" title="Reset all progress">Clear History</button>
+      </div>
       <div class="progress">
         <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
       </div>
@@ -81,13 +84,17 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
         <h2 class="section-title">{section.title}</h2>
         <div class="topics">
           {section.topics?.map(topic => (
-            <div class="topic" data-difficulty={topic.difficulty} data-topic={JSON.stringify(topic)}>
+            <div class={`topic ${topic.optional ? 'optional' : ''}`} data-difficulty={topic.difficulty} data-topic={JSON.stringify(topic)}>
               <div class={`difficulty ${topic.difficulty}`}></div>
-              <div class="topic-name">{topic.name}</div>
+              <div class="topic-name">
+                {topic.name}
+                {topic.optional && <span class="optional-badge">Optional</span>}
+              </div>
               <div class="topic-desc">{topic.description}</div>
               <div class="topic-actions">
                 <button class="action-btn details-btn">Details</button>
                 <button class="action-btn complete-btn">Mark Complete</button>
+                {topic.optional && <button class="action-btn skip-btn" title="Skip this optional topic">Skip</button>}
               </div>
             </div>
           ))}
@@ -339,11 +346,64 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   background: #10b981;
 }
 
+.topic.optional {
+  background: #fff7ed !important;
+  background-image: none !important;
+  border: 2px dashed #f97316 !important;
+}
+
+.topic.optional.clicked {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  border-style: solid !important;
+  border-color: #667eea !important;
+}
+
+.topic.optional.clicked .optional-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.topic.skipped {
+  background: #f1f5f9 !important;
+  background-image: none !important;
+  color: #64748b !important;
+  border: 2px solid #cbd5e1 !important;
+  opacity: 0.9;
+}
+
+.topic.skipped .topic-desc {
+  opacity: 0.7;
+}
+
+.topic.skipped::before {
+  border-color: #94a3b8;
+  background: #94a3b8;
+}
+
+.topic.skipped::after {
+  background: #94a3b8;
+}
+
 .topic-name {
   font-weight: 600;
   font-size: 1.05em;
   margin-bottom: 5px;
   padding-right: 20px;
+}
+
+.optional-badge {
+  display: inline-block;
+  background: #fef3c7;
+  color: #d97706;
+  font-size: 0.7em;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+  vertical-align: middle;
+  font-weight: 600;
+  border: 1px solid #f59e0b;
 }
 
 .topic-desc {
@@ -385,11 +445,33 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   text-align: center;
 }
 
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
 .progress-text {
   font-size: 1.1em;
-  margin-bottom: 10px;
   color: #667eea;
   font-weight: 600;
+}
+
+.clear-btn {
+  background: transparent;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clear-btn:hover {
+  background: #ef4444;
+  color: white;
 }
 
 .progress {
@@ -447,6 +529,8 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   margin-top: 15px;
   display: flex;
   gap: 10px;
+  position: relative;
+  z-index: 5;
 }
 
 .action-btn {
@@ -466,6 +550,16 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   background: #f9fafb;
   border-color: #d1d5db;
   color: #111827;
+}
+
+.skip-btn {
+  color: #d97706;
+  border-color: #fcd34d;
+}
+
+.skip-btn:hover {
+  background: #fffbeb;
+  border-color: #f59e0b;
 }
 
 @keyframes fadeInUp {
@@ -509,8 +603,13 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
 </style>
 
 <script define:vars={{ slug: roadmap.id }}>
+  console.log("Roadmap script initialized for:", slug);
+
   let completedTopicsSet = new Set(
     JSON.parse(localStorage.getItem(`completedTopics_${slug}`) || "[]")
+  );
+  let skippedTopicsSet = new Set(
+    JSON.parse(localStorage.getItem(`skippedTopics_${slug}`) || "[]")
   );
 
   const topics = document.querySelectorAll(".topic");
@@ -529,6 +628,26 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
     document.getElementById("totalTopicsDisplay").textContent = totalTopics;
   }
 
+  const clearBtn = document.getElementById('clearProgressBtn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      if(confirm('Are you sure you want to clear all progress for this roadmap?')) {
+        completedTopicsSet.clear();
+        skippedTopicsSet.clear();
+        localStorage.removeItem(`completedTopics_${slug}`);
+        localStorage.removeItem(`skippedTopics_${slug}`);
+        topics.forEach(t => {
+          t.classList.remove('clicked');
+          t.classList.remove('skipped');
+          const btn = t.querySelector('.complete-btn');
+          if(btn) btn.textContent = "Mark Complete";
+          const sBtn = t.querySelector('.skip-btn');
+          if(sBtn) sBtn.textContent = "Skip";
+        });
+        updateProgress();
+      }
+    });
+  }
 
   completedTopicsSet.forEach((index) => {
     if (topics[index]) {
@@ -540,8 +659,18 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
     }
   });
 
+  skippedTopicsSet.forEach((index) => {
+    if (topics[index]) {
+      topics[index].classList.add("skipped");
+      const btn = topics[index].querySelector('.skip-btn');
+      if (btn) {
+        btn.textContent = "Skipped";
+      }
+    }
+  });
+
   function updateProgress() {
-    const completed = completedTopicsSet.size;
+    const completed = completedTopicsSet.size + skippedTopicsSet.size;
     const percentage = totalTopics > 0 ? Math.round((completed / totalTopics) * 100) : 0;
 
     if (document.getElementById("completedTopics")) {
@@ -559,6 +688,10 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
       `completedTopics_${slug}`,
       JSON.stringify([...completedTopicsSet])
     );
+    localStorage.setItem(
+      `skippedTopics_${slug}`,
+      JSON.stringify([...skippedTopicsSet])
+    );
   }
 
   updateProgress();
@@ -567,8 +700,15 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   topics.forEach((topic, index) => {
     const detailsBtn = topic.querySelector('.details-btn');
     const completeBtn = topic.querySelector('.complete-btn');
+    const skipBtn = topic.querySelector('.skip-btn');
 
     const toggleComplete = () => {
+      if (topic.classList.contains('skipped')) {
+        topic.classList.remove('skipped');
+        skippedTopicsSet.delete(index);
+        if (skipBtn) skipBtn.textContent = "Skip";
+      }
+
       topic.classList.toggle("clicked");
 
       if (topic.classList.contains("clicked")) {
@@ -582,13 +722,38 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
       updateProgress();
     };
 
+    const toggleSkip = () => {
+      if (topic.classList.contains('clicked')) {
+        topic.classList.remove('clicked');
+        completedTopicsSet.delete(index);
+        if (completeBtn) completeBtn.textContent = "Mark Complete";
+      }
+
+      topic.classList.toggle("skipped");
+
+      if (topic.classList.contains("skipped")) {
+        skippedTopicsSet.add(index);
+        if (skipBtn) skipBtn.textContent = "Skipped";
+      } else {
+        skippedTopicsSet.delete(index);
+        if (skipBtn) skipBtn.textContent = "Skip";
+      }
+      updateProgress();
+    };
+
     // Left Click: Open Details Drawer
     topic.addEventListener("click", function (event) {
       if (event.target.tagName === 'A' || event.target.closest('.action-btn')) {
         return;
       }
       
-      const topicData = JSON.parse(topic.dataset.topic);
+      let topicData;
+      try {
+        topicData = JSON.parse(topic.dataset.topic);
+      } catch (e) {
+        console.error("Error parsing topic data:", e);
+        return;
+      }
 
       window.dispatchEvent(new CustomEvent('roadmap:open-drawer', { detail: topicData }));
     });
@@ -611,6 +776,13 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
       completeBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         toggleComplete();
+      });
+    }
+
+    if (skipBtn) {
+      skipBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleSkip();
       });
     }
   });

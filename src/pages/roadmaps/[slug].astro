@@ -23,31 +23,39 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
 ---
 
 <RoadmapLayout title={roadmap.data.title} description={roadmap.data.description}>
-<div class="fixed-progress-bar">
-  <div class="fixed-progress-fill" id="progressFill" style="width: 0%;"></div>
+
+<div class="sticky-header">
+  <div class="sticky-content">
+    <div class="sticky-stats">
+      <div class="stat-item">
+        <span class="stat-label">Topics</span>
+        <span class="stat-value" id="totalTopicsDisplay">{totalTopics}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Categories</span>
+        <span class="stat-value">{totalCategories}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Completed</span>
+        <span class="stat-value">
+          <span id="completedTopics">0</span>
+          <span id="progressPercentage" class="percentage-text">(0%)</span>
+        </span>
+      </div>
+    </div>
+    <button id="clearProgressBtn" class="sticky-reset-btn" title="Reset Progress">
+      Reset
+    </button>
+  </div>
+  <div class="sticky-progress-track">
+    <div class="sticky-progress-fill" id="progressFill" style="width: 0%;"></div>
+  </div>
 </div>
+
 <div class="container">
   <div class="header">
     <h1>{roadmap.data.title}</h1>
     <p>{roadmap.data.description}</p>
-    <div class="stats">
-      <div class="stat-box">
-        <div class="stat-number" id="totalTopicsDisplay">{totalTopics}</div>
-        <div class="stat-label">Total Topics</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-number">{totalCategories}</div>
-        <div class="stat-label">Categories</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-number">
-          <span id="completedTopics">0</span>
-          <span id="progressPercentage" class="percentage-text">(0%)</span>
-        </div>
-        <div class="stat-label">Completed</div>
-      </div>
-    </div>
-    <button id="clearProgressBtn" class="clear-btn-small">Reset Progress</button>
   </div>
 
   <div class="roadmap">
@@ -436,45 +444,85 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   background: #8b5cf6;
 }
 
-.fixed-progress-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 5px;
-  background: rgba(229, 231, 235, 0.3);
-  z-index: 9999;
+.sticky-header {
+  position: sticky;
+  top: 80px; /* Adjust based on your Navbar height */
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  border-radius: 16px;
+  margin: 0 auto 40px auto;
+  max-width: 800px;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
-.fixed-progress-fill {
+.sticky-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+}
+
+.sticky-stats {
+  display: flex;
+  gap: 24px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+
+.stat-label {
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.stat-value {
+  font-weight: 700;
+  color: #111827;
+}
+
+.sticky-progress-track {
+  width: 100%;
+  height: 4px;
+  background: #f3f4f6;
+}
+
+.sticky-progress-fill {
   height: 100%;
   background: linear-gradient(90deg, #10b981 0%, #667eea 100%);
   transition: width 0.3s ease;
   width: 0%;
-  box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
 }
 
 .percentage-text {
-  font-size: 0.5em;
+  font-size: 0.9em;
   color: #667eea;
-  vertical-align: middle;
-  margin-left: 5px;
+  margin-left: 4px;
 }
 
-.clear-btn-small {
-  background: transparent;
+.sticky-reset-btn {
+  background: #fee2e2;
   border: none;
-  color: #9ca3af;
-  font-size: 0.9em;
+  color: #ef4444;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 20px;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-top: 10px;
-  text-decoration: underline;
-  text-underline-offset: 4px;
 }
 
-.clear-btn-small:hover {
-  color: #ef4444;
+.sticky-reset-btn:hover {
+  background: #fecaca;
+  color: #dc2626;
 }
 
 .filter-section {

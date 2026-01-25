@@ -8,6 +8,7 @@ import DefaultLayout from '@/layouts/DefaultLayout.astro';
 
 // 1. Fetch all posts
 const allPosts = await getCollection('blog');
+const roadmaps = await getCollection('roadmaps');
 
 // 2. Helper to get specific posts by their IDs
 const getCuratedPosts = (ids: string[]) => {
@@ -28,7 +29,7 @@ const curriculum = [
             {
                 subtitle: "Python for Machine Learning",
                 // YOU CAN NOW ADD HTML LINKS HERE
-                description: "Learn the essential syntax, <a href='/tags/python' class='text-blue-600 hover:underline'>Python structure</a>, and memory management specifically for data science.",
+                description: "Learn the essential syntax, <a href='/topics/python' class='text-blue-600 hover:underline'>Python structure</a>, and memory management specifically for data science.",
                 posts: getCuratedPosts([
                     'python-type-hierarchy',
                     'python-variables-and-memory-references',
@@ -194,6 +195,34 @@ const getColorClasses = (color: string) => {
                     </section>
                 );
             })}
+
+            {/* --- ROADMAPS SECTION --- */}
+            <section class="mb-20">
+                <div class="flex flex-row items-center gap-6 mb-8 border-b border-slate-200 dark:border-slate-800 pb-6">
+                    <div class="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 font-bold text-2xl shadow-sm">
+                        4
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Interactive Roadmaps</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">
+                            Track your progress with our detailed structured learning paths.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 pl-2 md:pl-4">
+                    {roadmaps.filter(r => r.data.featured !== false).map((roadmap) => (
+                        <a href={`/roadmaps/${roadmap.id}`} class="group flex flex-col p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg hover:shadow-md hover:border-indigo-500 dark:hover:border-indigo-500 transition-all duration-200">
+                            <h4 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                                {roadmap.data.title}
+                            </h4>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">
+                                {roadmap.data.description}
+                            </p>
+                        </a>
+                    ))}
+                </div>
+            </section>
 
             {/* --- CTA --- */}
             <div class="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center mt-20">

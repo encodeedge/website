@@ -230,10 +230,10 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
 
 .section-title {
   font-size: 1.8em;
-  color: #667eea;
+  color: #3533cd;
   margin-bottom: 20px;
   padding-bottom: 10px;
-  border-bottom: 3px solid #667eea;
+  border-bottom: 3px solid #3533cd;
   text-align: center;
   position: relative;
 }
@@ -264,7 +264,7 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   top: 0;
   left: 50%;
   width: 4px;
-  background: #667eea;
+  background: #3533cd;
   transform: translateX(-50%);
   border-radius: 2px;
   z-index: 1;
@@ -347,36 +347,36 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
 
 .topic:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-  border-color: #667eea;
+  box-shadow: 0 8px 20px rgba(53, 51, 205, 0.3);
+  border-color: #3533cd;
 }
 
 /* Hover & Active States for Connectors */
 .topic:hover::before, .topic.clicked::before {
-  border-color: #667eea;
-  background: #667eea;
+  border-color: #3533cd;
+  background: #3533cd;
 }
 
 .topic:hover::after, .topic.clicked::after {
-  background: #667eea;
+  background: #3533cd;
 }
 
 .topic.clicked {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3533cd 0%, #1e1b85 100%);
   color: white;
-  border-color: #667eea;
+  border-color: #3533cd;
 }
 
 .topic.clicked::before {
   border-color: #10b981;
   background: #10b981;
-  border-color: #667eea;
-  background: #667eea;
+  border-color: #3533cd;
+  background: #3533cd;
 }
 
 .topic.clicked::after {
   background: #10b981;
-  background: #667eea;
+  background: #3533cd;
 }
 
 .topic.optional {
@@ -386,10 +386,10 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
 }
 
 .topic.optional.clicked {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  background: linear-gradient(135deg, #3533cd 0%, #1e1b85 100%) !important;
   color: white !important;
   border-style: solid !important;
-  border-color: #667eea !important;
+  border-color: #3533cd !important;
 }
 
 .topic.optional.clicked .optional-badge {
@@ -536,13 +536,13 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
   left: 0;
   width: 100%;
   height: 0%;
-  background: linear-gradient(to top, #10b981 0%, #667eea 100%);
+  background: linear-gradient(to top, #10b981 0%, #3533cd 100%);
   transition: height 0.3s ease;
 }
 
 .percentage-text {
   font-size: 0.9em;
-  color: #667eea;
+  color: #3533cd;
   margin-left: 4px;
 }
 
@@ -570,8 +570,8 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
 
 .filter-btn {
   background: white;
-  border: 2px solid #667eea;
-  color: #667eea;
+  border: 2px solid #3533cd;
+  color: #3533cd;
   padding: 8px 20px;
   border-radius: 20px;
   cursor: pointer;
@@ -581,12 +581,12 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
 }
 
 .filter-btn:hover {
-  background: #667eea;
+  background: #3533cd;
   color: white;
 }
 
 .filter-btn.active {
-  background: #667eea;
+  background: #3533cd;
   color: white;
 }
 
@@ -858,12 +858,12 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
 :global(.dark) .topic-desc { color: #d1d5db; }
 
 :global(.dark) .topic.clicked {
-  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
-  border-color: #6366f1;
+  background: linear-gradient(135deg, #3533cd 0%, #1e1b85 100%);
+  border-color: #3533cd;
 }
 :global(.dark) .topic.clicked::before {
-  border-color: #6366f1;
-  background: #6366f1;
+  border-color: #3533cd;
+  background: #3533cd;
 }
 
 :global(.dark) .topic.optional {

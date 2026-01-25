@@ -824,6 +824,106 @@ const totalCategories = roadmap.data.nodes?.length ?? 0;
 .modal-btn.confirm:hover {
   background: #dc2626;
 }
+
+/* Dark Mode Overrides */
+:global(.dark) .header h1 { color: #f3f4f6; }
+:global(.dark) .header p { color: #9ca3af; }
+:global(.dark) .stat-box { background: #1f2937; color: #f3f4f6; border-color: #374151; }
+:global(.dark) .stat-label { color: #9ca3af; }
+:global(.dark) .stat-value { color: #f3f4f6; }
+
+:global(.dark) .roadmap { background: #1f2937; border-color: #374151; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); }
+:global(.dark) .legend-item { color: #d1d5db; }
+:global(.dark) .legend-box { border-color: #4b5563; }
+
+:global(.dark) .section-title { color: #818cf8; border-bottom-color: #818cf8; }
+:global(.dark) .topics::before { background: #374151; }
+:global(.dark) .central-line-active { background: #818cf8; }
+
+:global(.dark) .topic {
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+:global(.dark) .topic::before {
+  background: #1f2937;
+  border-color: #4b5563;
+  box-shadow: 0 0 0 4px #1f2937;
+}
+:global(.dark) .topic::after { background: #4b5563; }
+:global(.dark) .topic:hover {
+  border-color: #818cf8;
+  box-shadow: 0 8px 20px rgba(129, 140, 248, 0.2);
+}
+:global(.dark) .topic-desc { color: #d1d5db; }
+
+:global(.dark) .topic.clicked {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+  border-color: #6366f1;
+}
+:global(.dark) .topic.clicked::before {
+  border-color: #6366f1;
+  background: #6366f1;
+}
+
+:global(.dark) .topic.optional {
+  background: #422006 !important;
+  border-color: #ea580c !important;
+}
+:global(.dark) .topic.optional .topic-name { color: #fdba74; }
+:global(.dark) .topic.optional .optional-badge {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+  border-color: #d97706;
+}
+
+:global(.dark) .topic.skipped {
+  background: #334155 !important;
+  border-color: #475569 !important;
+  color: #94a3b8 !important;
+}
+:global(.dark) .topic.skipped::before {
+  border-color: #475569;
+  background: #475569;
+}
+:global(.dark) .topic.skipped::after { background: #475569; }
+
+:global(.dark) .sticky-header {
+  background: rgba(31, 41, 55, 0.95);
+  border-color: rgba(75, 85, 99, 0.5);
+}
+:global(.dark) .stat-item { color: #d1d5db; }
+:global(.dark) .sticky-progress-track { background: #374151; }
+:global(.dark) .sticky-reset-btn { background: #7f1d1d; color: #fca5a5; }
+:global(.dark) .sticky-reset-btn:hover { background: #991b1b; }
+
+:global(.dark) .filter-btn {
+  background: #1f2937;
+  border-color: #818cf8;
+  color: #818cf8;
+}
+:global(.dark) .filter-btn:hover,
+:global(.dark) .filter-btn.active {
+  background: #818cf8;
+  color: white;
+}
+
+:global(.dark) .instructions {
+  background: #374151;
+  color: #d1d5db;
+  border-color: #4b5563;
+}
+
+:global(.dark) .action-btn { background: #374151; border-color: #4b5563; color: #d1d5db; }
+:global(.dark) .action-btn:hover { background: #4b5563; color: #f3f4f6; }
+:global(.dark) .skip-btn { color: #fbbf24; border-color: #d97706; }
+:global(.dark) .skip-btn:hover { background: #451a03; }
+
+:global(.dark) .modal-content { background: #1f2937; }
+:global(.dark) .modal-content h3 { color: #f3f4f6; }
+:global(.dark) .modal-content p { color: #9ca3af; }
+:global(.dark) .modal-btn.cancel { background: #374151; color: #d1d5db; }
+:global(.dark) .modal-btn.cancel:hover { background: #4b5563; }
 </style>
 
 <script define:vars={{ slug: roadmap.id }}>

@@ -20,6 +20,10 @@ faqs:
       Type hierarchy defines what data types are supported by Python, i.e
       different type of data that can be created and stored in Python.
     category: General
+  - question: how to see variables data type python?
+    answer: >-
+      We can make use of Python's built in type() function or more specifically
+      isinstance().
 references: []
 ---
 # Type Hierarchy

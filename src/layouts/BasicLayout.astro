@@ -29,7 +29,9 @@ const { title, description } = Astro.props;
                         analytics_storage: "granted",
                     });
 
-                    gtag("config", "G-5WBXFR71Y5");
+                    gtag("config", "G-5WBXFR71Y5", {
+                        debug_mode: true,
+                    });
                 </script>
                 <script is:inline>
                     function updateConsents() {

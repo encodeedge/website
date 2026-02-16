@@ -2,15 +2,15 @@
 import { getCollection } from 'astro:content';
 import { format } from 'date-fns';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
-const title = "Tuples";
-const description = "Tuples — Notebook export";
+const title = "Understanding Python Tuples";
+const description = "A comprehensive guide to Python tuples: understanding immutability, indexing, slicing, unpacking, and how they differ from lists.";
 // Static metadata used to render the hero + featured sidebar (edit as needed)
 const authorName = 'Atul Jha';
 const authorImage = '/assets/introduction-to-machine-learning/authorImage.png';
 const pubDate = '2025-01-01';
-const tags = ['notebook'];
-const topics = ['sample-topic', 'example-topic'];
-const image = '';
+const tags = ['tuples', 'notebook'];
+const topics = ['python'];
+const image = '/assets/notebooks/Tuples/Cover_Image.png';
 const featured = [{ id: 'linear-regression', data: { title: 'Linear Regression', pubDate: '2025-01-01', image: '' } }];
 
 const _allPosts = await getCollection('blog');

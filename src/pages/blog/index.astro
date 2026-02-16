@@ -6,7 +6,37 @@ import { BlogPosts } from '@/components/blocks/blog-posts';
 import { SITE_TITLE, SITE_DESCRIPTION } from '@/consts';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 
-const posts = (await getCollection('blog')).sort(
+const blogPosts = await getCollection('blog');
+
+const notebooks = await Astro.glob<any>('/src/pages/notebooks/*.astro');
+const notebookPosts = notebooks
+  .filter((n) => !n.file.endsWith('index.astro'))
+  .map((n) => {
+    const frontmatter = n.frontmatter || n;
+    const url = n.url || '';
+    const slug = url.split('/').filter(Boolean).pop() || '';
+    const title = frontmatter.title || slug
+      .split('-')
+      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+
+    return {
+      id: slug,
+      slug: `../notebooks/${slug}`,
+      collection: 'notebooks',
+      data: {
+        title,
+        description: frontmatter.description || '',
+        pubDate: frontmatter.pubDate ? new Date(frontmatter.pubDate) : new Date(0),
+        image: frontmatter.image,
+        tags: frontmatter.tags || [],
+        authorName: frontmatter.authorName || 'Encode Edge',
+        authorImage: frontmatter.authorImage,
+      }
+    };
+  });
+
+const posts = [...blogPosts, ...notebookPosts].sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
@@ -30,4 +60,3 @@ const posts = (await getCollection('blog')).sort(
 		</div>
 	</Background>
 </DefaultLayout>
-

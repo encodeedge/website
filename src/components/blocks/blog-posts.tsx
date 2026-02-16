@@ -25,7 +25,7 @@ const BlogPosts = ({ posts }: { posts: any[] }) => {
                 className="rounded-xl border hover:shadow-lg transition-shadow duration-300 block"
               >
                 <a 
-                  href={`/blog/${post.id}/`}
+                  href={post.collection === 'notebooks' ? `/notebooks/${post.id}` : `/blog/${post.id}/`}
                   className="block" // The link covers the main card area
                 >
                   <div className="p-2">
@@ -98,7 +98,7 @@ const BlogPosts = ({ posts }: { posts: any[] }) => {
                             </AvatarFallback>
                         </Avatar>
                         <span className="text-sm font-medium">
-                          <a href={`/authors/${slugify(post.data.authorName)}`} className="font-semibold">{post.data.authorName}</a>
+                          <a href={`/authors/${slugify(post.data.authorName || '')}`} className="font-semibold">{post.data.authorName}</a>
                         </span>
                         </div>
                         <Badge variant="secondary" className="h-fit">

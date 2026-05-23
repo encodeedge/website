@@ -11,6 +11,6 @@ shortDescription: >-
   minimum and focus on how things actually work. By the end, you won't just
   understand the hype; you’ll have coded your own models.
 level: advanced
-status: draft
+status: published
 chapters: []
 ---

@@ -1,0 +1,75 @@
+---
+import { getCollection, render } from 'astro:content';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+
+export async function getStaticPaths() {
+  const instructors = await getCollection('instructors');
+  return instructors.map(instructor => ({
+    params: { slug: instructor.id },
+    props: { instructor },
+  }));
+}
+
+const { instructor } = Astro.props;
+const { Content } = await render(instructor);
+
+const allCourses = await getCollection('courses');
+const instructorCourses = allCourses.filter(course => course.data.instructor === instructor.id && course.data.status === 'published');
+---
+
+<DefaultLayout title={instructor.data.name} description={`Profile of ${instructor.data.name}`}>
+  <div class="container mx-auto px-4 pt-28 pb-12 lg:pt-44 lg:pb-32 max-w-4xl">
+    <div class="flex flex-col md:flex-row gap-8 items-start mb-12">
+      {instructor.data.avatar && (
+        <div class="w-48 h-48 flex-shrink-0">
+          <img 
+            src={instructor.data.avatar} 
+            alt={instructor.data.name} 
+            class="w-full h-full object-cover rounded-full shadow-lg"
+          />
+        </div>
+      )}
+      
+      <div>
+        <h1 class="text-4xl font-bold mb-4">{instructor.data.name}</h1>
+        
+        {instructor.data.socialLinks && instructor.data.socialLinks.length > 0 && (
+          <div class="flex flex-wrap gap-3 mb-6">
+            {instructor.data.socialLinks.map(link => (
+              <a href={link.url} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+                {link.platform}
+              </a>
+            ))}
+          </div>
+        )}
+
+        <div class="prose prose-lg dark:prose-invert max-w-none">
+          <Content />
+        </div>
+      </div>
+    </div>
+
+    {instructorCourses.length > 0 && (
+      <div>
+        <h2 class="text-3xl font-bold mb-6 border-b pb-2">Courses by {instructor.data.name}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {instructorCourses.map(course => (
+            <Card>
+              <CardHeader>
+                <Badge variant="outline" className="w-fit mb-2 capitalize">{course.data.level}</Badge>
+                <CardTitle>
+                  <a href={`/courses/${course.id}`} class="hover:underline">{course.data.title}</a>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p class="text-muted-foreground line-clamp-2">{course.data.shortDescription}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</DefaultLayout>

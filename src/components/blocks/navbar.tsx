@@ -38,6 +38,7 @@ const ITEMS = [
     href: "#topics",
     dropdownStructure: TOPIC_DROPDOWN_STRUCTURE,
   },
+  { label: "Courses", href: "/courses" },
   { label: "Blog", href: "/blog" },
   { label: "About", href: "/about" },
   { label: "FAQ", href: "/faq" },
@@ -79,13 +80,13 @@ export const Navbar = () => {
   return (
     <section
       className={cn(
-        "bg-background/70 fixed left-1/2 z-50 w-[min(90%,700px)] -translate-x-1/2 rounded-4xl border backdrop-blur-md transition-all duration-300",
+        "bg-background/70 fixed left-1/2 z-50 w-[min(95%,900px)] -translate-x-1/2 rounded-4xl border backdrop-blur-md transition-all duration-300",
         // hide with a negative translate-y so it slides up smoothly
         isHidden ? "-translate-y-28 opacity-0 pointer-events-none" : "translate-y-0 opacity-100",
         "top-5 lg:top-12",
       )}
     >
-      <div className="flex items-center justify-between px-6 py-3">
+      <div className="flex items-center justify-between gap-4 px-6 py-3">
         <a href="/" className="flex shrink-0 items-center gap-2">
           <img
             src="/logos/logo.png"

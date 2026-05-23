@@ -1,0 +1,55 @@
+---
+import { getCollection, render } from 'astro:content';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { Badge } from '@/components/ui/badge';
+import { CourseNavigation } from '@/components/ui/course-navigation';
+import { getCoursesMap } from '@/utils/course-map';
+
+export async function getStaticPaths() {
+  const lessons = await getCollection('lessons');
+  return lessons.map(lesson => ({
+    params: { slug: lesson.id },
+    props: { lesson },
+  }));
+}
+
+const { lesson } = Astro.props;
+const { Content } = await render(lesson);
+
+const coursesMap = await getCoursesMap();
+---
+
+<DefaultLayout title={lesson.data.title} description={lesson.data.description || lesson.data.title}>
+  <div class="container mx-auto px-4 pt-28 pb-12 lg:pt-44 lg:pb-32 max-w-4xl">
+    
+    <CourseNavigation coursesMap={coursesMap} currentItemId={lesson.id} itemType="lesson" mode="top" client:load />
+
+    <div class="mb-8 mt-6">
+      <div class="flex items-center gap-4 mb-4">
+        <Badge variant="outline" className="uppercase">{lesson.data.lessonType}</Badge>
+        {lesson.data.duration && <span class="text-sm text-muted-foreground">{lesson.data.duration} mins</span>}
+      </div>
+      <h1 class="text-3xl md:text-5xl font-bold mb-4">{lesson.data.title}</h1>
+      {lesson.data.description && <p class="text-xl text-muted-foreground">{lesson.data.description}</p>}
+    </div>
+
+    {lesson.data.lessonType === 'video' && lesson.data.videoUrl && (
+      <div class="aspect-video w-full mb-12 rounded-xl overflow-hidden bg-black">
+        <iframe 
+          src={lesson.data.videoUrl} 
+          class="w-full h-full" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen
+        ></iframe>
+      </div>
+    )}
+
+    <div class="prose prose-lg dark:prose-invert max-w-none mb-12">
+      <Content />
+    </div>
+
+    <CourseNavigation coursesMap={coursesMap} currentItemId={lesson.id} itemType="lesson" mode="bottom" client:load />
+    
+  </div>
+</DefaultLayout>

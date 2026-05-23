@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+
+const assignments = await getCollection('assignments');
+---
+
+<DefaultLayout title="Assignments" description="Explore all available assignments">
+  <div class="container mx-auto px-4 pt-28 pb-12 lg:pt-44 lg:pb-32 max-w-4xl">
+    <div class="mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">All Assignments</h1>
+      <p class="text-xl text-muted-foreground">Apply what you've learned with hands-on assignments.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {assignments.map(assignment => (
+        <Card className="hover:border-primary transition-colors h-full flex flex-col">
+          <CardHeader>
+            <CardTitle>
+              <a href={`/assignments/${assignment.id}`} class="hover:underline">
+                {assignment.data.title}
+              </a>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex-1">
+            {assignment.data.description && (
+              <p class="text-muted-foreground line-clamp-3">{assignment.data.description}</p>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  </div>
+</DefaultLayout>

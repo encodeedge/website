@@ -7,6 +7,15 @@ export default config({
     kind: 'github',
     repo: 'encodeedge/website',
   },
+  ui: {
+    brand: { name: 'EncodeEdge' },
+    navigation: {
+      'Content': ['blogs', 'faqs', 'roadmaps'],
+      'LMS Core': ['courses', 'batches', 'instructors'],
+      'LMS Material': ['lessons', 'quizzes', 'assignments'],
+      'LMS Administration': ['certificates']
+    }
+  },
 
   collections: {
     blogs: collection({
@@ -172,6 +181,222 @@ export default config({
         ),
         content: fields.mdx({ label: 'Content', extension: 'md', description: 'Optional content for the roadmap page' }),
       },
+    }),
+    
+    // --- LMS Core ---
+    courses: collection({
+      label: 'Courses',
+      slugField: 'title',
+      path: 'src/content/courses/*',
+      format: { contentField: 'about' },
+      schema: {
+        title: fields.slug({ name: { label: 'Title' } }),
+        shortDescription: fields.text({ label: 'Short Description', multiline: true }),
+        coverImage: fields.image({
+          label: 'Cover Image',
+          publicPath: '/assets/courses/',
+          directory: '/public/assets/courses/',
+        }),
+        instructor: fields.relationship({
+          label: 'Instructor',
+          collection: 'instructors',
+        }),
+        level: fields.select({
+          label: 'Level',
+          options: [
+            { label: 'Beginner', value: 'beginner' },
+            { label: 'Intermediate', value: 'intermediate' },
+            { label: 'Advanced', value: 'advanced' },
+          ],
+          defaultValue: 'beginner'
+        }),
+        status: fields.select({
+          label: 'Status',
+          options: [
+            { label: 'Draft', value: 'draft' },
+            { label: 'Published', value: 'published' },
+            { label: 'Archived', value: 'archived' },
+          ],
+          defaultValue: 'draft'
+        }),
+        chapters: fields.array(
+          fields.object({
+            title: fields.text({ label: 'Chapter Title' }),
+            description: fields.text({ label: 'Chapter Description' }),
+            items: fields.blocks(
+              {
+                lesson: {
+                  label: 'Lesson',
+                  schema: fields.object({
+                    lessonRef: fields.relationship({ label: 'Select Lesson', collection: 'lessons' })
+                  })
+                },
+                quiz: {
+                  label: 'Quiz',
+                  schema: fields.object({
+                    quizRef: fields.relationship({ label: 'Select Quiz', collection: 'quizzes' })
+                  })
+                },
+                assignment: {
+                  label: 'Assignment',
+                  schema: fields.object({
+                    assignmentRef: fields.relationship({ label: 'Select Assignment', collection: 'assignments' })
+                  })
+                }
+              },
+              { label: 'Curriculum Items' }
+            ),
+          }),
+          { label: 'Chapters', itemLabel: props => props.fields.title.value }
+        ),
+        about: fields.mdx({ label: 'About this Course', extension: 'md' }),
+      }
+    }),
+    batches: collection({
+      label: 'Batches',
+      slugField: 'title',
+      path: 'src/content/batches/*',
+      format: { contentField: 'content' },
+      schema: {
+        title: fields.slug({ name: { label: 'Batch Title' } }),
+        course: fields.relationship({ label: 'Course', collection: 'courses' }),
+        startDate: fields.date({ label: 'Start Date' }),
+        endDate: fields.date({ label: 'End Date' }),
+        capacity: fields.number({ label: 'Capacity' }),
+        price: fields.number({ label: 'Price (Optional)' }),
+        status: fields.select({
+           label: 'Status',
+           options: [
+            { label: 'Upcoming', value: 'upcoming' },
+            { label: 'Ongoing', value: 'ongoing' },
+            { label: 'Completed', value: 'completed' }
+           ],
+           defaultValue: 'upcoming'
+        }),
+        content: fields.mdx({ label: 'Batch Information (Optional)', extension: 'md' }),
+      }
+    }),
+    instructors: collection({
+      label: 'Instructors',
+      slugField: 'name',
+      path: 'src/content/instructors/*',
+      format: { contentField: 'bio' },
+      schema: {
+        name: fields.slug({ name: { label: 'Name' } }),
+        avatar: fields.image({
+          label: 'Avatar',
+          publicPath: '/assets/instructors/',
+          directory: '/public/assets/instructors/',
+        }),
+        socialLinks: fields.array(
+          fields.object({
+            platform: fields.text({ label: 'Platform' }),
+            url: fields.text({ label: 'URL' }),
+          }),
+          { label: 'Social Links', itemLabel: props => props.fields.platform.value }
+        ),
+        bio: fields.mdx({ label: 'Bio', extension: 'md' }),
+      }
+    }),
+
+    // --- LMS Material ---
+    lessons: collection({
+      label: 'Lessons',
+      slugField: 'title',
+      path: 'src/content/lessons/*',
+      format: { contentField: 'content' },
+      schema: {
+        title: fields.slug({ name: { label: 'Title' } }),
+        description: fields.text({ label: 'Description', multiline: true }),
+        lessonType: fields.select({
+          label: 'Lesson Type',
+          options: [
+            { label: 'Video', value: 'video' },
+            { label: 'Article', value: 'article' },
+          ],
+          defaultValue: 'video'
+        }),
+        videoUrl: fields.text({ label: 'Video URL', description: 'YouTube or Vimeo embed URL' }),
+        duration: fields.number({ label: 'Duration (in minutes)' }),
+        content: fields.mdx({ label: 'Content', extension: 'md' }),
+      }
+    }),
+    quizzes: collection({
+      label: 'Quizzes',
+      slugField: 'title',
+      path: 'src/content/quizzes/*',
+      schema: {
+        title: fields.slug({ name: { label: 'Title' } }),
+        description: fields.text({ label: 'Description', multiline: true }),
+        questions: fields.array(
+          fields.object({
+            question: fields.text({ label: 'Question', multiline: true, validation: { isRequired: true } }),
+            type: fields.select({
+              label: 'Question Type',
+              options: [
+                { label: 'Multiple Choice (MCQ)', value: 'mcq' },
+                { label: 'Multiple Select (MSQ)', value: 'msq' },
+                { label: 'Numeric Answer (Decimals)', value: 'answer' },
+              ],
+              defaultValue: 'mcq',
+            }),
+            options: fields.array(
+              fields.text({ label: 'Option' }),
+              { label: 'Options (Leave empty for Numeric Answer)', itemLabel: props => props.value }
+            ),
+            correctAnswer: fields.number({ label: 'Correct Answer Index (0-based) for MCQ' }),
+            correctAnswers: fields.array(
+              fields.number({ label: 'Correct Answer Index' }),
+              { label: 'Correct Answer Indices (0-based) for MSQ' }
+            ),
+            numericAnswer: fields.number({ label: 'Correct Numeric Answer' }),
+            explanation: fields.text({ label: 'Explanation', multiline: true }),
+          }),
+          { label: 'Questions', itemLabel: props => props.fields.question.value }
+        ),
+      }
+    }),
+    assignments: collection({
+      label: 'Assignments',
+      slugField: 'title',
+      path: 'src/content/assignments/*',
+      format: { contentField: 'instructions' },
+      schema: {
+        title: fields.slug({ name: { label: 'Title' } }),
+        description: fields.text({ label: 'Description', multiline: true }),
+        rubric: fields.array(
+          fields.object({
+            criteria: fields.text({ label: 'Criteria', validation: { isRequired: true } }),
+            maxPoints: fields.number({ label: 'Max Points', validation: { isRequired: true } }),
+          }),
+          { label: 'Grading Rubric', itemLabel: props => `${props.fields.criteria.value} (${props.fields.maxPoints.value} pts)` }
+        ),
+        resources: fields.array(
+          fields.object({
+            title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+            url: fields.text({ label: 'URL / Path', validation: { isRequired: true } }),
+          }),
+          { label: 'Downloadable Resources', itemLabel: props => props.fields.title.value }
+        ),
+        instructions: fields.mdx({ label: 'Detailed Instructions', extension: 'md' }),
+      }
+    }),
+
+    // --- LMS Administration ---
+    certificates: collection({
+      label: 'Certificates',
+      slugField: 'title',
+      path: 'src/content/certificates/*',
+      schema: {
+        title: fields.slug({ name: { label: 'Template Name' } }),
+        description: fields.text({ label: 'Description', multiline: true }),
+        course: fields.relationship({ label: 'Associated Course', collection: 'courses' }),
+        templateImage: fields.image({
+          label: 'Background Template Image',
+          publicPath: '/assets/certificates/',
+          directory: '/public/assets/certificates/',
+        }),
+      }
     }),
   },
 });

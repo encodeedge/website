@@ -1,0 +1,72 @@
+---
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { getCollection } from 'astro:content';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+
+const allBatches = await getCollection('batches');
+const allCourses = await getCollection('courses');
+
+// Helper to get course data
+const getCourseData = (courseId) => allCourses.find(c => c.id === courseId);
+---
+
+<DefaultLayout title="Live Batches" description="Join our upcoming live batches and cohorts.">
+  <div class="container mx-auto px-4 pt-28 pb-12 lg:pt-44 lg:pb-32">
+    <div class="mb-12">
+      <h1 class="text-4xl font-bold mb-4">Live Batches & Cohorts</h1>
+      <p class="text-xl text-muted-foreground">Join a cohort-based learning experience with live sessions and community support.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+      {allBatches.length > 0 ? allBatches.map(batch => {
+        const course = batch.data.course ? getCourseData(batch.data.course) : null;
+        
+        return (
+          <Card className="flex flex-col h-full">
+            <CardHeader>
+              <div class="flex justify-between items-center mb-2">
+                <Badge variant={batch.data.status === 'upcoming' ? 'default' : 'secondary'} className="capitalize">
+                  {batch.data.status}
+                </Badge>
+                {batch.data.price ? <span class="font-bold">${batch.data.price}</span> : <span class="font-bold">Free</span>}
+              </div>
+              <CardTitle className="text-2xl">{batch.data.title}</CardTitle>
+              {course && <CardDescription>Course: {course.data.title}</CardDescription>}
+            </CardHeader>
+            <CardContent className="flex-grow">
+              <div class="space-y-4">
+                <div class="flex justify-between border-b pb-2">
+                  <span class="text-muted-foreground">Start Date</span>
+                  <span class="font-medium">{batch.data.startDate ? new Date(batch.data.startDate).toLocaleDateString() : 'TBD'}</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                  <span class="text-muted-foreground">End Date</span>
+                  <span class="font-medium">{batch.data.endDate ? new Date(batch.data.endDate).toLocaleDateString() : 'TBD'}</span>
+                </div>
+                {batch.data.capacity && (
+                  <div class="flex justify-between border-b pb-2">
+                    <span class="text-muted-foreground">Capacity</span>
+                    <span class="font-medium">{batch.data.capacity} seats</span>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+            <CardFooter>
+              {batch.data.status === 'upcoming' ? (
+                <a href={`/contact?subject=Enrollment%20for%20${encodeURIComponent(batch.data.title)}`} class="block w-full">
+                  <Button className="w-full">Enroll Now</Button>
+                </a>
+              ) : (
+                <Button className="w-full" disabled>Closed</Button>
+              )}
+            </CardFooter>
+          </Card>
+        );
+      }) : (
+        <p class="text-muted-foreground">No batches are currently scheduled. Please check back later.</p>
+      )}
+    </div>
+  </div>
+</DefaultLayout>

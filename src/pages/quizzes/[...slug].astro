@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { Badge } from '@/components/ui/badge';
+import { InteractiveQuiz } from '@/components/ui/interactive-quiz';
+import { CourseNavigation } from '@/components/ui/course-navigation';
+import { getCoursesMap } from '@/utils/course-map';
+
+export async function getStaticPaths() {
+  const quizzes = await getCollection('quizzes');
+  return quizzes.map(quiz => ({
+    params: { slug: quiz.id },
+    props: { quiz },
+  }));
+}
+
+const { quiz } = Astro.props;
+const coursesMap = await getCoursesMap();
+---
+
+<DefaultLayout title={quiz.data.title} description={quiz.data.description || quiz.data.title}>
+  <div class="container mx-auto px-4 pt-28 pb-12 lg:pt-44 lg:pb-32 max-w-4xl">
+    <CourseNavigation coursesMap={coursesMap} currentItemId={quiz.id} itemType="quiz" mode="top" client:load />
+
+    <div class="mb-8 mt-6">
+      <div class="flex items-center gap-4 mb-4">
+        <Badge variant="outline" className="uppercase bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">Quiz</Badge>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-bold mb-4">{quiz.data.title}</h1>
+      {quiz.data.description && <p class="text-xl text-muted-foreground">{quiz.data.description}</p>}
+    </div>
+
+    {quiz.data.questions && (
+      <InteractiveQuiz questions={quiz.data.questions} client:load />
+    )}
+
+    <CourseNavigation coursesMap={coursesMap} currentItemId={quiz.id} itemType="quiz" mode="bottom" client:load />
+  </div>
+</DefaultLayout>

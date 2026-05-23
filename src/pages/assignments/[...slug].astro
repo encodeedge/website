@@ -1,0 +1,91 @@
+---
+import { getCollection, render } from 'astro:content';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { CourseNavigation } from '@/components/ui/course-navigation';
+import { getCoursesMap } from '@/utils/course-map';
+
+export async function getStaticPaths() {
+  const assignments = await getCollection('assignments');
+  return assignments.map(assignment => ({
+    params: { slug: assignment.id },
+    props: { assignment },
+  }));
+}
+
+const { assignment } = Astro.props;
+const { Content } = await render(assignment);
+const coursesMap = await getCoursesMap();
+---
+
+<DefaultLayout title={assignment.data.title} description={assignment.data.description || assignment.data.title}>
+  <div class="container mx-auto px-4 pt-28 pb-12 lg:pt-44 lg:pb-32 max-w-4xl">
+    <CourseNavigation coursesMap={coursesMap} currentItemId={assignment.id} itemType="assignment" mode="top" client:load />
+
+    <div class="mb-8 mt-6">
+      <div class="flex items-center gap-4 mb-4">
+        <Badge variant="outline" className="uppercase bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">Assignment</Badge>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-bold mb-4">{assignment.data.title}</h1>
+      {assignment.data.description && <p class="text-xl text-muted-foreground">{assignment.data.description}</p>}
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      <div class="md:col-span-2">
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Instructions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="prose prose-lg dark:prose-invert max-w-none">
+              <Content />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div class="md:col-span-1 space-y-6">
+        {assignment.data.rubric && assignment.data.rubric.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Grading Rubric</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul class="space-y-4">
+                {assignment.data.rubric.map((item) => (
+                  <li class="flex justify-between items-start pb-2 border-b last:border-0 last:pb-0">
+                    <span class="text-sm">{item.criteria}</span>
+                    <span class="font-medium shrink-0 ml-4">{item.maxPoints} pts</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
+
+        {assignment.data.resources && assignment.data.resources.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Resources</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul class="space-y-3">
+                {assignment.data.resources.map((resource) => (
+                  <li>
+                    <a href={resource.url} target="_blank" rel="noopener noreferrer" class="flex items-center text-primary hover:underline">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                      {resource.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </div>
+
+    <CourseNavigation coursesMap={coursesMap} currentItemId={assignment.id} itemType="assignment" mode="bottom" client:load />
+  </div>
+</DefaultLayout>

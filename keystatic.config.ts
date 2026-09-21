@@ -124,10 +124,12 @@ export const mdxComponents = {
 };
 
 export default config({
-  storage: {
-    kind: 'github',
-    repo: 'encodeedge/website',
-  },
+  storage: (process.env.NODE_ENV === 'development' || process.env.KEYSTATIC_LOCAL)
+    ? { kind: 'local' }
+    : {
+        kind: 'github',
+        repo: 'encodeedge/website',
+      },
   ui: {
     brand: { name: 'EncodeEdge' },
     navigation: {
@@ -177,13 +179,13 @@ export default config({
           label: 'Blog Post Image',
           description: 'Enter an online URL or upload a local image.',
           publicPath: '/assets/',
-          directory: '/public/assets/',
+          directory: 'public/assets/',
         }),
         authorImage: fields.image({ 
           label: 'Author Image',
           description: 'Enter an online URL or upload a local author avatar.',
           publicPath: '/assets/',
-          directory: '/public/assets/',
+          directory: 'public/assets/',
         }),
         authorName: fields.text({ label: 'Author Name', validation: { isRequired: true } }),
         faqs: fields.array(
@@ -207,13 +209,17 @@ export default config({
               { label: 'Book', value: 'book' },
               { label: 'Link', value: 'link' },
               { label: 'Course', value: 'course' },
+              { label: 'Documentation', value: 'docs' },
+              { label: 'Documentation (Long)', value: 'documentation' },
+              { label: 'Research Paper', value: 'paper' },
+              { label: 'Article', value: 'article' },
             ], defaultValue: 'link' }),
             affiliate: fields.text({ label: 'Affiliate ID', description: 'Optional affiliate id or tracking code' }),
             image: fields.image({
               label: 'Image',
               description: 'Optional thumbnail or cover image for the reference',
               publicPath: '/assets/',
-              directory: '/public/assets/',
+              directory: 'public/assets/',
             }),
           }),
           {
@@ -228,7 +234,7 @@ export default config({
           components: mdxComponents,
           options: {
             image: {
-              directory: '/public/assets/',
+              directory: 'public/assets/',
               publicPath: '/assets/',
             },
           },
@@ -449,7 +455,7 @@ export default config({
         }),
         videoUrl: fields.text({ label: 'Video URL', description: 'YouTube or Vimeo embed URL' }),
         duration: fields.number({ label: 'Duration (in minutes)' }),
-        content: fields.mdx({ label: 'Content', extension: 'mdx', components: mdxComponents }),
+        content: fields.mdx({ label: 'Content', extension: 'md', components: mdxComponents }),
       }
     }),
     quizzes: collection({

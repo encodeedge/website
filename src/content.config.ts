@@ -96,7 +96,8 @@ const lessons = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
-    lessonType: z.enum(['video', 'article', 'quiz']).default('video'),
+    lessonType: z.enum(['video', 'article', 'lab', 'quiz']).default('video'),
+    interactiveLab: z.enum(['none', 'memory-explorer', 'neural-playground', 'gradient-descent', 'code-sandbox']).optional(),
     videoUrl: z.string().optional(),
     duration: z.number().optional(),
   }),

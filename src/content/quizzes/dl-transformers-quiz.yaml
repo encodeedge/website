@@ -1,0 +1,26 @@
+title: Transformers & Self-Attention Architecture
+description: Test your mastery of Query-Key-Value projections and multi-head attention
+  mechanics.
+questions:
+- question: In Scaled Dot-Product Attention, why are dot products scaled by 1/sqrt(d_k)?
+  type: mcq
+  options:
+  - To counteract large values pushing the softmax function into regions with tiny
+    gradients
+  - To ensure that the output tensor is strictly orthogonal
+  - To reduce memory usage on CUDA device allocations
+  - To convert logits into boolean masks
+  correctAnswer: 0
+  explanation: For large projection dimensions, the variance of dot products grows
+    as d_k, which pushes softmax into saturated areas with near-zero gradients.
+- question: What enables Transformers to process all tokens in a prompt in parallel
+    during training, unlike RNNs?
+  type: mcq
+  options:
+  - Self-attention operates across all token pairs simultaneously as matrix multiplications
+  - Transformers do not use matrix multiplication
+  - Hidden state is passed sequentially from left to right
+  - Transformers discard word order entirely
+  correctAnswer: 0
+  explanation: Because each layer attends across the entire sequence via matrix operations
+    without sequential recurrent loops, training is completely parallelized.

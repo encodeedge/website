@@ -1,0 +1,191 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="100%" height="100%">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="pyBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F0F17" />
+      <stop offset="50%" stop-color="#161522" />
+      <stop offset="100%" stop-color="#0A0A10" />
+    </linearGradient>
+
+    <linearGradient id="amberGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+
+    <linearGradient id="pyCyanGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="pyGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="softGlowPy" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="15" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- Grid Pattern -->
+    <pattern id="pyHexGrid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M 24,0 L 48,14 L 48,42 L 24,56 L 0,42 L 0,14 Z" fill="none" stroke="#2D2B42" stroke-width="0.75" opacity="0.3" />
+    </pattern>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="100%" height="100%" fill="url(#pyBgGrad)" />
+  <rect width="100%" height="100%" fill="url(#pyHexGrid)" />
+
+  <!-- Ambient Light Fields -->
+  <circle cx="280" cy="300" r="220" fill="#D97706" opacity="0.14" filter="url(#softGlowPy)" />
+  <circle cx="850" cy="320" r="240" fill="#0284C7" opacity="0.14" filter="url(#softGlowPy)" />
+
+  <!-- Technical Framing -->
+  <rect x="80" y="60" width="1040" height="555" rx="12" fill="none" stroke="#F59E0B" stroke-width="0.8" stroke-dasharray="6,6" opacity="0.25" />
+
+  <!-- 1. LEFT: Execution Call Stack (PyFrameObject LIFO) -->
+  <g transform="translate(130, 140)">
+    <rect x="0" y="0" width="260" height="360" rx="12" fill="#181826" stroke="#F59E0B" stroke-width="1.5" />
+    
+    <!-- Header Bar -->
+    <rect x="0" y="0" width="260" height="42" rx="12" fill="#252438" />
+    <text x="20" y="26" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700" fill="#FBBF24">CALL STACK (PyFrameObject)</text>
+
+    <!-- Frame 3 (Top - Active) -->
+    <g transform="translate(16, 56)">
+      <rect x="0" y="0" width="228" height="80" rx="8" fill="#2A243D" stroke="#F59E0B" stroke-width="2" filter="url(#pyGlow)" />
+      <text x="14" y="24" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700" fill="#FDE68A">frame: compute_tensor()</text>
+      <text x="14" y="44" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="#94A3B8">f_locals: {x: ptr_0x1, y: ptr_0x2}</text>
+      <text x="14" y="64" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="#38BDF8">f_lasti: 42 (LOAD_FAST)</text>
+    </g>
+
+    <!-- Frame 2 -->
+    <g transform="translate(16, 150)">
+      <rect x="0" y="0" width="228" height="74" rx="8" fill="#1D1D2C" stroke="#78350F" stroke-width="1" />
+      <text x="14" y="24" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="600" fill="#D97706">frame: train_epoch()</text>
+      <text x="14" y="44" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="#64748B">f_locals: {model: ptr_0x7}</text>
+      <text x="14" y="62" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="#64748B">f_lasti: 18 (CALL_FUNCTION)</text>
+    </g>
+
+    <!-- Frame 1 (Bottom - Module Level) -->
+    <g transform="translate(16, 238)">
+      <rect x="0" y="0" width="228" height="66" rx="8" fill="#151520" stroke="#451A03" stroke-width="1" />
+      <text x="14" y="24" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="600" fill="#B45309">frame: &lt;module&gt; main.py</text>
+      <text x="14" y="44" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="#64748B">__name__ == '__main__'</text>
+    </g>
+  </g>
+
+  <!-- 2. CENTER: Dynamic Memory Pointer Buses (Connecting Stack locals to CPython Heap Objects) -->
+  <g stroke="#38BDF8" stroke-width="2" fill="none" opacity="0.85">
+    <!-- Pointer 1 from compute_tensor to PyObject A -->
+    <path d="M 374,210 C 450,210 460,180 520,180" stroke-dasharray="6,4" />
+    <polygon points="518,176 528,180 518,184" fill="#38BDF8" />
+
+    <!-- Pointer 2 from compute_tensor to PyObject B -->
+    <path d="M 374,235 C 450,235 460,310 520,310" stroke-dasharray="6,4" stroke="#F59E0B" />
+    <polygon points="518,306 528,310 518,314" fill="#F59E0B" />
+
+    <!-- Pointer 3 from train_epoch to PyObject C -->
+    <path d="M 374,320 C 440,320 460,420 520,420" stroke-dasharray="6,4" stroke="#A855F7" />
+    <polygon points="518,416 528,420 518,424" fill="#A855F7" />
+  </g>
+
+  <!-- 3. CENTER-RIGHT: CPython Heap Object Graph (PyObject Internals) -->
+  <g transform="translate(530, 130)">
+    <!-- Heap Memory Boundary Label -->
+    <rect x="0" y="0" width="360" height="380" rx="12" fill="#13141F" stroke="#38BDF8" stroke-width="1.5" />
+    <rect x="0" y="0" width="360" height="38" rx="12" fill="#1E2338" />
+    <text x="20" y="24" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700" fill="#38BDF8">HEAP: CPYTHON OBJECT GRAPH</text>
+
+    <!-- PyObject 1: Float Tensor -->
+    <g transform="translate(18, 52)">
+      <rect x="0" y="0" width="324" height="88" rx="8" fill="#18233C" stroke="#38BDF8" stroke-width="2" filter="url(#pyGlow)" />
+      <!-- Header Fields -->
+      <rect x="10" y="10" width="95" height="24" rx="4" fill="#0C4A6E" />
+      <text x="57" y="26" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#38BDF8" text-anchor="middle">ob_refcnt = 3</text>
+
+      <rect x="115" y="10" width="105" height="24" rx="4" fill="#1E3A8A" />
+      <text x="167" y="26" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#93C5FD" text-anchor="middle">ob_type = &amp;float</text>
+
+      <rect x="230" y="10" width="84" height="24" rx="4" fill="#0284C7" fill-opacity="0.3" />
+      <text x="272" y="26" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#E0F2FE" text-anchor="middle">0x7F9B01</text>
+
+      <text x="14" y="62" font-family="'JetBrains Mono', monospace" font-size="11" fill="#FFFFFF">ob_fval: 3.141592653589793</text>
+    </g>
+
+    <!-- PyObject 2: Interned Small Int -->
+    <g transform="translate(18, 155)">
+      <rect x="0" y="0" width="324" height="84" rx="8" fill="#2A1E14" stroke="#F59E0B" stroke-width="1.5" />
+      <rect x="10" y="10" width="95" height="24" rx="4" fill="#78350F" />
+      <text x="57" y="26" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#FDE68A" text-anchor="middle">ob_refcnt = 12</text>
+
+      <rect x="115" y="10" width="105" height="24" rx="4" fill="#78350F" />
+      <text x="167" y="26" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#FDE68A" text-anchor="middle">ob_type = &amp;int</text>
+
+      <text x="14" y="60" font-family="'JetBrains Mono', monospace" font-size="11" fill="#FDE68A">small_int_cache[-5..256]: 42</text>
+    </g>
+
+    <!-- PyObject 3: PyListObject (Dynamic Array of Pointers) -->
+    <g transform="translate(18, 252)">
+      <rect x="0" y="0" width="324" height="106" rx="8" fill="#22152B" stroke="#A855F7" stroke-width="1.5" />
+      <text x="14" y="24" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700" fill="#E9D5FF">PyListObject: ob_item**</text>
+      
+      <!-- Array Slots -->
+      <g transform="translate(14, 38)">
+        <rect x="0" y="0" width="68" height="42" rx="4" fill="#3B184E" stroke="#A855F7" stroke-width="1" />
+        <text x="34" y="20" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E9D5FF" text-anchor="middle">[0]</text>
+        <text x="34" y="34" font-family="'JetBrains Mono', monospace" font-size="8" fill="#C084FC" text-anchor="middle">ptr_0x1</text>
+
+        <rect x="74" y="0" width="68" height="42" rx="4" fill="#3B184E" stroke="#A855F7" stroke-width="1" />
+        <text x="108" y="20" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E9D5FF" text-anchor="middle">[1]</text>
+        <text x="108" y="34" font-family="'JetBrains Mono', monospace" font-size="8" fill="#C084FC" text-anchor="middle">ptr_0x2</text>
+
+        <rect x="148" y="0" width="68" height="42" rx="4" fill="#3B184E" stroke="#A855F7" stroke-width="1" />
+        <text x="182" y="20" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E9D5FF" text-anchor="middle">[2]</text>
+        <text x="182" y="34" font-family="'JetBrains Mono', monospace" font-size="8" fill="#C084FC" text-anchor="middle">ptr_0x3</text>
+
+        <rect x="222" y="0" width="68" height="42" rx="4" fill="#241031" stroke="#6B21A8" stroke-width="1" stroke-dasharray="3,3" />
+        <text x="256" y="26" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="#7E22CE" text-anchor="middle">allocated</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- 4. FAR-RIGHT: Global Interpreter Lock (GIL) Concurrency Pipeline -->
+  <g transform="translate(930, 160)">
+    <rect x="0" y="0" width="170" height="320" rx="12" fill="#14141E" stroke="#F59E0B" stroke-width="1.5" />
+    <rect x="0" y="0" width="170" height="36" rx="12" fill="#291F12" />
+    <text x="85" y="23" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700" fill="#FBBF24" text-anchor="middle">GIL SCHEDULER</text>
+
+    <!-- Thread 1: Running -->
+    <g transform="translate(14, 55)">
+      <rect x="0" y="0" width="142" height="65" rx="8" fill="#242111" stroke="#F59E0B" stroke-width="2" filter="url(#pyGlow)" />
+      <circle cx="20" cy="20" r="5" fill="#10B981" />
+      <text x="32" y="24" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#FDE68A">THREAD A</text>
+      <text x="14" y="48" font-family="'JetBrains Mono', monospace" font-size="9" fill="#34D399">LOCKED: RUNNING</text>
+    </g>
+
+    <!-- Thread 2: Suspended / Waiting -->
+    <g transform="translate(14, 135)">
+      <rect x="0" y="0" width="142" height="65" rx="8" fill="#1A1822" stroke="#475569" stroke-width="1" />
+      <circle cx="20" cy="20" r="5" fill="#EF4444" />
+      <text x="32" y="24" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#94A3B8">THREAD B</text>
+      <text x="14" y="48" font-family="'JetBrains Mono', monospace" font-size="9" fill="#EF4444">WAITING ON GIL</text>
+    </g>
+
+    <!-- Thread 3: IO Releasing -->
+    <g transform="translate(14, 215)">
+      <rect x="0" y="0" width="142" height="65" rx="8" fill="#141E26" stroke="#0284C7" stroke-width="1.5" />
+      <circle cx="20" cy="20" r="5" fill="#38BDF8" />
+      <text x="32" y="24" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#BAE6FD">THREAD C</text>
+      <text x="14" y="48" font-family="'JetBrains Mono', monospace" font-size="9" fill="#38BDF8">C-EXT RELEASE</text>
+    </g>
+  </g>
+
+  <!-- Telemetry Bar -->
+  <g transform="translate(140, 580)" font-family="'JetBrains Mono', monospace" font-size="11" fill="#FBBF24" opacity="0.6">
+    <text x="0" y="0">CPYTHON_VERSION: 3.13_FREE_THREADED</text>
+    <text x="340" y="0">GC_GENERATIONS: [G0=250, G1=14, G2=2]</text>
+    <text x="700" y="0">BYTECODE: SPECIALIZED_ADAPTIVE</text>
+  </g>
+</svg>

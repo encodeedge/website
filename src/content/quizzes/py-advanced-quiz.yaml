@@ -1,0 +1,26 @@
+title: Python Internals & Memory Architecture
+description: Checkpoint test covering refcounts, closures, descriptors, and generators.
+questions:
+- question: What is the primary benefit of declaring `__slots__` in a custom Python
+    class?
+  type: mcq
+  options:
+  - Eliminates the per-instance `__dict__` overhead, saving memory for millions of
+    instances
+  - Prevents subclasses from inheriting methods
+  - Automatically compiles Python bytecode into C machine code
+  - Makes all instance attributes strictly immutable
+  correctAnswer: 0
+  explanation: '`__slots__` tells Python to allocate fixed descriptor references in
+    a C array rather than maintaining an unrestricted dict for every instance.'
+- question: Which method in the Descriptor Protocol is called when accessing an attribute
+    on an instance?
+  type: mcq
+  options:
+  - __get__(self, instance, owner)
+  - __set__(self, instance, value)
+  - __getattr__(self, name)
+  - __access__(self, obj)
+  correctAnswer: 0
+  explanation: The descriptor protocol specifies `__get__(self, instance, owner)`
+    for reading attribute values.

@@ -1,0 +1,25 @@
+title: Evaluation Metrics & Optimization Checkpoint
+description: Assess your intuition on MSE, RMSE, MAE, R-squared, and Gradient Descent.
+questions:
+- question: Why is Mean Absolute Error (MAE) more robust to large outliers than Mean
+    Squared Error (MSE)?
+  type: mcq
+  options:
+  - MAE penalizes errors linearly rather than quadratically
+  - MAE ignores all negative residuals
+  - MSE divides the error by total features instead of samples
+  - MAE is an unweighted derivative
+  correctAnswer: 0
+  explanation: Squaring the error in MSE disproportionately magnifies large outlier
+    residuals, whereas MAE scales proportionally.
+- question: What is indicated when a model achieves 0.0 MSE on training data but very
+    high MSE on test data?
+  type: mcq
+  options:
+  - Severe Overfitting (High Variance)
+  - Severe Underfitting (High Bias)
+  - Optimal Generalization
+  - Data Leakage from the test set
+  correctAnswer: 0
+  explanation: Memorizing training data while failing on unseen test samples is the
+    hallmark of overfitting / high variance.

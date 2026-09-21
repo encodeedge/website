@@ -6,4 +6,6 @@ export { NewsletterCTA } from "./NewsletterCTA";
 export { StatCard } from "./StatCard";
 export { CodeSnippet } from "./CodeSnippet";
 export { ReferenceCard } from "./ReferenceCard";
+export { InteractiveLab } from "./InteractiveLab";
+export { CodeSandbox } from "./CodeSandbox";
 

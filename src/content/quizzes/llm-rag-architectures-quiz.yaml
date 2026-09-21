@@ -1,0 +1,28 @@
+title: Retrieval Augmented Generation & Embeddings Checkpoint
+description: Verify your understanding of vector similarity, chunking strategies,
+  and hybrid retrieval.
+questions:
+- question: What is the primary advantage of Hybrid Search (combining Dense Vector
+    Search with Sparse BM25)?
+  type: mcq
+  options:
+  - It captures both conceptual semantics (vector) and exact keyword/part-number matches
+    (sparse)
+  - It reduces vector database disk size by half
+  - It eliminates the need for token embeddings
+  - It speeds up LLM generation latency
+  correctAnswer: 0
+  explanation: Dense vectors capture general semantics but often struggle with precise
+    product codes, acronyms, and names where keyword search (BM25) excels.
+- question: What is the purpose of re-ranking retrieved documents before passing them
+    into an LLM context?
+  type: mcq
+  options:
+  - To apply cross-encoder models that accurately score relevance for top-K candidates
+  - To translate the retrieved documents to another language
+  - To generate summary embeddings for the query
+  - To delete duplicate documents from the database
+  correctAnswer: 0
+  explanation: Cross-encoder re-rankers analyze query and chunk together with full
+    cross-attention, providing higher precision relevance scores than fast vector
+    search alone.

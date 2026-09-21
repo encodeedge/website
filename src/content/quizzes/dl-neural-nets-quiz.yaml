@@ -1,0 +1,40 @@
+title: Neural Networks & Backpropagation Checkpoint
+description: Verify your understanding of computation graphs, activation functions,
+  and gradient updates.
+questions:
+- question: What is the primary function of the activation function in a deep neural
+    network?
+  type: mcq
+  options:
+  - To introduce non-linearity so the network can approximate non-linear functions
+  - To normalize the input vectors to standard normal distribution
+  - To speed up GPU matrix multiplications during the forward pass
+  - To prevent integer overflow in float64 arrays
+  correctAnswer: 0
+  explanation: Without non-linear activation functions, stacking multiple linear layers
+    results in just a single composite linear transformation (W2 * W1 * x = W_eff
+    * x).
+- question: Which of the following activation functions suffers from the vanishing
+    gradient problem when inputs are very large positive or negative numbers?
+  type: mcq
+  options:
+  - Sigmoid
+  - ReLU (Rectified Linear Unit)
+  - Leaky ReLU
+  - ELU
+  correctAnswer: 0
+  explanation: Sigmoid saturates near 0 and 1, where its derivative approaches 0,
+    causing gradients to vanish when backpropagating through deep layers.
+- question: Which techniques help prevent vanishing gradients in deep architectures?
+  type: msq
+  options:
+  - Residual skip connections (ResNet)
+  - Batch Normalization / Layer Normalization
+  - Using ReLU or GELU activations
+  - Increasing the learning rate to 10.0
+  correctAnswers:
+  - 0
+  - 1
+  - 2
+  explanation: Residual connections, normalization layers, and non-saturating activations
+    all directly combat vanishing gradients.

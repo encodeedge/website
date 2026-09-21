@@ -2,7 +2,10 @@
 import { getCollection, render } from 'astro:content';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { CourseNavigation } from '@/components/ui/course-navigation';
+import { LessonCurriculumDrawer } from '@/components/ui/lesson-curriculum-drawer';
+import { AssignmentSubmissionCard } from '@/components/ui/assignment-submission-card';
 import { getCoursesMap } from '@/utils/course-map';
+import { Briefcase, CheckCircle2, Download, ExternalLink, Code } from 'lucide-react';
 
 export async function getStaticPaths() {
   const assignments = await getCollection('assignments');
@@ -15,75 +18,135 @@ export async function getStaticPaths() {
 const { assignment } = Astro.props;
 const { Content } = await render(assignment);
 const coursesMap = await getCoursesMap();
+
+const rubric = assignment.data.rubric || [];
+const totalPoints = rubric.reduce((sum, item) => sum + item.maxPoints, 0);
 ---
 
-<DefaultLayout title={`${assignment.data.title} | Assignment`} description={assignment.data.description || assignment.data.title}>
-  <div class="max-w-5xl mx-auto px-4 py-12 md:py-16">
-    <CourseNavigation coursesMap={coursesMap} currentItemId={assignment.id} itemType="assignment" mode="top" client:load />
+<DefaultLayout 
+  title={`${assignment.data.title} | Capstone Project`} 
+  description={assignment.data.description || assignment.data.title}
+>
+  <div class="max-w-6xl mx-auto px-4 py-8 md:py-16 space-y-8">
+    
+    <!-- Top Bar Navigation -->
+    <div class="space-y-4">
+      <CourseNavigation coursesMap={coursesMap} currentItemId={assignment.id} itemType="assignment" mode="top" client:load />
 
-    <div class="mb-8 mt-6">
-      <div class="flex items-center gap-4 mb-3">
-        <span class="woords_tag_small">Assignment</span>
+      <div class="flex items-center justify-between border-b border-border/60 pb-4 flex-wrap gap-3">
+        <LessonCurriculumDrawer 
+          coursesMap={coursesMap} 
+          currentItemId={assignment.id} 
+          itemType="assignment" 
+          client:load 
+        />
+
+        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+          Capstone Project ({totalPoints} Pts)
+        </span>
       </div>
-      <h1 class="font-display font-bold text-3xl md:text-5xl tracking-tight text-foreground mb-3 leading-tight">
+    </div>
+
+    <!-- Assignment Header -->
+    <div class="space-y-4 pt-2">
+      <div class="flex items-center gap-3">
+        <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+          Hands-on Project
+        </span>
+        <span class="text-xs font-semibold text-muted-foreground">
+          Self-paced verification
+        </span>
+      </div>
+
+      <h1 class="font-display font-bold text-3xl sm:text-4xl md:text-5xl tracking-tight text-foreground leading-[1.2]">
         {assignment.data.title}
       </h1>
+
       {assignment.data.description && (
-        <p class="text-base sm:text-lg text-muted-foreground max-w-3xl leading-relaxed">
+        <p class="text-base sm:text-lg text-muted-foreground font-body leading-relaxed max-w-3xl">
           {assignment.data.description}
         </p>
       )}
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-      <div class="lg:col-span-2">
-        <div class="rounded-2xl border border-black-200 dark:border-black-800 bg-card p-6 md:p-8 shadow-sm">
-          <h2 class="font-display font-bold text-xl text-foreground mb-4 pb-2 border-b border-border">
-            Instructions
+    <!-- Two-Column Layout: Instructions vs Submission & Rubric -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+      
+      <!-- Instructions Column (2/3) -->
+      <div class="lg:col-span-2 space-y-6">
+        <div class="rounded-3xl border border-border/80 bg-card p-6 md:p-8 shadow-sm space-y-6">
+          <h2 class="font-display font-bold text-xl text-foreground pb-3 border-b border-border/60 flex items-center gap-2">
+            <Code class="w-5 h-5 text-primary" />
+            <span>Project Specifications &amp; Requirements</span>
           </h2>
-          <div class="prose prose-lg dark:prose-invert max-w-none font-body">
+          
+          <div class="prose prose-lg dark:prose-invert max-w-none font-body leading-relaxed">
             <Content />
           </div>
         </div>
       </div>
 
-      <div class="lg:col-span-1 space-y-6">
-        {assignment.data.rubric && assignment.data.rubric.length > 0 && (
-          <div class="rounded-2xl border border-black-200 dark:border-black-800 bg-card p-6 shadow-sm">
-            <h3 class="font-display font-bold text-lg text-foreground mb-4 pb-2 border-b border-border">
-              Grading Rubric
+      <!-- Right Column (1/3): Submission Simulator & Rubric -->
+      <div class="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
+        
+        <!-- Interactive Submission Simulator Card -->
+        <AssignmentSubmissionCard 
+          assignmentId={assignment.id} 
+          totalPoints={totalPoints} 
+          client:load 
+        />
+
+        <!-- Grading Rubric Card -->
+        {rubric.length > 0 && (
+          <div class="rounded-2xl border border-border/80 bg-card p-6 shadow-sm space-y-4">
+            <h3 class="font-display font-bold text-base text-foreground pb-2 border-b border-border/60">
+              Evaluation Rubric
             </h3>
             <ul class="space-y-3">
-              {assignment.data.rubric.map((item) => (
-                <li class="flex justify-between items-start pb-2 border-b border-border/50 last:border-0 last:pb-0 text-xs">
-                  <span class="text-muted-foreground">{item.criteria}</span>
-                  <span class="font-semibold text-foreground shrink-0 ml-3">{item.maxPoints} pts</span>
+              {rubric.map((item) => (
+                <li class="flex justify-between items-start pb-2.5 border-b border-border/40 last:border-0 last:pb-0 text-xs">
+                  <span class="text-muted-foreground leading-relaxed pr-2">{item.criteria}</span>
+                  <span class="font-bold text-foreground shrink-0 ml-auto bg-muted px-2 py-0.5 rounded">
+                    {item.maxPoints} pts
+                  </span>
                 </li>
               ))}
             </ul>
           </div>
         )}
 
+        <!-- Resources & Starter Code -->
         {assignment.data.resources && assignment.data.resources.length > 0 && (
-          <div class="rounded-2xl border border-black-200 dark:border-black-800 bg-card p-6 shadow-sm">
-            <h3 class="font-display font-bold text-lg text-foreground mb-4 pb-2 border-b border-border">
-              Resources & Starter Code
+          <div class="rounded-2xl border border-border/80 bg-card p-6 shadow-sm space-y-3">
+            <h3 class="font-display font-bold text-base text-foreground pb-2 border-b border-border/60">
+              Starter Materials &amp; Links
             </h3>
             <ul class="space-y-2.5 text-xs">
               {assignment.data.resources.map((resource) => (
                 <li>
-                  <a href={resource.url} target="_blank" rel="noopener noreferrer" class="flex items-center text-foreground hover:underline font-medium gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    <span>{resource.title}</span>
+                  <a 
+                    href={resource.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    class="flex items-center text-primary hover:underline font-medium gap-2 group"
+                  >
+                    <ExternalLink class="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />
+                    <span class="truncate">{resource.title}</span>
                   </a>
                 </li>
               ))}
             </ul>
           </div>
         )}
+
       </div>
+
     </div>
 
-    <CourseNavigation coursesMap={coursesMap} currentItemId={assignment.id} itemType="assignment" mode="bottom" client:load />
+    <!-- Bottom Navigation -->
+    <div class="pt-8 border-t border-border/60">
+      <CourseNavigation coursesMap={coursesMap} currentItemId={assignment.id} itemType="assignment" mode="bottom" client:load />
+    </div>
+
   </div>
 </DefaultLayout>

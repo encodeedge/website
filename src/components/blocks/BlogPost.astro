@@ -4,6 +4,7 @@ import { slugify } from "@/utils/slugs";
 import FAQs from "@/components/blocks/faqs";
 import References from "@/components/blocks/references";
 import { TOPIC_METADATA } from "@/lib/topics";
+import { CodeSandboxRunner } from "@/components/interactive/CodeSandboxRunner";
 
 interface Props {
   post: any;
@@ -325,6 +326,15 @@ const postId = post.id;
         {/* Article Prose Content */}
         <div id="article-content" class="prose dark:prose-invert max-w-none font-body text-base sm:text-lg leading-relaxed">
           <slot />
+        </div>
+
+        {/* Interactive Post Code Sandbox (Matched directly to article topic) */}
+        <div class="mt-14 not-prose print:hidden">
+          <CodeSandboxRunner 
+            contentId={post.id} 
+            titleOverride={`Interactive Code Lab: ${title}`}
+            client:load 
+          />
         </div>
 
         {/* Interactive Reactions Bar */}

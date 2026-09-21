@@ -1,10 +1,18 @@
 ---
 import { getCollection, render } from 'astro:content';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
-import { Badge } from '@/components/ui/badge';
 import { CourseNavigation } from '@/components/ui/course-navigation';
+import { LessonCurriculumDrawer } from '@/components/ui/lesson-curriculum-drawer';
+import { LessonCompletionToggle } from '@/components/ui/lesson-completion-toggle';
+import { LearnerNotesDrawer } from '@/components/interactive/LearnerNotesDrawer';
+import { CourseFlashcardsDrawer } from '@/components/interactive/CourseFlashcardsDrawer';
+import { CodeSandboxRunner } from '@/components/interactive/CodeSandboxRunner';
+import { NeuralPlayground } from '@/components/interactive/NeuralPlayground';
+import { GradientDescentLab } from '@/components/interactive/GradientDescentLab';
+import { MemoryExplorer } from '@/components/interactive/MemoryExplorer';
 import { getCoursesMap } from '@/utils/course-map';
-import { Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard } from '@/components/mdx';
+import { Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox } from '@/components/mdx';
+import { Clock, PlayCircle, FileText, CheckCircle2, FlaskConical } from 'lucide-react';
 
 export async function getStaticPaths() {
   const lessons = await getCollection('lessons');
@@ -20,23 +28,71 @@ const { Content } = await render(lesson);
 const coursesMap = await getCoursesMap();
 ---
 
-<DefaultLayout title={lesson.data.title} description={lesson.data.description || lesson.data.title}>
-  <div class="py-12 md:py-16 container mx-auto px-4 max-w-4xl">
+<DefaultLayout title={`${lesson.data.title} | EncodeEdge Lesson`} description={lesson.data.description || lesson.data.title}>
+  <div class="py-8 md:py-16 container mx-auto px-4 max-w-4xl space-y-8">
     
-    <CourseNavigation coursesMap={coursesMap} currentItemId={lesson.id} itemType="lesson" mode="top" client:load />
+    <!-- Top Bar with Course Navigation & Curriculum Drawer & Notes & Completion Toggle -->
+    <div class="space-y-4">
+      <CourseNavigation coursesMap={coursesMap} currentItemId={lesson.id} itemType="lesson" mode="top" client:load />
 
-    <div class="mb-8 mt-6">
-      <div class="flex items-center gap-4 mb-4">
-        <span class="woords_tag uppercase text-xs">{lesson.data.lessonType}</span>
-        {lesson.data.duration && <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{lesson.data.duration} mins</span>}
+      <div class="flex items-center justify-between border-b border-border/60 pb-4 flex-wrap gap-3">
+        <div class="flex items-center gap-2">
+          <LessonCurriculumDrawer 
+            coursesMap={coursesMap} 
+            currentItemId={lesson.id} 
+            itemType="lesson" 
+            client:load 
+          />
+          <LearnerNotesDrawer
+            lessonId={lesson.id}
+            lessonTitle={lesson.data.title}
+            client:load
+          />
+          <CourseFlashcardsDrawer client:load />
+        </div>
+        
+        <LessonCompletionToggle 
+          itemId={lesson.id} 
+          client:load 
+        />
       </div>
-      <h1 class="text-3xl md:text-5xl font-bold font-display tracking-tight text-foreground mb-4">{lesson.data.title}</h1>
-      {lesson.data.description && <p class="text-lg md:text-xl text-muted-foreground font-body">{lesson.data.description}</p>}
     </div>
 
+    <!-- Lesson Header -->
+    <div class="space-y-4 pt-2">
+      <div class="flex items-center gap-3">
+        <span class={`text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full ${
+          lesson.data.lessonType === 'video' 
+            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20' 
+            : lesson.data.lessonType === 'lab'
+            ? 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20'
+            : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+        }`}>
+          {lesson.data.lessonType === 'lab' ? 'Interactive Lab' : `${lesson.data.lessonType} Lesson`}
+        </span>
 
+        {lesson.data.duration && (
+          <span class="flex items-center gap-1 text-xs text-muted-foreground font-semibold">
+            <Clock class="w-3.5 h-3.5" />
+            {lesson.data.duration} min
+          </span>
+        )}
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold font-display tracking-tight text-foreground leading-[1.2]">
+        {lesson.data.title}
+      </h1>
+
+      {lesson.data.description && (
+        <p class="text-base sm:text-lg text-muted-foreground font-body leading-relaxed max-w-3xl">
+          {lesson.data.description}
+        </p>
+      )}
+    </div>
+
+    <!-- Video Embed (if video lesson) -->
     {lesson.data.lessonType === 'video' && lesson.data.videoUrl && (
-      <div class="aspect-video w-full mb-12 rounded-xl overflow-hidden bg-black">
+      <div class="aspect-video w-full rounded-2xl overflow-hidden border border-border/80 bg-black shadow-lg">
         <iframe 
           src={lesson.data.videoUrl} 
           class="w-full h-full" 
@@ -47,11 +103,55 @@ const coursesMap = await getCoursesMap();
       </div>
     )}
 
-    <div class="prose prose-lg dark:prose-invert max-w-none mb-12">
-      <Content components={{ Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard }} />
+    <!-- Interactive Lab Embed for specific conceptual lessons -->
+    {(lesson.data.interactiveLab === 'neural-playground' || lesson.id === 'dl-perceptrons-and-backprop' || lesson.id === 'dl-interactive-lab') && (
+      <div class="my-8">
+        <NeuralPlayground client:load />
+      </div>
+    )}
+
+    {(lesson.data.interactiveLab === 'gradient-descent' || lesson.id === 'ml-gradient-descent-mechanics' || lesson.id === 'ml-interactive-lab') && (
+      <div class="my-8">
+        <GradientDescentLab client:load />
+      </div>
+    )}
+
+    {(lesson.data.interactiveLab === 'memory-explorer' || lesson.id === 'py-memory-management' || lesson.id === 'py-interactive-lab') && (
+      <div class="my-8">
+        <MemoryExplorer client:load />
+      </div>
+    )}
+
+    <!-- Lesson Markdown Prose Content -->
+    <div class="prose prose-lg dark:prose-invert max-w-none font-body leading-relaxed pt-4">
+      <Content components={{ Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox }} />
     </div>
 
-    <CourseNavigation coursesMap={coursesMap} currentItemId={lesson.id} itemType="lesson" mode="bottom" client:load />
+    <!-- Live In-Lesson Code Sandbox -->
+    <div class="my-8">
+      <CodeSandboxRunner contentId={lesson.id} client:load />
+    </div>
+
+    <!-- Bottom Actions: Completion Toggle + Bottom Navigation -->
+    <div class="pt-8 border-t border-border/60 space-y-6">
+      <div class="p-6 rounded-2xl bg-card border border-border/80 flex items-center justify-between flex-wrap gap-4 shadow-sm">
+        <div>
+          <h4 class="font-bold font-display text-base text-foreground">
+            Finished this lesson?
+          </h4>
+          <p class="text-xs text-muted-foreground">
+            Mark it as complete to record your progress and unlock the next module.
+          </p>
+        </div>
+
+        <LessonCompletionToggle 
+          itemId={lesson.id} 
+          client:load 
+        />
+      </div>
+
+      <CourseNavigation coursesMap={coursesMap} currentItemId={lesson.id} itemType="lesson" mode="bottom" client:load />
+    </div>
     
   </div>
 </DefaultLayout>

@@ -121,6 +121,40 @@ export const mdxComponents = {
       description: fields.text({ label: 'Description', multiline: true }),
     },
   }),
+  InteractiveLab: block({
+    label: 'Interactive Lab Simulator',
+    description: 'Embed a hands-on visual simulator widget',
+    schema: {
+      type: fields.select({
+        label: 'Simulator Type',
+        options: [
+          { label: 'Neural Network & Activation Playground', value: 'neural-playground' },
+          { label: 'Loss Surface & Gradient Descent Optimizer Lab', value: 'gradient-descent' },
+          { label: 'CPython Stack & Heap Memory Explorer', value: 'memory-explorer' },
+        ],
+        defaultValue: 'neural-playground',
+      }),
+    },
+  }),
+  CodeSandbox: block({
+    label: 'Interactive Code Sandbox',
+    description: 'Embed an in-browser code runner with terminal output',
+    schema: {
+      snippetId: fields.text({ label: 'Initial Snippet ID (Optional)' }),
+      category: fields.select({
+        label: 'Category Scope',
+        options: [
+          { label: 'Auto (Scoped to Course / Lesson)', value: 'auto' },
+          { label: 'Python Systems', value: 'Python Systems' },
+          { label: 'Deep Learning', value: 'Deep Learning' },
+          { label: 'Machine Learning', value: 'Machine Learning' },
+          { label: 'LLMs & RAG', value: 'LLMs & RAG' },
+        ],
+        defaultValue: 'auto',
+      }),
+      title: fields.text({ label: 'Title Override (Optional)' }),
+    },
+  }),
 };
 
 export default config({
@@ -245,6 +279,7 @@ export default config({
       label: 'FAQs',
       slugField: 'question',
       path: 'src/content/faqs/*',
+      format: { data: 'yaml' },
       schema: {
         question: fields.text({ label: 'Question', validation: { isRequired: true } }),
         answer: fields.text({ label: 'Answer', validation: { isRequired: true } }),
@@ -332,7 +367,7 @@ export default config({
         coverImage: fields.image({
           label: 'Cover Image',
           publicPath: '/assets/courses/',
-          directory: '/public/assets/courses/',
+          directory: 'public/assets/courses',
         }),
         instructor: fields.relationship({
           label: 'Instructor',
@@ -423,7 +458,7 @@ export default config({
         avatar: fields.image({
           label: 'Avatar',
           publicPath: '/assets/instructors/',
-          directory: '/public/assets/instructors/',
+          directory: 'public/assets/instructors',
         }),
         socialLinks: fields.array(
           fields.object({
@@ -448,10 +483,23 @@ export default config({
         lessonType: fields.select({
           label: 'Lesson Type',
           options: [
-            { label: 'Video', value: 'video' },
-            { label: 'Article', value: 'article' },
+            { label: 'Video Lesson', value: 'video' },
+            { label: 'Article / Written Lesson', value: 'article' },
+            { label: 'Interactive Lab Simulator', value: 'lab' },
           ],
           defaultValue: 'video'
+        }),
+        interactiveLab: fields.select({
+          label: 'Interactive Lab Embed',
+          description: 'Optionally embed a specialized interactive simulation widget into this lesson',
+          options: [
+            { label: 'None', value: 'none' },
+            { label: 'CPython Stack & Heap Memory Explorer', value: 'memory-explorer' },
+            { label: 'Neural Network & Activation Playground', value: 'neural-playground' },
+            { label: 'Loss Surface & Gradient Descent Optimizer Lab', value: 'gradient-descent' },
+            { label: 'Interactive Code Sandbox', value: 'code-sandbox' },
+          ],
+          defaultValue: 'none',
         }),
         videoUrl: fields.text({ label: 'Video URL', description: 'YouTube or Vimeo embed URL' }),
         duration: fields.number({ label: 'Duration (in minutes)' }),
@@ -462,6 +510,7 @@ export default config({
       label: 'Quizzes',
       slugField: 'title',
       path: 'src/content/quizzes/*',
+      format: { data: 'yaml' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
         description: fields.text({ label: 'Description', multiline: true }),
@@ -569,7 +618,7 @@ export default config({
         templateImage: fields.image({
           label: 'Background Template Image',
           publicPath: '/assets/certificates/',
-          directory: '/public/assets/certificates/',
+          directory: 'public/assets/certificates',
         }),
       }
     }),

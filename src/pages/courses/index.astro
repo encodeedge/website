@@ -1,67 +1,327 @@
 ---
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { getCollection } from 'astro:content';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { BookOpen, Award, CheckCircle, Clock, Users, Sparkles, ArrowRight, ShieldCheck, Code, Layers } from 'lucide-react';
+import { LearnerGamificationBar } from '@/components/interactive/LearnerGamificationBar';
+import { CourseFlashcardsDrawer } from '@/components/interactive/CourseFlashcardsDrawer';
+import { CodeSandboxRunner } from '@/components/interactive/CodeSandboxRunner';
 
 const allCourses = await getCollection('courses');
 const publishedCourses = allCourses.filter(course => course.data.status === 'published');
+const allLessons = await getCollection('lessons');
+const allQuizzes = await getCollection('quizzes');
+const allAssignments = await getCollection('assignments');
+const allBatches = await getCollection('batches');
+const instructors = await getCollection('instructors');
+
+// Compute curriculum counts for each course
+const coursesWithMeta = publishedCourses.map(course => {
+  let lessonCount = 0;
+  let quizCount = 0;
+  let assignmentCount = 0;
+  let totalDurationMinutes = 0;
+
+  course.data.chapters?.forEach(ch => {
+    ch.items?.forEach(item => {
+      if (item.discriminant === 'lesson') {
+        lessonCount++;
+        const l = allLessons.find(les => les.id === item.value.lessonRef);
+        if (l?.data.duration) totalDurationMinutes += l.data.duration;
+      } else if (item.discriminant === 'quiz') {
+        quizCount++;
+        totalDurationMinutes += 15; // default quiz estimate
+      } else if (item.discriminant === 'assignment') {
+        assignmentCount++;
+        totalDurationMinutes += 90; // default project estimate
+      }
+    });
+  });
+
+  const instructorData = instructors.find(inst => inst.id === course.data.instructor);
+
+  return {
+    ...course,
+    lessonCount,
+    quizCount,
+    assignmentCount,
+    totalDurationMinutes,
+    instructorName: instructorData?.data.name || 'Atul Jha',
+    instructorAvatar: instructorData?.data.avatar || '/assets/python-variables-and-memory-references/authorImage.png',
+  };
+});
 ---
 
-<DefaultLayout title="Courses" description="Explore our comprehensive courses.">
-  <div class="py-12 md:py-16 max-w-6xl mx-auto px-4 sm:px-6">
-    <div class="text-center max-w-2xl mx-auto mb-12">
-      <span class="inline-block text-xs font-semibold uppercase tracking-wider bg-black-100 dark:bg-black-800 text-muted-foreground px-3 py-1 rounded-full mb-3">
-        Structured Learning
-      </span>
-      <h1 class="text-4xl sm:text-5xl font-bold font-display tracking-tight text-foreground mb-4">
-        Our Courses
+<DefaultLayout 
+  title="Courses & Academy | EncodeEdge" 
+  description="Master modern Artificial Intelligence, Machine Learning, Deep Learning, and Python through hands-on, production-grade courses."
+>
+  <div class="py-12 md:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+    
+    <!-- Hero Header -->
+    <header class="text-center max-w-3xl mx-auto space-y-4">
+      <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 px-3.5 py-1.5 rounded-full">
+        <Sparkles class="w-3.5 h-3.5" />
+        <span>Production-Grade Learning Academy</span>
+      </div>
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight text-foreground leading-[1.15]">
+        Master Applied AI &amp; Software Engineering
       </h1>
-      <p class="text-base sm:text-lg text-muted-foreground font-body">
-        Level up your skills with comprehensive, hands-on courses led by experienced practitioners.
+      <p class="text-base sm:text-lg md:text-xl text-muted-foreground font-body leading-relaxed max-w-2xl mx-auto">
+        Go beyond high-level buzzwords. Build neural networks, language agents, and high-performance streaming pipelines from scratch with code-first curricula.
       </p>
+    </header>
+
+    <!-- Stats Banner -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+      <div class="p-4 rounded-2xl border border-border/80 bg-card text-center space-y-1 shadow-sm">
+        <div class="text-2xl sm:text-3xl font-bold font-display text-foreground">{publishedCourses.length}</div>
+        <div class="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Flagship Courses</div>
+      </div>
+      <div class="p-4 rounded-2xl border border-border/80 bg-card text-center space-y-1 shadow-sm">
+        <div class="text-2xl sm:text-3xl font-bold font-display text-foreground">{allLessons.length}+</div>
+        <div class="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Interactive Lessons</div>
+      </div>
+      <div class="p-4 rounded-2xl border border-border/80 bg-card text-center space-y-1 shadow-sm">
+        <div class="text-2xl sm:text-3xl font-bold font-display text-foreground">{allAssignments.length}</div>
+        <div class="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Capstone Projects</div>
+      </div>
+      <div class="p-4 rounded-2xl border border-border/80 bg-card text-center space-y-1 shadow-sm">
+        <div class="text-2xl sm:text-3xl font-bold font-display text-emerald-600 dark:text-emerald-400">100%</div>
+        <div class="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Free &amp; Open Access</div>
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {publishedCourses.length > 0 ? publishedCourses.map(course => (
-        <div class="flex flex-col h-full rounded-2xl border border-black-200 dark:border-black-800 bg-card overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
-          {course.data.coverImage && (
-            <div class="w-full h-48 overflow-hidden bg-black-100 dark:bg-black-800">
-              <img 
-                src={course.data.coverImage} 
-                alt={course.data.title} 
-                class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-              />
-            </div>
-          )}
-          <div class="p-6 flex-1 flex flex-col justify-between">
-            <div>
-              <div class="flex justify-between items-center mb-3">
-                <span class="woords_tag capitalize text-xs">
-                  {course.data.level}
-                </span>
-              </div>
-              <h2 class="text-xl font-bold font-display text-foreground mb-2">
-                {course.data.title}
-              </h2>
-              <p class="text-sm text-muted-foreground font-body line-clamp-2">
-                {course.data.shortDescription}
-              </p>
-            </div>
-            <div class="mt-6 pt-4 border-t border-black-100 dark:border-black-800">
-              <a href={`/courses/${course.id}`} class="block w-full">
-                <button class="woords_btn w-full text-sm">
-                  View Course →
-                </button>
-              </a>
-            </div>
-          </div>
-        </div>
-      )) : (
-        <p class="text-muted-foreground col-span-3 text-center py-12">No courses available at the moment. Please check back later.</p>
-      )}
+    <!-- Learner Gamification & Flashcards Bar -->
+    <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+      <div class="flex-1">
+        <LearnerGamificationBar client:load />
+      </div>
+      <div class="shrink-0 flex items-center justify-end">
+        <CourseFlashcardsDrawer client:load />
+      </div>
     </div>
+
+    <!-- Filter Buttons Bar (Accessible client filtering via vanilla JS data attributes) -->
+    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-border/60 pb-5">
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full" id="filter-buttons">
+        <button 
+          data-filter="all" 
+          class="filter-btn active text-xs font-bold px-3.5 py-1.5 rounded-full bg-primary text-primary-foreground transition-colors cursor-pointer"
+        >
+          All Courses
+        </button>
+        <button 
+          data-filter="beginner" 
+          class="filter-btn text-xs font-semibold px-3.5 py-1.5 rounded-full bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        >
+          Beginner
+        </button>
+        <button 
+          data-filter="intermediate" 
+          class="filter-btn text-xs font-semibold px-3.5 py-1.5 rounded-full bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        >
+          Intermediate
+        </button>
+        <button 
+          data-filter="advanced" 
+          class="filter-btn text-xs font-semibold px-3.5 py-1.5 rounded-full bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        >
+          Advanced
+        </button>
+      </div>
+
+      <a 
+        href="/batches" 
+        class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+      >
+        <Users class="w-3.5 h-3.5" />
+        <span>View Live Mentorship Batches ({allBatches.length}) →</span>
+      </a>
+    </div>
+
+    <!-- Courses Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="courses-grid">
+      {coursesWithMeta.map(course => {
+        const hours = Math.floor(course.totalDurationMinutes / 60);
+        const mins = course.totalDurationMinutes % 60;
+        const durationStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+
+        return (
+          <article 
+            data-level={course.data.level}
+            class="course-card flex flex-col rounded-3xl border border-border/80 bg-card overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 group"
+          >
+            <!-- Card Artwork -->
+            {course.data.coverImage && (
+              <a href={`/courses/${course.id}`} class="block w-full aspect-video overflow-hidden bg-muted/30 border-b border-border/60 relative">
+                <img 
+                  src={course.data.coverImage} 
+                  alt={course.data.title} 
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                  loading="lazy"
+                />
+                <div class="absolute top-4 left-4 flex gap-2">
+                  <span class={`text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm backdrop-blur-md ${
+                    course.data.level === 'advanced' 
+                      ? 'bg-rose-500/90 text-white' 
+                      : course.data.level === 'intermediate'
+                        ? 'bg-amber-500/90 text-white'
+                        : 'bg-emerald-500/90 text-white'
+                  }`}>
+                    {course.data.level}
+                  </span>
+                </div>
+              </a>
+            )}
+
+            <!-- Card Body -->
+            <div class="p-6 md:p-8 flex-1 flex flex-col justify-between space-y-6">
+              <div class="space-y-3">
+                <!-- Meta tags pill -->
+                <div class="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
+                  <span class="flex items-center gap-1 font-medium">
+                    <Clock class="w-3.5 h-3.5 text-primary" />
+                    {durationStr}
+                  </span>
+                  <span>•</span>
+                  <span class="flex items-center gap-1 font-medium">
+                    <BookOpen class="w-3.5 h-3.5 text-primary" />
+                    {course.lessonCount} lessons
+                  </span>
+                  <span>•</span>
+                  <span class="flex items-center gap-1 font-medium">
+                    <Code class="w-3.5 h-3.5 text-primary" />
+                    {course.assignmentCount} projects
+                  </span>
+                </div>
+
+                <h2 class="text-2xl font-bold font-display text-foreground group-hover:text-primary transition-colors leading-snug">
+                  <a href={`/courses/${course.id}`}>
+                    {course.data.title}
+                  </a>
+                </h2>
+
+                <p class="text-sm text-muted-foreground font-body leading-relaxed line-clamp-3">
+                  {course.data.shortDescription}
+                </p>
+              </div>
+
+              <!-- Footer Strip -->
+              <div class="pt-5 border-t border-border/60 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <img 
+                    src={course.instructorAvatar} 
+                    alt={course.instructorName} 
+                    class="w-7 h-7 rounded-full object-cover border border-border"
+                  />
+                  <span class="text-xs font-semibold text-foreground truncate">
+                    {course.instructorName}
+                  </span>
+                </div>
+
+                <a 
+                  href={`/courses/${course.id}`} 
+                  class="inline-flex items-center gap-1 text-xs font-bold px-4 py-2 rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition-opacity shadow-sm shrink-0"
+                >
+                  <span>Explore Course</span>
+                  <ArrowRight class="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+
+    <!-- Interactive Academy Code Sandbox -->
+    <div class="space-y-6 max-w-5xl mx-auto">
+      <div class="text-center space-y-2">
+        <div class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary">
+          <Sparkles class="w-3.5 h-3.5" />
+          <span>Hands-On Engineering</span>
+        </div>
+        <h3 class="text-2xl sm:text-3xl font-bold font-display text-foreground">
+          Try Live Algorithms in the Browser
+        </h3>
+        <p class="text-xs sm:text-sm text-muted-foreground font-body max-w-xl mx-auto">
+          Test real PyTorch autograd computations, gradient descent steps, and semantic RAG cosine similarity with zero local environment setup.
+        </p>
+      </div>
+
+      <CodeSandboxRunner client:load />
+    </div>
+
+    <!-- Academy Value Proposition Strip -->
+    <section class="rounded-3xl border border-border/80 bg-muted/20 p-8 md:p-12 space-y-8">
+      <div class="text-center max-w-2xl mx-auto space-y-2">
+        <h3 class="text-2xl sm:text-3xl font-bold font-display text-foreground">
+          Why Learn on EncodeEdge?
+        </h3>
+        <p class="text-sm sm:text-base text-muted-foreground">
+          Engineered for engineers. We focus exclusively on practical, reproducible code and industry patterns.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-card border border-border/60 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+            <Code class="w-5 h-5" />
+          </div>
+          <h4 class="font-bold font-display text-base text-foreground">Code-First From Scratch</h4>
+          <p class="text-xs text-muted-foreground leading-relaxed">
+            No magic black boxes. Every formula is backed by executable Python code, unit tests, and downloadable Jupyter notebooks.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-card border border-border/60 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+            <Layers class="w-5 h-5" />
+          </div>
+          <h4 class="font-bold font-display text-base text-foreground">Production Architectures</h4>
+          <p class="text-xs text-muted-foreground leading-relaxed">
+            Learn the systems companies actually deploy: low-latency RAG vector pipelines, TorchScript compilation, and async endpoints.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-card border border-border/60 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+            <Award class="w-5 h-5" />
+          </div>
+          <h4 class="font-bold font-display text-base text-foreground">Verifiable Portfolio Projects</h4>
+          <p class="text-xs text-muted-foreground leading-relaxed">
+            Build stand-out capstone projects that demonstrate your ability to solve real problems and build deployable machine learning systems.
+          </p>
+        </div>
+      </div>
+    </section>
+
   </div>
 </DefaultLayout>
 
+<script>
+  // Client-side category filtering
+  const buttons = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.course-card');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => {
+        b.classList.remove('bg-primary', 'text-primary-foreground', 'font-bold');
+        b.classList.add('bg-muted/60', 'text-muted-foreground', 'font-semibold');
+      });
+      btn.classList.add('bg-primary', 'text-primary-foreground', 'font-bold');
+      btn.classList.remove('bg-muted/60', 'text-muted-foreground', 'font-semibold');
+
+      const filter = btn.getAttribute('data-filter');
+
+      cards.forEach(card => {
+        const level = card.getAttribute('data-level');
+        if (filter === 'all' || level === filter) {
+          (card as HTMLElement).style.display = 'flex';
+        } else {
+          (card as HTMLElement).style.display = 'none';
+        }
+      });
+    });
+  });
+</script>

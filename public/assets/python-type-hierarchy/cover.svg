@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="100%" height="100%">
+  <defs>
+    <linearGradient id="pth-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E121A" />
+      <stop offset="50%" stop-color="#141A26" />
+      <stop offset="100%" stop-color="#1C2436" />
+    </linearGradient>
+    <pattern id="pth-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
+    </pattern>
+    <filter id="pth-card-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="rgba(0,0,0,0.5)" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="675" fill="url(#pth-bg)" />
+  <rect width="1200" height="675" fill="url(#pth-grid)" />
+
+  <!-- Ambient Glow -->
+  <circle cx="600" cy="180" r="300" fill="#E5E795" opacity="0.06" filter="blur(80px)" />
+  <circle cx="300" cy="450" r="250" fill="#A2D2FF" opacity="0.05" filter="blur(80px)" />
+  <circle cx="900" cy="450" r="250" fill="#FDA4AF" opacity="0.05" filter="blur(80px)" />
+
+  <!-- Tree Lines -->
+  <path d="M 600 190 L 600 270" stroke="rgba(255,255,255,0.25)" stroke-width="2.5" />
+  <path d="M 280 270 L 920 270" stroke="rgba(255,255,255,0.25)" stroke-width="2.5" />
+  <path d="M 280 270 L 280 340" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
+  <path d="M 490 270 L 490 340" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
+  <path d="M 710 270 L 710 340" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
+  <path d="M 920 270 L 920 340" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
+
+  <!-- Sub-branches -->
+  <path d="M 280 430 L 280 490 M 200 490 L 360 490 M 200 490 L 200 520 M 360 490 L 360 520" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-dasharray="4 4" />
+  <path d="M 490 430 L 490 490 M 430 490 L 550 490 M 430 490 L 430 520 M 550 490 L 550 520" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-dasharray="4 4" />
+
+  <!-- Top Badge & Header -->
+  <g transform="translate(100, 60)">
+    <rect x="0" y="0" width="140" height="28" rx="14" fill="#E5E795" opacity="0.2" />
+    <text x="70" y="18" fill="#E5E795" font-family="system-ui, sans-serif" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1.5">PYTHON INTERNALS</text>
+    <text x="0" y="58" fill="#FFFFFF" font-family="Georgia, serif" font-size="34" font-weight="700" letter-spacing="-0.5">Type Hierarchy</text>
+  </g>
+
+  <!-- Root Node: object -->
+  <g transform="translate(510, 110)" filter="url(#pth-card-shadow)">
+    <rect width="180" height="80" rx="18" fill="#1C2335" stroke="#E5E795" stroke-width="2" />
+    <text x="90" y="42" fill="#E5E795" font-family="system-ui, sans-serif" font-size="11" font-weight="800" text-anchor="middle" letter-spacing="1">BASE CLASS</text>
+    <text x="90" y="65" fill="#FFFFFF" font-family="'Courier New', monospace" font-size="20" font-weight="700" text-anchor="middle">&lt;class 'object'&gt;</text>
+  </g>
+
+  <!-- Level 2 Node: Numbers -->
+  <g transform="translate(190, 340)" filter="url(#pth-card-shadow)">
+    <rect width="180" height="90" rx="16" fill="#171F2F" stroke="#A2D2FF" stroke-width="1.5" />
+    <rect x="18" y="16" width="32" height="32" rx="8" fill="#A2D2FF" opacity="0.2" />
+    <text x="34" y="37" fill="#A2D2FF" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" text-anchor="middle">#</text>
+    <text x="62" y="32" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="14" font-weight="700">Numbers</text>
+    <text x="62" y="48" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="11">Numeric types</text>
+    <text x="18" y="76" fill="#A2D2FF" font-family="'Courier New', monospace" font-size="11">int, float, complex</text>
+  </g>
+
+  <!-- Level 2 Node: Sequences -->
+  <g transform="translate(400, 340)" filter="url(#pth-card-shadow)">
+    <rect width="180" height="90" rx="16" fill="#171F2F" stroke="#FDA4AF" stroke-width="1.5" />
+    <rect x="18" y="16" width="32" height="32" rx="8" fill="#FDA4AF" opacity="0.2" />
+    <text x="34" y="37" fill="#FDA4AF" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" text-anchor="middle">[ ]</text>
+    <text x="62" y="32" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="14" font-weight="700">Sequences</text>
+    <text x="62" y="48" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="11">Ordered iterables</text>
+    <text x="18" y="76" fill="#FDA4AF" font-family="'Courier New', monospace" font-size="11">list, tuple, str</text>
+  </g>
+
+  <!-- Level 2 Node: Mappings & Sets -->
+  <g transform="translate(620, 340)" filter="url(#pth-card-shadow)">
+    <rect width="180" height="90" rx="16" fill="#171F2F" stroke="#E9D5FF" stroke-width="1.5" />
+    <rect x="18" y="16" width="32" height="32" rx="8" fill="#E9D5FF" opacity="0.2" />
+    <text x="34" y="37" fill="#E9D5FF" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" text-anchor="middle">{ }</text>
+    <text x="62" y="32" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="14" font-weight="700">Mappings</text>
+    <text x="62" y="48" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="11">Key-value tables</text>
+    <text x="18" y="76" fill="#E9D5FF" font-family="'Courier New', monospace" font-size="11">dict, set, frozenset</text>
+  </g>
+
+  <!-- Level 2 Node: Callables -->
+  <g transform="translate(830, 340)" filter="url(#shadow)">
+    <rect width="180" height="90" rx="16" fill="#171F2F" stroke="#E5E795" stroke-width="1.5" />
+    <rect x="18" y="16" width="32" height="32" rx="8" fill="#E5E795" opacity="0.2" />
+    <text x="34" y="37" fill="#E5E795" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" text-anchor="middle">f( )</text>
+    <text x="62" y="32" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="14" font-weight="700">Callables</text>
+    <text x="62" y="48" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="11">Functions &amp; types</text>
+    <text x="18" y="76" fill="#E5E795" font-family="'Courier New', monospace" font-size="11">function, class, method</text>
+  </g>
+
+  <!-- Sub Node: bool -> int -->
+  <g transform="translate(130, 520)">
+    <rect width="130" height="46" rx="10" fill="#141C2B" stroke="rgba(255,255,255,0.15)" stroke-width="1" />
+    <text x="65" y="28" fill="#FFFFFF" font-family="'Courier New', monospace" font-size="12" text-anchor="middle">bool ⊂ int</text>
+  </g>
+
+  <!-- Sub Node: float -->
+  <g transform="translate(290, 520)">
+    <rect width="130" height="46" rx="10" fill="#141C2B" stroke="rgba(255,255,255,0.15)" stroke-width="1" />
+    <text x="65" y="28" fill="#FFFFFF" font-family="'Courier New', monospace" font-size="12" text-anchor="middle">float, complex</text>
+  </g>
+
+  <!-- Sub Node: mutable vs immutable -->
+  <g transform="translate(460, 520)">
+    <rect width="180" height="46" rx="10" fill="#141C2B" stroke="rgba(255,255,255,0.15)" stroke-width="1" />
+    <text x="90" y="28" fill="#FFFFFF" font-family="'Courier New', monospace" font-size="12" text-anchor="middle">Mutable vs Immutable</text>
+  </g>
+</svg>
+

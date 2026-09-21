@@ -30,7 +30,7 @@ export const Features = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
           <div className="space-y-1">
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Featured Insights</h2>
-            <p className="text-muted-foreground text-lg">Deep dives and tutorials hand-picked for you.</p>
+            <p className="text-muted-foreground text-lg">Guides and tutorials hand-picked for you.</p>
           </div>
           <a href="/blog" className="group flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary/80 transition-colors">
             View all posts <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

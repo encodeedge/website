@@ -1,0 +1,1453 @@
+---
+import { format } from "date-fns";
+import { slugify } from "@/utils/slugs";
+import FAQs from "@/components/blocks/faqs";
+import References from "@/components/blocks/references";
+import { TOPIC_METADATA } from "@/lib/topics";
+
+interface Props {
+  post: any;
+  featured?: any[];
+  prevPost?: any;
+  nextPost?: any;
+  relatedPosts?: any[];
+}
+
+const { post, featured = [], prevPost, nextPost, relatedPosts = [] } = Astro.props;
+
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  readTime = 6,
+  image,
+  authorImage,
+  authorName = "Atul Jha",
+  faqs = [],
+  references = [],
+  topics = [],
+  tags = [],
+  featured: isFeatured = false,
+} = post.data;
+
+const primaryTopic = topics[0] || "machine-learning";
+const topicMeta = TOPIC_METADATA[primaryTopic] || {
+  label: primaryTopic.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
+  color: "#E5E795",
+  roadmapSlug: primaryTopic,
+};
+const roadmapSlug = topicMeta?.roadmapSlug;
+
+const formatSlug = (slug: string) => {
+  if (TOPIC_METADATA[slug]) {
+    return TOPIC_METADATA[slug].label;
+  }
+  return slug
+    .replace(/-/g, " ")
+    .split(" ")
+    .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+    .join(" ");
+};
+
+const normalizeTagSlug = (tag: string) =>
+  tag.toLowerCase().trim().replace(/ /g, "-").replace(/[^\w-]+/g, "");
+
+const getInitials = (name?: string) => {
+  if (!name) return "E";
+  return name
+    .split(" ")
+    .slice(0, 2)
+    .map((s) => s.charAt(0))
+    .join("");
+};
+
+const estimatedWordCount = Math.max((readTime || 6) * 220, 600);
+const postId = post.id;
+---
+
+<article class="relative w-full" id="blog-post-root" data-post-id={postId} data-read-time={readTime} data-title={title}>
+  {/* 1. Top Reading Progress Bar */}
+  <div class="fixed top-0 left-0 right-0 h-[3px] bg-black-100 dark:bg-black-900 z-50">
+    <div
+      id="top-progress-bar"
+      class="h-full bg-gradient-to-r from-primary via-indigo-500 to-purple-500 dark:from-[#E5E795] dark:via-lime-400 dark:to-[#E5E795] transition-all duration-100 ease-out"
+      style="width: 0%"
+    ></div>
+  </div>
+
+  {/* 2. Top Navigation & Breadcrumbs */}
+  <nav class="woords_container_small mb-6 pt-2 print:hidden">
+    <div class="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground border-b border-border/40 pb-3">
+      <div class="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
+        <a href="/" class="hover:text-foreground transition-colors">Home</a>
+        <span class="text-muted-foreground/40">/</span>
+        <a href="/blog/" class="hover:text-foreground transition-colors">Articles</a>
+        {primaryTopic && (
+          <>
+            <span class="text-muted-foreground/40">/</span>
+            <a
+              href={`/topics/${primaryTopic}/`}
+              class="hover:text-foreground transition-colors font-medium text-foreground truncate max-w-[140px]"
+            >
+              {formatSlug(primaryTopic)}
+            </a>
+          </>
+        )}
+      </div>
+
+      <a
+        href="/blog/"
+        class="inline-flex items-center gap-1.5 font-semibold hover:text-foreground text-primary transition-colors ml-auto"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        <span>Back to all articles</span>
+      </a>
+    </div>
+  </nav>
+
+  {/* 3. Editorial Article Header */}
+  <header class="woords_container_small mb-8 text-center">
+    <div class="max-w-3xl mx-auto flex flex-col items-center gap-y-4">
+      {/* Topic & Format Badges */}
+      <div class="flex flex-wrap items-center justify-center gap-2">
+        {isFeatured && (
+          <span class="woords_tag_secondary_small font-bold shadow-2xs">
+            ★ Featured Blueprint
+          </span>
+        )}
+        {topics.map((topic: string) => {
+          const meta = TOPIC_METADATA[topic];
+          return (
+            <a
+              href={`/topics/${topic}/`}
+              class="px-3 py-1 rounded-full text-xs font-semibold border hover:scale-105 transition-transform"
+              style={`background-color: ${meta?.color || "#FDA4AF"}25; border-color: ${meta?.color || "#FDA4AF"}60; color: inherit;`}
+            >
+              {formatSlug(topic)}
+            </a>
+          );
+        })}
+        {tags.slice(0, 3).map((tag: string) => (
+          <a
+            href={`/tags/${normalizeTagSlug(tag)}/`}
+            class="woords_tag_small opacity-75 hover:opacity-100"
+          >
+            #{tag}
+          </a>
+        ))}
+      </div>
+
+      {/* Main Headline */}
+      <h1 class="font-display font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-foreground tracking-tight leading-[1.12]">
+        {title}
+      </h1>
+
+      {/* Description / Subtitle */}
+      {description && (
+        <p class="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl font-body">
+          {description}
+        </p>
+      )}
+
+      {/* Author Byline & Article Metrics */}
+      <div class="flex flex-wrap items-center justify-center gap-4 pt-3 border-t border-border/40 w-full">
+        <div class="flex items-center gap-2.5 text-left">
+          <div class="size-10 rounded-full border border-border overflow-hidden bg-black-100 dark:bg-black-800 flex items-center justify-center shrink-0">
+            {authorImage ? (
+              <img src={authorImage} alt={authorName} class="size-full object-cover" />
+            ) : (
+              <span class="text-xs font-bold text-foreground">{getInitials(authorName)}</span>
+            )}
+          </div>
+          <div class="text-xs leading-tight">
+            <a
+              href={`/authors/${slugify(authorName)}/`}
+              class="font-bold text-foreground hover:underline block"
+            >
+              {authorName}
+            </a>
+            <span class="text-[11px] text-muted-foreground">Systems & AI Researcher</span>
+          </div>
+        </div>
+
+        <div class="hidden sm:block h-6 w-px bg-border/60"></div>
+
+        <div class="flex items-center gap-3 text-xs text-muted-foreground">
+          <div class="flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+            <time datetime={new Date(pubDate).toISOString()}>
+              {format(new Date(pubDate), "dd MMM yyyy")}
+            </time>
+          </div>
+          <span>•</span>
+          <div class="flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>{readTime} min read</span>
+          </div>
+          <span>•</span>
+          <div class="hidden md:flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span>~{estimatedWordCount.toLocaleString()} words</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Reading Utilities Toolbar */}
+      <div class="flex items-center justify-center gap-2 pt-2 flex-wrap print:hidden">
+        {/* Font Size Adjuster */}
+        <div class="inline-flex items-center rounded-full border border-border bg-background p-0.5 text-xs">
+          <button
+            type="button"
+            data-font-size="sm"
+            class="font-size-btn px-2.5 py-1 rounded-full text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            title="Small font size"
+          >
+            A-
+          </button>
+          <button
+            type="button"
+            data-font-size="base"
+            class="font-size-btn active px-2.5 py-1 rounded-full text-[11px] font-bold bg-foreground text-background transition-colors cursor-pointer"
+            title="Normal font size"
+          >
+            A
+          </button>
+          <button
+            type="button"
+            data-font-size="lg"
+            class="font-size-btn px-2.5 py-1 rounded-full text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            title="Large font size"
+          >
+            A+
+          </button>
+        </div>
+
+        {/* Bookmark Button */}
+        <button
+          type="button"
+          id="btn-bookmark-header"
+          class="bookmark-toggle-btn inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-border bg-background hover:bg-black-100 dark:hover:bg-black-800 text-xs font-semibold text-foreground transition-all cursor-pointer"
+          title="Bookmark this blueprint"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="bookmark-icon size-3.5"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+          <span class="bookmark-text">Save</span>
+        </button>
+
+        {/* Copy Link Button */}
+        <button
+          type="button"
+          id="btn-copy-link-header"
+          class="copy-link-btn inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-border bg-background hover:bg-black-100 dark:hover:bg-black-800 text-xs font-medium text-foreground transition-all cursor-pointer"
+          title="Copy link to clipboard"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon size-3.5"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          <span class="copy-text">Copy Link</span>
+        </button>
+
+        {/* Share to X */}
+        <button
+          type="button"
+          id="btn-share-x-header"
+          class="share-x-btn size-8 rounded-full border border-border bg-background hover:bg-black-100 dark:hover:bg-black-800 flex items-center justify-center transition-colors cursor-pointer text-foreground"
+          title="Share on X"
+          aria-label="Share on X"
+        >
+          <svg class="size-3.5 fill-current" viewBox="0 0 24 24">
+            <path d="M13.68 10.62 20.24 3h-1.55L13 9.62 8.45 3H3.19l6.88 10.01L3.19 21h1.55l6.01-6.99 4.8 6.99h5.24l-7.13-10.38Zm-2.13 2.47-.7-1-5.54-7.93H7.7l4.47 6.4.7 1 5.82 8.32H16.3z" />
+          </svg>
+        </button>
+
+        {/* Share to LinkedIn */}
+        <button
+          type="button"
+          id="btn-share-li-header"
+          class="share-li-btn size-8 rounded-full border border-border bg-background hover:bg-black-100 dark:hover:bg-black-800 flex items-center justify-center transition-colors cursor-pointer text-foreground"
+          title="Share on LinkedIn"
+          aria-label="Share on LinkedIn"
+        >
+          <svg class="size-3.5 fill-current" viewBox="0 0 24 24">
+            <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.45a1.64 1.64 0 1 0 1.64 1.64 1.64 1.64 0 0 0-1.64-1.64Z" />
+          </svg>
+        </button>
+
+        {/* Print Button */}
+        <button
+          type="button"
+          id="btn-print-header"
+          class="print-btn size-8 rounded-full border border-border bg-background hover:bg-black-100 dark:hover:bg-black-800 flex items-center justify-center text-foreground transition-colors cursor-pointer"
+          title="Print blueprint"
+          aria-label="Print blueprint"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+        </button>
+      </div>
+    </div>
+
+    {/* 5. Clean Editorial Hero Visual */}
+    <div class="mt-8 max-w-4xl mx-auto overflow-hidden rounded-2xl sm:rounded-3xl border border-border/80 bg-card shadow-xs group">
+      <div class="relative aspect-16/10 sm:aspect-21/9 w-full overflow-hidden">
+        <img
+          src={image || '/assets/default-post.svg'}
+          alt={title}
+          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          loading="eager"
+        />
+      </div>
+    </div>
+  </header>
+
+  {/* Tags Row */}
+  {tags.length > 0 && (
+    <div class="woords_container_small mb-8 print:hidden">
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3 text-muted-foreground"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+          Topic Tags:
+        </span>
+        {tags.map((tag: string) => (
+          <a
+            href={`/tags/${normalizeTagSlug(tag)}/`}
+            class="px-2.5 py-1 rounded-lg text-xs font-medium bg-black-50 dark:bg-black-900 text-muted-foreground hover:text-foreground hover:bg-black-100 dark:hover:bg-black-800 border border-black-150 dark:border-black-800 transition-colors"
+          >
+            #{tag}
+          </a>
+        ))}
+      </div>
+    </div>
+  )}
+
+  {/* 6. Main Content Area: Article + Sticky Editorial Sidebar */}
+  <div class="woords_container">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_19rem] gap-12 items-start">
+      {/* Main Article Column */}
+      <main class="w-full min-w-0 max-w-[820px] mx-auto xl:mx-0" id="main-article-wrapper">
+        {/* Article Prose Content */}
+        <div id="article-content" class="prose dark:prose-invert max-w-none font-body text-base sm:text-lg leading-relaxed">
+          <slot />
+        </div>
+
+        {/* Interactive Reactions Bar */}
+        <div class="mt-14 pt-8 border-t border-border/60 not-prose print:hidden">
+          <div class="text-center mb-5">
+            <h3 class="font-display font-bold text-xl text-foreground">
+              How did you find this blueprint?
+            </h3>
+            <p class="text-xs text-muted-foreground mt-1">
+              Tap a reaction to share instant feedback with the engineering team.
+            </p>
+          </div>
+
+          <div class="flex items-center justify-center gap-2.5 sm:gap-3.5 flex-wrap" id="reactions-container">
+            <button
+              type="button"
+              data-reaction-key="insightful"
+              class="reaction-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-black-150 dark:border-black-800 bg-card text-foreground hover:border-foreground/40 hover:shadow-sm text-sm font-medium transition-all cursor-pointer"
+            >
+              <span class="text-lg">🔥</span>
+              <span class="text-xs font-semibold">Insightful</span>
+              <span class="reaction-count text-[11px] font-mono px-1.5 py-0.5 rounded-full bg-black-100 dark:bg-black-800 text-muted-foreground">0</span>
+            </button>
+
+            <button
+              type="button"
+              data-reaction-key="helpful"
+              class="reaction-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-black-150 dark:border-black-800 bg-card text-foreground hover:border-foreground/40 hover:shadow-sm text-sm font-medium transition-all cursor-pointer"
+            >
+              <span class="text-lg">💡</span>
+              <span class="text-xs font-semibold">Helpful</span>
+              <span class="reaction-count text-[11px] font-mono px-1.5 py-0.5 rounded-full bg-black-100 dark:bg-black-800 text-muted-foreground">0</span>
+            </button>
+
+            <button
+              type="button"
+              data-reaction-key="practical"
+              class="reaction-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-black-150 dark:border-black-800 bg-card text-foreground hover:border-foreground/40 hover:shadow-sm text-sm font-medium transition-all cursor-pointer"
+            >
+              <span class="text-lg">🎯</span>
+              <span class="text-xs font-semibold">Practical</span>
+              <span class="reaction-count text-[11px] font-mono px-1.5 py-0.5 rounded-full bg-black-100 dark:bg-black-800 text-muted-foreground">0</span>
+            </button>
+
+            <button
+              type="button"
+              data-reaction-key="well-written"
+              class="reaction-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-black-150 dark:border-black-800 bg-card text-foreground hover:border-foreground/40 hover:shadow-sm text-sm font-medium transition-all cursor-pointer"
+            >
+              <span class="text-lg">👏</span>
+              <span class="text-xs font-semibold">Well Written</span>
+              <span class="reaction-count text-[11px] font-mono px-1.5 py-0.5 rounded-full bg-black-100 dark:bg-black-800 text-muted-foreground">0</span>
+            </button>
+          </div>
+        </div>
+
+        {/* FAQs Accordion */}
+        {faqs && faqs.length > 0 && (
+          <div class="mt-14 pt-8 border-t border-border/60">
+            <div class="flex items-center gap-2.5 mb-6">
+              <span class="size-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><circle cx="12" cy="12" r="10"/><path d="9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+              </span>
+              <h3 class="font-display font-bold text-2xl text-foreground">
+                Frequently Asked Questions
+              </h3>
+            </div>
+            <FAQs items={faqs} />
+          </div>
+        )}
+
+        {/* References Section */}
+        {references && references.length > 0 && (
+          <div class="mt-12 pt-8 border-t border-border/60">
+            <div class="flex items-center gap-2.5 mb-6">
+              <span class="size-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+              </span>
+              <h3 class="font-display font-bold text-2xl text-foreground">
+                Citations & Recommended References
+              </h3>
+            </div>
+            <References items={references} />
+          </div>
+        )}
+
+        {/* Author Bio Card */}
+        <div class="mt-14 rounded-3xl border border-black-150 dark:border-black-800 bg-card p-6 sm:p-8 shadow-xs not-prose">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            <div class="size-16 rounded-full border-2 border-border shadow-xs overflow-hidden bg-black-100 dark:bg-black-800 flex items-center justify-center shrink-0">
+              {authorImage ? (
+                <img src={authorImage} alt={authorName} class="size-full object-cover" />
+              ) : (
+                <span class="text-base font-bold text-foreground">{getInitials(authorName)}</span>
+              )}
+            </div>
+            <div class="space-y-1.5 flex-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                Written by
+              </div>
+              <a
+                href={`/authors/${slugify(authorName)}/`}
+                class="font-bold font-display text-xl text-foreground hover:underline block"
+              >
+                {authorName}
+              </a>
+              <p class="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                AI Researcher and Systems Engineer focusing on production machine learning pipelines, transformer architectures, and performant Python runtime internals.
+              </p>
+            </div>
+            <a
+              href={`/authors/${slugify(authorName)}/`}
+              class="px-4 py-2 rounded-full border border-border hover:bg-foreground hover:text-background text-xs font-semibold text-foreground transition-all self-start sm:self-center shrink-0"
+            >
+              View Profile →
+            </a>
+          </div>
+        </div>
+
+        {/* Share Strip & Bookmarking Bar */}
+        <div class="mt-8 border-t border-border/60 pt-6 not-prose flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase text-muted-foreground mr-1">
+              Share Blueprint:
+            </span>
+            <button
+              type="button"
+              class="share-x-btn size-9 rounded-full border border-border bg-background hover:bg-black-100 dark:hover:bg-black-800 flex items-center justify-center transition-colors cursor-pointer text-foreground"
+              title="Share on X"
+            >
+              <svg class="size-4 fill-current" viewBox="0 0 24 24">
+                <path d="M13.68 10.62 20.24 3h-1.55L13 9.62 8.45 3H3.19l6.88 10.01L3.19 21h1.55l6.01-6.99 4.8 6.99h5.24l-7.13-10.38Zm-2.13 2.47-.7-1-5.54-7.93H7.7l4.47 6.4.7 1 5.82 8.32H16.3z" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="share-li-btn size-9 rounded-full border border-border bg-background hover:bg-black-100 dark:hover:bg-black-800 flex items-center justify-center transition-colors cursor-pointer text-foreground"
+              title="Share on LinkedIn"
+            >
+              <svg class="size-4 fill-current" viewBox="0 0 24 24">
+                <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.45a1.64 1.64 0 1 0 1.64 1.64 1.64 1.64 0 0 0-1.64-1.64Z" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="copy-link-btn size-9 rounded-full border border-border bg-background hover:bg-black-100 dark:hover:bg-black-800 flex items-center justify-center transition-colors cursor-pointer text-foreground"
+              title="Copy link"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon size-4"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            </button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              id="btn-bookmark-bottom"
+              class="bookmark-toggle-btn inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-border bg-background hover:bg-black-100 dark:hover:bg-black-800 text-xs font-semibold text-foreground transition-all cursor-pointer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="bookmark-icon size-4"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+              <span class="bookmark-text">Save for Later</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Previous & Next Post Navigation Cards */}
+        <div class="mt-12 not-prose grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {prevPost ? (
+            <a
+              href={`/blog/${prevPost.id}/`}
+              class="p-5 rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:border-black/40 dark:hover:border-white/30 transition-all group flex flex-col justify-between space-y-2"
+            >
+              <div class="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 transition-transform group-hover:-translate-x-1"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+                Previous Blueprint
+              </div>
+              <div class="font-display font-bold text-sm sm:text-base text-foreground line-clamp-2 group-hover:underline">
+                {prevPost.data.title}
+              </div>
+            </a>
+          ) : (
+            <div class="hidden sm:block"></div>
+          )}
+
+          {nextPost ? (
+            <a
+              href={`/blog/${nextPost.id}/`}
+              class="p-5 rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:border-black/40 dark:hover:border-white/30 transition-all group flex flex-col justify-between items-end space-y-2 text-right"
+            >
+              <div class="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
+                Next Blueprint
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </div>
+              <div class="font-display font-bold text-sm sm:text-base text-foreground line-clamp-2 group-hover:underline">
+                {nextPost.data.title}
+              </div>
+            </a>
+          ) : (
+            <div class="hidden sm:block"></div>
+          )}
+        </div>
+
+        {/* Giscus Comments Section */}
+        <div class="mt-14 not-prose">
+          <div class="border-t border-border/60 pt-8">
+            <h3 class="font-display font-bold text-xl text-foreground mb-4">
+              Discussion & Community Thoughts
+            </h3>
+            <div class="giscus mx-auto w-full" id="comments-container"></div>
+          </div>
+        </div>
+      </main>
+
+      {/* 7. Sticky Editorial Sidebar */}
+      <aside class="hidden xl:block sticky top-20 space-y-6 print:hidden">
+        {/* Table of Contents Card */}
+        <div class="border border-black-150 dark:border-black-800 rounded-3xl p-5 bg-card shadow-xs" id="toc-card">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-border/40">
+            <span class="font-bold text-xs uppercase tracking-wider text-muted-foreground font-display flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>
+              On this page
+            </span>
+            <div class="flex items-center gap-2">
+              <span id="toc-min-left" class="text-[10px] text-muted-foreground font-medium">{readTime}m left</span>
+              <span id="toc-progress-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-secondary text-foreground font-mono">
+                0%
+              </span>
+            </div>
+          </div>
+
+          {/* Mini progress bar */}
+          <div class="w-full h-1 rounded-full bg-black-100 dark:bg-black-800 mb-3 overflow-hidden">
+            <div id="toc-mini-progress" class="h-full bg-primary rounded-full transition-all duration-150" style="width: 0%"></div>
+          </div>
+
+          <ul id="toc-list" class="space-y-1 list-none pl-0 text-xs max-h-[340px] overflow-y-auto scrollbar-thin">
+            {/* Populated dynamically via inline script */}
+          </ul>
+        </div>
+
+        {/* Highlights Widget ("My Highlights") */}
+        <div class="border border-black-150 dark:border-black-800 rounded-3xl p-5 bg-card shadow-xs hidden" id="highlights-card">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-border/40">
+            <span class="font-bold text-xs uppercase tracking-wider text-muted-foreground font-display flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 text-amber-500"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              My Saved Notes
+            </span>
+            <span id="highlights-count" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 font-mono">
+              0
+            </span>
+          </div>
+          <ul id="highlights-list" class="space-y-2 list-none pl-0 max-h-[220px] overflow-y-auto text-xs">
+            {/* Populated dynamically via inline script */}
+          </ul>
+        </div>
+
+        {/* Curated Roadmap Track Recommendation */}
+        {roadmapSlug && (
+          <div class="border border-black-150 dark:border-black-800 rounded-3xl p-5 bg-card shadow-xs space-y-3">
+            <div class="flex items-center gap-2.5">
+              <span class="size-8 rounded-xl bg-[#E5E795]/30 text-black dark:text-white flex items-center justify-center font-bold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>
+              </span>
+              <div>
+                <div class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Interactive Learning Track
+                </div>
+                <div class="text-xs font-bold font-display text-foreground">
+                  {topicMeta?.label} Roadmap
+                </div>
+              </div>
+            </div>
+            <p class="text-xs text-muted-foreground leading-relaxed">
+              Track your progress, build foundational milestones, and master {topicMeta?.label} with interactive graph pathways.
+            </p>
+            <a
+              href={`/roadmaps/${roadmapSlug}/`}
+              class="inline-flex items-center justify-between w-full px-3.5 py-2 rounded-xl bg-black-100 dark:bg-black-800 hover:bg-foreground hover:text-background text-xs font-semibold text-foreground transition-all group"
+            >
+              <span>Explore Roadmap</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+          </div>
+        )}
+
+        {/* Featured Blueprints Widget */}
+        {featured && featured.length > 0 && (
+          <div class="border border-black-150 dark:border-black-800 rounded-3xl p-5 bg-card shadow-xs">
+            <div class="font-bold mb-3 text-xs uppercase tracking-wider text-muted-foreground font-display flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 text-primary"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+              Featured Blueprints
+            </div>
+            <ul class="space-y-3.5 list-none pl-0">
+              {featured.slice(0, 3).map((f: any) => (
+                <li>
+                  <a
+                    href={`/blog/${f.id}/`}
+                    class="group flex items-start gap-3 rounded-xl p-2 hover:bg-black-100 dark:hover:bg-black-800 transition-colors"
+                  >
+                    {f.data.image ? (
+                      <img
+                        src={f.data.image}
+                        alt={f.data.title}
+                        class="size-11 rounded-lg object-cover border border-border shrink-0 group-hover:scale-105 transition-transform"
+                      />
+                    ) : (
+                      <div class="size-11 rounded-lg bg-black-100 dark:bg-black-800 flex items-center justify-center text-xs font-bold text-muted-foreground shrink-0">
+                        {getInitials(f.data.title)}
+                      </div>
+                    )}
+                    <div class="flex-1 min-w-0">
+                      <h4 class="text-xs font-bold font-display text-foreground line-clamp-2 group-hover:underline leading-snug">
+                        {f.data.title}
+                      </h4>
+                      <div class="text-[10px] text-muted-foreground mt-1 flex items-center gap-1.5">
+                        <span>{format(new Date(f.data.pubDate), "dd MMM yyyy")}</span>
+                        <span>•</span>
+                        <span>{f.data.readTime || 6} min</span>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Sidebar Quick Action Buttons */}
+        <div class="border border-black-150 dark:border-black-800 rounded-3xl p-4 bg-card shadow-xs">
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              id="btn-bookmark-sidebar"
+              class="bookmark-toggle-btn flex-1 inline-flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold bg-black-100 dark:bg-black-800 hover:bg-black-200 dark:hover:bg-black-700 text-foreground transition-all cursor-pointer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="bookmark-icon size-3.5"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+              <span class="bookmark-text">Save</span>
+            </button>
+            <button
+              type="button"
+              class="copy-link-btn flex-1 inline-flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold bg-black-100 dark:bg-black-800 hover:bg-black-200 dark:hover:bg-black-700 text-foreground transition-all cursor-pointer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon size-3.5"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              <span class="copy-text">Copy Link</span>
+            </button>
+            <button
+              type="button"
+              class="print-btn size-9 inline-flex items-center justify-center rounded-xl bg-black-100 dark:bg-black-800 hover:bg-black-200 dark:hover:bg-black-700 text-foreground transition-colors cursor-pointer shrink-0"
+              title="Print"
+              aria-label="Print"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  {/* 8. Bottom Related Blueprints Section */}
+  {relatedPosts && relatedPosts.length > 0 && (
+    <section class="woords_container mt-20 pt-12 border-t border-border/60 print:hidden">
+      <div class="max-w-6xl mx-auto space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="woords_tag_small mb-1">Continue Learning</span>
+            <h3 class="font-display font-bold text-2xl sm:text-3xl text-foreground">
+              Related Blueprints & Guides
+            </h3>
+          </div>
+          <a
+            href="/blog/"
+            class="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1"
+          >
+            View all articles
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {relatedPosts.slice(0, 3).map((item: any) => {
+            const itemTopic = (item.data.topics || [])[0] || "machine-learning";
+            const itemMeta = TOPIC_METADATA[itemTopic];
+            return (
+              <a
+                href={`/blog/${item.id}/`}
+                class="flex flex-col rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden group p-4 space-y-3"
+              >
+                {item.data.image && (
+                  <div class="relative aspect-16/10 overflow-hidden rounded-xl bg-black-100 dark:bg-black-800 border border-border/60">
+                    <img
+                      src={item.data.image}
+                      alt={item.data.title}
+                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <div class="space-y-2 flex-1 flex flex-col justify-between">
+                  <div class="space-y-1.5">
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="px-2 py-0.5 rounded-full text-[10px] font-bold border"
+                        style={`background-color: ${itemMeta ? `${itemMeta.color}25` : "rgba(0,0,0,0.05)"}; border-color: ${itemMeta ? `${itemMeta.color}60` : "transparent"};`}
+                      >
+                        {formatSlug(itemTopic)}
+                      </span>
+                      <span class="text-[11px] text-muted-foreground ml-auto flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        {item.data.readTime || 6} min
+                      </span>
+                    </div>
+                    <h4 class="font-display font-bold text-base text-foreground group-hover:underline line-clamp-2 leading-snug">
+                      {item.data.title}
+                    </h4>
+                    {item.data.description && (
+                      <p class="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                        {item.data.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {/* 9. Floating Action Bar (Pill at bottom) */}
+  <div
+    id="floating-action-bar"
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 transition-all duration-300 print:hidden translate-y-20 opacity-0 pointer-events-none"
+  >
+    <div class="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-card/95 backdrop-blur-xl border border-black-200 dark:border-black-700 shadow-2xl">
+      {/* Mini Progress */}
+      <div class="flex items-center gap-2 px-2 text-xs text-muted-foreground font-mono">
+        <div class="w-16 h-1.5 rounded-full bg-black-100 dark:bg-black-800 overflow-hidden">
+          <div id="floating-progress-bar" class="h-full bg-primary rounded-full transition-all duration-150" style="width: 0%"></div>
+        </div>
+        <span id="floating-progress-text" class="text-[10px] font-semibold w-7 text-right">0%</span>
+      </div>
+
+      <div class="h-5 w-px bg-border/60 mx-0.5"></div>
+
+      {/* Font Size Pills */}
+      <div class="inline-flex items-center rounded-lg bg-black-100 dark:bg-black-800 p-0.5">
+        <button
+          type="button"
+          data-font-size="sm"
+          class="font-size-btn px-1.5 py-0.5 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        >
+          A⁻
+        </button>
+        <button
+          type="button"
+          data-font-size="base"
+          class="font-size-btn active px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-foreground text-background transition-colors cursor-pointer"
+        >
+          A
+        </button>
+        <button
+          type="button"
+          data-font-size="lg"
+          class="font-size-btn px-1.5 py-0.5 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        >
+          A⁺
+        </button>
+      </div>
+
+      <div class="h-5 w-px bg-border/60 mx-0.5"></div>
+
+      {/* Bookmark */}
+      <button
+        type="button"
+        id="btn-bookmark-floating"
+        class="bookmark-toggle-btn p-1.5 rounded-lg text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        title="Bookmark"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="bookmark-icon size-4"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+      </button>
+
+      {/* Copy Link */}
+      <button
+        type="button"
+        class="copy-link-btn p-1.5 rounded-lg text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        title="Copy link"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon size-4"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+      </button>
+
+      {/* Share to X */}
+      <button
+        type="button"
+        class="share-x-btn p-1.5 rounded-lg text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        title="Share on X"
+      >
+        <svg class="size-4 fill-current" viewBox="0 0 24 24">
+          <path d="M13.68 10.62 20.24 3h-1.55L13 9.62 8.45 3H3.19l6.88 10.01L3.19 21h1.55l6.01-6.99 4.8 6.99h5.24l-7.13-10.38Zm-2.13 2.47-.7-1-5.54-7.93H7.7l4.47 6.4.7 1 5.82 8.32H16.3z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  {/* 10. Floating Scroll to Top Button with SVG Progress Ring */}
+  <button
+    type="button"
+    id="scroll-to-top-btn"
+    aria-label="Scroll to top"
+    class="fixed bottom-20 right-6 size-11 rounded-full bg-card border border-border shadow-lg hover:shadow-xl hover:bg-foreground hover:text-background flex items-center justify-center transition-all duration-200 z-40 cursor-pointer group opacity-0 pointer-events-none print:hidden"
+  >
+    <svg class="absolute inset-0 -rotate-90 size-11" viewBox="0 0 44 44">
+      <circle
+        cx="22"
+        cy="22"
+        r="18"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        class="text-black-100 dark:text-black-800"
+      />
+      <circle
+        id="scroll-progress-ring"
+        cx="22"
+        cy="22"
+        r="18"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        class="text-primary group-hover:text-background transition-colors"
+        stroke-dasharray="113.097"
+        stroke-dashoffset="113.097"
+      />
+    </svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4 relative z-10"><path d="m18 15-6-6-6 6"/></svg>
+  </button>
+
+  {/* 11. Toast Notification */}
+  <div
+    id="blog-toast"
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2.5 rounded-2xl bg-black text-white dark:bg-white dark:text-black text-xs font-semibold shadow-2xl flex items-center gap-2 z-50 transition-all duration-300 opacity-0 pointer-events-none translate-y-4"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="toast-icon size-4 text-emerald-400"><path d="M20 6 9 17l-5-5"/></svg>
+    <span id="toast-message">Notification</span>
+  </div>
+
+  {/* 12. Text Highlight Popover */}
+  <div
+    id="selection-popover"
+    class="fixed z-50 hidden items-center gap-1 px-2 py-1 rounded-xl bg-foreground text-background shadow-xl border border-border/20 text-[11px] font-semibold -translate-x-1/2 -translate-y-full"
+  >
+    <button
+      type="button"
+      id="btn-popover-highlight"
+      class="inline-flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-white/20 dark:hover:bg-black/30 transition-colors cursor-pointer"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3 text-amber-400"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+      Save Note
+    </button>
+    <div class="h-4 w-px bg-white/20 dark:bg-black/20"></div>
+    <button
+      type="button"
+      id="btn-popover-copy"
+      class="inline-flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-white/20 dark:hover:bg-black/30 transition-colors cursor-pointer"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+      Copy
+    </button>
+  </div>
+</article>
+
+{/* Client-side Script with Robust Vanilla JS (100% Reliability, Zero Hydration Errors) */}
+<script is:inline>
+  (function () {
+    const root = document.getElementById("blog-post-root");
+    if (!root) return;
+
+    const postId = root.dataset.postId || "";
+    const postTitle = root.dataset.title || document.title;
+    const readTime = parseInt(root.dataset.readTime || "6", 10);
+    const content = document.getElementById("article-content");
+
+    // Elements
+    const topBar = document.getElementById("top-progress-bar");
+    const floatingBar = document.getElementById("floating-action-bar");
+    const floatingBarProgress = document.getElementById("floating-progress-bar");
+    const floatingBarText = document.getElementById("floating-progress-text");
+    const tocProgressBadge = document.getElementById("toc-progress-badge");
+    const tocMiniProgress = document.getElementById("toc-mini-progress");
+    const tocMinLeft = document.getElementById("toc-min-left");
+    const scrollToTopBtn = document.getElementById("scroll-to-top-btn");
+    const scrollRing = document.getElementById("scroll-progress-ring");
+    const toast = document.getElementById("blog-toast");
+    const toastMessage = document.getElementById("toast-message");
+    const popover = document.getElementById("selection-popover");
+    const highlightsCard = document.getElementById("highlights-card");
+    const highlightsList = document.getElementById("highlights-list");
+    const highlightsCount = document.getElementById("highlights-count");
+
+    const RING_CIRCUMFERENCE = 113.097;
+
+    // Toast helper
+    let toastTimeout = null;
+    function showToast(msg, isSuccess = true) {
+      if (!toast || !toastMessage) return;
+      toastMessage.textContent = msg;
+      toast.classList.remove("opacity-0", "pointer-events-none", "translate-y-4");
+      toast.classList.add("opacity-100", "translate-y-0");
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove("opacity-100", "translate-y-0");
+        toast.classList.add("opacity-0", "pointer-events-none", "translate-y-4");
+      }, 2500);
+    }
+
+    // 1. Table of Contents Generator
+    const tocList = document.getElementById("toc-list");
+    const headings = [];
+    if (content && tocList) {
+      const headingElements = content.querySelectorAll("h2, h3");
+      headingElements.forEach((el, index) => {
+        let id = el.id;
+        if (!id) {
+          id = el.textContent
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/(^-|-$)/g, "") || `section-${index}`;
+          el.id = id;
+        }
+        const level = el.tagName === "H2" ? 2 : 3;
+        headings.push({ id, el, level });
+
+        const li = document.createElement("li");
+        if (level === 3) li.className = "pl-3";
+        const a = document.createElement("a");
+        a.href = `#${id}`;
+        a.className = "toc-link block rounded-lg px-2.5 py-1.5 transition-all duration-150 leading-snug text-muted-foreground hover:text-foreground hover:bg-black-100 dark:hover:bg-black-800";
+        a.textContent = (level === 3 ? "– " : "") + (el.textContent || "Section");
+        a.dataset.targetId = id;
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          const target = document.getElementById(id);
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+            history.pushState(null, "", `#${id}`);
+          }
+        });
+        li.appendChild(a);
+        tocList.appendChild(li);
+      });
+
+      if (headings.length === 0) {
+        const tocCard = document.getElementById("toc-card");
+        if (tocCard) tocCard.style.display = "none";
+      }
+    }
+
+    // 2. Scroll Progress & Active Heading Tracker
+    function updateScroll() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+      const roundedProgress = Math.round(progress);
+
+      // Top progress bar
+      if (topBar) topBar.style.width = `${progress}%`;
+
+      // Floating action bar
+      if (floatingBar) {
+        if (scrollTop > 450) {
+          floatingBar.classList.remove("translate-y-20", "opacity-0", "pointer-events-none");
+          floatingBar.classList.add("translate-y-0", "opacity-100");
+        } else {
+          floatingBar.classList.remove("translate-y-0", "opacity-100");
+          floatingBar.classList.add("translate-y-20", "opacity-0", "pointer-events-none");
+        }
+      }
+      if (floatingBarProgress) floatingBarProgress.style.width = `${progress}%`;
+      if (floatingBarText) floatingBarText.textContent = `${roundedProgress}%`;
+
+      // TOC badges
+      if (tocProgressBadge) tocProgressBadge.textContent = `${roundedProgress}%`;
+      if (tocMiniProgress) tocMiniProgress.style.width = `${progress}%`;
+      if (tocMinLeft) {
+        const minsRemaining = Math.max(1, Math.ceil(readTime * (1 - progress / 100)));
+        tocMinLeft.textContent = progress >= 95 ? "Done!" : `${minsRemaining}m left`;
+      }
+
+      // Scroll to top button
+      if (scrollToTopBtn) {
+        if (scrollTop > 500) {
+          scrollToTopBtn.classList.remove("opacity-0", "pointer-events-none");
+          scrollToTopBtn.classList.add("opacity-100");
+        } else {
+          scrollToTopBtn.classList.remove("opacity-100");
+          scrollToTopBtn.classList.add("opacity-0", "pointer-events-none");
+        }
+      }
+      if (scrollRing) {
+        const offset = RING_CIRCUMFERENCE - (progress / 100) * RING_CIRCUMFERENCE;
+        scrollRing.style.strokeDashoffset = offset.toString();
+      }
+
+      // Active TOC link
+      if (headings.length > 0) {
+        let activeId = headings[0].id;
+        for (let i = 0; i < headings.length; i++) {
+          const rect = headings[i].el.getBoundingClientRect();
+          if (rect.top <= window.innerHeight * 0.35) {
+            activeId = headings[i].id;
+          }
+        }
+        document.querySelectorAll(".toc-link").forEach((link) => {
+          if (link.dataset.targetId === activeId) {
+            link.classList.add("bg-foreground", "text-background", "font-semibold", "shadow-xs");
+            link.classList.remove("text-muted-foreground", "hover:bg-black-100", "dark:hover:bg-black-800");
+          } else {
+            link.classList.remove("bg-foreground", "text-background", "font-semibold", "shadow-xs");
+            link.classList.add("text-muted-foreground");
+          }
+        });
+      }
+    }
+
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    updateScroll();
+
+    // 3. Scroll to Top Click
+    if (scrollToTopBtn) {
+      scrollToTopBtn.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    }
+
+    // 4. Font Size Adjuster
+    function setFontSize(size) {
+      if (!content) return;
+      content.classList.remove("text-base", "sm:text-lg", "text-sm", "sm:text-base", "text-lg", "sm:text-xl");
+      if (size === "sm") {
+        content.classList.add("text-sm", "sm:text-base");
+      } else if (size === "lg") {
+        content.classList.add("text-lg", "sm:text-xl");
+      } else {
+        content.classList.add("text-base", "sm:text-lg");
+      }
+
+      document.querySelectorAll(".font-size-btn").forEach((btn) => {
+        if (btn.dataset.fontSize === size) {
+          btn.classList.add("active", "bg-foreground", "text-background", "font-bold");
+          btn.classList.remove("text-muted-foreground");
+        } else {
+          btn.classList.remove("active", "bg-foreground", "text-background", "font-bold");
+          btn.classList.add("text-muted-foreground");
+        }
+      });
+
+      try {
+        localStorage.setItem("encodeedge_font_size", size);
+      } catch (e) {}
+    }
+
+    document.querySelectorAll(".font-size-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const size = btn.dataset.fontSize || "base";
+        setFontSize(size);
+      });
+    });
+
+    try {
+      const savedFontSize = localStorage.getItem("encodeedge_font_size");
+      if (savedFontSize) setFontSize(savedFontSize);
+    } catch (e) {}
+
+    // 5. Bookmark System
+    function getBookmarks() {
+      try {
+        const raw = localStorage.getItem("encodeedge_blog_bookmarks");
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function isBookmarked() {
+      return getBookmarks().includes(postId);
+    }
+
+    function updateBookmarkUI() {
+      const saved = isBookmarked();
+      document.querySelectorAll(".bookmark-toggle-btn").forEach((btn) => {
+        const textSpan = btn.querySelector(".bookmark-text");
+        const svgIcon = btn.querySelector(".bookmark-icon");
+
+        if (saved) {
+          btn.classList.add("bg-amber-500", "text-black", "border-amber-500");
+          btn.classList.remove("bg-background", "text-foreground");
+          if (textSpan) textSpan.textContent = "Saved";
+          if (svgIcon) svgIcon.setAttribute("fill", "currentColor");
+        } else {
+          btn.classList.remove("bg-amber-500", "text-black", "border-amber-500");
+          btn.classList.add("bg-background", "text-foreground");
+          if (textSpan) textSpan.textContent = "Save";
+          if (svgIcon) svgIcon.setAttribute("fill", "none");
+        }
+      });
+    }
+
+    function toggleBookmark() {
+      let list = getBookmarks();
+      if (list.includes(postId)) {
+        list = list.filter((id) => id !== postId);
+        showToast("Removed from reading list");
+      } else {
+        list.push(postId);
+        showToast("Saved to reading list! ⭐");
+      }
+      try {
+        localStorage.setItem("encodeedge_blog_bookmarks", JSON.stringify(list));
+      } catch (e) {}
+      updateBookmarkUI();
+    }
+
+    document.querySelectorAll(".bookmark-toggle-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        toggleBookmark();
+      });
+    });
+    updateBookmarkUI();
+
+    // 6. Copy Link Buttons
+    function copyCurrentLink() {
+      const url = window.location.href;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          showToast("Link copied to clipboard! 📋");
+          document.querySelectorAll(".copy-link-btn").forEach((btn) => {
+            const textSpan = btn.querySelector(".copy-text");
+            if (textSpan) textSpan.textContent = "Copied!";
+            setTimeout(() => {
+              if (textSpan) textSpan.textContent = "Copy Link";
+            }, 2000);
+          });
+        });
+      }
+    }
+
+    document.querySelectorAll(".copy-link-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        copyCurrentLink();
+      });
+    });
+
+    // 7. Social Sharing
+    function shareToX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(postTitle);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, "_blank", "width=600,height=400");
+    }
+
+    function shareToLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, "_blank", "width=600,height=500");
+    }
+
+    document.querySelectorAll(".share-x-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        shareToX();
+      });
+    });
+
+    document.querySelectorAll(".share-li-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        shareToLinkedIn();
+      });
+    });
+
+    // 8. Print Buttons
+    document.querySelectorAll(".print-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        window.print();
+      });
+    });
+
+    // 9. Article Reactions
+    function getReactions() {
+      try {
+        const raw = localStorage.getItem(`blog_reactions_${postId}`);
+        return raw ? JSON.parse(raw) : { insightful: 3, helpful: 5, practical: 2, "well-written": 4 };
+      } catch (e) {
+        return { insightful: 3, helpful: 5, practical: 2, "well-written": 4 };
+      }
+    }
+
+    function getUserReactions() {
+      try {
+        const raw = localStorage.getItem(`blog_user_reactions_${postId}`);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function updateReactionsUI() {
+      const counts = getReactions();
+      const userList = getUserReactions();
+
+      document.querySelectorAll(".reaction-btn").forEach((btn) => {
+        const key = btn.dataset.reactionKey;
+        if (!key) return;
+        const countSpan = btn.querySelector(".reaction-count");
+        if (countSpan) countSpan.textContent = (counts[key] || 0).toString();
+
+        if (userList.includes(key)) {
+          btn.classList.add("bg-foreground", "text-background", "border-foreground", "shadow-sm", "scale-105");
+          btn.classList.remove("bg-card", "text-foreground");
+          if (countSpan) {
+            countSpan.classList.add("bg-background/20", "text-background");
+            countSpan.classList.remove("bg-black-100", "dark:bg-black-800", "text-muted-foreground");
+          }
+        } else {
+          btn.classList.remove("bg-foreground", "text-background", "border-foreground", "shadow-sm", "scale-105");
+          btn.classList.add("bg-card", "text-foreground");
+          if (countSpan) {
+            countSpan.classList.remove("bg-background/20", "text-background");
+            countSpan.classList.add("bg-black-100", "dark:bg-black-800", "text-muted-foreground");
+          }
+        }
+      });
+    }
+
+    document.querySelectorAll(".reaction-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const key = btn.dataset.reactionKey;
+        if (!key) return;
+
+        let counts = getReactions();
+        let userList = getUserReactions();
+
+        if (userList.includes(key)) {
+          userList = userList.filter((k) => k !== key);
+          counts[key] = Math.max(0, (counts[key] || 1) - 1);
+        } else {
+          userList.push(key);
+          counts[key] = (counts[key] || 0) + 1;
+          showToast(`Thanks for your feedback! 👍`);
+        }
+
+        try {
+          localStorage.setItem(`blog_reactions_${postId}`, JSON.stringify(counts));
+          localStorage.setItem(`blog_user_reactions_${postId}`, JSON.stringify(userList));
+        } catch (e) {}
+
+        updateReactionsUI();
+      });
+    });
+    updateReactionsUI();
+
+    // 10. Code Block Copy Buttons
+    if (content) {
+      content.querySelectorAll("pre").forEach((pre) => {
+        if (pre.querySelector(".code-copy-btn")) return;
+        pre.classList.add("relative", "group");
+
+        const copyBtn = document.createElement("button");
+        copyBtn.type = "button";
+        copyBtn.className =
+          "code-copy-btn absolute top-3 right-3 px-2.5 py-1 rounded-md text-[11px] font-mono font-medium bg-black/60 hover:bg-black text-white/90 opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-xs border border-white/10";
+        copyBtn.textContent = "Copy";
+
+        copyBtn.addEventListener("click", () => {
+          const code = pre.querySelector("code")?.textContent || pre.textContent || "";
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(code).then(() => {
+              copyBtn.textContent = "Copied!";
+              copyBtn.classList.add("bg-emerald-600", "text-white");
+              setTimeout(() => {
+                copyBtn.textContent = "Copy";
+                copyBtn.classList.remove("bg-emerald-600", "text-white");
+              }, 2000);
+            });
+          }
+        });
+
+        pre.appendChild(copyBtn);
+      });
+    }
+
+    // 11. Text Selection Highlights
+    let selectedText = "";
+    document.addEventListener("mouseup", () => {
+      const sel = window.getSelection();
+      const txt = sel ? sel.toString().trim() : "";
+      if (txt && txt.length > 5 && content && content.contains(sel.anchorNode)) {
+        selectedText = txt;
+        const range = sel.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        if (popover) {
+          popover.style.left = `${rect.left + rect.width / 2}px`;
+          popover.style.top = `${rect.top - 8 + window.scrollY}px`;
+          popover.classList.remove("hidden");
+          popover.classList.add("flex");
+        }
+      } else {
+        if (popover && !popover.contains(document.activeElement)) {
+          popover.classList.add("hidden");
+          popover.classList.remove("flex");
+        }
+      }
+    });
+
+    const btnHighlight = document.getElementById("btn-popover-highlight");
+    const btnPopoverCopy = document.getElementById("btn-popover-copy");
+
+    function getHighlights() {
+      try {
+        const raw = localStorage.getItem(`blog_highlights_${postId}`);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function renderHighlights() {
+      const list = getHighlights();
+      if (!highlightsCard || !highlightsList || !highlightsCount) return;
+
+      if (list.length === 0) {
+        highlightsCard.classList.add("hidden");
+        return;
+      }
+
+      highlightsCard.classList.remove("hidden");
+      highlightsCount.textContent = list.length.toString();
+      highlightsList.innerHTML = "";
+
+      list.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.className = "relative group bg-amber-500/5 border-l-2 border-amber-500/50 rounded-r-lg p-2 pr-6 leading-snug";
+        li.innerHTML = `
+          <span class="text-foreground/90 font-medium">"${item.length > 90 ? item.slice(0, 90) + "…" : item}"</span>
+          <button type="button" class="del-hl-btn absolute top-1.5 right-1.5 size-4 flex items-center justify-center text-muted-foreground hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-xs" data-index="${index}">×</button>
+        `;
+        highlightsList.appendChild(li);
+      });
+
+      highlightsList.querySelectorAll(".del-hl-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          const idx = parseInt(btn.dataset.index || "0", 10);
+          let current = getHighlights();
+          current.splice(idx, 1);
+          try {
+            localStorage.setItem(`blog_highlights_${postId}`, JSON.stringify(current));
+          } catch (e) {}
+          renderHighlights();
+          showToast("Highlight removed");
+        });
+      });
+    }
+
+    if (btnHighlight) {
+      btnHighlight.addEventListener("click", () => {
+        if (!selectedText) return;
+        let list = getHighlights();
+        list.push(selectedText);
+        try {
+          localStorage.setItem(`blog_highlights_${postId}`, JSON.stringify(list));
+        } catch (e) {}
+        if (popover) {
+          popover.classList.add("hidden");
+          popover.classList.remove("flex");
+        }
+        window.getSelection()?.removeAllRanges();
+        renderHighlights();
+        showToast("Note saved to sidebar! 📝");
+      });
+    }
+
+    if (btnPopoverCopy) {
+      btnPopoverCopy.addEventListener("click", () => {
+        if (!selectedText) return;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(selectedText).then(() => {
+            showToast("Selected text copied!");
+          });
+        }
+        if (popover) {
+          popover.classList.add("hidden");
+          popover.classList.remove("flex");
+        }
+        window.getSelection()?.removeAllRanges();
+      });
+    }
+
+    renderHighlights();
+
+    // 12. Giscus Comments Loader
+    const commentsContainer = document.getElementById("comments-container");
+    if (commentsContainer) {
+      const giscusScript = document.createElement("script");
+      giscusScript.src = "https://giscus.app/client.js";
+      giscusScript.setAttribute("data-repo", "encodeedge/website");
+      giscusScript.setAttribute("data-repo-id", "R_kgDOQbT02Q");
+      giscusScript.setAttribute("data-category", "Blog Posts Comments");
+      giscusScript.setAttribute("data-category-id", "DIC_kwDOQbT02c4Czm3k");
+      giscusScript.setAttribute("data-mapping", "url");
+      giscusScript.setAttribute("data-strict", "0");
+      giscusScript.setAttribute("data-reactions-enabled", "1");
+      giscusScript.setAttribute("data-emit-metadata", "0");
+      giscusScript.setAttribute("data-input-position", "top");
+      giscusScript.setAttribute("data-theme", "noborder_light");
+      giscusScript.setAttribute("data-lang", "en");
+      giscusScript.setAttribute("data-loading", "lazy");
+      giscusScript.crossOrigin = "anonymous";
+      giscusScript.async = true;
+      commentsContainer.appendChild(giscusScript);
+    }
+  })();
+</script>

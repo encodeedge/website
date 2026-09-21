@@ -8,7 +8,7 @@ featured: false
 tags: []
 topics:
   - machine-learning
-image: /assets/introduction-to-machine-learning/image.png
+image: /assets/blog/introduction-to-machine-learning.svg
 authorImage: /assets/introduction-to-machine-learning/authorImage.png
 authorName: Atul Jha
 faqs:
@@ -58,7 +58,6 @@ references:
     affiliate: https://amzn.to/494wO4M
     image: /assets/introduction-to-machine-learning/references/3/image.jpg
 ---
-# Introduction to Machine Learning
 
 #### Definition :&#x20;
 

@@ -1,5 +1,5 @@
 ---
-title: 'Welcome to EncodeEdge : Your Path to Practical AI Mastery'
+title: 'Welcome to EncodeEdge: Your Path to Practical AI Mastery'
 description: >-
   Welcome to EncodeEdge! This inaugural post introduces our mission to demystify
   AI and ML and promising practical, code-backed tutorials for real-world
@@ -11,17 +11,18 @@ featured: false
 tags:
   - first-post
   - encodeedge
-topics: []
-image: /assets/welcome-to-encode-edge-your-path-to-practical-ai-mastery/image.png
+topics:
+  - machine-learning
+image: /assets/blog/welcome-to-encode-edge.svg
 authorImage: >-
   /assets/welcome-to-encode-edge-your-path-to-practical-ai-mastery/authorImage.png
 authorName: Atul Jha
 faqs: []
-references: []
 ---
-# 🚀 Welcome to EncodeEdge: Your Path to Practical AI Mastery
+import { Callout, AudioPlayer, StatCard, QuizBlock, NewsletterCTA } from '@/components/mdx';
 
 If you're reading this, you're ready to move beyond the buzzwords and start building. The world of Artificial Intelligence (AI) and Machine Learning (ML) is moving fast, but the foundations remain solid. This is where **EncodeEdge** begins.
+
 
 ## 🧠 Decoding the Terms: AI vs. ML
 
@@ -34,21 +35,55 @@ Think of it this way:
 
 At EncodeEdge, we believe mastery lies in understanding both the **theory** (AI) and the **practical execution** (ML).
 
+<Callout kind="tip" title="Practical Takeaway">
+AI is the overarching goal of intelligent automation; Machine Learning is the data-driven engine that learns representations from examples rather than static rules.
+</Callout>
+
+<AudioPlayer 
+  title="Introduction to Modern AI: Episode 01" 
+  duration="12 min" 
+  host="Atul Jha" 
+  description="Listen to our audio walkthrough of the foundations of practical machine learning, architecture patterns, and our roadmap."
+/>
+
 ---
 
 ## 🌟 The EncodeEdge Promise: Moving from Code to Impact
 
 Every technical blog has a mission. **EncodeEdge** is committed to helping you bridge the gap between abstract concepts and deployable code.
 
-> **\[Learn and build your way]**
-> Our goal is to focus on **practical, accessible tutorials** that are always backed by **clean Python code** and **clear mathematical explanations**, ensuring you not only know *how* to use a model, but *why* it works.
+<StatCard 
+  statValue="85%" 
+  label="Hands-on Code Ratio" 
+  description="Every single tutorial on EncodeEdge is backed by clean, reproducible Python code and interactive Jupyter notebooks."
+  accent="lime"
+/>
 
-We aim to be the resource you turn to when you need to understand the "why" behind the code you're writing.
+> **[Learn and build your way]**
+> Our goal is to focus on **practical, accessible tutorials** that are always backed by **clean Python code** and **clear mathematical explanations**, ensuring you not only know *how* to use a model, but *why* it works.
 
 ---
 
-## 📈 What’s Next: Our First Deep Dive
+## 🧠 Test Your Understanding
+
+<QuizBlock 
+  question="Which of the following statements accurately describes the relationship between AI and Machine Learning?"
+  option1="ML and AI are completely unrelated fields of computer science"
+  option2="Machine Learning is a specialized subfield of AI where models learn representations directly from data"
+  option3="Artificial Intelligence is a subset of Machine Learning"
+  option4="Machine Learning relies strictly on predefined if-else rule trees"
+  correctAnswer="1"
+  explanation="Machine Learning is a subset of Artificial Intelligence that builds models capable of improving their predictions by learning directly from data."
+/>
+
+---
+
+## 📈 What’s Next: Our First Blueprint
 
 Now that we've set the stage, it's time to dive into the core mechanics of machine learning.
 
-Join us on this journey to encode your edge in the world of AI!
+<NewsletterCTA 
+  title="Encode Your Edge in Artificial Intelligence" 
+  description="Join ambitious software engineers and data scientists building production ML applications." 
+  buttonText="Join the Community"
+/>

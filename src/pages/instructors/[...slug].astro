@@ -20,56 +20,56 @@ const instructorCourses = allCourses.filter(course => course.data.instructor ===
 ---
 
 <DefaultLayout title={instructor.data.name} description={`Profile of ${instructor.data.name}`}>
-  <div class="container mx-auto px-4 pt-28 pb-12 lg:pt-44 lg:pb-32 max-w-4xl">
+  <div class="py-12 md:py-16 max-w-4xl mx-auto px-4 sm:px-6">
     <div class="flex flex-col md:flex-row gap-8 items-start mb-12">
       {instructor.data.avatar && (
-        <div class="w-48 h-48 flex-shrink-0">
+        <div class="w-36 h-36 md:w-44 md:h-44 flex-shrink-0">
           <img 
             src={instructor.data.avatar} 
             alt={instructor.data.name} 
-            class="w-full h-full object-cover rounded-full shadow-lg"
+            class="w-full h-full object-cover rounded-full border-2 border-black-200 dark:border-black-700 shadow-md"
           />
         </div>
       )}
       
       <div>
-        <h1 class="text-4xl font-bold mb-4">{instructor.data.name}</h1>
+        <span class="inline-block text-xs font-semibold uppercase tracking-wider bg-black-100 dark:bg-black-800 text-muted-foreground px-3 py-1 rounded-full mb-3">
+          Instructor Profile
+        </span>
+        <h1 class="text-3xl md:text-5xl font-bold font-display tracking-tight text-foreground mb-3">{instructor.data.name}</h1>
         
         {instructor.data.socialLinks && instructor.data.socialLinks.length > 0 && (
-          <div class="flex flex-wrap gap-3 mb-6">
+          <div class="flex flex-wrap gap-2 mb-6">
             {instructor.data.socialLinks.map(link => (
-              <a href={link.url} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
-                {link.platform}
+              <a href={link.url} target="_blank" rel="noopener noreferrer" class="woords_tag text-xs">
+                {link.platform} ↗
               </a>
             ))}
           </div>
         )}
 
-        <div class="prose prose-lg dark:prose-invert max-w-none">
+        <div class="prose prose-lg dark:prose-invert max-w-none font-body">
           <Content />
         </div>
       </div>
     </div>
 
     {instructorCourses.length > 0 && (
-      <div>
-        <h2 class="text-3xl font-bold mb-6 border-b pb-2">Courses by {instructor.data.name}</h2>
+      <div class="mt-12 pt-8 border-t border-black-100 dark:border-black-800">
+        <h2 class="text-2xl md:text-3xl font-bold font-display tracking-tight text-foreground mb-6">Courses by {instructor.data.name}</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           {instructorCourses.map(course => (
-            <Card>
-              <CardHeader>
-                <Badge variant="outline" className="w-fit mb-2 capitalize">{course.data.level}</Badge>
-                <CardTitle>
-                  <a href={`/courses/${course.id}`} class="hover:underline">{course.data.title}</a>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p class="text-muted-foreground line-clamp-2">{course.data.shortDescription}</p>
-              </CardContent>
-            </Card>
+            <div class="rounded-2xl border border-black-200 dark:border-black-800 bg-card p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+              <span class="woords_tag capitalize text-xs mb-3 inline-block">{course.data.level}</span>
+              <h3 class="text-xl font-bold font-display text-foreground mb-2">
+                <a href={`/courses/${course.id}`} class="hover:text-primary transition-colors">{course.data.title}</a>
+              </h3>
+              <p class="text-muted-foreground font-body text-sm line-clamp-2">{course.data.shortDescription}</p>
+            </div>
           ))}
         </div>
       </div>
     )}
   </div>
 </DefaultLayout>
+

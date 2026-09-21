@@ -9,35 +9,34 @@ import DefaultLayout from "@/layouts/DefaultLayout.astro";
 
 <DefaultLayout title="404: Not Found" description="Sorry, the page you're looking for doesn't exist.">
   <Background>
-    <div class="container flex min-h-[70vh] flex-col items-center justify-center py-28 text-center lg:min-h-[80vh] lg:py-32">
-      <div class="relative z-10 max-w-2xl">
-        <h1 class="from-foreground to-foreground/70 relative mb-6 bg-linear-to-br bg-clip-text py-2 text-5xl font-bold text-transparent sm:text-6xl lg:text-7xl">
+    <div class="container flex min-h-[60vh] flex-col items-center justify-center py-16 md:py-24 text-center">
+      <div class="relative z-10 max-w-2xl mx-auto px-4">
+        <span class="inline-block text-xs font-semibold uppercase tracking-wider bg-[#FDA4AF]/30 text-[#701625] dark:bg-[#FDA4AF]/20 dark:text-[#FDA4AF] px-3 py-1 rounded-full mb-4">
+          Error 404
+        </span>
+        <h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold font-display tracking-tight text-foreground mb-6">
           Page Not Found
         </h1>
 
-        <p class="text-muted-foreground mb-10 text-xl">
-          Sorry, we couldn't find the page you're looking for. The page might
-          have been removed or the URL might be incorrect.
+        <p class="text-muted-foreground font-body text-base sm:text-lg mb-10 max-w-lg mx-auto">
+          Sorry, we couldn't find the editorial story, article, or resource you're looking for. It might have been moved or archived.
         </p>
 
-        <div class="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
           <a href="/">
-          <Button size="lg" className="group min-w-[200px] gap-2">
-              <ArrowLeft className="size-5 transition-transform group-hover:-translate-x-1" />
+            <button class="woords_btn gap-2 text-sm inline-flex items-center">
+              <ArrowLeft className="size-4" />
               Back to Home
-            </Button>
+            </button>
           </a>
           <a href="/contact">
-            <Button
-            variant="outline"
-            size="lg"
-            className="min-w-[200px]"
-            >
+            <button class="px-6 py-2.5 rounded-full border border-black-200 dark:border-black-800 text-sm font-medium hover:bg-black-100 dark:hover:bg-black-800 transition-colors">
               Contact Support
-            </Button>
-           </a>
+            </button>
+          </a>
         </div>
       </div>
     </div>
+
   </Background>
 </DefaultLayout> 

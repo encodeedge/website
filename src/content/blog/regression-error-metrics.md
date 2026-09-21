@@ -1,5 +1,5 @@
 ---
-title: 'Regression : Error Metrics'
+title: 'Regression: Error Metrics'
 description: A close look at the error metrics for regression
 pubDate: 2026-01-04
 updatedDate: 2026-01-04
@@ -11,11 +11,10 @@ tags:
 topics:
   - machine-learning
   - deep-learning
-image: /assets/regression-error-metrics/image.png
+image: /assets/blog/regression-error-metrics.svg
 authorImage: /assets/regression-error-metrics/authorImage.png
 authorName: Atul Jha
 ---
-# Error Metrics for Regression
 
 In simple linear regression, the goal is to find the best fitting line that predicts the dependent variable 'y' from the independent variable 'x'. To evaluate the performance of the regression model, we use error metrics to quantify how well the model's predictions match the actual data.
 

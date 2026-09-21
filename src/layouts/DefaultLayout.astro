@@ -54,10 +54,9 @@ const { title, description } = Astro.props;
         <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.27/dist/contrib/auto-render.min.js" integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"
     onload="renderMathInElement(document.body);"></script>
     </head>
-    <body class={`h-screen antialiased`}
-    >
-        <Navbar client:only='react' />
-        <main><slot /></main>
+    <body class="min-h-screen flex flex-col antialiased bg-background text-foreground">
+        <Navbar client:load />
+        <main class="flex-1"><slot /></main>
         <Footer />
         <script type="module" src="/scripts/cookieconsent-config.js"></script>
     </body>

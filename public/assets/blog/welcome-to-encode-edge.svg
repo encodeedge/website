@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <pattern id="gridPattern" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.2" fill="#A2D2FF" opacity="0.18" />
+    </pattern>
+  </defs>
+
+  <style>
+    .bg-canvas { fill: #FAF5FF; }
+    .diagram-card { fill: #FFFFFF; stroke: #A2D2FF; stroke-width: 2px; }
+    .diagram-node { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5px; }
+    .diagram-text { fill: #0F172A; }
+    .diagram-subtext { fill: #64748B; }
+    .diagram-line { stroke: #94A3B8; }
+
+    @media (prefers-color-scheme: dark) {
+      .bg-canvas { fill: #1A1224 !important; }
+      .diagram-card { fill: #1E2538 !important; stroke: #A2D2FF !important; stroke-width: 2px !important; }
+      .diagram-node { fill: #161D2B !important; stroke: #334155 !important; stroke-width: 1.5px !important; }
+      .diagram-text { fill: #F8FAFC !important; }
+      .diagram-subtext { fill: #94A3B8 !important; }
+      .diagram-line { stroke: #475569 !important; }
+    }
+  </style>
+
+  <!-- Clean Tinted Canvas (Distinct from grey page background) -->
+  <rect width="800" height="450" class="bg-canvas" />
+  <rect width="800" height="450" fill="url(#gridPattern)" />
+
+  <!-- Diagram Visual -->
+  
+  <g transform="translate(150, 70)">
+    <rect x="40" y="20" width="420" height="150" rx="24" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2" class="diagram-card" />
+    
+    <!-- Central Monogram -->
+    <rect x="215" y="45" width="70" height="70" rx="18" fill="url(#primaryAccent)" />
+    <text x="250" y="92" text-anchor="middle" font-family="serif" font-size="32" font-weight="800" fill="#FFFFFF">EE</text>
+
+    <text x="250" y="145" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" class="diagram-text">EncodeEdge Architecture</text>
+  </g>
+
+</svg>

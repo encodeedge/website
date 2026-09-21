@@ -1,5 +1,5 @@
 ---
-title: 'Python : Type Hierarchy'
+title: 'Python: Type Hierarchy'
 description: >-
   The fundamentals of Python programming for machine learning and AI. Learn the
   basic of type hierarchy in python.
@@ -11,7 +11,7 @@ tags:
   - foundation
 topics:
   - python
-image: /assets/python-type-hierarchy/image.png
+image: /assets/blog/python-type-hierarchy.svg
 authorImage: /assets/python-type-hierarchy/authorImage.png
 authorName: Atul Jha
 faqs:

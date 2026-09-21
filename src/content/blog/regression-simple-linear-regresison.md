@@ -1,5 +1,5 @@
 ---
-title: 'Regression : Simple Linear Regresison'
+title: 'Regression: Simple Linear Regression'
 description: Dive into the topic of simple linear regression
 pubDate: 2026-01-03
 updatedDate: 2026-01-03
@@ -10,11 +10,10 @@ tags:
   - simple-linear-regression
 topics:
   - machine-learning
-image: /assets/regression-simple-linear-regresison/image.png
+image: /assets/blog/regression-simple-linear-regresison.svg
 authorImage: /assets/regression-simple-linear-regresison/authorImage.png
 authorName: Atul Jha
 ---
-# Regression
 
 **Regression** : Regression is a statistical method used for predicting continuous outcome ( dependent variable ) based on one or more input features ( independent variables ).
 

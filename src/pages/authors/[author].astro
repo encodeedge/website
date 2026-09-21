@@ -55,24 +55,26 @@ const authorImage = posts[0]?.data.authorImage;
 ---
 
 <DefaultLayout title={title} description={description}>
-    <Background>
-        <div class="py-28 lg:pt-44 lg:pb-32">
-            <div class="flex flex-col items-center mb-12">
-                {authorImage && (
-                    <img 
-                        src={authorImage} 
-                        alt={authorName} 
-                        class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg mb-4"
-                    />
-                )}
-                <h1 class="text-5xl font-extrabold text-center mb-4">Articles by {authorName}</h1>
-                <p class="text-xl text-center text-gray-600">
-                    Read the latest insights and tutorials from <strong>{authorName}</strong>.
-                </p>
-            </div>
-            
-            {/* Reuses your existing BlogPosts component */}
-            <BlogPosts posts={posts} client:only='react' />
+    <div class="py-12 md:py-16 max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <a href="/authors" class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground mb-4 transition-colors">
+                ← All Authors
+            </a>
+            {authorImage && (
+                <img 
+                    src={authorImage} 
+                    alt={authorName} 
+                    class="w-24 h-24 rounded-full object-cover border-2 border-black-200 dark:border-black-700 shadow-md mb-4 mx-auto"
+                />
+            )}
+            <h1 class="text-4xl sm:text-5xl font-bold font-display tracking-tight text-foreground mb-3">
+                Articles by {authorName}
+            </h1>
+            <p class="text-base sm:text-lg text-muted-foreground font-body">
+                Read the latest engineering insights, architecture breakdowns, and tutorials from {authorName}.
+            </p>
         </div>
-    </Background>
+        
+        <BlogPosts posts={posts} client:load />
+    </div>
 </DefaultLayout>

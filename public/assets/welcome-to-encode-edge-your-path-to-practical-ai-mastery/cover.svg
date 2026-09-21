@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="100%" height="100%">
+  <defs>
+    <linearGradient id="wel-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c1017" />
+      <stop offset="50%" stop-color="#121824" />
+      <stop offset="100%" stop-color="#182030" />
+    </linearGradient>
+    <pattern id="wel-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
+    </pattern>
+    <filter id="wel-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="rgba(0,0,0,0.5)" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="675" fill="url(#wel-bg)" />
+  <rect width="1200" height="675" fill="url(#wel-grid)" />
+
+  <!-- Ambient Glow Circles -->
+  <circle cx="250" cy="200" r="280" fill="#E5E795" opacity="0.07" filter="blur(80px)" />
+  <circle cx="950" cy="450" r="300" fill="#A2D2FF" opacity="0.08" filter="blur(80px)" />
+  <circle cx="600" cy="550" r="200" fill="#FDA4AF" opacity="0.05" filter="blur(80px)" />
+
+  <!-- Left: Header Info -->
+  <g transform="translate(100, 140)">
+    <rect x="0" y="0" width="140" height="28" rx="14" fill="#E5E795" opacity="0.2" />
+    <text x="70" y="18" fill="#E5E795" font-family="system-ui, sans-serif" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1.5">EDITORIAL ESSAY</text>
+    
+    <text x="0" y="70" fill="#FFFFFF" font-family="Georgia, serif" font-size="44" font-weight="700" letter-spacing="-1">Welcome to EncodeEdge</text>
+    <text x="0" y="112" fill="rgba(255,255,255,0.7)" font-family="system-ui, sans-serif" font-size="18" font-weight="400">Your Path to Practical, Code-Backed AI &amp; ML Mastery</text>
+  </g>
+
+  <!-- Floating Visual Feature Cards -->
+  <g transform="translate(100, 310)">
+    <!-- Card 1: Code Blueprints -->
+    <g transform="translate(0, 0)" filter="url(#wel-shadow)">
+      <rect width="310" height="200" rx="20" fill="#171F2E" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />
+      <circle cx="44" cy="44" r="18" fill="#E5E795" opacity="0.2" />
+      <text x="44" y="50" fill="#E5E795" font-family="'Courier New', monospace" font-size="16" font-weight="bold" text-anchor="middle">&lt;/&gt;</text>
+      <text x="30" y="96" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="18" font-weight="700">Code-Backed Recipes</text>
+      <text x="30" y="122" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="13">Reproducible Python implementations for every core algorithm and pipeline.</text>
+      <rect x="30" y="152" width="80" height="24" rx="12" fill="#E5E795" opacity="0.15" />
+      <text x="70" y="168" fill="#E5E795" font-family="system-ui, sans-serif" font-size="10" font-weight="700" text-anchor="middle">FOUNDATIONS</text>
+    </g>
+
+    <!-- Card 2: Interactive Roadmaps -->
+    <g transform="translate(345, 0)" filter="url(#wel-shadow)">
+      <rect width="310" height="200" rx="20" fill="#171F2E" stroke="#A2D2FF" stroke-width="1.5" />
+      <circle cx="44" cy="44" r="18" fill="#A2D2FF" opacity="0.2" />
+      <text x="44" y="50" fill="#A2D2FF" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" text-anchor="middle">❖</text>
+      <text x="30" y="96" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="18" font-weight="700">Interactive Trees</text>
+      <text x="30" y="122" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="13">Track progress step-by-step from beginner intuition to production models.</text>
+      <rect x="30" y="152" width="70" height="24" rx="12" fill="#A2D2FF" opacity="0.15" />
+      <text x="65" y="168" fill="#A2D2FF" font-family="system-ui, sans-serif" font-size="10" font-weight="700" text-anchor="middle">ROADMAPS</text>
+    </g>
+
+    <!-- Card 3: Deep Architecture -->
+    <g transform="translate(690, 0)" filter="url(#wel-shadow)">
+      <rect width="310" height="200" rx="20" fill="#171F2E" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />
+      <circle cx="44" cy="44" r="18" fill="#FDA4AF" opacity="0.2" />
+      <text x="44" y="50" fill="#FDA4AF" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" text-anchor="middle">⌘</text>
+      <text x="30" y="96" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="18" font-weight="700">Applied Deep Learning</text>
+      <text x="30" y="122" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="13">Transformers, PyTorch mechanics, autograd, and high-performance inference.</text>
+      <rect x="30" y="152" width="75" height="24" rx="12" fill="#FDA4AF" opacity="0.15" />
+      <text x="67" y="168" fill="#FDA4AF" font-family="system-ui, sans-serif" font-size="10" font-weight="700" text-anchor="middle">SYSTEMS</text>
+    </g>
+  </g>
+</svg>
+

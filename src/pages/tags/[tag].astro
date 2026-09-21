@@ -43,14 +43,18 @@ const description = `All blog posts related to the core Tag: ${tagLabel}.`;
 ---
 
 <DefaultLayout title={title} description={description}>
-    <Background>
-        <div class="py-28 lg:pt-44 lg:pb-32">
-            <h1 class="text-5xl font-extrabold text-center mb-4">Articles on: {tagLabel}</h1>
-            <p class="text-xl text-center text-gray-600 mb-12">
-                Content that is categorized under <strong>{tagLabel}</strong>.
+    <div class="py-12 md:py-16 max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <a href="/tags" class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground mb-3 transition-colors">
+                ← All Tags
+            </a>
+            <h1 class="text-4xl sm:text-5xl font-bold font-display tracking-tight text-foreground mb-4">
+                #{tagLabel}
+            </h1>
+            <p class="text-base sm:text-lg text-muted-foreground font-body">
+                Articles and tutorials tagged with #{tagLabel}.
             </p>
-            {/* Reuses your existing BlogPosts component for rendering the list */}
-            <BlogPosts posts={posts} client:only='react' />
         </div>
-    </Background>
+        <BlogPosts posts={posts} client:load />
+    </div>
 </DefaultLayout>

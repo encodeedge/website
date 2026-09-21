@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <pattern id="gridPattern" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.2" fill="#A2D2FF" opacity="0.18" />
+    </pattern>
+  </defs>
+
+  <style>
+    .bg-canvas { fill: #F0FDF4; }
+    .diagram-card { fill: #FFFFFF; stroke: #A2D2FF; stroke-width: 2px; }
+    .diagram-node { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5px; }
+    .diagram-text { fill: #0F172A; }
+    .diagram-subtext { fill: #64748B; }
+    .diagram-line { stroke: #94A3B8; }
+
+    @media (prefers-color-scheme: dark) {
+      .bg-canvas { fill: #0C1F17 !important; }
+      .diagram-card { fill: #1E2538 !important; stroke: #A2D2FF !important; stroke-width: 2px !important; }
+      .diagram-node { fill: #161D2B !important; stroke: #334155 !important; stroke-width: 1.5px !important; }
+      .diagram-text { fill: #F8FAFC !important; }
+      .diagram-subtext { fill: #94A3B8 !important; }
+      .diagram-line { stroke: #475569 !important; }
+    }
+  </style>
+
+  <!-- Clean Tinted Canvas (Distinct from grey page background) -->
+  <rect width="800" height="450" class="bg-canvas" />
+  <rect width="800" height="450" fill="url(#gridPattern)" />
+
+  <!-- Diagram Visual -->
+  
+  <g transform="translate(140, 70)">
+    <!-- Axes -->
+    <line x1="40" y1="200" x2="480" y2="200" stroke="#94A3B8" stroke-width="2" />
+    <line x1="40" y1="200" x2="40" y2="20" stroke="#94A3B8" stroke-width="2" />
+
+    <!-- Best fit line -->
+    <line x1="60" y1="170" x2="460" y2="50" stroke="#A2D2FF" stroke-width="3.5" stroke-linecap="round" />
+
+    <!-- Data points -->
+    <circle cx="100" cy="150" r="5" fill="#0284C7" />
+    <circle cx="160" cy="130" r="5" fill="#0284C7" />
+    <circle cx="220" cy="120" r="5" fill="#0284C7" />
+    <circle cx="290" cy="95" r="5" fill="#0284C7" />
+    <circle cx="370" cy="70" r="5" fill="#0284C7" />
+    <circle cx="430" cy="65" r="5" fill="#0284C7" />
+
+    <rect x="260" y="130" width="220" height="50" rx="12" fill="#FFFFFF" stroke="#A2D2FF" stroke-width="2" class="diagram-card" />
+    <text x="370" y="155" text-anchor="middle" font-family="monospace" font-size="14" font-weight="800" class="diagram-text">y = mx + b</text>
+    <text x="370" y="172" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="600" fill="#64748B">Ordinary Least Squares</text>
+  </g>
+
+</svg>

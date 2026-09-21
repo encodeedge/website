@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <pattern id="gridPattern" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.2" fill="#FDA4AF" opacity="0.18" />
+    </pattern>
+  </defs>
+
+  <style>
+    .bg-canvas { fill: #FFF1F3; }
+    .diagram-card { fill: #FFFFFF; stroke: #FDA4AF; stroke-width: 2px; }
+    .diagram-node { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5px; }
+    .diagram-text { fill: #0F172A; }
+    .diagram-subtext { fill: #64748B; }
+    .diagram-line { stroke: #94A3B8; }
+
+    @media (prefers-color-scheme: dark) {
+      .bg-canvas { fill: #1E1318 !important; }
+      .diagram-card { fill: #1E2538 !important; stroke: #FDA4AF !important; stroke-width: 2px !important; }
+      .diagram-node { fill: #161D2B !important; stroke: #334155 !important; stroke-width: 1.5px !important; }
+      .diagram-text { fill: #F8FAFC !important; }
+      .diagram-subtext { fill: #94A3B8 !important; }
+      .diagram-line { stroke: #475569 !important; }
+    }
+  </style>
+
+  <!-- Clean Tinted Canvas (Distinct from grey page background) -->
+  <rect width="800" height="450" class="bg-canvas" />
+  <rect width="800" height="450" fill="url(#gridPattern)" />
+
+  <!-- Diagram Visual -->
+  
+  <g transform="translate(140, 70)">
+    <!-- Scatter plot grid -->
+    <line x1="40" y1="200" x2="480" y2="200" stroke="#94A3B8" stroke-width="2" />
+    <line x1="40" y1="200" x2="40" y2="20" stroke="#94A3B8" stroke-width="2" />
+
+    <!-- Regression Line -->
+    <line x1="60" y1="180" x2="460" y2="40" stroke="#A2D2FF" stroke-width="3" stroke-linecap="round" />
+
+    <!-- Residual Error Dashes -->
+    <line x1="140" y1="152" x2="140" y2="90" stroke="#FDA4AF" stroke-width="2" stroke-dasharray="3 3" />
+    <circle cx="140" cy="90" r="5" fill="#FDA4AF" />
+
+    <line x1="260" y1="110" x2="260" y2="160" stroke="#FDA4AF" stroke-width="2" stroke-dasharray="3 3" />
+    <circle cx="260" cy="160" r="5" fill="#FDA4AF" />
+
+    <line x1="380" y1="68" x2="380" y2="110" stroke="#FDA4AF" stroke-width="2" stroke-dasharray="3 3" />
+    <circle cx="380" cy="110" r="5" fill="#FDA4AF" />
+
+    <!-- Formula Badges -->
+    <rect x="320" y="140" width="180" height="50" rx="10" fill="#FFFFFF" stroke="#FDA4AF" stroke-width="2" class="diagram-card" />
+    <text x="410" y="165" text-anchor="middle" font-family="monospace" font-size="12" font-weight="700" class="diagram-text">MAE, MSE, RMSE, R²</text>
+    <text x="410" y="180" text-anchor="middle" font-family="sans-serif" font-size="9" font-weight="600" fill="#64748B">Residual Metrics</text>
+  </g>
+
+</svg>

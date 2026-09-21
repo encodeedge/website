@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <pattern id="gridPattern" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.2" fill="#FDA4AF" opacity="0.18" />
+    </pattern>
+  </defs>
+
+  <style>
+    .bg-canvas { fill: #FFF8F0; }
+    .diagram-card { fill: #FFFFFF; stroke: #FDA4AF; stroke-width: 2px; }
+    .diagram-node { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5px; }
+    .diagram-text { fill: #0F172A; }
+    .diagram-subtext { fill: #64748B; }
+    .diagram-line { stroke: #94A3B8; }
+
+    @media (prefers-color-scheme: dark) {
+      .bg-canvas { fill: #191520 !important; }
+      .diagram-card { fill: #1E2538 !important; stroke: #FDA4AF !important; stroke-width: 2px !important; }
+      .diagram-node { fill: #161D2B !important; stroke: #334155 !important; stroke-width: 1.5px !important; }
+      .diagram-text { fill: #F8FAFC !important; }
+      .diagram-subtext { fill: #94A3B8 !important; }
+      .diagram-line { stroke: #475569 !important; }
+    }
+  </style>
+
+  <!-- Clean Tinted Canvas (Distinct from grey page background) -->
+  <rect width="800" height="450" class="bg-canvas" />
+  <rect width="800" height="450" fill="url(#gridPattern)" />
+
+  <!-- Diagram Visual -->
+  
+  <g transform="translate(120, 110)">
+    <!-- Pipeline flow: Input -> Function Transformer -> Output -->
+    <rect x="0" y="30" width="110" height="60" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2" class="diagram-node" />
+    <text x="55" y="65" text-anchor="middle" font-family="monospace" font-size="14" font-weight="700" fill="#0F172A" class="diagram-text">[1, 2, 3, 4]</text>
+
+    <path d="M 110 60 L 180 60" fill="none" stroke="#CBD5E1" stroke-width="3" stroke-linecap="round" class="diagram-line" />
+    <polygon points="185,60 175,55 175,65" fill="#A2D2FF" />
+
+    <!-- Higher Order Function Block -->
+    <rect x="190" y="10" width="180" height="100" rx="18" fill="#FFFFFF" stroke="#FDA4AF" stroke-width="2.5" class="diagram-card" />
+    <text x="280" y="45" text-anchor="middle" font-family="monospace" font-size="14" font-weight="700" fill="#FDA4AF">map(func, data)</text>
+    <rect x="210" y="60" width="140" height="30" rx="8" fill="#FDA4AF" opacity="0.2" />
+    <text x="280" y="80" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#0F172A" class="diagram-text">lambda x: x * 2</text>
+
+    <path d="M 370 60 L 440 60" fill="none" stroke="#CBD5E1" stroke-width="3" stroke-linecap="round" class="diagram-line" />
+    <polygon points="445,60 435,55 435,65" fill="#FDA4AF" />
+
+    <rect x="450" y="30" width="110" height="60" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2" class="diagram-node" />
+    <text x="505" y="65" text-anchor="middle" font-family="monospace" font-size="14" font-weight="700" fill="#0F172A" class="diagram-text">[2, 4, 6, 8]</text>
+  </g>
+
+</svg>

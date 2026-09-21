@@ -1,71 +1,101 @@
 ---
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { getCollection } from 'astro:content';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 
 const allBatches = await getCollection('batches');
 const allCourses = await getCollection('courses');
 
 // Helper to get course data
-const getCourseData = (courseId) => allCourses.find(c => c.id === courseId);
+const getCourseData = (courseId: string) => allCourses.find(c => c.id === courseId);
 ---
 
-<DefaultLayout title="Live Batches" description="Join our upcoming live batches and cohorts.">
-  <div class="container mx-auto px-4 pt-28 pb-12 lg:pt-44 lg:pb-32">
-    <div class="mb-12">
-      <h1 class="text-4xl font-bold mb-4">Live Batches & Cohorts</h1>
-      <p class="text-xl text-muted-foreground">Join a cohort-based learning experience with live sessions and community support.</p>
-    </div>
+<DefaultLayout title="Live Batches & Cohorts | Encode Edge" description="Join our upcoming live batches and interactive cohorts.">
+  <div class="woords_container py-12 md:py-16">
+    <header class="max-w-2xl mx-auto text-center mb-12 space-y-3">
+      <span class="woords_tag_small">Live Learning</span>
+      <h1 class="font-display font-bold text-3xl sm:text-4xl md:text-5xl tracking-tight text-foreground">
+        Live Batches & Cohorts
+      </h1>
+      <p class="text-sm sm:text-base text-muted-foreground leading-relaxed">
+        Join a cohort-based learning experience with live sessions, code reviews, and direct mentor support.
+      </p>
+    </header>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
       {allBatches.length > 0 ? allBatches.map(batch => {
         const course = batch.data.course ? getCourseData(batch.data.course) : null;
+        const isUpcoming = batch.data.status === 'upcoming';
         
         return (
-          <Card className="flex flex-col h-full">
-            <CardHeader>
-              <div class="flex justify-between items-center mb-2">
-                <Badge variant={batch.data.status === 'upcoming' ? 'default' : 'secondary'} className="capitalize">
+          <div class="rounded-2xl border border-black-200 dark:border-black-800 bg-card p-6 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-4">
+                <span class={`text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize ${
+                  isUpcoming 
+                    ? 'bg-[#E5E795]/40 text-black dark:bg-[#E5E795]/20 dark:text-[#E5E795]'
+                    : 'bg-black-100 dark:bg-black-800 text-muted-foreground'
+                }`}>
                   {batch.data.status}
-                </Badge>
-                {batch.data.price ? <span class="font-bold">${batch.data.price}</span> : <span class="font-bold">Free</span>}
+                </span>
+                <span class="font-display font-bold text-lg text-foreground">
+                  {batch.data.price ? `$${batch.data.price}` : 'Free'}
+                </span>
               </div>
-              <CardTitle className="text-2xl">{batch.data.title}</CardTitle>
-              {course && <CardDescription>Course: {course.data.title}</CardDescription>}
-            </CardHeader>
-            <CardContent className="flex-grow">
-              <div class="space-y-4">
-                <div class="flex justify-between border-b pb-2">
+
+              <h2 class="font-display font-bold text-2xl text-foreground mb-1 leading-snug">
+                {batch.data.title}
+              </h2>
+              {course && (
+                <p class="text-xs text-muted-foreground mb-4">
+                  Course: <span class="font-medium text-foreground">{course.data.title}</span>
+                </p>
+              )}
+
+              <div class="space-y-2.5 py-4 border-t border-b border-black-150 dark:border-black-800 my-4 text-xs">
+                <div class="flex justify-between items-center">
                   <span class="text-muted-foreground">Start Date</span>
-                  <span class="font-medium">{batch.data.startDate ? new Date(batch.data.startDate).toLocaleDateString() : 'TBD'}</span>
+                  <span class="font-medium text-foreground">
+                    {batch.data.startDate ? new Date(batch.data.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'TBD'}
+                  </span>
                 </div>
-                <div class="flex justify-between border-b pb-2">
+                <div class="flex justify-between items-center">
                   <span class="text-muted-foreground">End Date</span>
-                  <span class="font-medium">{batch.data.endDate ? new Date(batch.data.endDate).toLocaleDateString() : 'TBD'}</span>
+                  <span class="font-medium text-foreground">
+                    {batch.data.endDate ? new Date(batch.data.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'TBD'}
+                  </span>
                 </div>
                 {batch.data.capacity && (
-                  <div class="flex justify-between border-b pb-2">
+                  <div class="flex justify-between items-center">
                     <span class="text-muted-foreground">Capacity</span>
-                    <span class="font-medium">{batch.data.capacity} seats</span>
+                    <span class="font-medium text-foreground">{batch.data.capacity} seats</span>
                   </div>
                 )}
               </div>
-            </CardContent>
-            <CardFooter>
-              {batch.data.status === 'upcoming' ? (
-                <a href={`/contact?subject=Enrollment%20for%20${encodeURIComponent(batch.data.title)}`} class="block w-full">
-                  <Button className="w-full">Enroll Now</Button>
+            </div>
+
+            <div class="pt-2">
+              {isUpcoming ? (
+                <a 
+                  href={`/contact?subject=Enrollment%20for%20${encodeURIComponent(batch.data.title)}`} 
+                  class="woords_btn w-full block text-center !bg-ghost-accent !text-black font-semibold text-xs py-2.5"
+                >
+                  Enroll in Cohort →
                 </a>
               ) : (
-                <Button className="w-full" disabled>Closed</Button>
+                <button 
+                  disabled 
+                  class="w-full text-center rounded-full py-2.5 text-xs font-semibold bg-black-100 dark:bg-black-800 text-muted-foreground cursor-not-allowed"
+                >
+                  Cohort Closed
+                </button>
               )}
-            </CardFooter>
-          </Card>
+            </div>
+          </div>
         );
       }) : (
-        <p class="text-muted-foreground">No batches are currently scheduled. Please check back later.</p>
+        <div class="col-span-full text-center py-12 border border-dashed border-border rounded-2xl p-8">
+          <p class="text-muted-foreground text-sm">No live batches are currently scheduled. Please check back later or subscribe to our newsletter to get notified.</p>
+        </div>
       )}
     </div>
   </div>

@@ -1,5 +1,5 @@
 ---
-title: 'Python : Variables and Memory references'
+title: 'Python: Variables and Memory references'
 description: The blog post introduces variables in Python and memory references
 pubDate: 2025-12-08
 updatedDate: 2025-12-08
@@ -12,11 +12,10 @@ tags:
   - garbage-collector
 topics:
   - python
-image: /assets/python-variables-and-memory-references/image.jpg
+image: /assets/blog/python-variables-and-memory-references.svg
 authorImage: /assets/python-variables-and-memory-references/authorImage.png
 authorName: Atul Jha
 ---
-# Variables and Memory references in Python
 
 ## Variables
 

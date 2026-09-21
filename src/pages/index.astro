@@ -1,26 +1,874 @@
 ---
+import { getCollection } from 'astro:content';
+import { format } from 'date-fns';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
-
-import { Background } from '@/components/background';
-import { FAQ } from '@/components/blocks/faq';
-import { Features } from '@/components/blocks/features';
-import { Hero } from '@/components/blocks/hero';
-import { Logos } from '@/components/blocks/logos';
-import { Pricing } from '@/components/blocks/pricing';
-import { ResourceAllocation } from '@/components/blocks/resource-allocation';
-import { Testimonials } from '@/components/blocks/testimonials';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { slugify } from '@/utils/slugs';
+import { getPodcastEpisodes, AI_NEWS_DISPATCHES } from '@/lib/feeds';
+import { TOPIC_METADATA } from '@/lib/topics';
+import { 
+  ArrowRight, 
+  Sparkles, 
+  Compass, 
+  BookOpen, 
+  Play, 
+  Pause,
+  Headphones, 
+  Video, 
+  ExternalLink, 
+  Clock, 
+  Newspaper, 
+  Volume2, 
+  Code2,
+  Rss,
+  GraduationCap
+} from 'lucide-react';
 
+const allPosts = await getCollection('blog');
+const sortedPosts = allPosts.sort(
+  (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+);
 
+// Quick reads for top strip
+const quickReads = sortedPosts.slice(0, 4);
 
-import { RoadmapTeaser } from '@/components/blocks/roadmap-teaser';
+// Featured posts: prefer items with featured: true, fallback to latest
+const featuredCandidates = sortedPosts.filter((p) => p.data.featured);
+const featuredPosts = (featuredCandidates.length > 0 ? featuredCandidates : sortedPosts).slice(0, 3);
+
+// Roadmaps for the dark highlight showcase
+const roadmaps = await getCollection('roadmaps');
+
+// Courses collection for the Video Lessons & Applied Courses section
+const allCourses = await getCollection('courses');
+const featuredCourse = allCourses.find((c) => c.id === 'applied-deep-learning') || allCourses[0];
+
+// Live Podcast episodes fetched from RSS feed
+const podcastEpisodes = await getPodcastEpisodes();
+const spotlightEpisode = podcastEpisodes[0];
+const companionEpisodes = podcastEpisodes.slice(1, 4);
+
+// Recent blog posts for the dedicated blog section
+const recentBlogPosts = sortedPosts.slice(0, 6);
+
+// Topic tracks (matching Woords pastel system)
+const TOPIC_CARDS = [
+  {
+    name: 'Machine Learning',
+    slug: 'machine-learning',
+    color: '#FDA4AF', // Rose
+    description: 'Practical algorithms, regression models, scikit-learn blueprints, and evaluation metrics.',
+  },
+  {
+    name: 'Data Science',
+    slug: 'data-science',
+    color: '#A2D2FF', // Sky blue
+    description: 'Exploratory data analysis, statistical methods, pandas workflows, and data pipelines.',
+  },
+  {
+    name: 'Deep Learning',
+    slug: 'deep-learning',
+    color: '#EEA9ED', // Lavender
+    description: 'Neural networks, PyTorch fundamentals, backpropagation, and computer vision models.',
+  },
+  {
+    name: 'Python Foundations',
+    slug: 'python',
+    color: '#FFB86A', // Peach
+    description: 'Memory references, type hierarchy, object-oriented design, and performant Python code.',
+  },
+  {
+    name: 'Artificial Intelligence',
+    slug: 'artificial-intelligence',
+    color: '#E5E795', // Lime
+    description: 'High-level architectures, heuristic search, agentic frameworks, and AI systems engineering.',
+  },
+];
 ---
 
-<DefaultLayout title={SITE_TITLE} description={SITE_DESCRIPTION} >
-  <Background className="via-muted to-muted/80">
-    <Hero />
-    <Features />
-    <Logos client:only="react"/>
-    <RoadmapTeaser client:only="react" />
-  </Background>
+<DefaultLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+
+  {/* 1. Quick Reads / Top Strip */}
+  {quickReads.length > 0 && (
+    <section class="bg-black-50/70 dark:bg-black-900/50 py-6 border-b border-black-150 dark:border-black-800/80 mb-12">
+      <div class="woords_container_small grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+        {quickReads.map((post) => (
+          <div class="flex items-center space-x-3.5 group">
+            <div class="relative w-20 h-20 rounded-xl shrink-0 overflow-hidden border border-border/80 bg-card">
+              <a href={`/blog/${post.id}/`} class="absolute inset-0 overflow-hidden block">
+                <img
+                  src={post.data.image || '/assets/default-post.svg'}
+                  alt={post.data.title}
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+              </a>
+            </div>
+            <div class="flex flex-col gap-y-1 min-w-0">
+              <h3 class="font-bold font-display text-xs leading-snug hover:underline line-clamp-2 text-foreground">
+                <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+              </h3>
+              <div class="flex items-center gap-x-1.5 text-muted-foreground text-[11px] font-medium">
+                <time datetime={new Date(post.data.pubDate).toISOString()}>
+                  {format(new Date(post.data.pubDate), 'dd MMM yyyy')}
+                </time>
+                <span>—</span>
+                <a href={`/authors/${slugify(post.data.authorName || 'Atul Jha')}`} class="hover:underline truncate max-w-[80px]">
+                  {post.data.authorName || 'Atul Jha'}
+                </a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {/* 2. Editorial Hero & Subscribe Box */}
+  <section class="max-w-3xl mx-auto flex flex-col items-center py-12 px-6 text-center gap-y-5 mb-16" id="subscribe-box">
+    <div class="inline-flex items-center gap-1.5 rounded-full bg-black-100 dark:bg-black-800 px-3.5 py-1 text-xs font-semibold text-foreground">
+      <Sparkles class="size-3.5 text-primary" />
+      <span>Practical Engineering Journal</span>
+    </div>
+    <h1 class="font-bold font-display text-3xl sm:text-4xl md:text-5xl max-w-2xl mx-auto text-foreground leading-[1.18] tracking-tight">
+      Dive into practical AI, machine learning tutorials, and code blueprints.
+    </h1>
+    <p class="text-muted-foreground text-base max-w-xl leading-relaxed">
+      We turn hard theoretical concepts into tested, production-grade skills. No fluff, just clean code.
+    </p>
+
+    <form action="/subscribe" method="GET" class="w-full max-w-md mt-2">
+      <div class="flex items-center justify-center gap-2 flex-col sm:flex-row w-full">
+        <input
+          type="email"
+          placeholder="Enter your email address..."
+          required
+          class="flex items-center pl-5 text-sm text-foreground placeholder:text-muted-foreground bg-black-100/80 dark:bg-black-850 w-full sm:w-80 rounded-full h-11 border border-black-200 dark:border-black-800 focus:outline-none focus:ring-2 focus:ring-ghost-accent"
+        />
+        <button type="submit" class="woords_btn !bg-ghost-accent !text-black w-full sm:w-auto h-11 font-semibold cursor-pointer">
+          <span>Subscribe</span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  {/* 3. Structured Learning Tracks (Pastel Cards) */}
+  <section class="woords_container_small mb-20" id="trending-topics">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-black-150 dark:border-black-800 gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="woords_tag_small">
+            <GraduationCap class="size-3 mr-1 text-primary" />
+            Curriculum Tracks
+          </span>
+        </div>
+        <h2 class="font-bold font-display text-2xl sm:text-3xl md:text-4xl text-foreground tracking-tight">
+          Explore Structured Learning Tracks
+        </h2>
+        <p class="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xl">
+          Comprehensive curriculum maps from foundational Python to deep neural networks.
+        </p>
+      </div>
+      <a href="/topics" class="woords_btn text-xs font-semibold shrink-0">
+        <span>View all tracks</span>
+        <ArrowRight class="size-3.5" />
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      {TOPIC_CARDS.map((topic) => (
+        <a
+          href={`/topics/${topic.slug}/`}
+          class="relative overflow-hidden p-6 rounded-2xl flex flex-col justify-between gap-y-4 group hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 border backdrop-blur-md"
+          style={`background: linear-gradient(135deg, ${topic.color}25 0%, ${topic.color}0a 100%); border-color: ${topic.color}45;`}
+        >
+          {/* Subtle ambient colored glow */}
+          <div
+            class="absolute -bottom-8 -right-8 size-24 rounded-full blur-2xl pointer-events-none opacity-30 group-hover:opacity-60 transition-opacity duration-300"
+            style={`background-color: ${topic.color};`}
+          />
+
+          <div class="flex flex-col gap-y-2 relative z-10">
+            <span class="font-bold font-display text-xl leading-tight text-foreground group-hover:text-primary group-hover:underline transition-colors">
+              {topic.name}
+            </span>
+            <p class="text-xs text-muted-foreground line-clamp-3 leading-relaxed font-body">
+              {topic.description}
+            </p>
+          </div>
+
+          <div class="relative z-10 pt-1">
+            <span
+              class="inline-flex items-center gap-1 rounded-full uppercase font-bold text-[10px] tracking-wider px-3.5 py-1.5 border shadow-2xs group-hover:scale-105 transition-transform text-foreground"
+              style={`background-color: ${topic.color}20; border-color: ${topic.color}60;`}
+            >
+              <span>Explore</span>
+              <ArrowRight class="size-2.5 transition-transform group-hover:translate-x-0.5" />
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  {/* 4. Featured Blueprints (Compact 3-Column Editorial Grid) */}
+  {featuredPosts.length > 0 && (
+    <section class="woords_container_small mb-20" id="featured-blueprints">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-black-150 dark:border-black-800 gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="woords_tag_small">
+              <Sparkles class="size-3 mr-1 text-primary" />
+              Staff Picks
+            </span>
+          </div>
+          <h2 class="font-bold font-display text-2xl sm:text-3xl md:text-4xl text-foreground tracking-tight">
+            Featured Blueprints &amp; Articles
+          </h2>
+          <p class="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xl">
+            In-depth architectural walkthroughs, core mathematical derivations, and production recipes.
+          </p>
+        </div>
+        <a href="/blog" class="woords_btn text-xs font-semibold shrink-0">
+          <span>All Blueprints</span>
+          <ArrowRight class="size-3.5" />
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {featuredPosts.map((post, idx) => {
+          const primaryTopic = post.data.topics?.[0] || 'machine-learning';
+          return (
+            <article class="flex flex-col justify-between p-5 rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group">
+              <div>
+                <div class="relative aspect-16/10 overflow-hidden rounded-xl border border-border/70 bg-card mb-3.5">
+                  <a href={`/blog/${post.id}/`} class="absolute inset-0 overflow-hidden block">
+                    <img
+                      src={post.data.image || '/assets/default-post.svg'}
+                      alt={post.data.title}
+                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </a>
+                  {idx === 0 && (
+                    <div class="absolute top-2.5 left-2.5 z-20">
+                      <span class="woords_tag_secondary_small font-bold shadow-xs">
+                        ★ Featured
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="woords_tag_small">
+                    {primaryTopic.replace(/-/g, ' ')}
+                  </span>
+                  <span class="text-[11px] text-muted-foreground ml-auto flex items-center gap-1 font-mono">
+                    <Clock class="size-3" />
+                    {post.data.readTime || 6} min
+                  </span>
+                </div>
+
+                <h3 class="font-bold font-display text-base sm:text-lg text-foreground group-hover:text-primary group-hover:underline line-clamp-2 leading-snug mb-2">
+                  <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+                </h3>
+
+                <p class="text-xs text-muted-foreground line-clamp-2 leading-relaxed font-body">
+                  {post.data.description}
+                </p>
+              </div>
+
+              <div class="flex items-center justify-between text-xs text-muted-foreground font-medium pt-3 mt-4 border-t border-black-150 dark:border-black-800">
+                <time datetime={new Date(post.data.pubDate).toISOString()}>
+                  {format(new Date(post.data.pubDate), 'dd MMM yyyy')}
+                </time>
+                <a 
+                  href={`/blog/${post.id}/`} 
+                  class="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary transition-colors"
+                >
+                  <span>Read Guide</span>
+                  <ArrowRight class="size-3" />
+                </a>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  )}
+
+  {/* 5. Dark Highlight Feature Banner (Interactive Roadmaps Showcase) */}
+  <section class="py-16 bg-black-950 dark:bg-black-950 relative text-white mb-20 overflow-hidden border-y border-white/10">
+    <div class="grid-bg absolute inset-0 opacity-25 pointer-events-none" />
+    <div class="woords_container_small relative z-10 px-4">
+      <div class="max-w-2xl mx-auto text-center mb-10">
+        <div class="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-ghost-accent mb-3">
+          <Compass class="size-3.5" />
+          Interactive Learning Maps
+        </div>
+        <h2 class="font-bold font-display text-3xl sm:text-4xl text-white tracking-tight leading-tight">
+          Master Modern AI &amp; Python with Step-by-Step Roadmaps
+        </h2>
+        <p class="text-white/70 text-sm mt-3 leading-relaxed">
+          Follow structured curriculum maps from fundamentals to production model deployment.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {roadmaps.slice(0, 3).map((map) => (
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-6 hover:bg-white/10 transition-colors flex flex-col justify-between gap-4">
+            <div>
+              <span class="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-ghost-accent text-black mb-3">
+                Roadmap
+              </span>
+              <h3 class="font-bold font-display text-xl text-white mb-2 leading-snug">
+                {map.data.title}
+              </h3>
+              <p class="text-xs text-white/70 line-clamp-3 leading-relaxed">
+                {map.data.description}
+              </p>
+            </div>
+            <a
+              href={`/roadmaps/${map.id}/`}
+              class="inline-flex items-center gap-1.5 text-xs font-semibold text-ghost-accent hover:underline pt-2"
+            >
+              <span>Explore Curriculum</span>
+              <ArrowRight class="size-3.5" />
+            </a>
+          </div>
+        ))}
+      </div>
+
+      <div class="flex justify-center mt-10">
+        <a href="/roadmaps" class="woords_btn !bg-ghost-accent !text-black text-xs font-semibold">
+          <span>Explore All Roadmaps</span>
+          <ArrowRight class="size-3.5" />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {/* 6. Video Lessons & Applied Courses (Sourced from site courses & video lessons) */}
+  <section class="woords_container_small mb-20" id="video-masterclasses">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-black-150 dark:border-black-800 gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="woords_tag_small">
+            <Video class="size-3 mr-1 text-primary" />
+            Watch &amp; Build
+          </span>
+        </div>
+        <h2 class="font-bold font-display text-2xl sm:text-3xl md:text-4xl text-foreground tracking-tight">
+          Video Lessons &amp; Applied Courses
+        </h2>
+        <p class="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xl">
+          Self-paced video lectures, hands-on curriculum, and interactive Jupyter notebook labs from our internal collections.
+        </p>
+      </div>
+      <a 
+        href="/courses" 
+        class="woords_btn text-xs font-semibold shrink-0"
+      >
+        <span>Browse All Courses</span>
+        <ArrowRight class="size-3.5" />
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* 1. Featured Video Course */}
+      <div class="rounded-2xl border border-black-150 dark:border-black-800 bg-card p-5 flex flex-col justify-between hover:shadow-md transition-all group">
+        <div>
+          <div class="relative aspect-16/10 rounded-xl overflow-hidden mb-3.5 bg-black-900 border border-border/60">
+            <img
+              src="/assets/welcome-to-encode-edge-your-path-to-practical-ai-mastery/cover.svg"
+              alt="Applied Deep Learning"
+              class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+            <div class="absolute inset-0 bg-black/25 flex items-center justify-center">
+              <a
+                href={featuredCourse ? `/courses/${featuredCourse.id}/` : '/courses'}
+                class="size-10 rounded-full bg-primary text-black flex items-center justify-center shadow-xs hover:scale-110 transition-transform cursor-pointer"
+                aria-label="Start course"
+              >
+                <Play class="size-4 fill-black ml-0.5" />
+              </a>
+            </div>
+            <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-black/80 text-white">
+              Course
+            </span>
+          </div>
+
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/20 text-foreground">
+              Video Course • {featuredCourse?.data.level || 'Advanced'}
+            </span>
+          </div>
+
+          <h4 class="text-base font-bold font-display text-foreground group-hover:text-primary transition-colors leading-snug mb-1.5">
+            <a href={featuredCourse ? `/courses/${featuredCourse.id}/` : '/courses'}>
+              {featuredCourse?.data.title || 'Applied Deep Learning: From Data to Production'}
+            </a>
+          </h4>
+          <p class="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+            {featuredCourse?.data.shortDescription || 'Master practical deep learning execution, PyTorch training loops, and real-world deployment.'}
+          </p>
+        </div>
+
+        <div class="flex items-center justify-between pt-3 mt-4 border-t border-black-150 dark:border-black-800 text-xs">
+          <span class="text-muted-foreground font-medium">2 Video Chapters</span>
+          <a
+            href={featuredCourse ? `/courses/${featuredCourse.id}/` : '/courses'}
+            class="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary transition-colors"
+          >
+            <span>Open Course</span>
+            <ArrowRight class="size-3" />
+          </a>
+        </div>
+      </div>
+
+      {/* 2. Python Video Tutorial */}
+      <div class="rounded-2xl border border-black-150 dark:border-black-800 bg-card p-5 flex flex-col justify-between hover:shadow-md transition-all group">
+        <div>
+          <div class="relative aspect-16/10 rounded-xl overflow-hidden mb-3.5 bg-black-900 border border-border/60">
+            <img
+              src="/assets/python-variables-and-memory-references/cover.svg"
+              alt="Python Variables & Memory"
+              class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+            <div class="absolute inset-0 bg-black/25 flex items-center justify-center">
+              <a 
+                href="https://www.youtube.com/watch?v=khKv-8q7YmY" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                class="size-10 rounded-full bg-white/90 text-black flex items-center justify-center shadow-xs hover:scale-110 transition-transform"
+                aria-label="Play Python tutorial video"
+              >
+                <Play class="size-4 fill-black ml-0.5" />
+              </a>
+            </div>
+            <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-black/80 text-white">
+              45 min
+            </span>
+          </div>
+
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FFB86A]/30 text-foreground">
+              Python Video Tutorial
+            </span>
+          </div>
+
+          <h4 class="text-base font-bold font-display text-foreground group-hover:text-primary transition-colors leading-snug mb-1.5">
+            <a href="https://www.youtube.com/watch?v=khKv-8q7YmY" target="_blank" rel="noopener noreferrer">
+              Variables, Data Types &amp; Memory Walkthrough
+            </a>
+          </h4>
+          <p class="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+            Step-by-step video lecture explaining variable binding, primitive types, and CPython references.
+          </p>
+        </div>
+
+        <div class="flex items-center justify-between pt-3 mt-4 border-t border-black-150 dark:border-black-800 text-xs">
+          <a href="/roadmaps/python/" class="text-muted-foreground hover:text-foreground font-medium">
+            From Python Track
+          </a>
+          <a 
+            href="https://www.youtube.com/watch?v=khKv-8q7YmY" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary"
+          >
+            <span>Watch Video</span>
+            <ExternalLink class="size-3" />
+          </a>
+        </div>
+      </div>
+
+      {/* 3. Interactive Jupyter Code Lab */}
+      <div class="rounded-2xl border border-black-150 dark:border-black-800 bg-card p-5 flex flex-col justify-between hover:shadow-md transition-all group">
+        <div>
+          <div class="relative aspect-16/10 rounded-xl overflow-hidden mb-3.5 bg-black-900 border border-border/60">
+            <img
+              src="/assets/python-type-hierarchy/cover.svg"
+              alt="Interactive Python Code Labs"
+              class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+            <div class="absolute inset-0 bg-black/25 flex items-center justify-center">
+              <a 
+                href="/notebooks/Tuples/" 
+                class="size-10 rounded-full bg-white/90 text-black flex items-center justify-center shadow-xs hover:scale-110 transition-transform"
+                aria-label="Open Jupyter lab"
+              >
+                <Code2 class="size-4 text-black" />
+              </a>
+            </div>
+            <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-primary text-black">
+              Interactive Lab
+            </span>
+          </div>
+
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#A2D2FF]/30 text-foreground">
+              Browser Code Lab
+            </span>
+          </div>
+
+          <h4 class="text-base font-bold font-display text-foreground group-hover:text-primary transition-colors leading-snug mb-1.5">
+            <a href="/notebooks/Tuples/">
+              Working with Tuples &amp; Structures
+            </a>
+          </h4>
+          <p class="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+            Run and inspect Python code directly in your browser with zero local environment setup required.
+          </p>
+        </div>
+
+        <div class="flex items-center justify-between pt-3 mt-4 border-t border-black-150 dark:border-black-800 text-xs">
+          <a href="/notebooks" class="text-muted-foreground hover:text-foreground font-medium">
+            All Notebooks
+          </a>
+          <a 
+            href="/notebooks/Tuples/" 
+            class="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary"
+          >
+            <span>Launch Lab</span>
+            <ArrowRight class="size-3" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* 7. AI & Tech Radar / Dispatches (Curated Technical Briefings & Releases) */}
+  <section class="woords_container_small mb-20" id="ai-news">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-black-150 dark:border-black-800 gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="woords_tag_small">
+            <Newspaper class="size-3 mr-1 text-primary" />
+            Industry Radar
+          </span>
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-500/10 text-rose-600 dark:text-rose-400">
+            <span class="size-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+            Live Updates
+          </span>
+        </div>
+        <h2 class="font-bold font-display text-2xl sm:text-3xl md:text-4xl text-foreground tracking-tight">
+          AI &amp; Tech Intelligence
+        </h2>
+        <p class="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xl">
+          Curated technical developments, frontier model releases, and silicon benchmarks.
+        </p>
+      </div>
+      <a href="/rss.xml" class="woords_btn text-xs font-semibold shrink-0">
+        <span>Site RSS Feed</span>
+        <Rss class="size-3.5" />
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {AI_NEWS_DISPATCHES.map((news) => (
+        <article class="flex flex-col justify-between p-5 rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${news.badgeColor}`}>
+                {news.tag}
+              </span>
+              <span class="text-[11px] text-muted-foreground font-mono flex items-center gap-1">
+                <Clock class="size-3" />
+                {news.timeAgo}
+              </span>
+            </div>
+
+            <h3 class="font-bold font-display text-lg text-foreground group-hover:text-primary group-hover:underline leading-snug mb-2">
+              <a href={news.url} target={news.isExternal ? '_blank' : '_self'} rel={news.isExternal ? 'noopener noreferrer' : undefined}>
+                {news.title}
+              </a>
+            </h3>
+
+            <p class="text-xs text-muted-foreground line-clamp-3 leading-relaxed font-body">
+              {news.summary}
+            </p>
+          </div>
+
+          <div class="mt-5 pt-3 border-t border-black-150 dark:border-black-800 flex items-center justify-between text-xs text-muted-foreground">
+            <span class="font-semibold text-foreground/80">{news.source}</span>
+            <a 
+              href={news.url} 
+              target={news.isExternal ? '_blank' : '_self'} 
+              rel={news.isExternal ? 'noopener noreferrer' : undefined}
+              class="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary transition-colors"
+            >
+              <span>{news.isExternal ? 'Read Source' : 'Read Article'}</span>
+              {news.isExternal ? <ExternalLink class="size-3" /> : <ArrowRight class="size-3" />}
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  {/* 8. AI Engineering Podcasts & Audio Briefings (Updated from live RSS Feed) */}
+  <section class="woords_container_small mb-20" id="podcasts">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-black-150 dark:border-black-800 gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="woords_tag_small">
+            <Headphones class="size-3 mr-1 text-primary" />
+            Audio Briefings
+          </span>
+        </div>
+        <h2 class="font-bold font-display text-2xl sm:text-3xl md:text-4xl text-foreground tracking-tight">
+          AI Engineering Podcasts &amp; Audio
+        </h2>
+        <p class="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xl">
+          Technical discussions on reasoning architectures, production AI models, and real engineering trade-offs.
+        </p>
+      </div>
+      <a 
+        href="https://changelog.com/practicalai" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        class="woords_btn text-xs font-semibold shrink-0"
+      >
+        <span>Practical AI Feed</span>
+        <ExternalLink class="size-3.5" />
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* 1. Spotlight Episode with Compact Mini Player */}
+      {spotlightEpisode && (
+        <div class="p-5 rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:shadow-md transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-muted-foreground mb-2.5">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-ghost-accent text-black shadow-2xs">
+                {spotlightEpisode.episode}
+              </span>
+              <span class="font-mono text-[11px] flex items-center gap-1">
+                <Clock class="size-3" />
+                {spotlightEpisode.duration}
+              </span>
+            </div>
+
+            <h4 class="font-bold font-display text-base text-foreground group-hover:text-primary transition-colors leading-snug mb-2">
+              <a href={spotlightEpisode.link} target="_blank" rel="noopener noreferrer">
+                {spotlightEpisode.title}
+              </a>
+            </h4>
+
+            <p class="text-xs text-muted-foreground line-clamp-2 leading-relaxed font-body mb-3.5">
+              {spotlightEpisode.summary}
+            </p>
+
+            {/* Compact Mini Audio Player */}
+            {spotlightEpisode.audioUrl && (
+              <div class="p-3 rounded-xl bg-black-50 dark:bg-black-900 border border-black-150 dark:border-black-800">
+                <audio id="podcast-audio" src={spotlightEpisode.audioUrl} preload="none"></audio>
+                <div class="flex items-center gap-3">
+                  <button 
+                    id="podcast-play-btn"
+                    type="button"
+                    class="size-8 rounded-full bg-foreground text-background flex items-center justify-center hover:scale-105 transition-transform cursor-pointer shrink-0 shadow-xs"
+                    aria-label="Play episode preview"
+                  >
+                    <Play id="podcast-play-icon" class="size-3.5 fill-current ml-0.5" />
+                    <Pause id="podcast-pause-icon" class="size-3.5 fill-current hidden" />
+                  </button>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between text-[11px] font-semibold mb-1">
+                      <span class="text-foreground truncate">{spotlightEpisode.source}</span>
+                      <span id="podcast-time" class="font-mono text-muted-foreground text-[10px]">0:00 / {spotlightEpisode.duration}</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-black-200 dark:bg-black-800 rounded-full overflow-hidden">
+                      <div id="podcast-progress" class="h-full bg-foreground dark:bg-ghost-accent rounded-full transition-all duration-150" style="width: 0%;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div class="flex items-center justify-between pt-3 mt-4 border-t border-black-150 dark:border-black-800 text-xs">
+            <span class="text-muted-foreground text-[11px]">{spotlightEpisode.pubDate}</span>
+            <a 
+              href={spotlightEpisode.link} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary transition-colors"
+            >
+              <span>Show Notes</span>
+              <ExternalLink class="size-3" />
+            </a>
+          </div>
+        </div>
+      )}
+
+      {/* 2 & 3. Companion Podcast Episodes */}
+      {companionEpisodes.slice(0, 2).map((ep) => (
+        <div class="p-5 rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:shadow-md transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-muted-foreground mb-2.5">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold uppercase tracking-wider bg-black-100 dark:bg-black-850 text-foreground border border-black-200 dark:border-black-800">
+                {ep.episode}
+              </span>
+              <span class="font-mono text-[11px] flex items-center gap-1">
+                <Clock class="size-3" />
+                {ep.duration}
+              </span>
+            </div>
+
+            <h4 class="font-bold font-display text-base text-foreground group-hover:text-primary transition-colors leading-snug mb-2">
+              <a href={ep.link} target={ep.link.startsWith('http') ? '_blank' : '_self'} rel={ep.link.startsWith('http') ? 'noopener noreferrer' : undefined}>
+                {ep.title}
+              </a>
+            </h4>
+
+            <p class="text-xs text-muted-foreground line-clamp-3 leading-relaxed font-body mb-3">
+              {ep.summary}
+            </p>
+          </div>
+
+          <div class="flex items-center justify-between pt-3 mt-4 border-t border-black-150 dark:border-black-800 text-xs">
+            <span class="text-muted-foreground text-[11px]">{ep.pubDate}</span>
+            <a 
+              href={ep.link} 
+              target={ep.link.startsWith('http') ? '_blank' : '_self'} 
+              rel={ep.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+              class="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary transition-colors"
+            >
+              <span>{ep.link.startsWith('http') ? 'Listen' : 'Read & Listen'}</span>
+              {ep.link.startsWith('http') ? <ExternalLink class="size-3" /> : <ArrowRight class="size-3" />}
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  {/* 9. Dedicated Blog Section (Engineering Journal) */}
+  <section class="woords_container_small mb-20" id="blog-section">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-black-150 dark:border-black-800 gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="woords_tag_small">
+            <BookOpen class="size-3 mr-1 text-primary" />
+            Engineering Journal
+          </span>
+        </div>
+        <h2 class="font-bold font-display text-2xl sm:text-3xl md:text-4xl text-foreground tracking-tight">
+          Latest Blog Tutorials &amp; Notes
+        </h2>
+        <p class="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xl">
+          Detailed technical explainers, mathematical proofs, and code implementations.
+        </p>
+      </div>
+      <a href="/blog" class="woords_btn text-xs font-semibold shrink-0">
+        <span>View all articles</span>
+        <ArrowRight class="size-3.5" />
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+      {recentBlogPosts.map((post) => (
+        <article class="flex flex-col justify-between p-5 rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group">
+          <div>
+            <div class="relative aspect-16/10 overflow-hidden rounded-xl border border-border/70 bg-card mb-3.5">
+              <a href={`/blog/${post.id}/`} class="absolute inset-0 overflow-hidden block">
+                <img
+                  src={post.data.image || '/assets/default-post.svg'}
+                  alt={post.data.title}
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+              </a>
+            </div>
+
+            <div class="flex items-center space-x-2 mb-2">
+              <span class="woords_tag_small">
+                {post.data.topics?.[0] || post.data.tags?.[0] || 'Tutorial'}
+              </span>
+            </div>
+
+            <h3 class="font-bold font-display text-lg hover:underline line-clamp-2 leading-snug text-foreground mb-2">
+              <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+            </h3>
+
+            <p class="text-xs text-muted-foreground line-clamp-2 leading-relaxed font-body">
+              {post.data.description}
+            </p>
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-muted-foreground font-medium pt-3 mt-4 border-t border-black-150 dark:border-black-800">
+            <time datetime={new Date(post.data.pubDate).toISOString()}>
+              {format(new Date(post.data.pubDate), 'dd MMM yyyy')}
+            </time>
+            <span>—</span>
+            <a href={`/authors/${slugify(post.data.authorName || 'Atul Jha')}`} class="hover:underline truncate max-w-[120px]">
+              {post.data.authorName || 'Atul Jha'}
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <div class="flex justify-center mt-12">
+      <a href="/blog" class="woords_btn text-sm px-8 py-3 font-bold cursor-pointer">
+        <span>Explore All Articles</span>
+        <ArrowRight class="size-4 ml-1" />
+      </a>
+    </div>
+  </section>
+
+  {/* Client-side script for inline interactive podcast playback */}
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      const audio = document.getElementById('podcast-audio');
+      const playBtn = document.getElementById('podcast-play-btn');
+      const playIcon = document.getElementById('podcast-play-icon');
+      const pauseIcon = document.getElementById('podcast-pause-icon');
+      const timeDisplay = document.getElementById('podcast-time');
+      const progress = document.getElementById('podcast-progress');
+
+      if (audio && playBtn) {
+        playBtn.addEventListener('click', () => {
+          if (audio.paused) {
+            audio.play().then(() => {
+              playIcon?.classList.add('hidden');
+              pauseIcon?.classList.remove('hidden');
+            }).catch((err) => {
+              console.warn('Audio play request failed:', err);
+            });
+          } else {
+            audio.pause();
+            playIcon?.classList.remove('hidden');
+            pauseIcon?.classList.add('hidden');
+          }
+        });
+
+        audio.addEventListener('timeupdate', () => {
+          if (audio.duration && progress) {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progress.style.width = percent + '%';
+          }
+          if (timeDisplay) {
+            const curM = Math.floor(audio.currentTime / 60);
+            const curS = Math.floor(audio.currentTime % 60);
+            const durM = Math.floor((audio.duration || 0) / 60);
+            const durS = Math.floor((audio.duration || 0) % 60);
+            timeDisplay.textContent = `${curM}:${curS < 10 ? '0' : ''}${curS} / ${durM || 45}:${durS < 10 ? '0' : ''}${durS}`;
+          }
+        });
+
+        audio.addEventListener('ended', () => {
+          playIcon?.classList.remove('hidden');
+          pauseIcon?.classList.add('hidden');
+          if (progress) progress.style.width = '0%';
+        });
+      }
+    });
+  </script>
+
 </DefaultLayout>

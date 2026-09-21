@@ -3,7 +3,7 @@
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 @font-face {
   font-family: "DM Sans";
@@ -87,42 +87,57 @@
     0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
 
+  --font-fraunces: "Fraunces", Georgia, serif;
+  --font-poppins: "Poppins", "DM Sans", sans-serif;
   --font-dm-sans: "DM Sans", sans-serif;
   --font-inter: "inter", sans-serif;
 
+  --font-heading: var(--font-fraunces);
+  --font-body: var(--font-poppins);
+
   --font-sans:
-    var(--font-dm-sans), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    var(--font-poppins), var(--font-dm-sans), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, Cambria, serif;
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
 
-  /* StyleGlide provides a better abstraction for fonts */
-  --display-family: var(--font-sans);
-  --text-family: var(--font-inter);
+  /* Editorial style fonts */
+  --display-family: var(--font-fraunces);
+  --text-family: var(--font-poppins);
   --display-weight: 600;
   --text-weight: 400;
+
+  /* Woords Publication Palette */
+  --ghost-accent: #E5E795;
+  --ghost-accent-foreground: #000000;
+  --tag-rose: #FDA4AF;
+  --tag-blue: #A2D2FF;
+  --tag-lavender: #EEA9ED;
+  --tag-peach: #FFB86A;
+  --tag-lime: #E5E795;
+  --tag-mint: #A7F3D0;
 }
 
 .dark {
-  --background: #000000;
-  --foreground: #ffffff;
-  --card: #0a0a0a;
+  --background: #0d0e12;
+  --foreground: #f4f4f5;
+  --card: #13141a;
   --card-foreground: #ffffff;
-  --popover: #0a0a0a;
+  --popover: #13141a;
   --popover-foreground: #ffffff;
-  --primary: #3533cd;
-  --primary-foreground: #ffffff;
-  --secondary: oklch(0.269 0 0);
+  --primary: #E5E795;
+  --primary-foreground: #000000;
+  --secondary: oklch(0.24 0 0);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
+  --muted: oklch(0.22 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+  --accent: oklch(0.24 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: #E5E795;
 
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
@@ -130,14 +145,14 @@
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
 
-  --sidebar: #0a0a0a;
+  --sidebar: #13141a;
   --sidebar-foreground: #ffffff;
-  --sidebar-primary: #3533cd;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #3533cd;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-primary: #E5E795;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #E5E795;
+  --sidebar-accent-foreground: #000000;
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: #E5E795;
 }
 
 @theme inline {
@@ -167,6 +182,14 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
+  --color-ghost-accent: var(--ghost-accent);
+  --color-tag-rose: var(--tag-rose);
+  --color-tag-blue: var(--tag-blue);
+  --color-tag-lavender: var(--tag-lavender);
+  --color-tag-peach: var(--tag-peach);
+  --color-tag-lime: var(--tag-lime);
+  --color-tag-mint: var(--tag-mint);
+
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -175,6 +198,21 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Custom publication dark surfaces */
+  --color-black-50: #f8f8fa;
+  --color-black-100: #f0f0f3;
+  --color-black-150: #e5e5ea;
+  --color-black-200: #d8d8df;
+  --color-black-300: #b5b5c0;
+  --color-black-400: #858592;
+  --color-black-500: #5c5c68;
+  --color-black-600: #42424b;
+  --color-black-700: #2d2d34;
+  --color-black-800: #1d1d23;
+  --color-black-850: #16161c;
+  --color-black-900: #101014;
+  --color-black-950: #0a0a0d;
 
   --radius-xs: calc(var(--radius) - 4px);
   --radius-sm: calc(var(--radius) - 4px);
@@ -203,6 +241,8 @@
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
   --font-mono: var(--font-mono);
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
 
   --font-display: var(--display-family);
   --font-text: var(--text-family);
@@ -295,6 +335,10 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+  }
   *,
   ::after,
   ::before,
@@ -303,3 +347,159 @@ body {
     border-color: var(--color-gray-200, currentColor);
   }
 }
+
+/* Editorial Prose Link & Heading Readability */
+.prose a {
+  color: #3533cd;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+.prose a:hover {
+  color: #1e1b4b;
+}
+.dark .prose a {
+  color: #93c5fd;
+}
+.dark .prose a:hover {
+  color: #dbeafe;
+}
+
+/* Suppress duplicate top H1 in rendered markdown when page template provides title */
+.prose > h1:first-of-type,
+.notebook-embed .jp-Notebook-cell:first-child h1:first-of-type,
+.notebook-embed .jp-RenderedHTMLCommon > h1:first-of-type {
+  display: none;
+}
+
+/* Woords Publication System Utilities */
+.grid-bg {
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.dark .grid-bg {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.woords_container {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.woords_container_small {
+  width: 100%;
+  max-width: 1140px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.woords_btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  padding: 0.5rem 1.25rem;
+  background-color: var(--ghost-accent, #E5E795);
+  color: #000000;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.woords_btn:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.woords_tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.85rem;
+  background-color: oklch(0.96 0 0);
+  color: oklch(0.2 0 0);
+  transition: all 0.2s;
+}
+.dark .woords_tag {
+  background-color: oklch(0.22 0 0);
+  color: oklch(0.95 0 0);
+}
+.woords_tag:hover {
+  opacity: 0.85;
+}
+
+.woords_tag_small {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.2rem 0.65rem;
+  background-color: oklch(0.94 0 0);
+  color: oklch(0.25 0 0);
+  transition: all 0.2s;
+}
+.dark .woords_tag_small {
+  background-color: oklch(0.22 0 0);
+  color: oklch(0.92 0 0);
+}
+
+.woords_tag_secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.85rem;
+  background-color: var(--ghost-accent, #E5E795);
+  color: #000000;
+}
+
+.woords_tag_secondary_small {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.2rem 0.65rem;
+  background-color: var(--ghost-accent, #E5E795);
+  color: #000000;
+}
+
+/* Editorial In-Article Markdown Images */
+.prose img {
+  border-radius: 1rem;
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.1));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  background-color: rgba(0, 0, 0, 0.02);
+}
+.dark .prose img {
+  border-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.02);
+}
+

@@ -1,71 +1,384 @@
 ---
 // src/pages/topics/[topic].astro
 import { getCollection, type CollectionEntry } from 'astro:content';
-
-import { Background } from '@/components/background';
-import { BlogPosts } from '@/components/blocks/blog-posts';
+import { format } from 'date-fns';
+import { SITE_TITLE } from '@/consts';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
-
+import { slugify } from '@/utils/slugs';
+import { 
+  ArrowRight, 
+  Sparkles, 
+  Brain, 
+  Bot, 
+  LineChart, 
+  MessageSquareCode, 
+  Eye, 
+  Code2, 
+  Terminal, 
+  Compass, 
+  Clock, 
+  Tag, 
+  BookOpen,
+  Layers
+} from 'lucide-react';
+import { TOPIC_METADATA } from '@/lib/topics';
 
 export async function getStaticPaths() {
-    const allPosts = await getCollection('blog');
-    
-    // 🚨 Define TOPIC_OPTIONS and topicMap locally inside getStaticPaths for safety
-    const TOPIC_OPTIONS = [
-        { label: 'Machine Learning', value: 'machine-learning' },
-        { label: 'Deep Learning', value: 'deep-learning' },
-        { label: 'Data Science', value: 'data-science' },
-        { label: 'Natural Language Processing', value: 'nlp' },
-        { label: 'Computer Vision', value: 'computer-vision' },
-        { label: 'Astro/Web Development', value: 'web-dev' },
-        { label: 'Python', value: 'python' },
-    ];
-    const topicMap = new Map(TOPIC_OPTIONS.map(t => [t.value, t.label]));
+  const allPosts = await getCollection('blog');
+  const allRoadmaps = await getCollection('roadmaps');
+  const roadmapSlugs = new Set(allRoadmaps.map(r => r.id));
 
+  // 1. Get ALL unique topics from ALL posts and predefined config
+  const postTopics = allPosts.flatMap(post => post.data.topics || []);
+  const allUniqueTopics = [...new Set([...postTopics, ...Object.keys(TOPIC_METADATA)])];
 
-    // 1. Get ALL unique topics from ALL posts
-    const allTopics = allPosts.flatMap(post => post.data.topics || []);
-    const uniqueTopics = [...new Set(allTopics)];
-    
-    // 2. Map unique topics to dynamic paths
-    return uniqueTopics.map(topicSlug => {
-        // Filter: Post is included if its 'topics' array includes the current 'topicSlug'
-        const posts = allPosts
-            .filter(post => post.data.topics && post.data.topics.includes(topicSlug))
-            .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  return allUniqueTopics.map(topicSlug => {
+    const posts = allPosts
+      .filter(post => post.data.topics && post.data.topics.includes(topicSlug as any))
+      .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
-        // Get the human-readable label
-        const topicLabel = topicMap.get(topicSlug) || topicSlug;
+    const meta = TOPIC_METADATA[topicSlug] || {
+      label: topicSlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      description: `Comprehensive technical tutorials, walkthroughs, and blueprints on ${topicSlug}.`,
+      color: '#A2D2FF',
+    };
 
-        return {
-            params: { topic: topicSlug }, // Creates the URL slug (e.g., /topics/machine-learning)
-            props: { posts, topicLabel },
-        };
-    });
+    const hasRoadmap = meta.roadmapSlug && roadmapSlugs.has(meta.roadmapSlug);
+
+    return {
+      params: { topic: topicSlug },
+      props: { 
+        topicSlug,
+        posts, 
+        meta,
+        hasRoadmap,
+      },
+    };
+  });
 }
 
-// 3. Define the expected properties for the page
-interface TopicProps {
-    posts: CollectionEntry<'blog'>[]; 
-    topicLabel: string; 
+interface Props {
+  topicSlug: string;
+  posts: CollectionEntry<'blog'>[];
+  meta: {
+    label: string;
+    description: string;
+    color: string;
+    roadmapSlug?: string;
+  };
+  hasRoadmap: boolean;
 }
 
-const { posts, topicLabel } = Astro.props as TopicProps;
+const { topicSlug, posts, meta, hasRoadmap } = Astro.props;
 
-const title = `Topic: ${topicLabel}`;
-const description = `All blog posts related to the core topic: ${topicLabel}.`;
+// Calculate stats
+const totalReadTime = posts.reduce((sum, p) => sum + (p.data.readTime || 5), 0);
+const uniqueTags = [...new Set(posts.flatMap(p => p.data.tags || []))];
 
+// Lead hero post & supporting posts
+const leadPost = posts[0];
+const supportingPosts = posts.slice(1);
+
+// Other topics for related navigation
+const otherTopics = Object.entries(TOPIC_METADATA)
+  .filter(([slug]) => slug !== topicSlug)
+  .slice(0, 4);
+
+const title = `${meta.label} Articles & Blueprints | ${SITE_TITLE}`;
+const description = meta.description;
 ---
 
 <DefaultLayout title={title} description={description}>
-    <Background>
-        <div class="py-28 lg:pt-44 lg:pb-32">
-            <h1 class="text-5xl font-extrabold text-center mb-4">Articles on: {topicLabel}</h1>
-            <p class="text-xl text-center text-gray-600 mb-12">
-                Content that is categorized under <strong>{topicLabel} </strong>.
+  <div class="py-12 md:py-16 max-w-6xl mx-auto px-4 sm:px-6">
+
+    {/* Breadcrumbs & Navigation Back */}
+    <div class="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-6">
+      <a href="/topics" class="hover:text-foreground flex items-center gap-1 transition-colors">
+        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        <span>All Topics</span>
+      </a>
+      <span>/</span>
+      <span class="text-foreground">{meta.label}</span>
+    </div>
+
+    {/* Topic Hero Section */}
+    <div class="p-8 sm:p-10 rounded-3xl border border-black-150 dark:border-black-800 bg-card shadow-xs mb-12">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="flex items-start gap-5">
+          <div 
+            class="size-16 sm:size-20 rounded-2xl flex items-center justify-center text-black shrink-0 shadow-xs"
+            style={`background-color: ${meta.color};`}
+          >
+            {topicSlug === 'machine-learning' && <Brain class="size-8 sm:size-10 text-black" />}
+            {topicSlug === 'deep-learning' && <Bot class="size-8 sm:size-10 text-black" />}
+            {topicSlug === 'data-science' && <LineChart class="size-8 sm:size-10 text-black" />}
+            {topicSlug === 'python' && <Terminal class="size-8 sm:size-10 text-black" />}
+            {topicSlug === 'nlp' && <MessageSquareCode class="size-8 sm:size-10 text-black" />}
+            {topicSlug === 'computer-vision' && <Eye class="size-8 sm:size-10 text-black" />}
+            {topicSlug === 'web-dev' && <Code2 class="size-8 sm:size-10 text-black" />}
+          </div>
+
+          <div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-black-100 dark:bg-black-800 text-foreground mb-2">
+              Topic Hub
+            </span>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold font-display text-foreground tracking-tight leading-tight">
+              {meta.label}
+            </h1>
+            <p class="text-sm sm:text-base text-muted-foreground font-body mt-2.5 max-w-2xl leading-relaxed">
+              {meta.description}
             </p>
-            {/* Reuses your existing BlogPosts component for rendering the list */}
-            <BlogPosts posts={posts} client:only='react' />
+          </div>
         </div>
-    </Background>
+
+        {/* Quick Stats Pill */}
+        <div class="flex md:flex-col items-center md:items-end justify-between gap-2 shrink-0 pt-4 md:pt-0 border-t md:border-t-0 border-black-150 dark:border-black-800">
+          <div class="px-4 py-2 rounded-2xl border border-black-150 dark:border-black-800 bg-background text-center min-w-[120px]">
+            <span class="block text-2xl font-bold font-display text-foreground">{posts.length}</span>
+            <span class="text-[11px] font-medium text-muted-foreground uppercase">{posts.length === 1 ? 'Article' : 'Articles'}</span>
+          </div>
+          {totalReadTime > 0 && (
+            <span class="text-xs font-mono text-muted-foreground flex items-center gap-1">
+              <Clock class="size-3" />
+              {totalReadTime}m total read
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Sub-tags Pill Strip */}
+      {uniqueTags.length > 0 && (
+        <div class="mt-8 pt-6 border-t border-black-150 dark:border-black-800 flex items-center gap-2 flex-wrap text-xs">
+          <span class="font-bold text-[11px] uppercase tracking-wider text-muted-foreground mr-1 flex items-center gap-1">
+            <Tag class="size-3" />
+            Core Disciplines:
+          </span>
+          {uniqueTags.map((tag) => (
+            <a 
+              href={`/tags/${slugify(tag)}/`}
+              class="px-3 py-1 rounded-full border border-black-150 dark:border-black-800 bg-background hover:bg-black-50 dark:hover:bg-black-850 hover:border-primary/50 text-foreground transition-all"
+            >
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+
+    {/* Connected Interactive Roadmap Banner (if available) */}
+    {hasRoadmap && meta.roadmapSlug && (
+      <div class="mb-14 p-6 sm:p-8 rounded-3xl border border-primary/30 bg-primary/5 dark:bg-primary/10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div class="flex items-start gap-4">
+          <div class="size-12 rounded-2xl bg-primary text-black flex items-center justify-center shrink-0 shadow-xs">
+            <Compass class="size-6" />
+          </div>
+          <div>
+            <div class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary mb-1">
+              <Sparkles class="size-3.5" />
+              Structured Skill Path
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold font-display text-foreground leading-snug">
+              Master {meta.label} with the Interactive Step-by-Step Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm text-muted-foreground font-body mt-1 max-w-xl">
+              Track milestones, code blueprints, difficulty ratings, and official documentation across every core module.
+            </p>
+          </div>
+        </div>
+
+        <a 
+          href={`/roadmaps/${meta.roadmapSlug}/`}
+          class="woords_btn text-xs font-semibold shrink-0"
+        >
+          <span>Explore Interactive Roadmap</span>
+          <ArrowRight class="size-3.5" />
+        </a>
+      </div>
+    )}
+
+    {/* Articles Collection */}
+    {posts.length === 0 ? (
+      <div class="text-center py-20 px-4 rounded-3xl border border-dashed border-black-200 dark:border-black-800">
+        <BookOpen class="size-10 text-muted-foreground mx-auto mb-3 opacity-50" />
+        <h3 class="text-xl font-bold font-display text-foreground">No articles in this hub yet</h3>
+        <p class="text-sm text-muted-foreground mt-1 max-w-md mx-auto">
+          We are currently authoring new in-depth guides for {meta.label}. Check back soon or explore our related topics.
+        </p>
+        <a href="/topics" class="woords_btn text-xs font-semibold inline-block mt-6">
+          <span>Browse Other Topics</span>
+        </a>
+      </div>
+    ) : (
+      <div class="space-y-10 mb-16">
+        
+        {/* Lead Hero Article (If exists) */}
+        {leadPost && (
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-bold uppercase tracking-wider text-muted-foreground font-display">
+                Featured Hub Guide
+              </span>
+            </div>
+
+            <article class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 p-6 sm:p-8 rounded-3xl border border-black-150 dark:border-black-800 bg-card hover:shadow-md transition-all">
+              <div class="lg:col-span-6 relative aspect-16/10 overflow-hidden rounded-2xl border border-border/60 bg-black-50 dark:bg-black-900">
+                <a href={`/blog/${leadPost.id}/`} class="absolute inset-0 group overflow-hidden block">
+                  <img
+                    src={leadPost.data.image || '/assets/default-post.svg'}
+                    alt={leadPost.data.title}
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
+                    loading="lazy"
+                  />
+                </a>
+              </div>
+
+              <div class="lg:col-span-6 flex flex-col justify-between gap-y-4">
+                <div>
+                  <div class="flex items-center gap-2 mb-3">
+                    <span class="woords_tag_small">
+                      {meta.label}
+                    </span>
+                    <span class="text-xs text-muted-foreground font-mono">
+                      {leadPost.data.readTime || 5} min read
+                    </span>
+                  </div>
+
+                  <h3 class="font-bold font-display text-2xl sm:text-3xl text-foreground hover:underline leading-snug mb-3">
+                    <a href={`/blog/${leadPost.id}/`}>{leadPost.data.title}</a>
+                  </h3>
+
+                  <p class="text-sm text-muted-foreground font-body leading-relaxed line-clamp-3">
+                    {leadPost.data.description}
+                  </p>
+                </div>
+
+                <div class="flex items-center justify-between pt-4 border-t border-black-150 dark:border-black-800 text-xs text-muted-foreground">
+                  <div class="flex items-center gap-2">
+                    {leadPost.data.authorImage && (
+                      <img 
+                        src={leadPost.data.authorImage} 
+                        alt={leadPost.data.authorName || 'Author'} 
+                        class="size-6 rounded-full object-cover border border-border"
+                      />
+                    )}
+                    <span class="font-semibold text-foreground">{leadPost.data.authorName || 'Atul Jha'}</span>
+                    <span>•</span>
+                    <time datetime={new Date(leadPost.data.pubDate).toISOString()}>
+                      {format(new Date(leadPost.data.pubDate), 'dd MMM yyyy')}
+                    </time>
+                  </div>
+
+                  <a 
+                    href={`/blog/${leadPost.id}/`} 
+                    class="font-semibold text-foreground hover:text-primary transition-colors flex items-center gap-1"
+                  >
+                    <span>Read Article</span>
+                    <ArrowRight class="size-3.5" />
+                  </a>
+                </div>
+              </div>
+            </article>
+          </div>
+        )}
+
+        {/* Supporting Articles Grid */}
+        {supportingPosts.length > 0 && (
+          <div>
+            <div class="flex items-center justify-between mb-6 pt-4">
+              <span class="text-xs font-bold uppercase tracking-wider text-muted-foreground font-display">
+                All {meta.label} Tutorials ({supportingPosts.length})
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {supportingPosts.map((post) => (
+                <article class="flex flex-col justify-between p-5 rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group">
+                  <div>
+                    <div class="relative aspect-4/3 overflow-hidden rounded-xl border border-border/60 bg-black-50 dark:bg-black-900 mb-4">
+                      <a href={`/blog/${post.id}/`} class="absolute inset-0 overflow-hidden block">
+                        <img
+                          src={post.data.image || '/assets/default-post.svg'}
+                          alt={post.data.title}
+                          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      </a>
+                    </div>
+
+                    <div class="flex items-center gap-2 mb-2">
+                      <span class="woords_tag_small">
+                        {post.data.topics?.[0] || 'Tutorial'}
+                      </span>
+                      <span class="text-[11px] text-muted-foreground font-mono">
+                        {post.data.readTime || 4} min read
+                      </span>
+                    </div>
+
+                    <h4 class="font-bold font-display text-lg text-foreground group-hover:text-primary group-hover:underline line-clamp-2 leading-snug mb-2">
+                      <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+                    </h4>
+
+                    <p class="text-xs text-muted-foreground line-clamp-2 leading-relaxed font-body">
+                      {post.data.description}
+                    </p>
+                  </div>
+
+                  <div class="flex items-center justify-between text-xs text-muted-foreground mt-4 pt-3 border-t border-black-150 dark:border-black-800">
+                    <time datetime={new Date(post.data.pubDate).toISOString()}>
+                      {format(new Date(post.data.pubDate), 'dd MMM yyyy')}
+                    </time>
+                    <span class="font-medium text-foreground">{post.data.authorName || 'Atul Jha'}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+
+      </div>
+    )}
+
+    {/* Related Topic Hubs Footer Strip */}
+    <div class="pt-12 border-t border-black-150 dark:border-black-800">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-muted-foreground font-display">
+            Explore Other Domains
+          </span>
+          <h3 class="text-xl font-bold font-display text-foreground mt-0.5">
+            Related Learning Hubs
+          </h3>
+        </div>
+        <a href="/topics" class="text-xs font-semibold text-muted-foreground hover:text-foreground flex items-center gap-1">
+          <span>All Hubs</span>
+          <ArrowRight class="size-3.5" />
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {otherTopics.map(([slug, item]) => (
+          <a
+            href={`/topics/${slug}/`}
+            class="p-4 rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:bg-black-50 dark:hover:bg-black-850 hover:border-primary/50 transition-all flex items-center justify-between group"
+          >
+            <div>
+              <h4 class="text-sm font-bold font-display text-foreground group-hover:text-primary transition-colors">
+                {item.label}
+              </h4>
+              <span class="text-[11px] text-muted-foreground">Explore domain →</span>
+            </div>
+            <span 
+              class="size-8 rounded-xl flex items-center justify-center text-black shrink-0"
+              style={`background-color: ${item.color};`}
+            >
+              <Layers class="size-4 text-black" />
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+
+  </div>
 </DefaultLayout>

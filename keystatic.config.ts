@@ -1,6 +1,127 @@
 // keystatic.config.ts
 import { config, fields, collection } from '@keystatic/core';
-import { updateScrollPosition } from 'astro/virtual-modules/transitions-router.js';
+import { block, wrapper } from '@keystatic/core/content-components';
+
+export const mdxComponents = {
+  Callout: wrapper({
+    label: 'Callout Box',
+    description: 'Highlighted callout note, tip, warning, or alert',
+    schema: {
+      kind: fields.select({
+        label: 'Type',
+        options: [
+          { label: 'Info (Blue)', value: 'info' },
+          { label: 'Tip (Green)', value: 'tip' },
+          { label: 'Warning (Amber)', value: 'warning' },
+          { label: 'Danger (Red)', value: 'danger' },
+          { label: 'Success (Lime)', value: 'success' },
+        ],
+        defaultValue: 'info',
+      }),
+      title: fields.text({ label: 'Title (Optional)' }),
+    },
+  }),
+  VideoEmbed: block({
+    label: 'Video Embed',
+    description: 'Embed a YouTube or Vimeo video',
+    schema: {
+      url: fields.text({ label: 'Video URL', validation: { isRequired: true } }),
+      caption: fields.text({ label: 'Caption (Optional)' }),
+    },
+  }),
+  AudioPlayer: block({
+    label: 'Podcast / Audio Player',
+    description: 'Embed an audio/podcast player widget',
+    schema: {
+      title: fields.text({ label: 'Audio / Episode Title', validation: { isRequired: true } }),
+      audioUrl: fields.text({ label: 'Audio File URL (.mp3 / stream)' }),
+      duration: fields.text({ label: 'Duration (e.g. 15 min)' }),
+      host: fields.text({ label: 'Host / Creator Name' }),
+      description: fields.text({ label: 'Short Description', multiline: true }),
+    },
+  }),
+  QuizBlock: block({
+    label: 'Interactive Quiz / Question',
+    description: 'Test reader knowledge with an interactive question',
+    schema: {
+      question: fields.text({ label: 'Question', validation: { isRequired: true } }),
+      option1: fields.text({ label: 'Option A', validation: { isRequired: true } }),
+      option2: fields.text({ label: 'Option B', validation: { isRequired: true } }),
+      option3: fields.text({ label: 'Option C' }),
+      option4: fields.text({ label: 'Option D' }),
+      correctAnswer: fields.select({
+        label: 'Correct Option',
+        options: [
+          { label: 'Option A', value: '0' },
+          { label: 'Option B', value: '1' },
+          { label: 'Option C', value: '2' },
+          { label: 'Option D', value: '3' },
+        ],
+        defaultValue: '0',
+      }),
+      explanation: fields.text({ label: 'Explanation (Shown after answering)', multiline: true }),
+    },
+  }),
+  NewsletterCTA: block({
+    label: 'Newsletter CTA',
+    description: 'In-article newsletter subscription box',
+    schema: {
+      title: fields.text({ label: 'Heading' }),
+      description: fields.text({ label: 'Description', multiline: true }),
+      buttonText: fields.text({ label: 'Button Label' }),
+    },
+  }),
+  StatCard: block({
+    label: 'Stat / Takeaway Card',
+    description: 'Highlight a key metric or takeaway',
+    schema: {
+      statValue: fields.text({ label: 'Stat Value / Metric (e.g. 98.5% or 4.2x)', validation: { isRequired: true } }),
+      label: fields.text({ label: 'Label', validation: { isRequired: true } }),
+      description: fields.text({ label: 'Description', multiline: true }),
+      accent: fields.select({
+        label: 'Accent Color',
+        options: [
+          { label: 'Lime Yellow', value: 'lime' },
+          { label: 'Rose Pink', value: 'rose' },
+          { label: 'Sky Blue', value: 'blue' },
+          { label: 'Lavender Purple', value: 'lavender' },
+          { label: 'Peach Orange', value: 'peach' },
+        ],
+        defaultValue: 'lime',
+      }),
+    },
+  }),
+  CodeSnippet: block({
+    label: 'Code Snippet Block',
+    description: 'Syntax-highlighted code block with title and copy button',
+    schema: {
+      language: fields.text({ label: 'Language (e.g. python, typescript, bash)' }),
+      filename: fields.text({ label: 'Filename / Title' }),
+      code: fields.text({ label: 'Code Content', multiline: true, validation: { isRequired: true } }),
+    },
+  }),
+  ReferenceCard: block({
+    label: 'Resource / Reference Card',
+    description: 'Recommend a book, course, paper, or link',
+    schema: {
+      title: fields.text({ label: 'Resource Title', validation: { isRequired: true } }),
+      url: fields.text({ label: 'URL', validation: { isRequired: true } }),
+      type: fields.select({
+        label: 'Type',
+        options: [
+          { label: 'Link', value: 'link' },
+          { label: 'Book', value: 'book' },
+          { label: 'Course', value: 'course' },
+          { label: 'Research Paper', value: 'paper' },
+          { label: 'Documentation', value: 'documentation' },
+        ],
+        defaultValue: 'link',
+      }),
+      author: fields.text({ label: 'Author / Publisher' }),
+      description: fields.text({ label: 'Description', multiline: true }),
+    },
+  }),
+};
 
 export default config({
   storage: {
@@ -11,6 +132,7 @@ export default config({
     brand: { name: 'EncodeEdge' },
     navigation: {
       'Content': ['blogs', 'faqs', 'roadmaps'],
+      'Components': ['components'],
       'LMS Core': ['courses', 'batches', 'instructors'],
       'LMS Material': ['lessons', 'quizzes', 'assignments'],
       'LMS Administration': ['certificates']
@@ -100,13 +222,16 @@ export default config({
             itemLabel: props => props.fields.title.value ,
           }
         ),
-        content: fields.mdx({ label: 'Content', extension: 'md', 
-        options: {
-        image: {
-          directory: '/public/assets/', // For images embedded within MDX content
-          publicPath: '/assets/', // Use an alias for easier referencing
-        },
-      },
+        content: fields.mdx({
+          label: 'Content',
+          extension: 'mdx',
+          components: mdxComponents,
+          options: {
+            image: {
+              directory: '/public/assets/',
+              publicPath: '/assets/',
+            },
+          },
         }),
       },
     }),
@@ -128,6 +253,12 @@ export default config({
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
         description: fields.text({ label: 'Description', validation: { isRequired: true } }),
+        image: fields.image({
+          label: 'Cover Image',
+          description: 'Roadmap preview graphic or illustration',
+          publicPath: '/assets/roadmaps/',
+          directory: 'public/assets/roadmaps',
+        }),
         featured: fields.checkbox({ label: 'Featured', description: 'Highlight this roadmap' }),
         nodes: fields.array(
           fields.object({
@@ -179,7 +310,7 @@ export default config({
           }),
           { label: 'Nodes', itemLabel: props => props.fields.title.value }
         ),
-        content: fields.mdx({ label: 'Content', extension: 'md', description: 'Optional content for the roadmap page' }),
+        content: fields.mdx({ label: 'Content', extension: 'md', components: mdxComponents, description: 'Optional content for the roadmap page' }),
       },
     }),
     
@@ -318,7 +449,7 @@ export default config({
         }),
         videoUrl: fields.text({ label: 'Video URL', description: 'YouTube or Vimeo embed URL' }),
         duration: fields.number({ label: 'Duration (in minutes)' }),
-        content: fields.mdx({ label: 'Content', extension: 'md' }),
+        content: fields.mdx({ label: 'Content', extension: 'mdx', components: mdxComponents }),
       }
     }),
     quizzes: collection({
@@ -380,6 +511,44 @@ export default config({
         ),
         instructions: fields.mdx({ label: 'Detailed Instructions', extension: 'md' }),
       }
+    }),
+
+    // --- Reusable Components ---
+    components: collection({
+      label: 'Reusable Components',
+      slugField: 'name',
+      path: 'src/content/components/*',
+      format: { contentField: 'content' },
+      schema: {
+        name: fields.slug({ name: { label: 'Component Name' } }),
+        category: fields.select({
+          label: 'Category',
+          options: [
+            { label: 'Callout / Alert', value: 'callout' },
+            { label: 'Newsletter / CTA', value: 'cta' },
+            { label: 'Banner / Announcement', value: 'banner' },
+            { label: 'Audio / Podcast Feature', value: 'podcast' },
+            { label: 'Resource / Reference', value: 'resource' },
+          ],
+          defaultValue: 'callout',
+        }),
+        description: fields.text({ label: 'Description / Purpose', multiline: true }),
+        buttonText: fields.text({ label: 'Button / Action Text (Optional)' }),
+        buttonUrl: fields.text({ label: 'Button / Action URL (Optional)' }),
+        accentColor: fields.select({
+          label: 'Accent Color',
+          options: [
+            { label: 'Lime Yellow (Theme Accent)', value: '#E5E795' },
+            { label: 'Rose Pink', value: '#FDA4AF' },
+            { label: 'Sky Blue', value: '#A2D2FF' },
+            { label: 'Lavender Purple', value: '#EEA9ED' },
+            { label: 'Peach Orange', value: '#FFB86A' },
+            { label: 'Mint Green', value: '#A7F3D0' },
+          ],
+          defaultValue: '#E5E795',
+        }),
+        content: fields.mdx({ label: 'Content', extension: 'md', components: mdxComponents }),
+      },
     }),
 
     // --- LMS Administration ---

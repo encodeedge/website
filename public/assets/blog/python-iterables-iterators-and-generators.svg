@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <pattern id="gridPattern" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.2" fill="#FDA4AF" opacity="0.18" />
+    </pattern>
+  </defs>
+
+  <style>
+    .bg-canvas { fill: #FFF8F0; }
+    .diagram-card { fill: #FFFFFF; stroke: #FDA4AF; stroke-width: 2px; }
+    .diagram-node { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5px; }
+    .diagram-text { fill: #0F172A; }
+    .diagram-subtext { fill: #64748B; }
+    .diagram-line { stroke: #94A3B8; }
+
+    @media (prefers-color-scheme: dark) {
+      .bg-canvas { fill: #191520 !important; }
+      .diagram-card { fill: #1E2538 !important; stroke: #FDA4AF !important; stroke-width: 2px !important; }
+      .diagram-node { fill: #161D2B !important; stroke: #334155 !important; stroke-width: 1.5px !important; }
+      .diagram-text { fill: #F8FAFC !important; }
+      .diagram-subtext { fill: #94A3B8 !important; }
+      .diagram-line { stroke: #475569 !important; }
+    }
+  </style>
+
+  <!-- Clean Tinted Canvas (Distinct from grey page background) -->
+  <rect width="800" height="450" class="bg-canvas" />
+  <rect width="800" height="450" fill="url(#gridPattern)" />
+
+  <!-- Diagram Visual -->
+  
+  <g transform="translate(120, 100)">
+    <!-- Stream Sequence -->
+    <g transform="translate(0, 10)">
+      <circle cx="40" cy="40" r="28" fill="#FFFFFF" stroke="#FDA4AF" stroke-width="2" class="diagram-card" />
+      <text x="40" y="46" text-anchor="middle" font-family="monospace" font-size="16" font-weight="700" fill="#0F172A" class="diagram-text">1</text>
+
+      <path d="M 70 40 L 130 40" fill="none" stroke="#CBD5E1" stroke-width="2.5" class="diagram-line" />
+      <text x="100" y="30" text-anchor="middle" font-family="monospace" font-size="10" fill="#94A3B8">yield</text>
+
+      <circle cx="160" cy="40" r="28" fill="#FFFFFF" stroke="#E5E795" stroke-width="2" class="diagram-card" />
+      <text x="160" y="46" text-anchor="middle" font-family="monospace" font-size="16" font-weight="700" fill="#0F172A" class="diagram-text">2</text>
+
+      <path d="M 190 40 L 250 40" fill="none" stroke="#CBD5E1" stroke-width="2.5" class="diagram-line" />
+      <text x="220" y="30" text-anchor="middle" font-family="monospace" font-size="10" fill="#94A3B8">yield</text>
+
+      <circle cx="280" cy="40" r="28" fill="#FFFFFF" stroke="#A2D2FF" stroke-width="2" class="diagram-card" />
+      <text x="280" y="46" text-anchor="middle" font-family="monospace" font-size="16" font-weight="700" fill="#0F172A" class="diagram-text">3</text>
+
+      <!-- Generator State Box -->
+      <rect x="350" y="0" width="200" height="80" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2" class="diagram-card" />
+      <text x="450" y="34" text-anchor="middle" font-family="monospace" font-size="12" font-weight="700" fill="#059669">GEN_SUSPENDED</text>
+      <text x="450" y="58" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="600" fill="#64748B" class="diagram-subtext">O(1) Memory Footprint</text>
+    </g>
+  </g>
+
+</svg>

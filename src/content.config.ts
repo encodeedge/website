@@ -48,6 +48,7 @@ const roadmaps = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
+    image: z.string().optional(),
     featured: z.boolean().optional(),
     nodes: z.array(z.object({
       id: z.string(),
@@ -178,4 +179,16 @@ const certificates = defineCollection({
   }),
 });
 
-export const collections = { blog, faqs, roadmaps, instructors, lessons, courses, batches, quizzes, assignments, certificates };
+const components = defineCollection({
+  loader: glob({ base: "./src/content/components", pattern: "**/*.{md,mdx,json}" }),
+  schema: z.object({
+    name: z.string().optional(),
+    category: z.enum(['callout', 'cta', 'banner', 'podcast', 'resource']).default('callout'),
+    description: z.string().optional(),
+    buttonText: z.string().optional(),
+    buttonUrl: z.string().optional(),
+    accentColor: z.string().optional(),
+  }),
+});
+
+export const collections = { blog, faqs, roadmaps, instructors, lessons, courses, batches, quizzes, assignments, certificates, components };

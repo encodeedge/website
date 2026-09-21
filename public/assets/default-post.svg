@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="100%" height="100%">
+  <defs>
+    <pattern id="dotGrid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.2" fill="#FFB86A" opacity="0.2" class="dot-color" />
+    </pattern>
+  </defs>
+
+  <style>
+    .bg-canvas { fill: #FFF8F0; }
+    .card-box { fill: #FFFFFF; stroke: #FFB86A; stroke-width: 2px; }
+    .top-bar { fill: #FFF2E2; }
+    .icon-box { fill: #FFFDF9; stroke: #FFB86A; stroke-opacity: 0.5; }
+    .title-text { fill: #0F172A; }
+    .subtitle-text { fill: #64748B; }
+
+    @media (prefers-color-scheme: dark) {
+      .bg-canvas { fill: #191520 !important; }
+      .card-box { fill: #1E2538 !important; stroke: #FFB86A !important; stroke-width: 2px !important; }
+      .top-bar { fill: #281F30 !important; }
+      .icon-box { fill: #231C2C !important; stroke: #FFB86A !important; stroke-opacity: 0.5 !important; }
+      .title-text { fill: #F8FAFC !important; }
+      .subtitle-text { fill: #94A3B8 !important; }
+    }
+  </style>
+
+  <!-- Distinct Tinted Canvas (Not grey) -->
+  <rect width="1200" height="675" class="bg-canvas" />
+  <rect width="1200" height="675" fill="url(#dotGrid)" />
+
+  <!-- Central Editorial Frame -->
+  <g transform="translate(350, 175)">
+    <rect width="500" height="320" rx="20" class="card-box" />
+    
+    <!-- Top Header Bar -->
+    <path d="M 0 20 Q 0 0 20 0 L 480 0 Q 500 0 500 20 L 500 56 L 0 56 Z" class="top-bar" />
+    <line x1="0" y1="56" x2="500" y2="56" stroke="#FFB86A" stroke-opacity="0.3" stroke-width="1.5" />
+
+    <!-- Three Window Dots -->
+    <circle cx="28" cy="28" r="5" fill="#FDA4AF" />
+    <circle cx="46" cy="28" r="5" fill="#FFB86A" />
+    <circle cx="64" cy="28" r="5" fill="#A2D2FF" />
+
+    <text x="250" y="34" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700" fill="#64748B" letter-spacing="1">ENCODE EDGE</text>
+
+    <!-- Content -->
+    <g transform="translate(40, 90)">
+      <rect x="175" y="0" width="70" height="70" rx="16" class="icon-box" stroke-width="1.5" />
+      <text x="210" y="44" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="24" font-weight="900" fill="#FFB86A">&lt;/&gt;</text>
+
+      <text x="210" y="110" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" font-weight="700" class="title-text">Engineering Article</text>
+      <text x="210" y="135" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="500" class="subtitle-text">Architecture • Math • Production Code</text>
+    </g>
+  </g>
+</svg>

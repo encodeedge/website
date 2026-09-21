@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="py-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141824" />
+      <stop offset="100%" stop-color="#1E2337" />
+    </linearGradient>
+    <pattern id="py-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1" />
+    </pattern>
+    <filter id="shadow-py" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(0,0,0,0.4)" />
+    </filter>
+  </defs>
+
+  <rect width="800" height="500" fill="url(#py-bg)" />
+  <rect width="800" height="500" fill="url(#py-grid)" />
+
+  <!-- Flow Lines -->
+  <path d="M 160 250 Q 280 180 370 250 T 580 250" fill="none" stroke="#FFB86A" stroke-width="3" stroke-dasharray="6 6" opacity="0.7" />
+  <path d="M 370 250 L 520 160 L 650 250" fill="none" stroke="#A2D2FF" stroke-width="2.5" opacity="0.6" />
+  <path d="M 370 250 L 520 340 L 650 250" fill="none" stroke="#E5E795" stroke-width="2.5" opacity="0.6" />
+
+  <!-- Header -->
+  <g transform="translate(60, 50)">
+    <rect x="0" y="0" width="130" height="26" rx="13" fill="#FFB86A" opacity="0.2" />
+    <text x="65" y="17" fill="#FFB86A" font-family="system-ui, sans-serif" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1">CURRICULUM</text>
+    <text x="0" y="54" fill="#FFFFFF" font-family="Georgia, serif" font-size="28" font-weight="700" letter-spacing="-0.5">Python Developer Path</text>
+  </g>
+
+  <!-- Node 1: Primitives & Syntax -->
+  <g transform="translate(90, 210)" filter="url(#shadow-py)">
+    <rect width="130" height="80" rx="16" fill="#182033" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />
+    <circle cx="28" cy="28" r="14" fill="#FFB86A" />
+    <text x="28" y="33" fill="#000" font-family="system-ui, sans-serif" font-size="12" font-weight="800" text-anchor="middle">01</text>
+    <text x="28" y="60" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="13" font-weight="700">Foundations</text>
+    <text x="28" y="73" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="10">Syntax &amp; Types</text>
+  </g>
+
+  <!-- Node 2: Memory & Internals -->
+  <g transform="translate(290, 210)" filter="url(#shadow-py)">
+    <rect width="140" height="80" rx="16" fill="#182033" stroke="#FFB86A" stroke-width="1.5" />
+    <circle cx="28" cy="28" r="14" fill="#FFB86A" />
+    <text x="28" y="33" fill="#000" font-family="system-ui, sans-serif" font-size="12" font-weight="800" text-anchor="middle">02</text>
+    <text x="28" y="60" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="13" font-weight="700">Memory &amp; Ref</text>
+    <text x="28" y="73" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="10">Mutability, GC</text>
+  </g>
+
+  <!-- Node 3: OOP & Protocols -->
+  <g transform="translate(460, 120)" filter="url(#shadow-py)">
+    <rect width="140" height="80" rx="16" fill="#182033" stroke="#A2D2FF" stroke-width="1.5" />
+    <circle cx="28" cy="28" r="14" fill="#A2D2FF" />
+    <text x="28" y="33" fill="#000" font-family="system-ui, sans-serif" font-size="12" font-weight="800" text-anchor="middle">03</text>
+    <text x="28" y="60" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="13" font-weight="700">OOP &amp; Dunder</text>
+    <text x="28" y="73" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="10">Classes &amp; Protocols</text>
+  </g>
+
+  <!-- Node 4: Async & Concurrency -->
+  <g transform="translate(460, 300)" filter="url(#shadow-py)">
+    <rect width="140" height="80" rx="16" fill="#182033" stroke="#E5E795" stroke-width="1.5" />
+    <circle cx="28" cy="28" r="14" fill="#E5E795" />
+    <text x="28" y="33" fill="#000" font-family="system-ui, sans-serif" font-size="12" font-weight="800" text-anchor="middle">04</text>
+    <text x="28" y="60" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="13" font-weight="700">Async &amp; Threads</text>
+    <text x="28" y="73" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="10">asyncio, Coroutines</text>
+  </g>
+
+  <!-- Node 5: Packaging -->
+  <g transform="translate(620, 210)" filter="url(#shadow-py)">
+    <rect width="130" height="80" rx="16" fill="#182033" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+    <circle cx="28" cy="28" r="14" fill="#E9D5FF" />
+    <text x="28" y="33" fill="#000" font-family="system-ui, sans-serif" font-size="12" font-weight="800" text-anchor="middle">05</text>
+    <text x="28" y="60" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="13" font-weight="700">Production</text>
+    <text x="28" y="73" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="10">Pip, Wheels &amp; CI</text>
+  </g>
+</svg>
+

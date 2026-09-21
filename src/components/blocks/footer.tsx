@@ -1,94 +1,64 @@
-import { ArrowUpRight } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
 import { GITHUB_URL } from "@/consts";
 
 export function Footer() {
   const navigation = [
-    { name: "Tutorials", href: "/tutorials" },
-    { name: "About Us", href: "/about" },
-    { name: "Blogs", href: "/blog" },
+    { name: "Home", href: "/" },
+    { name: "Roadmaps", href: "/roadmaps" },
+    { name: "Topics", href: "/topics" },
+    { name: "Blog", href: "/blog" },
+    { name: "Courses", href: "/courses" },
+    { name: "About", href: "/about" },
     { name: "FAQ", href: "/faq" },
-    { name: "Contact", href: "/contact" },
+    { name: "Subscribe", href: "/subscribe" },
+    { name: "Privacy", href: "/privacy" },
+    { name: "Terms", href: "/terms" },
   ];
-
-  const social = [
-    { name: "Twitter", href: "https://x.com/encodeedge" },
-    { name: "LinkedIn", href: "https://www.linkedin.com/company/encodeedge" },
-  ];
-
-  const legal = [{ name: "Privacy Policy", href: "/privacy" }];
 
   return (
-    <footer className="flex flex-col items-center gap-14 pt-28 lg:pt-32">
-      <div className="container space-y-3 text-center">
-        <h2 className="text-2xl tracking-tight md:text-4xl lg:text-5xl">
-          Carefuly crafted content
-        </h2>
-        <p className="text-muted-foreground mx-auto max-w-xl leading-snug text-balance">
-          Straight to your inbox
+    <footer className="bg-black-50/70 dark:bg-black-900 border-t border-black-150 dark:border-black-800 transition-colors mt-20">
+      <div className="woords_container flex flex-col gap-y-8 justify-center items-center py-12">
+        {/* Logo & Brand Name */}
+        <a href="/" className="flex items-center gap-2 group">
+          <img
+            src="/logos/logo.png"
+            alt="EncodeEdge"
+            className="h-7 w-auto dark:invert transition-transform group-hover:scale-105"
+          />
+          <span className="font-display font-extrabold text-2xl tracking-tight text-foreground">
+            Encode<span className="text-black/60 dark:text-white/60 font-medium">Edge</span>
+          </span>
+        </a>
+
+        <p className="text-xs text-muted-foreground text-center max-w-md">
+          Demystifying modern Python, Machine Learning, and algorithms with clear, code-backed blueprints.
         </p>
-        <div>
-          <Button size="lg" className="mt-4" asChild>
-            <a href="/subscribe">Subscribe</a>
-          </Button>
-        </div>
+
+        {/* Footer Navigation */}
+        <nav className="flex items-center justify-center">
+          <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-medium text-muted-foreground">
+            {navigation.map((item) => (
+              <li key={item.name}>
+                <a
+                  href={item.href}
+                  className="hover:text-foreground hover:underline transition-colors"
+                >
+                  {item.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
 
-      <nav className="container flex flex-col items-center gap-4">
-        <ul className="flex flex-wrap items-center justify-center gap-6">
-          {navigation.map((item) => (
-            <li key={item.name}>
-              <a
-                href={item.href}
-                className="font-medium transition-opacity hover:opacity-75"
-              >
-                {item.name}
-              </a>
-            </li>
-          ))}
-          {social.map((item) => (
-            <li key={item.name}>
-              <a
-                href={item.href}
-                className="flex items-center gap-0.5 font-medium transition-opacity hover:opacity-75"
-              >
-                {item.name} <ArrowUpRight className="size-4" />
-              </a>
-            </li>
-          ))}
-        </ul>
-        <ul className="flex flex-wrap items-center justify-center gap-6">
-          {legal.map((item) => (
-            <li key={item.name}>
-              <a
-                href={item.href}
-                className="text-muted-foreground text-sm transition-opacity hover:opacity-75"
-              >
-                {item.name}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      <div className="text-primary mt-10 w-full md:mt-14 lg:mt-20">
-        <svg width="1570" height="293" viewBox="0 0 1570 293" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-  <defs>
-    <linearGradient id="textGradient" x1="785" y1="0" x2="785" y2="293" gradientUnits="userSpaceOnUse">
-      <stop stopColor="currentColor"></stop>
-      <stop offset="1" stopColor="#F8F8F8" stopOpacity="0.41"></stop>
-    </linearGradient>
-  </defs>
-  <text x="50%" y="220" textAnchor="middle"
-        fontFamily="Inter, system-ui, sans-serif" 
-        fontSize="250" 
-        fontWeight="800"
-        letterSpacing="-10" 
-        fill="url(#textGradient)">
-    encodeedge
-  </text>
-</svg>
+      {/* Copyright Bar */}
+      <div className="text-xs text-muted-foreground flex items-center justify-center py-5 border-t border-black-150 dark:border-black-800/80 px-4 text-center">
+        <div>
+          &copy; {new Date().getFullYear()}{" "}
+          <a href="/" className="font-semibold text-foreground hover:underline">
+            EncodeEdge
+          </a>
+          . Crafted for curious engineers and builders.
+        </div>
       </div>
     </footer>
   );

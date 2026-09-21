@@ -8,15 +8,13 @@ import { DashedLine } from '@/components/dashed-line';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 ---
 <DefaultLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
-  <Background>
+  <div class="py-12 md:py-16 max-w-4xl mx-auto px-4 sm:px-6">
     <FAQ
-      client:only='react'
-      className="py-28 text-center lg:pt-44 lg:pb-32"
-      className2="max-w-xl lg:grid-cols-1"
+      client:load
+      className="text-center"
+      className2="max-w-2xl mx-auto lg:grid-cols-1"
       headerTag="h1"
     />
-    <!-- <DashedLine className="mx-auto max-w-xl" />
-    <Testimonials dashedLineClassName="hidden" client:only='react'
-    /> -->
-  </Background>
+  </div>
 </DefaultLayout>
+

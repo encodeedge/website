@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import RoadmapLayout from '@/layouts/RoadmapLayout.astro';
 import type { CollectionEntry } from 'astro:content';
-import { RoadmapDrawer } from '@/components/RoadmapDrawer';
+import { TOPIC_METADATA } from '@/lib/topics';
 
 export async function getStaticPaths() {
   const roadmaps = await getCollection('roadmaps');
@@ -17,1174 +17,2692 @@ interface Props {
 }
 
 const { roadmap } = Astro.props;
-
 const totalTopics = roadmap.data.nodes?.reduce((acc, section) => acc + (section.topics?.length ?? 0), 0) ?? 0;
-const totalCategories = roadmap.data.nodes?.length ?? 0;
+const totalModules = roadmap.data.nodes?.length ?? 0;
+
+const topicMeta = TOPIC_METADATA[roadmap.id] || {
+  value: roadmap.id,
+  label: roadmap.data.title,
+  description: roadmap.data.description,
+  color: '#E5E795',
+  roadmapSlug: roadmap.id,
+};
+
+// Helper to parse duration string to numeric hours
+function parseDurationHours(duration?: string): number {
+  if (!duration) return 2;
+  const d = duration.toLowerCase();
+  if (d.includes('hour') || d.includes('hr')) {
+    return parseFloat(d) || 2;
+  }
+  if (d.includes('min')) {
+    return Math.round(((parseFloat(d) || 45) / 60) * 10) / 10;
+  }
+  if (d.includes('week')) {
+    return (parseFloat(d) || 1) * 10;
+  }
+  return 2;
+}
+
+// Calculate total estimated hours
+let totalHours = 0;
+roadmap.data.nodes?.forEach((sec) => {
+  sec.topics?.forEach((t) => {
+    totalHours += parseDurationHours(t.duration);
+  });
+});
+const estimatedHours = Math.max(10, Math.round(totalHours));
+
+// Helper to slugify topic names for anchors
+const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 ---
 
-<RoadmapLayout title={roadmap.data.title} description={roadmap.data.description}>
+<RoadmapLayout 
+  title={`${roadmap.data.title} - Interactive Roadmap`} 
+  description={roadmap.data.description}
+>
 
-<div class="sticky-header">
-  <div class="sticky-content">
-    <div class="sticky-stats">
-      <div class="stat-item">
-        <span class="stat-label">Topics</span>
-        <span class="stat-value" id="totalTopicsDisplay">{totalTopics}</span>
+<div class="woords_container_small py-6 sm:py-10" id="roadmapContainer" data-slug={roadmap.id} data-title={roadmap.data.title}>
+
+  {/* 1. Woords Editorial Breadcrumbs & Header */}
+  <div class="mb-8">
+    <div class="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-4">
+      <a href="/roadmaps" class="hover:text-foreground flex items-center gap-1.5 transition-colors">
+        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        <span>All Roadmaps</span>
+      </a>
+      <span>/</span>
+      <span class="text-foreground font-medium">{roadmap.data.title}</span>
+    </div>
+
+    <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-6 border-b border-black-150 dark:border-black-800">
+      <div class="max-w-3xl">
+        <div class="flex items-center gap-2 mb-3 flex-wrap">
+          <span 
+            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-black shadow-xs"
+            style={`background-color: ${topicMeta.color};`}
+          >
+            <svg class="size-3.5 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+            {topicMeta.label || roadmap.data.title}
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+            <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            Interactive Graph Curriculum
+          </span>
+        </div>
+
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-medium font-serif text-foreground tracking-tight leading-[1.15]">
+          {roadmap.data.title}
+        </h1>
+        <p class="text-sm sm:text-base text-muted-foreground font-body mt-2.5 leading-relaxed">
+          {roadmap.data.description}
+        </p>
       </div>
-      <div class="stat-item">
-        <span class="stat-label">Categories</span>
-        <span class="stat-value">{totalCategories}</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-label">Completed</span>
-        <span class="stat-value">
-          <span id="completedTopics">0</span>
-          <span id="progressPercentage" class="percentage-text">(0%)</span>
-        </span>
+
+      {/* Header Stats Chips */}
+      <div class="flex items-center gap-2.5 sm:gap-3 shrink-0 flex-wrap">
+        <div class="px-4 py-2.5 rounded-2xl border border-black-150 dark:border-black-800 bg-card/80 backdrop-blur-xs text-center min-w-[76px] shadow-xs">
+          <span class="block text-xl font-bold font-serif text-foreground">{totalModules}</span>
+          <span class="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Phases</span>
+        </div>
+        <div class="px-4 py-2.5 rounded-2xl border border-black-150 dark:border-black-800 bg-card/80 backdrop-blur-xs text-center min-w-[76px] shadow-xs">
+          <span class="block text-xl font-bold font-serif text-foreground" id="totalTopicsDisplay">{totalTopics}</span>
+          <span class="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Topics</span>
+        </div>
+        <div class="px-4 py-2.5 rounded-2xl border border-black-150 dark:border-black-800 bg-card/80 backdrop-blur-xs text-center min-w-[84px] shadow-xs">
+          <span class="block text-xl font-bold font-serif text-foreground">~{estimatedHours}h</span>
+          <span class="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Total Time</span>
+        </div>
       </div>
     </div>
-    <button id="clearProgressBtn" class="sticky-reset-btn" title="Reset Progress">
-      Reset
+  </div>
+
+  {/* 2. Sticky Control Toolbar */}
+  <div class="sticky top-20 z-30 mb-6 rounded-2xl border border-black-200 dark:border-black-800 bg-background/95 backdrop-blur-md shadow-md p-4 transition-all" id="stickyToolbar">
+    
+    {/* Progress Bar & High-Level Actions */}
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-3.5 border-b border-black-150 dark:border-black-800">
+      
+      {/* Learning Progress & Hours Tracker */}
+      <div class="flex-1 max-w-xl">
+        <div class="flex items-center justify-between text-xs font-semibold mb-1.5 flex-wrap gap-1">
+          <span class="text-foreground flex items-center gap-1.5">
+            <svg class="size-3.5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Study Progress:
+            <span class="text-muted-foreground font-normal ml-0.5">
+              <strong class="text-foreground font-semibold" id="completedCountDisplay">0</strong> of {totalTopics} completed
+              <span class="mx-1.5 text-muted-foreground/50">•</span>
+              <span id="completedHoursDisplay" class="font-semibold text-foreground">0h</span> of ~{estimatedHours}h
+            </span>
+          </span>
+          <span class="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400" id="progressPercentDisplay">0%</span>
+        </div>
+        <div class="w-full h-2 rounded-full bg-black-100 dark:bg-black-800 overflow-hidden">
+          <div 
+            id="progressBarFill"
+            class="h-full bg-linear-to-r from-emerald-500 to-teal-400 transition-all duration-300 rounded-full" 
+            style="width: 0%;"
+          ></div>
+        </div>
+      </div>
+
+      {/* View Switcher, Density & Actions Group */}
+      <div class="flex items-center gap-2 shrink-0 flex-wrap">
+        
+        {/* Dual View Mode Toggle */}
+        <div class="inline-flex p-1 rounded-xl bg-black-100 dark:bg-black-800 border border-black-150 dark:border-black-700" id="viewModeGroup">
+          <button 
+            type="button" 
+            id="btnViewFlowchart"
+            class="view-mode-btn active inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer shadow-xs"
+            title="Switch to Visual Zigzag Tree Canvas"
+          >
+            <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="5" r="3" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <circle cx="6" cy="19" r="3" />
+              <circle cx="18" cy="19" r="3" />
+              <path d="M12 12l-6 4" />
+              <path d="M12 12l6 4" />
+            </svg>
+            <span>Tree Graph</span>
+          </button>
+          <button 
+            type="button" 
+            id="btnViewSyllabus"
+            class="view-mode-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer text-muted-foreground hover:text-foreground"
+            title="Switch to Syllabus Guide View"
+          >
+            <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="8" y1="6" x2="21" y2="6" />
+              <line x1="8" y1="12" x2="21" y2="12" />
+              <line x1="8" y1="18" x2="21" y2="18" />
+              <line x1="3" y1="6" x2="3.01" y2="6" />
+              <line x1="3" y1="12" x2="3.01" y2="12" />
+              <line x1="3" y1="18" x2="3.01" y2="18" />
+            </svg>
+            <span>Syllabus Guide</span>
+          </button>
+        </div>
+
+        {/* Visual Density Toggle (Detailed vs Compact) */}
+        <button 
+          type="button" 
+          id="btnToggleDensity"
+          class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold border border-black-150 dark:border-black-800 bg-card hover:bg-secondary text-foreground transition-colors cursor-pointer shadow-2xs"
+          title="Toggle between Compact node view and Detailed cards"
+        >
+          <svg class="size-3.5 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+          </svg>
+          <span id="densityToggleText">Compact</span>
+        </button>
+
+        {/* Keyboard Shortcuts Button */}
+        <button 
+          type="button" 
+          id="openShortcutsBtn"
+          class="p-2 rounded-xl border border-black-150 dark:border-black-800 bg-card hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors cursor-pointer shadow-2xs"
+          title="View Keyboard Shortcuts"
+          aria-label="Keyboard Shortcuts"
+        >
+          <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8" />
+          </svg>
+        </button>
+
+        {/* Export Progress Button */}
+        <button 
+          type="button"
+          id="exportProgressBtn"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-foreground bg-card hover:bg-secondary border border-black-150 dark:border-black-800 transition-colors cursor-pointer shrink-0 shadow-xs"
+          title="Export your study checklist as Markdown"
+        >
+          <svg class="size-3.5 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span id="exportBtnText">Export</span>
+        </button>
+
+        {/* Reset Progress Button */}
+        <button 
+          type="button"
+          id="openResetModalBtn"
+          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 transition-colors cursor-pointer shrink-0"
+          title="Reset roadmap progress"
+        >
+          <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>Reset</span>
+        </button>
+      </div>
+
+    </div>
+
+    {/* Search & Filter Controls Row */}
+    <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 text-xs">
+      
+      {/* Live Topic Search */}
+      <div class="relative flex-1 max-w-md">
+        <svg class="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input 
+          type="text" 
+          id="topicSearchInput" 
+          placeholder="Filter topics (e.g., Transformers, Search, A*)..." 
+          class="w-full pl-8 pr-16 py-1.5 rounded-xl bg-card border border-black-150 dark:border-black-800 text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:ring-1 focus:ring-primary text-xs shadow-xs"
+        />
+        <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
+          <span class="px-1.5 py-0.5 rounded-md bg-black-100 dark:bg-black-800 text-[10px] font-mono text-muted-foreground border border-black-200 dark:border-black-700">/</span>
+        </div>
+        <button 
+          type="button"
+          id="clearSearchBtn"
+          class="absolute right-7 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground hidden cursor-pointer"
+          title="Clear search"
+        >
+          <svg class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Filter Groups */}
+      <div class="flex items-center gap-2.5 overflow-x-auto pb-1 lg:pb-0 flex-wrap">
+        
+        {/* Status Filter Pills */}
+        <div class="flex items-center gap-1 shrink-0" id="statusFilterContainer">
+          <span class="text-muted-foreground font-semibold text-[11px] mr-0.5">Status:</span>
+          <button type="button" class="status-filter-btn active px-2.5 py-1 rounded-lg font-semibold border transition-all cursor-pointer text-[11px]" data-status="all">All</button>
+          <button type="button" class="status-filter-btn px-2.5 py-1 rounded-lg font-semibold border transition-all cursor-pointer text-[11px]" data-status="done">Done</button>
+          <button type="button" class="status-filter-btn px-2.5 py-1 rounded-lg font-semibold border transition-all cursor-pointer text-[11px]" data-status="learning">In Progress</button>
+          <button type="button" class="status-filter-btn px-2.5 py-1 rounded-lg font-semibold border transition-all cursor-pointer text-[11px]" data-status="todo">Todo</button>
+          <button type="button" class="status-filter-btn px-2.5 py-1 rounded-lg font-semibold border transition-all cursor-pointer text-[11px]" data-status="starred">
+            <span>⭐ Starred</span>
+            <span id="starredFilterCount" class="ml-1 px-1 rounded-full text-[9px] bg-secondary text-secondary-foreground font-mono">0</span>
+          </button>
+          <button type="button" class="status-filter-btn px-2.5 py-1 rounded-lg font-semibold border transition-all cursor-pointer text-[11px]" data-status="optional">Optional</button>
+        </div>
+
+        <div class="hidden sm:block h-4 w-px bg-black-200 dark:bg-black-800"></div>
+
+        {/* Level Filter Pills */}
+        <div class="flex items-center gap-1 shrink-0" id="levelFilterContainer">
+          <span class="text-muted-foreground font-semibold text-[11px] mr-0.5">Level:</span>
+          <button type="button" class="level-btn active px-2.5 py-1 rounded-lg font-semibold border transition-all cursor-pointer text-[11px]" data-level="all">All</button>
+          <button type="button" class="level-btn px-2.5 py-1 rounded-lg font-semibold border transition-all cursor-pointer text-[11px]" data-level="beginner">Beginner</button>
+          <button type="button" class="level-btn px-2.5 py-1 rounded-lg font-semibold border transition-all cursor-pointer text-[11px]" data-level="intermediate">Intermediate</button>
+          <button type="button" class="level-btn px-2.5 py-1 rounded-lg font-semibold border transition-all cursor-pointer text-[11px]" data-level="advanced">Advanced</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {/* 3. Next Up Recommendation Banner */}
+  <div id="nextUpBanner" class="mb-8 p-4 rounded-2xl border border-black-150 dark:border-black-800 bg-card/80 backdrop-blur-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+    <div class="flex items-center gap-3.5 min-w-0">
+      <div class="size-10 rounded-xl bg-ghost-accent text-black flex items-center justify-center shrink-0 font-bold shadow-xs">
+        🎯
+      </div>
+      <div class="min-w-0">
+        <div class="flex items-center gap-2 mb-0.5">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground" id="nextUpLabel">Recommended Next Step</span>
+          <span id="nextUpDiffBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-secondary text-secondary-foreground uppercase">
+            Beginner
+          </span>
+          <span id="nextUpDurationBadge" class="text-[11px] text-muted-foreground font-medium hidden sm:inline">
+            ⏱️ 3 hours
+          </span>
+        </div>
+        <h3 id="nextUpTitle" class="text-base font-serif font-medium text-foreground truncate">
+          Intelligent Agents &amp; Problem Formulation
+        </h3>
+      </div>
+    </div>
+
+    <button 
+      type="button" 
+      id="nextUpActionBtn"
+      class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-foreground text-background hover:opacity-90 transition-all cursor-pointer shrink-0 shadow-xs"
+    >
+      <span>Jump to Topic</span>
+      <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
     </button>
   </div>
-  <div class="sticky-progress-track">
-    <div class="sticky-progress-fill" id="progressFill" style="width: 0%;"></div>
-  </div>
-</div>
 
-<div class="container">
-  <div class="header">
-    <h1>{roadmap.data.title}</h1>
-    <p>{roadmap.data.description}</p>
-  </div>
-
-  <div class="roadmap">
-    <div class="legend">
-      <div class="legend-item">
-        <div class="legend-box beginner"></div>
+  {/* 4. Interactive Legend Bar */}
+  <div class="flex flex-wrap items-center justify-between gap-4 mb-8 px-4 py-3 rounded-2xl bg-card border border-black-150 dark:border-black-800 text-xs text-muted-foreground shadow-xs">
+    <div class="flex items-center gap-3.5 flex-wrap">
+      <span class="font-bold uppercase tracking-wider text-[10px] text-foreground">Graph Legend:</span>
+      <div class="flex items-center gap-1.5">
+        <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-ghost-accent text-black border border-black/20">Recommended</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-semibold border border-dashed border-border text-muted-foreground">Optional</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="size-2 rounded-full bg-emerald-500"></span>
         <span>Beginner</span>
       </div>
-      <div class="legend-item">
-        <div class="legend-box intermediate"></div>
+      <div class="flex items-center gap-1.5">
+        <span class="size-2 rounded-full bg-blue-500"></span>
         <span>Intermediate</span>
       </div>
-      <div class="legend-item">
-        <div class="legend-box advanced"></div>
+      <div class="flex items-center gap-1.5">
+        <span class="size-2 rounded-full bg-purple-500"></span>
         <span>Advanced</span>
       </div>
     </div>
 
-    <div class="filter-section">
-      <button class="filter-btn active" data-filter="all">All Topics</button>
-      <button class="filter-btn" data-filter="beginner">Beginner</button>
-      <button class="filter-btn" data-filter="intermediate">Intermediate</button>
-      <button class="filter-btn" data-filter="advanced">Advanced</button>
+    <div class="flex items-center gap-3 text-[11px]">
+      <span class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
+        <svg class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+        Done
+      </span>
+      <span>•</span>
+      <span class="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-medium">
+        <svg class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        In Progress
+      </span>
+      <span>•</span>
+      <span class="text-foreground font-semibold">Use J/K or click cards to explore</span>
+    </div>
+  </div>
+
+  {/* 5. VIEW MODE A: Zigzag Tree / Graph Canvas */}
+  <div class="view-panel active relative" id="flowchartCanvas">
+    
+    {/* Start Landmark Node */}
+    <div class="flex flex-col items-center mb-8">
+      <div class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-ghost-accent text-black shadow-xs">
+        <svg class="size-3.5 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+        Curriculum Start
+      </div>
+      <div class="w-0.5 h-6 bg-dashed border-l-2 border-black-300 dark:border-black-700"></div>
     </div>
 
-    <div class="instructions">
-      <p><strong>Tip:</strong> Left-click a tile or use "Details" to view more info. Right-click or use "Mark Complete" to track progress.</p>
-    </div>
+    {/* Phases Zigzag Tree List */}
+    <div class="space-y-12" id="flowchartModules">
+      {roadmap.data.nodes?.map((section, sIdx) => {
+        const stepNumber = String(sIdx + 1).padStart(2, '0');
+        const sectionTotal = section.topics?.length ?? 0;
 
-    {roadmap.data.nodes?.map(section => (
-      <div class="section">
-        <h2 class="section-title">{section.title}</h2>
-        <div class="topics">
-          <div class="central-line-active"></div>
-          {section.topics?.map(topic => (
-            <div class={`topic ${topic.optional ? 'optional' : ''}`} data-difficulty={topic.difficulty} data-topic={JSON.stringify(topic)}>
-              <div class={`difficulty ${topic.difficulty}`}></div>
-              <div class="topic-name">
-                {topic.name}
-                {topic.optional && <span class="optional-badge">Optional</span>}
+        return (
+          <div class="roadmap-module relative" data-module-id={section.id}>
+            
+            {/* Phase Milestone Header Card (Centered) */}
+            <div class="max-w-2xl mx-auto mb-6 p-4 sm:p-5 rounded-2xl border border-black-150 dark:border-black-800 bg-card/90 backdrop-blur-xs text-center shadow-xs">
+              <div class="inline-flex items-center gap-2 mb-2">
+                <span class="size-7 rounded-xl bg-black-100 dark:bg-black-800 text-foreground font-serif font-bold text-xs flex items-center justify-center border border-black-200 dark:border-black-700 shadow-2xs">
+                  {stepNumber}
+                </span>
+                <span class="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Phase {stepNumber}
+                </span>
+                <span class="module-progress-badge text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground" data-total={sectionTotal}>
+                  0/{sectionTotal} completed
+                </span>
               </div>
-              <div class="topic-desc">{topic.description}</div>
-              <div class="topic-actions">
-                <button class="action-btn details-btn">Details</button>
-                <button class="action-btn complete-btn">Mark Complete</button>
-                {topic.optional && <button class="action-btn skip-btn" title="Skip this optional topic">Skip</button>}
+
+              <h2 class="text-xl sm:text-2xl font-serif font-medium text-foreground tracking-tight">
+                {section.title}
+              </h2>
+
+              {section.description && (
+                <p class="text-xs text-muted-foreground mt-1.5 font-body max-w-lg mx-auto">
+                  {section.description}
+                </p>
+              )}
+
+              {/* Phase Quick Actions */}
+              <div class="mt-3 flex items-center justify-center gap-2">
+                <button 
+                  type="button" 
+                  class="mark-phase-btn text-[11px] font-semibold px-3 py-1 rounded-lg border border-black-150 dark:border-black-800 bg-secondary/70 hover:bg-secondary text-foreground transition-all cursor-pointer shadow-2xs"
+                  data-phase-id={section.id}
+                  title="Toggle all topics in this phase as completed"
+                >
+                  Mark Phase Done
+                </button>
               </div>
             </div>
-          ))}
+
+            {/* Vertical connector down from Phase Milestone into the tree */}
+            <div class="flex justify-center mb-6">
+              <div class="w-0.5 h-6 bg-dashed border-l-2 border-black-300 dark:border-black-700"></div>
+            </div>
+
+            {/* Alternating Zigzag Tree Container */}
+            <div class="zigzag-tree-wrapper relative py-2">
+              
+              {/* Central Spine Line (Desktop md+) */}
+              <div class="hidden md:block absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-0.5 border-l-2 border-dashed border-black-200 dark:border-black-800 pointer-events-none"></div>
+
+              {/* Left Spine Line (Mobile < md) */}
+              <div class="block md:hidden absolute left-5 top-0 bottom-0 w-0.5 border-l-2 border-dashed border-black-200 dark:border-black-800 pointer-events-none"></div>
+
+              {/* Topics Grid (Zigzag Alternating Left & Right) */}
+              <div class="space-y-6 md:space-y-8">
+                {section.topics?.map((topic, tIdx) => {
+                  const isEven = tIdx % 2 === 0;
+                  const topicSlug = slugify(topic.name);
+                  const hours = parseDurationHours(topic.duration);
+
+                  const diffDotColors = {
+                    beginner: 'bg-emerald-500',
+                    intermediate: 'bg-blue-500',
+                    advanced: 'bg-purple-500',
+                  };
+                  const dotColor = diffDotColors[topic.difficulty as keyof typeof diffDotColors] || 'bg-emerald-500';
+
+                  return (
+                    <div 
+                      class={`topic-node-wrapper relative ${
+                        isEven 
+                          ? 'md:w-[calc(50%-2.25rem)] md:mr-auto md:ml-0 ml-12' 
+                          : 'md:w-[calc(50%-2.25rem)] md:ml-auto md:mr-0 ml-12'
+                      }`}
+                      id={`topic-node-${topicSlug}`}
+                    >
+                      {/* Branching Connector & Waypoint (Desktop - Left items connect to the right) */}
+                      {isEven ? (
+                        <>
+                          <div class="hidden md:block absolute -right-9 top-1/2 -translate-y-1/2 w-9 h-0.5 border-t-2 border-dashed border-black-200 dark:border-black-800 pointer-events-none transition-colors connector-line"></div>
+                          <div class="hidden md:flex absolute -right-11 top-1/2 -translate-y-1/2 size-4 rounded-full border-2 border-black-300 dark:border-black-700 bg-background items-center justify-center pointer-events-none z-10 transition-colors waypoint-dot">
+                            <span class="size-1.5 rounded-full bg-muted-foreground dot-inner"></span>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div class="hidden md:block absolute -left-9 top-1/2 -translate-y-1/2 w-9 h-0.5 border-t-2 border-dashed border-black-200 dark:border-black-800 pointer-events-none transition-colors connector-line"></div>
+                          <div class="hidden md:flex absolute -left-11 top-1/2 -translate-y-1/2 size-4 rounded-full border-2 border-black-300 dark:border-black-700 bg-background items-center justify-center pointer-events-none z-10 transition-colors waypoint-dot">
+                            <span class="size-1.5 rounded-full bg-muted-foreground dot-inner"></span>
+                          </div>
+                        </>
+                      )}
+
+                      {/* Mobile Branch Connector & Waypoint (< md) */}
+                      <div class="block md:hidden absolute -left-7 top-1/2 -translate-y-1/2 w-7 h-0.5 border-t-2 border-dashed border-black-200 dark:border-black-800 pointer-events-none connector-line"></div>
+                      <div class="flex md:hidden absolute -left-9 top-1/2 -translate-y-1/2 size-4 rounded-full border-2 border-black-300 dark:border-black-700 bg-background items-center justify-center pointer-events-none z-10 waypoint-dot">
+                        <span class="size-1.5 rounded-full bg-muted-foreground dot-inner"></span>
+                      </div>
+
+                      {/* Topic Card */}
+                      <div 
+                        class={`topic-node group relative rounded-2xl border p-4 transition-all duration-200 cursor-pointer bg-card border-black-150 dark:border-black-800 hover:border-primary/60 hover:shadow-md ${topic.optional ? 'border-dashed' : ''}`}
+                        data-topic-name={topic.name}
+                        data-topic-slug={topicSlug}
+                        data-difficulty={topic.difficulty}
+                        data-optional={topic.optional ? 'true' : 'false'}
+                        data-duration-hours={hours}
+                        tabindex="0"
+                      >
+                        <div class="flex flex-col justify-between gap-2.5">
+                          <div>
+                            {/* Card Badges & Star Button */}
+                            <div class="flex items-center justify-between gap-2 mb-1.5">
+                              <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class={`size-2 rounded-full ${dotColor} shrink-0`}></span>
+                                <span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                                  {topic.difficulty}
+                                </span>
+                                {topic.optional ? (
+                                  <span class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
+                                    Optional
+                                  </span>
+                                ) : (
+                                  <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-ghost-accent text-black border border-black/20">
+                                    Recommended
+                                  </span>
+                                )}
+                                {topic.duration && (
+                                  <span class="text-[10px] text-muted-foreground font-medium">
+                                    • {topic.duration}
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Star / Bookmark Topic Button */}
+                              <button 
+                                type="button"
+                                class="star-topic-btn p-1 rounded-md text-muted-foreground hover:text-amber-500 transition-colors cursor-pointer"
+                                title="Star topic"
+                                aria-label="Star topic"
+                              >
+                                <svg class="size-3.5 star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                </svg>
+                              </button>
+                            </div>
+
+                            {/* Title */}
+                            <h3 class="text-base font-serif font-medium text-foreground group-hover:text-primary transition-colors leading-snug">
+                              {topic.name}
+                            </h3>
+
+                            {/* Description (collapsible in compact mode) */}
+                            {topic.description && (
+                              <p class="topic-description text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed font-body">
+                                {topic.description}
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Action Buttons Row */}
+                          <div class="flex items-center justify-between gap-2 pt-2 border-t border-black-150 dark:border-black-800/80">
+                            {/* Status Quick-Toggle Button */}
+                            <button 
+                              type="button" 
+                              class="status-toggle-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer bg-secondary hover:bg-secondary/80 text-foreground border-black-150 dark:border-black-800 shadow-2xs"
+                              title="Click to cycle status: Todo -> Done -> In Progress -> Skip"
+                            >
+                              <span class="status-icon-box">
+                                <span class="size-2 rounded-full bg-muted-foreground inline-block"></span>
+                              </span>
+                              <span class="status-text capitalize">Todo</span>
+                            </button>
+
+                            {/* Details Button */}
+                            <button 
+                              type="button" 
+                              class="topic-details-btn p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary border border-black-150 dark:border-black-800 transition-colors cursor-pointer shadow-2xs"
+                              title="Open study notes & blueprint"
+                              aria-label="Open topic details"
+                            >
+                              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 16v-4" />
+                                <path d="M12 8h.01" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Connecting transit line down to next module */}
+            {sIdx < (roadmap.data.nodes?.length ?? 0) - 1 && (
+              <div class="flex justify-center my-6">
+                <div class="w-0.5 h-8 bg-dashed border-l-2 border-black-300 dark:border-black-700"></div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  </div>
+
+  {/* 6. VIEW MODE B: Syllabus Checklist Guide */}
+  <div class="view-panel hidden space-y-6" id="syllabusCanvas">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+        Curriculum Breakdown
+      </h2>
+      <button 
+        type="button" 
+        id="btnToggleAllPhases"
+        class="text-xs font-semibold px-3 py-1.5 rounded-xl border border-black-150 dark:border-black-800 bg-card hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors cursor-pointer shadow-2xs"
+      >
+        Collapse All Phases
+      </button>
+    </div>
+
+    {roadmap.data.nodes?.map((section, sIdx) => {
+      const stepNumber = String(sIdx + 1).padStart(2, '0');
+      const sectionTotal = section.topics?.length ?? 0;
+
+      return (
+        <div class="syllabus-phase-card rounded-2xl border border-black-150 dark:border-black-800 bg-card overflow-hidden shadow-xs" data-phase-id={section.id}>
+          {/* Phase Header */}
+          <div class="p-5 sm:p-6 bg-black-50/50 dark:bg-black-900/40 border-b border-black-150 dark:border-black-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-3.5">
+              <div class="size-9 rounded-xl bg-ghost-accent text-black font-serif font-bold text-sm flex items-center justify-center shrink-0 shadow-xs">
+                {stepNumber}
+              </div>
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h2 class="text-lg sm:text-xl font-serif font-medium text-foreground tracking-tight">
+                    {section.title}
+                  </h2>
+                  <span class="syllabus-phase-badge text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground" data-total={sectionTotal}>
+                    0/{sectionTotal} completed
+                  </span>
+                </div>
+                {section.description && (
+                  <p class="text-xs text-muted-foreground mt-1 font-body max-w-2xl">
+                    {section.description}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+              <button 
+                type="button" 
+                class="mark-phase-btn text-xs font-semibold px-3 py-1.5 rounded-xl border border-black-150 dark:border-black-800 bg-card hover:bg-secondary text-foreground transition-colors cursor-pointer"
+                data-phase-id={section.id}
+              >
+                Mark Phase Done
+              </button>
+              <button 
+                type="button" 
+                class="syllabus-toggle-phase-btn text-xs font-semibold px-3 py-1.5 rounded-xl border border-black-150 dark:border-black-800 bg-card hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              >
+                Collapse
+              </button>
+            </div>
+          </div>
+
+          {/* Phase Topic Items List */}
+          <div class="syllabus-phase-body divide-y divide-black-150 dark:divide-black-800 p-2 sm:p-4 space-y-3">
+            {section.topics?.map((topic) => {
+              const topicSlug = slugify(topic.name);
+              const hours = parseDurationHours(topic.duration);
+
+              return (
+                <div 
+                  class="syllabus-topic-item rounded-xl p-4 transition-all hover:bg-secondary/40"
+                  data-topic-name={topic.name}
+                  data-topic-slug={topicSlug}
+                  data-difficulty={topic.difficulty}
+                  data-optional={topic.optional ? 'true' : 'false'}
+                  data-duration-hours={hours}
+                >
+                  <div class="flex items-start gap-3.5">
+                    {/* Direct Status Checkbox */}
+                    <button 
+                      type="button"
+                      class="syllabus-checkbox-btn mt-1 size-5 rounded-md border border-black-300 dark:border-black-600 flex items-center justify-center shrink-0 cursor-pointer bg-card hover:border-emerald-500 transition-colors"
+                      title="Toggle completed status"
+                    >
+                      <svg class="size-3.5 text-white opacity-0 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </button>
+
+                    <div class="flex-1 min-w-0">
+                      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1.5">
+                        <div class="flex items-center gap-2 flex-wrap">
+                          <h3 class="syllabus-topic-title text-base font-serif font-medium text-foreground">
+                            {topic.name}
+                          </h3>
+                          <span class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-md bg-secondary text-secondary-foreground">
+                            {topic.difficulty}
+                          </span>
+                          {topic.optional && (
+                            <span class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400">
+                              Optional
+                            </span>
+                          )}
+                          {topic.duration && (
+                            <span class="text-[11px] text-muted-foreground font-medium">
+                              ⏱️ {topic.duration}
+                            </span>
+                          )}
+                        </div>
+
+                        <button 
+                          type="button"
+                          class="open-drawer-syllabus-btn inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline cursor-pointer"
+                        >
+                          <span>Open Notes &amp; Resources</span>
+                          <svg class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14" />
+                            <path d="M12 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      {topic.description && (
+                        <p class="text-xs text-muted-foreground leading-relaxed font-body mb-3">
+                          {topic.description}
+                        </p>
+                      )}
+
+                      {/* Inline Takeaways */}
+                      {topic.takeaways && topic.takeaways.length > 0 && (
+                        <div class="mt-2.5 p-3 rounded-xl bg-card border border-black-150 dark:border-black-800/80 text-xs">
+                          <span class="font-bold text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Key Outcomes:</span>
+                          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {topic.takeaways.map((point) => (
+                              <div class="flex items-start gap-2 text-foreground/90">
+                                <span class="text-emerald-500 mt-0.5">✓</span>
+                                <span class="leading-tight">{point}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Direct Links */}
+                      {topic.links && topic.links.length > 0 && (
+                        <div class="flex items-center gap-2 mt-3 flex-wrap">
+                          <span class="text-[11px] text-muted-foreground font-semibold">Links:</span>
+                          {topic.links.map((link) => (
+                            <a 
+                              href={link.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              class="inline-flex items-center gap-1 text-[11px] text-foreground bg-secondary/80 hover:bg-secondary px-2.5 py-1 rounded-lg border border-black-150 dark:border-black-800 transition-colors"
+                            >
+                              <span>{link.title}</span>
+                              <svg class="size-2.5 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    })}
+  </div>
+
+  {/* Empty State when Search has no results */}
+  <div id="emptySearchState" class="hidden text-center py-16 px-4 bg-card rounded-2xl border border-black-150 dark:border-black-800 mt-6 shadow-xs">
+    <svg class="size-8 text-muted-foreground mx-auto mb-3 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+    <h3 class="text-base font-serif font-bold text-foreground">No matching topics found</h3>
+    <p class="text-xs text-muted-foreground mt-1 max-w-sm mx-auto font-body">
+      Try adjusting your search keyword or resetting the status and difficulty filters.
+    </p>
+    <button 
+      type="button"
+      id="resetFiltersBtn"
+      class="mt-4 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-ghost-accent text-black cursor-pointer shadow-xs"
+    >
+      Reset All Filters
+    </button>
+  </div>
+
+</div>
+
+{/* 7. Rich Slide-Over Topic Modal / Drawer */}
+<div id="topicDrawerBackdrop" class="drawer-backdrop">
+  <div id="topicDrawerPanel" class="drawer-panel">
+    
+    {/* Drawer Header */}
+    <div class="px-6 py-5 border-b border-border flex justify-between items-start bg-card/80 backdrop-blur-md">
+      <div class="space-y-2 max-w-[85%]">
+        <div class="flex items-center gap-2 flex-wrap" id="drawerBadges">
+          <span id="drawerBadgeDiff" class="px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize bg-secondary text-secondary-foreground">
+            Beginner
+          </span>
+          <span id="drawerBadgeOptional" class="hidden px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
+            Optional
+          </span>
+          <span id="drawerBadgeDuration" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
+            <svg class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span id="drawerDurationText">45 min</span>
+          </span>
+          <button 
+            type="button"
+            id="drawerStarBtn"
+            class="p-1 rounded-md text-muted-foreground hover:text-amber-500 transition-colors cursor-pointer"
+            title="Star this topic"
+          >
+            <svg class="size-4 drawer-star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+          </button>
+        </div>
+        <h2 id="drawerTopicTitle" class="text-2xl font-serif font-medium text-foreground leading-tight tracking-tight">
+          Topic Title
+        </h2>
+      </div>
+
+      <div class="flex items-center gap-1 -mr-2">
+        {/* Share direct link */}
+        <button 
+          type="button" 
+          id="shareTopicBtn"
+          class="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-full transition-colors cursor-pointer"
+          title="Copy permalink to this topic"
+        >
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+          </svg>
+        </button>
+
+        {/* Close Drawer Button */}
+        <button 
+          type="button" 
+          id="closeDrawerBtn" 
+          aria-label="Close topic drawer"
+          class="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-full transition-colors cursor-pointer"
+        >
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    {/* Roadmap Status Switcher Toolbar */}
+    <div class="px-6 py-3 bg-secondary/40 border-b border-border flex items-center justify-between gap-2 overflow-x-auto text-xs">
+      <span class="font-semibold text-muted-foreground shrink-0 flex items-center gap-1.5">
+        <svg class="size-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+        Status:
+      </span>
+      <div class="flex items-center gap-1.5 shrink-0" id="drawerStatusBtnGroup">
+        <button 
+          type="button" 
+          id="drawerStatusDone"
+          class="drawer-status-btn inline-flex items-center gap-1 px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer bg-card hover:bg-secondary border border-border text-foreground"
+        >
+          <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+          <span>Done</span>
+        </button>
+        <button 
+          type="button" 
+          id="drawerStatusLearning"
+          class="drawer-status-btn inline-flex items-center gap-1 px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer bg-card hover:bg-secondary border border-border text-foreground"
+        >
+          <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>In Progress</span>
+        </button>
+        <button 
+          type="button" 
+          id="drawerStatusSkip"
+          class="drawer-status-btn inline-flex items-center gap-1 px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer bg-card hover:bg-secondary border border-border text-muted-foreground"
+        >
+          <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+          <span>Skip</span>
+        </button>
+        <button 
+          type="button" 
+          id="drawerStatusTodo"
+          title="Reset status to Todo"
+          class="p-1 text-muted-foreground hover:text-foreground rounded-lg hover:bg-secondary transition-colors cursor-pointer"
+        >
+          <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    {/* Navigation Tabs (Overview, My Study Notes, Resources) */}
+    <div class="flex border-b border-border px-6 bg-card/30">
+      <button 
+        type="button" 
+        id="tabBtnOverview" 
+        class="tab-nav-btn active py-3 mr-6 text-sm font-semibold border-b-2 transition-colors cursor-pointer border-primary text-primary"
+      >
+        Overview
+      </button>
+      <button 
+        type="button" 
+        id="tabBtnNotes" 
+        class="tab-nav-btn py-3 mr-6 text-sm font-semibold border-b-2 transition-colors cursor-pointer border-transparent text-muted-foreground hover:text-foreground flex items-center gap-1.5"
+      >
+        <span>My Notes</span>
+        <span id="notesIndicator" class="size-2 rounded-full bg-emerald-500 hidden"></span>
+      </button>
+      <button 
+        type="button" 
+        id="tabBtnResources" 
+        class="tab-nav-btn py-3 text-sm font-semibold border-b-2 transition-colors cursor-pointer border-transparent text-muted-foreground hover:text-foreground"
+      >
+        Resources &amp; Guides
+        <span id="resourcesCountBadge" class="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-secondary text-secondary-foreground font-mono">0</span>
+      </button>
+    </div>
+
+    {/* Drawer Scrollable Content */}
+    <div class="flex-1 overflow-y-auto p-6 space-y-6">
+      
+      {/* Tab 1: Overview */}
+      <div id="tabContentOverview" class="space-y-6">
+        <div>
+          <h3 class="text-xs font-bold font-serif uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
+            <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            What You Need to Know
+          </h3>
+          <p id="drawerDescription" class="text-foreground/90 leading-relaxed font-body text-sm bg-card p-4 rounded-xl border border-border shadow-2xs">
+            Topic explanation description goes here.
+          </p>
+        </div>
+
+        {/* Code Blueprint */}
+        <div id="drawerCodeSection" class="hidden">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-xs font-bold font-serif uppercase tracking-wider text-muted-foreground">
+              Code Blueprint
+            </h3>
+            <button 
+              type="button" 
+              id="copyCodeBtn" 
+              class="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+            >
+              <svg class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <span id="copyCodeText">Copy code</span>
+            </button>
+          </div>
+          <pre class="bg-[#12161f] text-slate-100 p-4 rounded-xl overflow-x-auto text-xs font-mono border border-border/70 leading-relaxed"><code id="drawerCodeText"></code></pre>
+        </div>
+
+        {/* Key Takeaways & Interactive Checkpoints */}
+        <div id="drawerTakeawaysSection" class="hidden">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs font-bold font-serif uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+              <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+              Key Milestones &amp; Checkpoints
+            </h3>
+            <span class="text-[10px] text-muted-foreground font-mono" id="takeawaysProgressBadge">0 completed</span>
+          </div>
+          <ul id="drawerTakeawaysList" class="space-y-2.5"></ul>
+        </div>
+
+        {/* Prerequisites */}
+        <div id="drawerPrereqsSection" class="hidden">
+          <h3 class="text-xs font-bold font-serif uppercase tracking-wider text-muted-foreground mb-3">
+            Recommended Prerequisites
+          </h3>
+          <ul id="drawerPrereqsList" class="space-y-2"></ul>
         </div>
       </div>
-    ))}
 
+      {/* Tab 2: My Study Notes */}
+      <div id="tabContentNotes" class="hidden space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold font-serif uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+            <svg class="size-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            Personal Study Notes
+          </h3>
+          <span id="noteSavedStatus" class="text-[11px] text-muted-foreground font-mono">
+            Auto-saved locally
+          </span>
+        </div>
 
-  </div>
-</div>
-<RoadmapDrawer client:load />
+        <p class="text-xs text-muted-foreground leading-relaxed font-body">
+          Capture your personal takeaways, code snippets, or interview questions for this topic. Notes are kept private and saved in your browser storage.
+        </p>
 
-<div id="confirmationModal" class="modal-overlay">
-  <div class="modal-content">
-    <h3>Reset Progress?</h3>
-    <p>Are you sure you want to clear all progress for this roadmap? This action cannot be undone.</p>
-    <div class="modal-actions">
-      <button id="cancelResetBtn" class="modal-btn cancel">Cancel</button>
-      <button id="confirmResetBtn" class="modal-btn confirm">Yes, Reset</button>
+        <div class="relative">
+          <textarea 
+            id="topicNoteTextarea"
+            rows="10"
+            placeholder="Write your study notes here (e.g., key formula, python implementation notes, paper references)..."
+            class="w-full p-4 rounded-xl bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:ring-1 focus:ring-primary text-xs font-mono leading-relaxed"
+          ></textarea>
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
+          <span class="text-[10px] text-muted-foreground font-mono" id="noteCharCount">0 characters</span>
+          <button 
+            type="button"
+            id="clearNoteBtn"
+            class="text-xs text-rose-500 hover:text-rose-600 transition-colors cursor-pointer"
+          >
+            Clear Notes
+          </button>
+        </div>
+      </div>
+
+      {/* Tab 3: Resources & Guides */}
+      <div id="tabContentResources" class="hidden space-y-6">
+        {/* Video Tutorial */}
+        <div id="drawerVideoSection" class="hidden">
+          <h3 class="text-xs font-bold font-serif uppercase tracking-wider text-muted-foreground mb-2">
+            Video Tutorial
+          </h3>
+          <a 
+            id="drawerVideoLink" 
+            href="#" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-500/15 transition-colors flex items-center justify-between group"
+          >
+            <div class="flex items-center gap-3">
+              <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+              <span class="text-xs font-semibold">Watch Masterclass Video Lecture</span>
+            </div>
+            <svg class="size-3.5 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+
+        {/* Links */}
+        <div id="drawerLinksSection" class="hidden">
+          <h3 class="text-xs font-bold font-serif uppercase tracking-wider text-muted-foreground mb-3">
+            Official Guides &amp; Documentation
+          </h3>
+          <div id="drawerLinksContainer" class="space-y-2.5"></div>
+        </div>
+
+        {/* References */}
+        <div id="drawerRefsSection" class="hidden">
+          <h3 class="text-xs font-bold font-serif uppercase tracking-wider text-muted-foreground mb-3">
+            Further Reading &amp; Standards
+          </h3>
+          <div id="drawerRefsContainer" class="space-y-2"></div>
+        </div>
+
+        {/* Related EncodeEdge Articles */}
+        <div class="pt-4 border-t border-border">
+          <h3 class="text-xs font-bold font-serif uppercase tracking-wider text-muted-foreground mb-2">
+            Related EncodeEdge Tutorials
+          </h3>
+          <a 
+            id="drawerEncodeEdgeSearchLink"
+            href="/blog"
+            class="flex items-center justify-between p-3.5 rounded-xl border border-border bg-card hover:border-primary/50 transition-all text-xs text-foreground group"
+          >
+            <span class="font-medium group-hover:text-primary transition-colors">Search blog articles for this topic</span>
+            <svg class="size-3.5 text-muted-foreground group-hover:text-primary transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <div id="drawerNoResources" class="hidden text-center py-12 text-muted-foreground text-sm">
+          <p>No external resources attached to this topic yet.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
+
+{/* 8. Keyboard Shortcuts Cheatsheet Modal */}
+<div id="shortcutsModal" class="modal-overlay">
+  <div class="modal-content max-w-md text-left">
+    <div class="flex items-center justify-between pb-3 border-b border-border mb-4">
+      <div class="flex items-center gap-2">
+        <svg class="size-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="4" width="20" height="16" rx="2" />
+          <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8" />
+        </svg>
+        <h3 class="text-base font-serif font-bold text-foreground">Keyboard Shortcuts</h3>
+      </div>
+      <button type="button" id="closeShortcutsBtn" class="text-muted-foreground hover:text-foreground cursor-pointer">
+        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="space-y-2.5 text-xs">
+      <div class="flex items-center justify-between py-1">
+        <span class="text-muted-foreground">Navigate Next / Previous Topic</span>
+        <div class="flex items-center gap-1">
+          <kbd class="shortcut-key">J</kbd>
+          <kbd class="shortcut-key">K</kbd>
+          <span class="text-muted-foreground/60">or</span>
+          <kbd class="shortcut-key">↓</kbd>
+          <kbd class="shortcut-key">↑</kbd>
+        </div>
+      </div>
+      <div class="flex items-center justify-between py-1">
+        <span class="text-muted-foreground">Quick Cycle Status</span>
+        <kbd class="shortcut-key">Space</kbd>
+      </div>
+      <div class="flex items-center justify-between py-1">
+        <span class="text-muted-foreground">Open Topic Drawer</span>
+        <kbd class="shortcut-key">Enter</kbd>
+      </div>
+      <div class="flex items-center justify-between py-1">
+        <span class="text-muted-foreground">Toggle Star / Favorite</span>
+        <kbd class="shortcut-key">S</kbd>
+      </div>
+      <div class="flex items-center justify-between py-1">
+        <span class="text-muted-foreground">Focus Search Input</span>
+        <kbd class="shortcut-key">/</kbd>
+      </div>
+      <div class="flex items-center justify-between py-1">
+        <span class="text-muted-foreground">Close Drawer &amp; Modals</span>
+        <kbd class="shortcut-key">Esc</kbd>
+      </div>
+    </div>
+
+    <div class="mt-5 text-center">
+      <button 
+        type="button" 
+        id="dismissShortcutsBtn" 
+        class="w-full py-2 rounded-xl text-xs font-semibold bg-secondary hover:bg-secondary/80 text-foreground cursor-pointer transition-colors"
+      >
+        Got it
+      </button>
+    </div>
+  </div>
+</div>
+
+{/* 9. Reset Confirmation Modal */}
+<div id="resetConfirmModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="size-12 rounded-full bg-rose-500/10 text-rose-600 flex items-center justify-center mx-auto mb-4">
+      <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+      </svg>
+    </div>
+    <h3 class="text-lg font-serif font-bold text-foreground">Reset All Progress?</h3>
+    <p class="text-xs text-muted-foreground mt-2 leading-relaxed font-body">
+      Are you sure you want to clear your learning progress, stars, and notes for this roadmap? All progress will be permanently reset.
+    </p>
+    <div class="mt-6 flex items-center justify-center gap-3">
+      <button 
+        type="button" 
+        id="cancelResetBtn" 
+        class="px-4 py-2 rounded-xl text-xs font-semibold bg-secondary hover:bg-secondary/80 text-foreground transition-colors cursor-pointer"
+      >
+        Cancel
+      </button>
+      <button 
+        type="button" 
+        id="confirmResetBtn" 
+        class="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white transition-colors cursor-pointer"
+      >
+        Yes, Reset Progress
+      </button>
+    </div>
+  </div>
+</div>
+
+{/* 10. Notification Toast */}
+<div id="exportToast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+  <div class="px-4 py-3 rounded-2xl bg-card border border-border shadow-xl flex items-center gap-3 text-xs text-foreground font-semibold">
+    <span class="size-2 rounded-full bg-emerald-500"></span>
+    <span id="exportToastMsg">Progress exported &amp; copied to clipboard!</span>
+  </div>
+</div>
+
+{/* Embedded JSON Data for Instant Native Topic Lookup */}
+<script type="application/json" id="roadmap-data" set:html={JSON.stringify(roadmap.data.nodes || [])} />
+
 </RoadmapLayout>
 
 <style>
-  * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.header {
-  text-align: center;
-  color: #1f2937;
-  margin-bottom: 40px;
-}
-
-.header h1 {
-  font-size: 3em;
-  margin-bottom: 10px;
-}
-
-.header p {
-  font-size: 1.2em;
-  opacity: 0.9;
-}
-
-.stats {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.stat-box {
-  background: white;
-  color: #333;
-  padding: 15px 30px;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
-}
-
-.stat-number {
-  font-size: 2em;
-  font-weight: bold;
-}
-
-.stat-label {
-  font-size: 0.9em;
-  opacity: 0.9;
-}
-
-.roadmap {
-  background: white;
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e5e7eb;
-}
-
-.legend {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin-bottom: 30px;
-  flex-wrap: wrap;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.9em;
-}
-
-.legend-box {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
-  border: 2px solid #ddd;
-}
-
-.legend-box.beginner {
-  background: #10b981;
-}
-
-.legend-box.intermediate {
-  background: #3b82f6;
-}
-
-.legend-box.advanced {
-  background: #8b5cf6;
-}
-
-.section {
-  margin-bottom: 40px;
-}
-
-.section-title {
-  font-size: 1.8em;
-  color: #3533cd;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 3px solid #3533cd;
-  text-align: center;
-  position: relative;
-}
-
-.topics {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  padding: 20px 0;
-}
-
-/* Central Line */
-.topics::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 4px;
-  background: #e5e7eb;
-  transform: translateX(-50%);
-  border-radius: 2px;
-  z-index: 0;
-}
-
-.central-line-active {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 4px;
-  background: #3533cd;
-  transform: translateX(-50%);
-  border-radius: 2px;
-  z-index: 1;
-  transition: height 0.5s ease;
-}
-
-.topic {
-  background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
-  padding: 15px 20px;
-  border-radius: 12px;
-  border: 2px solid #e5e7eb;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 45%;
-  margin-bottom: 40px;
-  z-index: 1;
-  animation: fadeInUp 0.5s ease forwards;
-  opacity: 0;
-}
-
-/* Alignment Styles */
-.topic[data-alignment="left"] {
-  align-self: flex-start;
-  margin-right: auto;
-}
-
-.topic[data-alignment="right"] {
-  align-self: flex-end;
-  margin-left: auto;
-}
-
-/* Connector Dots */
-.topic::before {
-  content: '';
-  position: absolute;
-  top: 24px;
-  width: 16px;
-  height: 16px;
-  background: #fff;
-  border: 4px solid #e5e7eb;
-  border-radius: 50%;
-  z-index: 2;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 0 4px white;
-}
-
-.topic[data-alignment="left"]::before {
-  right: -11.2%; /* Approx distance to center */
-  transform: translateX(50%);
-}
-
-.topic[data-alignment="right"]::before {
-  left: -11.2%;
-  transform: translateX(-50%);
-}
-
-/* Connector Lines */
-.topic::after {
-  content: '';
-  position: absolute;
-  top: 30px;
-  height: 4px;
-  background: #e5e7eb;
-  transition: all 0.3s ease;
-  z-index: 0;
-}
-
-.topic[data-alignment="left"]::after {
-  right: -11.2%;
-  width: 11.2%;
-}
-
-.topic[data-alignment="right"]::after {
-  left: -11.2%;
-  width: 11.2%;
-}
-
-.topic:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(53, 51, 205, 0.3);
-  border-color: #3533cd;
-}
-
-/* Hover & Active States for Connectors */
-.topic:hover::before, .topic.clicked::before {
-  border-color: #3533cd;
-  background: #3533cd;
-}
-
-.topic:hover::after, .topic.clicked::after {
-  background: #3533cd;
-}
-
-.topic.clicked {
-  background: linear-gradient(135deg, #3533cd 0%, #1e1b85 100%);
-  color: white;
-  border-color: #3533cd;
-}
-
-.topic.clicked::before {
-  border-color: #10b981;
-  background: #10b981;
-  border-color: #3533cd;
-  background: #3533cd;
-}
-
-.topic.clicked::after {
-  background: #10b981;
-  background: #3533cd;
-}
-
-.topic.optional {
-  background: #fff7ed !important;
-  background-image: none !important;
-  border: 2px dashed #f97316 !important;
-}
-
-.topic.optional.clicked {
-  background: linear-gradient(135deg, #3533cd 0%, #1e1b85 100%) !important;
-  color: white !important;
-  border-style: solid !important;
-  border-color: #3533cd !important;
-}
-
-.topic.optional.clicked .optional-badge {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
-.topic.skipped {
-  background: #f1f5f9 !important;
-  background-image: none !important;
-  color: #64748b !important;
-  border: 2px solid #cbd5e1 !important;
-  opacity: 0.9;
-}
-
-.topic.skipped .topic-desc {
-  opacity: 0.7;
-}
-
-.topic.skipped::before {
-  border-color: #94a3b8;
-  background: #94a3b8;
-}
-
-.topic.skipped::after {
-  background: #94a3b8;
-}
-
-.topic-name {
-  font-weight: 600;
-  font-size: 1.05em;
-  margin-bottom: 5px;
-  padding-right: 20px;
-}
-
-.optional-badge {
-  display: inline-block;
-  background: #fef3c7;
-  color: #d97706;
-  font-size: 0.7em;
-  padding: 2px 8px;
-  border-radius: 12px;
-  margin-left: 8px;
-  vertical-align: middle;
-  font-weight: 600;
-  border: 1px solid #f59e0b;
-}
-
-.topic-desc {
-  font-size: 0.85em;
-  opacity: 0.8;
-  line-height: 1.4;
-  flex-grow: 1;
-}
-
-.topic.clicked .topic-desc {
-  opacity: 0.95;
-}
-
-.difficulty {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.difficulty.beginner {
-  background: #10b981;
-}
-
-.difficulty.intermediate {
-  background: #3b82f6;
-}
-
-.difficulty.advanced {
-  background: #8b5cf6;
-}
-
-.sticky-header {
-  position: sticky;
-  top: 115px;
-  z-index: 30;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(229, 231, 235, 0.5);
-  border-radius: 16px;
-  margin: 20px auto 40px auto;
-  max-width: 800px;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.sticky-header.scrolled {
-  top: 115px;
-  margin-top: 0;
-}
-
-.sticky-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 24px;
-}
-
-.sticky-stats {
-  display: flex;
-  gap: 24px;
-}
-
-.stat-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.95rem;
-  color: #4b5563;
-}
-
-.stat-label {
-  font-weight: 500;
-  color: #6b7280;
-}
-
-.stat-value {
-  font-weight: 700;
-  color: #111827;
-}
-
-.sticky-progress-track {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 6px;
-  background: #f3f4f6;
-}
-
-.sticky-progress-fill {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 0%;
-  background: linear-gradient(to top, #10b981 0%, #3533cd 100%);
-  transition: height 0.3s ease;
-}
-
-.percentage-text {
-  font-size: 0.9em;
-  color: #3533cd;
-  margin-left: 4px;
-}
-
-.sticky-reset-btn {
-  background: #fee2e2;
-  border: none;
-  color: #ef4444;
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 6px 16px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.sticky-reset-btn:hover {
-  background: #fecaca;
-  color: #dc2626;
-}
-
-.filter-section {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.filter-btn {
-  background: white;
-  border: 2px solid #3533cd;
-  color: #3533cd;
-  padding: 8px 20px;
-  border-radius: 20px;
-  cursor: pointer;
-  margin: 5px;
-  font-weight: 600;
-  transition: all 0.3s;
-}
-
-.filter-btn:hover {
-  background: #3533cd;
-  color: white;
-}
-
-.filter-btn.active {
-  background: #3533cd;
-  color: white;
-}
-
-.instructions {
-  text-align: center;
-  margin-bottom: 30px;
-  font-size: 0.95em;
-  color: #6b7280;
-  background: #f3f4f6;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-}
-
-.topic-actions {
-  margin-top: 15px;
-  display: flex;
-  gap: 10px;
-  position: relative;
-  z-index: 5;
-}
-
-.action-btn {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #e5e7eb;
-  background: white;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.85em;
-  font-weight: 500;
-  color: #4b5563;
-  transition: all 0.2s;
-}
-
-.action-btn:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
-  color: #111827;
-}
-
-.skip-btn {
-  color: #d97706;
-  border-color: #fcd34d;
-}
-
-.skip-btn:hover {
-  background: #fffbeb;
-  border-color: #f59e0b;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (max-width: 768px) {
-  .header h1 {
-    font-size: 2em;
-  }
-
-  .topics::before {
-    left: 20px;
-  }
-
-  .topic {
-    width: calc(100% - 50px);
-    margin-left: 50px !important;
-    align-self: flex-end !important;
-  }
-
-  .topic::before {
-    left: -30px !important;
-    right: auto !important;
-    transform: translateX(-50%);
-  }
-
-  .topic::after {
-    left: -30px !important;
-    width: 30px !important;
-    right: auto !important;
-  }
-}
-
-@media (min-width: 1024px) {
-  .sticky-header {
+  /* Drawer Backdrop */
+  .drawer-backdrop {
     position: fixed;
-    top: 50%;
-    left: 20px;
-    transform: translateY(-50%);
-    width: 100px;
-    margin: 0;
-    max-width: none;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .drawer-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
   }
 
-  .sticky-header.scrolled {
-    top: 50%;
-    margin-top: 0;
-  }
-
-  .sticky-content {
-    flex-direction: column;
-    align-items: center;
-    padding: 24px 8px 24px 14px;
-    gap: 20px;
-  }
-
-  .sticky-stats {
-    flex-direction: column;
-    gap: 16px;
+  /* Drawer Panel */
+  .drawer-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
-  }
-
-  .stat-item {
-    flex-direction: column;
-    gap: 4px;
-    text-align: center;
-  }
-
-  .stat-item .stat-label {
-    font-size: 0.75rem;
-  }
-
-  .stat-item .stat-value {
-    font-size: 1rem;
+    max-width: 580px;
+    background-color: var(--background);
+    border-left: 1px solid var(--border);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.25);
     display: flex;
     flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 10000;
+  }
+  .drawer-backdrop.open .drawer-panel {
+    transform: translateX(0);
+  }
+
+  /* View Mode Switcher Buttons */
+  .view-mode-btn.active {
+    background-color: var(--card, #ffffff);
+    color: var(--foreground, #111827);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  :global(.dark) .view-mode-btn.active {
+    background-color: #27272a;
+    color: #ffffff;
+  }
+
+  /* Status Filter Buttons */
+  .status-filter-btn {
+    border-color: var(--border, #e5e7eb);
+    background-color: var(--card, #ffffff);
+    color: var(--muted-foreground, #64748b);
+  }
+  .status-filter-btn.active {
+    background-color: var(--foreground, #111827);
+    color: var(--background, #ffffff);
+    border-color: var(--foreground, #111827);
+  }
+  :global(.dark) .status-filter-btn.active {
+    background-color: #ffffff;
+    color: #000000;
+    border-color: #ffffff;
+  }
+
+  /* Level Filter Buttons */
+  .level-btn {
+    border-color: var(--border, #e5e7eb);
+    background-color: var(--card, #ffffff);
+    color: var(--muted-foreground, #64748b);
+  }
+  .level-btn.active {
+    background-color: var(--foreground, #111827);
+    color: var(--background, #ffffff);
+    border-color: var(--foreground, #111827);
+  }
+  :global(.dark) .level-btn.active {
+    background-color: #ffffff;
+    color: #000000;
+    border-color: #ffffff;
+  }
+
+  /* Topic Card Status Variants */
+  .topic-node.status-done {
+    border-color: #10b981 !important;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, var(--card) 100%) !important;
+  }
+  .topic-node.status-done .status-toggle-btn {
+    background-color: #10b981 !important;
+    color: #ffffff !important;
+    border-color: #10b981 !important;
+  }
+
+  .topic-node.status-learning {
+    border-color: #f59e0b !important;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, var(--card) 100%) !important;
+  }
+  .topic-node.status-learning .status-toggle-btn {
+    background-color: #f59e0b !important;
+    color: #ffffff !important;
+    border-color: #f59e0b !important;
+  }
+
+  .topic-node.status-skipped {
+    opacity: 0.55 !important;
+    border-color: var(--border) !important;
+  }
+  .topic-node.status-skipped .status-toggle-btn {
+    background-color: #475569 !important;
+    color: #ffffff !important;
+    border-color: #475569 !important;
+  }
+
+  /* Waypoint status glow on the central zigzag tree */
+  .topic-node-wrapper.status-done .waypoint-dot {
+    border-color: #10b981 !important;
+    background-color: #10b981 !important;
+  }
+  .topic-node-wrapper.status-done .waypoint-dot .dot-inner {
+    background-color: #ffffff !important;
+  }
+  .topic-node-wrapper.status-done .connector-line {
+    border-color: #10b981 !important;
+  }
+
+  .topic-node-wrapper.status-learning .waypoint-dot {
+    border-color: #f59e0b !important;
+    background-color: #f59e0b !important;
+  }
+  .topic-node-wrapper.status-learning .waypoint-dot .dot-inner {
+    background-color: #ffffff !important;
+  }
+  .topic-node-wrapper.status-learning .connector-line {
+    border-color: #f59e0b !important;
+  }
+
+  /* Keyboard Navigation Focus Indicator */
+  .topic-node.keyboard-focused {
+    outline: 2px solid var(--primary, #3533cd) !important;
+    outline-offset: 3px !important;
+    box-shadow: 0 0 15px rgba(53, 51, 205, 0.25) !important;
+  }
+
+  /* Starred state on card button */
+  .star-topic-btn.starred {
+    color: #f59e0b !important;
+  }
+  .star-topic-btn.starred .star-icon {
+    fill: #f59e0b !important;
+  }
+
+  /* Drawer Star Button */
+  #drawerStarBtn.starred {
+    color: #f59e0b !important;
+  }
+  #drawerStarBtn.starred .drawer-star-icon {
+    fill: #f59e0b !important;
+  }
+
+  /* Compact Mode Adjustments */
+  #flowchartCanvas.density-compact .topic-description {
+    display: none !important;
+  }
+  #flowchartCanvas.density-compact .topic-node {
+    padding: 0.75rem !important;
+  }
+  #flowchartCanvas.density-compact .topic-node h3 {
+    font-size: 0.875rem !important;
+  }
+
+  /* Syllabus Topic Item Status Variants */
+  .syllabus-topic-item.status-done {
+    background-color: rgba(16, 185, 129, 0.06);
+  }
+  .syllabus-topic-item.status-done .syllabus-checkbox-btn {
+    background-color: #10b981 !important;
+    border-color: #10b981 !important;
+  }
+  .syllabus-topic-item.status-done .syllabus-checkbox-btn svg {
+    opacity: 1 !important;
+  }
+  .syllabus-topic-item.status-done .syllabus-topic-title {
+    text-decoration: line-through;
+    opacity: 0.75;
+  }
+
+  /* Modal Overlay */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    display: flex;
     align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .modal-content {
+    background: var(--card, #ffffff);
+    border: 1px solid var(--border, #e5e7eb);
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    max-width: 440px;
+    width: 92%;
+    transform: scale(0.95);
+    transition: transform 0.2s ease;
+  }
+  .modal-overlay.open .modal-content {
+    transform: scale(1);
   }
 
-  .percentage-text {
-    margin-left: 0;
-    font-size: 0.8rem;
+  /* Shortcut Key Tag */
+  .shortcut-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.15rem 0.45rem;
+    border-radius: 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    background-color: var(--secondary, #f1f5f9);
+    border: 1px solid var(--border, #cbd5e1);
+    color: var(--foreground, #0f172a);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
   }
 
-  .sticky-reset-btn {
-    width: 100%;
-    margin-top: 4px;
-    font-size: 0.75rem;
-    padding: 4px 8px;
+  /* Print Styles */
+  @media print {
+    #stickyToolbar,
+    #topicDrawerBackdrop,
+    #shortcutsModal,
+    #resetConfirmModal,
+    #exportToast,
+    .mark-phase-btn,
+    .status-toggle-btn,
+    .topic-details-btn,
+    .star-topic-btn {
+      display: none !important;
+    }
+    body {
+      background: white !important;
+      color: black !important;
+    }
   }
-
-  .container {
-    margin-left: 140px;
-    width: calc(100% - 160px);
-  }
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.modal-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.modal-content {
-  background: white;
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
-  transform: scale(0.95);
-  transition: transform 0.3s ease;
-}
-
-.modal-overlay.active .modal-content {
-  transform: scale(1);
-}
-
-.modal-content h3 {
-  font-size: 1.5rem;
-  color: #1f2937;
-  margin-bottom: 10px;
-}
-
-.modal-content p {
-  color: #6b7280;
-  margin-bottom: 24px;
-  line-height: 1.5;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-
-.modal-btn {
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-  font-size: 0.95rem;
-}
-
-.modal-btn.cancel {
-  background: #f3f4f6;
-  color: #4b5563;
-}
-
-.modal-btn.cancel:hover {
-  background: #e5e7eb;
-}
-
-.modal-btn.confirm {
-  background: #ef4444;
-  color: white;
-}
-
-.modal-btn.confirm:hover {
-  background: #dc2626;
-}
-
-/* Dark Mode Overrides */
-:global(.dark) .header h1 { color: #f3f4f6; }
-:global(.dark) .header p { color: #9ca3af; }
-:global(.dark) .stat-box { background: #1f2937; color: #f3f4f6; border-color: #374151; }
-:global(.dark) .stat-label { color: #9ca3af; }
-:global(.dark) .stat-value { color: #f3f4f6; }
-
-:global(.dark) .roadmap { background: #1f2937; border-color: #374151; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); }
-:global(.dark) .legend-item { color: #d1d5db; }
-:global(.dark) .legend-box { border-color: #4b5563; }
-
-:global(.dark) .section-title { color: #818cf8; border-bottom-color: #818cf8; }
-:global(.dark) .topics::before { background: #374151; }
-:global(.dark) .central-line-active { background: #818cf8; }
-
-:global(.dark) .topic {
-  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
-  border-color: #4b5563;
-  color: #f3f4f6;
-}
-:global(.dark) .topic::before {
-  background: #1f2937;
-  border-color: #4b5563;
-  box-shadow: 0 0 0 4px #1f2937;
-}
-:global(.dark) .topic::after { background: #4b5563; }
-:global(.dark) .topic:hover {
-  border-color: #818cf8;
-  box-shadow: 0 8px 20px rgba(129, 140, 248, 0.2);
-}
-:global(.dark) .topic-desc { color: #d1d5db; }
-
-:global(.dark) .topic.clicked {
-  background: linear-gradient(135deg, #3533cd 0%, #1e1b85 100%);
-  border-color: #3533cd;
-}
-:global(.dark) .topic.clicked::before {
-  border-color: #3533cd;
-  background: #3533cd;
-}
-
-:global(.dark) .topic.optional {
-  background: #422006 !important;
-  border-color: #ea580c !important;
-}
-:global(.dark) .topic.optional .topic-name { color: #fdba74; }
-:global(.dark) .topic.optional .optional-badge {
-  background: rgba(251, 191, 36, 0.1);
-  color: #fbbf24;
-  border-color: #d97706;
-}
-
-:global(.dark) .topic.skipped {
-  background: #334155 !important;
-  border-color: #475569 !important;
-  color: #94a3b8 !important;
-}
-:global(.dark) .topic.skipped::before {
-  border-color: #475569;
-  background: #475569;
-}
-:global(.dark) .topic.skipped::after { background: #475569; }
-
-:global(.dark) .sticky-header {
-  background: rgba(31, 41, 55, 0.95);
-  border-color: rgba(75, 85, 99, 0.5);
-}
-:global(.dark) .stat-item { color: #d1d5db; }
-:global(.dark) .sticky-progress-track { background: #374151; }
-:global(.dark) .sticky-reset-btn { background: #7f1d1d; color: #fca5a5; }
-:global(.dark) .sticky-reset-btn:hover { background: #991b1b; }
-
-:global(.dark) .filter-btn {
-  background: #1f2937;
-  border-color: #818cf8;
-  color: #818cf8;
-}
-:global(.dark) .filter-btn:hover,
-:global(.dark) .filter-btn.active {
-  background: #818cf8;
-  color: white;
-}
-
-:global(.dark) .instructions {
-  background: #374151;
-  color: #d1d5db;
-  border-color: #4b5563;
-}
-
-:global(.dark) .action-btn { background: #374151; border-color: #4b5563; color: #d1d5db; }
-:global(.dark) .action-btn:hover { background: #4b5563; color: #f3f4f6; }
-:global(.dark) .skip-btn { color: #fbbf24; border-color: #d97706; }
-:global(.dark) .skip-btn:hover { background: #451a03; }
-
-:global(.dark) .modal-content { background: #1f2937; }
-:global(.dark) .modal-content h3 { color: #f3f4f6; }
-:global(.dark) .modal-content p { color: #9ca3af; }
-:global(.dark) .modal-btn.cancel { background: #374151; color: #d1d5db; }
-:global(.dark) .modal-btn.cancel:hover { background: #4b5563; }
 </style>
 
-<script define:vars={{ slug: roadmap.id }}>
-  console.log("Roadmap script initialized for:", slug);
+{/* 100% Native Script (Zero React Dependency, Guaranteed Click Activation) */}
+<script is:inline>
+  function initRoadmap() {
+    const container = document.getElementById('roadmapContainer');
+    if (!container) return;
+    const slug = container.getAttribute('data-slug') || 'roadmap';
+    const roadmapTitle = container.getAttribute('data-title') || 'Roadmap';
 
-  let completedTopicsSet = new Set(
-    JSON.parse(localStorage.getItem(`completedTopics_${slug}`) || "[]")
-  );
-  let skippedTopicsSet = new Set(
-    JSON.parse(localStorage.getItem(`skippedTopics_${slug}`) || "[]")
-  );
+    // Parse preloaded nodes data
+    const rawData = document.getElementById('roadmap-data')?.textContent || '[]';
+    let nodesList = [];
+    try {
+      nodesList = JSON.parse(rawData);
+    } catch (e) {
+      console.error('Error parsing roadmap nodes data:', e);
+    }
 
-  const stickyHeader = document.querySelector('.sticky-header');
-  if (stickyHeader) {
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 100) {
-        stickyHeader.classList.add('scrolled');
-      } else {
-        stickyHeader.classList.remove('scrolled');
-      }
-    });
-  }
-
-  const topics = document.querySelectorAll(".topic");
-  const totalTopics = topics.length;
-
-  // Function to update layout alignment (Left/Right) based on visibility
-  function updateLayout() {
-    const visibleTopics = Array.from(topics).filter(t => t.style.display !== 'none');
-    visibleTopics.forEach((topic, index) => {
-      topic.setAttribute('data-alignment', index % 2 === 0 ? 'left' : 'right');
-      topic.style.animationDelay = `${index * 0.1}s`; // Stagger animation
-    });
-  }
-
-  function updateVerticalLines() {
-    document.querySelectorAll('.topics').forEach(section => {
-      const line = section.querySelector('.central-line-active');
-      const sectionTopics = Array.from(section.querySelectorAll('.topic'));
-      const visibleTopics = sectionTopics.filter(t => t.style.display !== 'none');
-      let lastActiveTopic = null;
-
-      visibleTopics.forEach(topic => {
-         if (topic.classList.contains('clicked') || topic.classList.contains('skipped')) {
-           lastActiveTopic = topic;
-         }
+    const topicsMap = new Map();
+    const allTopicsList = [];
+    nodesList.forEach((sec) => {
+      sec.topics?.forEach((t) => {
+        t.sectionId = sec.id;
+        t.sectionTitle = sec.title;
+        topicsMap.set(t.name, t);
+        allTopicsList.push(t);
       });
-
-      if (line) {
-         const isLastActive = lastActiveTopic && lastActiveTopic === visibleTopics[visibleTopics.length - 1];
-         line.style.height = isLastActive ? '100%' : (lastActiveTopic ? (lastActiveTopic.offsetTop + 32) + 'px' : '0px');
-      }
     });
-  }
 
-  if (document.getElementById("totalTopicsDisplay")) {
-    document.getElementById("totalTopicsDisplay").textContent = totalTopics;
-  }
+    // LocalStorage State Sets
+    let completedTopics = new Set(JSON.parse(localStorage.getItem(`completedTopics_${slug}`) || '[]'));
+    let learningTopics = new Set(JSON.parse(localStorage.getItem(`learningTopics_${slug}`) || '[]'));
+    let skippedTopics = new Set(JSON.parse(localStorage.getItem(`skippedTopics_${slug}`) || '[]'));
+    let starredTopics = new Set(JSON.parse(localStorage.getItem(`starredTopics_${slug}`) || '[]'));
 
-  const clearBtn = document.getElementById('clearProgressBtn');
-  const modal = document.getElementById('confirmationModal');
-  const confirmBtn = document.getElementById('confirmResetBtn');
-  const cancelBtn = document.getElementById('cancelResetBtn');
+    const topicNodes = Array.from(document.querySelectorAll('.topic-node'));
+    const syllabusItems = Array.from(document.querySelectorAll('.syllabus-topic-item'));
+    const totalTopicsCount = topicNodes.length;
 
-  function closeModal() {
-    if (modal) modal.classList.remove('active');
-  }
+    // Elements
+    const completedCountEl = document.getElementById('completedCountDisplay');
+    const completedHoursEl = document.getElementById('completedHoursDisplay');
+    const progressPercentEl = document.getElementById('progressPercentDisplay');
+    const progressBarFillEl = document.getElementById('progressBarFill');
+    const starredFilterCountEl = document.getElementById('starredFilterCount');
 
-  if (clearBtn && modal) {
-    clearBtn.addEventListener('click', () => {
-      modal.classList.add('active');
-    });
-  }
+    // Next Up Banner
+    const nextUpBanner = document.getElementById('nextUpBanner');
+    const nextUpTitle = document.getElementById('nextUpTitle');
+    const nextUpDiffBadge = document.getElementById('nextUpDiffBadge');
+    const nextUpDurationBadge = document.getElementById('nextUpDurationBadge');
+    const nextUpActionBtn = document.getElementById('nextUpActionBtn');
+    let currentNextUpTopic = null;
 
-  if (cancelBtn) {
-    cancelBtn.addEventListener('click', closeModal);
-  }
+    // View & Density Switchers
+    const btnViewFlowchart = document.getElementById('btnViewFlowchart');
+    const btnViewSyllabus = document.getElementById('btnViewSyllabus');
+    const flowchartCanvas = document.getElementById('flowchartCanvas');
+    const syllabusCanvas = document.getElementById('syllabusCanvas');
+    const btnToggleDensity = document.getElementById('btnToggleDensity');
+    const densityToggleText = document.getElementById('densityToggleText');
 
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
-  }
+    // Drawer Elements
+    const drawerBackdrop = document.getElementById('topicDrawerBackdrop');
+    const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+    const shareTopicBtn = document.getElementById('shareTopicBtn');
+    const drawerStarBtn = document.getElementById('drawerStarBtn');
 
-  if (confirmBtn) {
-    confirmBtn.addEventListener('click', () => {
-      completedTopicsSet.clear();
-      skippedTopicsSet.clear();
-      localStorage.removeItem(`completedTopics_${slug}`);
-      localStorage.removeItem(`skippedTopics_${slug}`);
-      topics.forEach(t => {
-        t.classList.remove('clicked');
-        t.classList.remove('skipped');
-        const btn = t.querySelector('.complete-btn');
-        if(btn) btn.textContent = "Mark Complete";
-        const sBtn = t.querySelector('.skip-btn');
-        if(sBtn) sBtn.textContent = "Skip";
-      });
-      updateProgress();
-      closeModal();
-    });
-  }
+    const drawerBadgeDiff = document.getElementById('drawerBadgeDiff');
+    const drawerBadgeOptional = document.getElementById('drawerBadgeOptional');
+    const drawerDurationText = document.getElementById('drawerDurationText');
+    const drawerTopicTitle = document.getElementById('drawerTopicTitle');
+    const drawerDescription = document.getElementById('drawerDescription');
 
-  completedTopicsSet.forEach((index) => {
-    if (topics[index]) {
-      topics[index].classList.add("clicked");
-      const btn = topics[index].querySelector('.complete-btn');
-      if (btn) {
-        btn.textContent = "Completed";
-      }
+    const drawerCodeSection = document.getElementById('drawerCodeSection');
+    const drawerCodeText = document.getElementById('drawerCodeText');
+    const copyCodeBtn = document.getElementById('copyCodeBtn');
+    const copyCodeText = document.getElementById('copyCodeText');
+
+    const drawerTakeawaysSection = document.getElementById('drawerTakeawaysSection');
+    const drawerTakeawaysList = document.getElementById('drawerTakeawaysList');
+    const takeawaysProgressBadge = document.getElementById('takeawaysProgressBadge');
+
+    const drawerPrereqsSection = document.getElementById('drawerPrereqsSection');
+    const drawerPrereqsList = document.getElementById('drawerPrereqsList');
+
+    const tabBtnOverview = document.getElementById('tabBtnOverview');
+    const tabBtnNotes = document.getElementById('tabBtnNotes');
+    const tabBtnResources = document.getElementById('tabBtnResources');
+    const tabContentOverview = document.getElementById('tabContentOverview');
+    const tabContentNotes = document.getElementById('tabContentNotes');
+    const tabContentResources = document.getElementById('tabContentResources');
+    const resourcesCountBadge = document.getElementById('resourcesCountBadge');
+    const notesIndicator = document.getElementById('notesIndicator');
+
+    const topicNoteTextarea = document.getElementById('topicNoteTextarea');
+    const noteSavedStatus = document.getElementById('noteSavedStatus');
+    const noteCharCount = document.getElementById('noteCharCount');
+    const clearNoteBtn = document.getElementById('clearNoteBtn');
+
+    const drawerVideoSection = document.getElementById('drawerVideoSection');
+    const drawerVideoLink = document.getElementById('drawerVideoLink');
+    const drawerLinksSection = document.getElementById('drawerLinksSection');
+    const drawerLinksContainer = document.getElementById('drawerLinksContainer');
+    const drawerRefsSection = document.getElementById('drawerRefsSection');
+    const drawerRefsContainer = document.getElementById('drawerRefsContainer');
+    const drawerNoResources = document.getElementById('drawerNoResources');
+    const drawerEncodeEdgeSearchLink = document.getElementById('drawerEncodeEdgeSearchLink');
+
+    const drawerStatusDone = document.getElementById('drawerStatusDone');
+    const drawerStatusLearning = document.getElementById('drawerStatusLearning');
+    const drawerStatusSkip = document.getElementById('drawerStatusSkip');
+    const drawerStatusTodo = document.getElementById('drawerStatusTodo');
+
+    let currentActiveTopic = null;
+    let noteSaveTimeout = null;
+    let focusedTopicIndex = -1;
+
+    function slugifyStr(str) {
+      return (str || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     }
-  });
 
-  skippedTopicsSet.forEach((index) => {
-    if (topics[index]) {
-      topics[index].classList.add("skipped");
-      const btn = topics[index].querySelector('.skip-btn');
-      if (btn) {
-        btn.textContent = "Skipped";
-      }
+    function getTopicStatus(name) {
+      if (completedTopics.has(name)) return 'done';
+      if (learningTopics.has(name)) return 'learning';
+      if (skippedTopics.has(name)) return 'skipped';
+      return 'todo';
     }
-  });
 
-  function updateProgress() {
-    const completed = completedTopicsSet.size + skippedTopicsSet.size;
-    const percentage = totalTopics > 0 ? Math.round((completed / totalTopics) * 100) : 0;
+    function setTopicStatus(name, status) {
+      completedTopics.delete(name);
+      learningTopics.delete(name);
+      skippedTopics.delete(name);
 
-    if (document.getElementById("completedTopics")) {
-      document.getElementById("completedTopics").textContent = completed;
-    }
-    if (document.getElementById("progressFill")) {
-      document.getElementById("progressFill").style.height = percentage + "%";
-    }
-    if (document.getElementById("progressPercentage")) {
-      document.getElementById("progressPercentage").textContent = `(${percentage}%)`;
-    }
-    
+      if (status === 'done') completedTopics.add(name);
+      else if (status === 'learning') learningTopics.add(name);
+      else if (status === 'skipped') skippedTopics.add(name);
 
-    localStorage.setItem(
-      `completedTopics_${slug}`,
-      JSON.stringify([...completedTopicsSet])
-    );
-    localStorage.setItem(
-      `skippedTopics_${slug}`,
-      JSON.stringify([...skippedTopicsSet])
-    );
-    updateVerticalLines();
-  }
-
-  updateProgress();
-  updateLayout(); // Initial layout calculation
-
-  topics.forEach((topic, index) => {
-    const detailsBtn = topic.querySelector('.details-btn');
-    const completeBtn = topic.querySelector('.complete-btn');
-    const skipBtn = topic.querySelector('.skip-btn');
-
-    const toggleComplete = () => {
-      if (topic.classList.contains('skipped')) {
-        topic.classList.remove('skipped');
-        skippedTopicsSet.delete(index);
-        if (skipBtn) skipBtn.textContent = "Skip";
-      }
-
-      topic.classList.toggle("clicked");
-
-      if (topic.classList.contains("clicked")) {
-        completedTopicsSet.add(index);
-        if (completeBtn) completeBtn.textContent = "Completed";
-      } else {
-        completedTopicsSet.delete(index);
-        if (completeBtn) completeBtn.textContent = "Mark Complete";
-      }
-
-      updateProgress();
-    };
-
-    const toggleSkip = () => {
-      if (topic.classList.contains('clicked')) {
-        topic.classList.remove('clicked');
-        completedTopicsSet.delete(index);
-        if (completeBtn) completeBtn.textContent = "Mark Complete";
-      }
-
-      topic.classList.toggle("skipped");
-
-      if (topic.classList.contains("skipped")) {
-        skippedTopicsSet.add(index);
-        if (skipBtn) skipBtn.textContent = "Skipped";
-      } else {
-        skippedTopicsSet.delete(index);
-        if (skipBtn) skipBtn.textContent = "Skip";
-      }
-      updateProgress();
-    };
-
-    // Left Click: Open Details Drawer
-    topic.addEventListener("click", function (event) {
-      if (event.target.tagName === 'A' || event.target.closest('.action-btn')) {
-        return;
-      }
-      
-      let topicData;
       try {
-        topicData = JSON.parse(topic.dataset.topic);
+        localStorage.setItem(`completedTopics_${slug}`, JSON.stringify([...completedTopics]));
+        localStorage.setItem(`learningTopics_${slug}`, JSON.stringify([...learningTopics]));
+        localStorage.setItem(`skippedTopics_${slug}`, JSON.stringify([...skippedTopics]));
       } catch (e) {
-        console.error("Error parsing topic data:", e);
-        return;
+        console.error(e);
       }
 
-      window.dispatchEvent(new CustomEvent('roadmap:open-drawer', { detail: topicData }));
-    });
+      renderAllNodes();
+      updateProgress();
+      updateNextUpBanner();
 
-    // Right Click: Toggle Completion Status
-    topic.addEventListener("contextmenu", function (event) {
-      event.preventDefault();
-      toggleComplete();
-    });
-
-    if (detailsBtn) {
-      detailsBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const topicData = JSON.parse(topic.dataset.topic);
-        window.dispatchEvent(new CustomEvent('roadmap:open-drawer', { detail: topicData }));
-      });
+      if (currentActiveTopic && currentActiveTopic.name === name) {
+        updateDrawerStatusButtons(status);
+      }
     }
 
-    if (completeBtn) {
-      completeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleComplete();
-      });
+    function cycleTopicStatus(name) {
+      const current = getTopicStatus(name);
+      if (current === 'todo') setTopicStatus(name, 'done');
+      else if (current === 'done') setTopicStatus(name, 'learning');
+      else if (current === 'learning') setTopicStatus(name, 'skipped');
+      else setTopicStatus(name, 'todo');
     }
 
-    if (skipBtn) {
-      skipBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleSkip();
-      });
+    function toggleStar(name) {
+      if (starredTopics.has(name)) {
+        starredTopics.delete(name);
+      } else {
+        starredTopics.add(name);
+      }
+      try {
+        localStorage.setItem(`starredTopics_${slug}`, JSON.stringify([...starredTopics]));
+      } catch (e) {}
+
+      renderStars();
+      if (currentActiveTopic && currentActiveTopic.name === name) {
+        updateDrawerStarButton();
+      }
+      if (activeStatus === 'starred') {
+        applyFilters();
+      }
     }
-  });
 
-  const filterButtons = document.querySelectorAll(".filter-btn");
-
-  filterButtons.forEach((button) => {
-    button.addEventListener("click", function () {
-      filterButtons.forEach((btn) => btn.classList.remove("active"));
-      this.classList.add("active");
-
-      const filter = this.getAttribute("data-filter");
-
-      topics.forEach((topic) => {
-        if (filter === "all") {
-          topic.style.display = "block";
-        } else {
-          const difficulty = topic.getAttribute("data-difficulty");
-          topic.style.display = difficulty === filter ? "block" : "none";
+    function renderStars() {
+      topicNodes.forEach((node) => {
+        const name = node.getAttribute('data-topic-name');
+        const starBtn = node.querySelector('.star-topic-btn');
+        if (starBtn) {
+          if (starredTopics.has(name)) {
+            starBtn.classList.add('starred');
+          } else {
+            starBtn.classList.remove('starred');
+          }
         }
       });
-      updateLayout(); // Recalculate tree structure after filtering
-      updateVerticalLines();
+      if (starredFilterCountEl) {
+        starredFilterCountEl.textContent = String(starredTopics.size);
+      }
+    }
+
+    function updateDrawerStarButton() {
+      if (!currentActiveTopic || !drawerStarBtn) return;
+      if (starredTopics.has(currentActiveTopic.name)) {
+        drawerStarBtn.classList.add('starred');
+      } else {
+        drawerStarBtn.classList.remove('starred');
+      }
+    }
+
+    function renderAllNodes() {
+      let completedHoursTotal = 0;
+
+      // 1. Flowchart Nodes & Wrapper Status (for Waypoint glows)
+      topicNodes.forEach((node) => {
+        const name = node.getAttribute('data-topic-name');
+        const status = getTopicStatus(name);
+        const hours = parseFloat(node.getAttribute('data-duration-hours') || '2');
+        const wrapper = node.closest('.topic-node-wrapper');
+
+        node.classList.remove('status-done', 'status-learning', 'status-skipped');
+        if (wrapper) {
+          wrapper.classList.remove('status-done', 'status-learning', 'status-skipped');
+        }
+
+        const textEl = node.querySelector('.status-text');
+        const iconEl = node.querySelector('.status-icon-box');
+
+        if (status === 'done') {
+          node.classList.add('status-done');
+          if (wrapper) wrapper.classList.add('status-done');
+          completedHoursTotal += hours;
+          if (textEl) textEl.textContent = 'Done';
+          if (iconEl) iconEl.innerHTML = '<svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" /></svg>';
+        } else if (status === 'learning') {
+          node.classList.add('status-learning');
+          if (wrapper) wrapper.classList.add('status-learning');
+          if (textEl) textEl.textContent = 'In Progress';
+          if (iconEl) iconEl.innerHTML = '<svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+        } else if (status === 'skipped') {
+          node.classList.add('status-skipped');
+          if (wrapper) wrapper.classList.add('status-skipped');
+          if (textEl) textEl.textContent = 'Skipped';
+          if (iconEl) iconEl.innerHTML = '<svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>';
+        } else {
+          if (textEl) textEl.textContent = 'Todo';
+          if (iconEl) iconEl.innerHTML = '<span class="size-2 rounded-full bg-muted-foreground inline-block"></span>';
+        }
+      });
+
+      // 2. Syllabus Items
+      syllabusItems.forEach((item) => {
+        const name = item.getAttribute('data-topic-name');
+        const status = getTopicStatus(name);
+
+        item.classList.remove('status-done', 'status-learning', 'status-skipped');
+        if (status === 'done') {
+          item.classList.add('status-done');
+        }
+      });
+
+      // 3. Module Milestone Counters & Mark Phase Buttons
+      document.querySelectorAll('.roadmap-module').forEach((mod) => {
+        const nodes = Array.from(mod.querySelectorAll('.topic-node'));
+        const doneCount = nodes.filter((n) => completedTopics.has(n.getAttribute('data-topic-name'))).length;
+        const badge = mod.querySelector('.module-progress-badge');
+        const phaseBtn = mod.querySelector('.mark-phase-btn');
+
+        if (badge) {
+          badge.textContent = `${doneCount}/${nodes.length} completed`;
+          if (doneCount === nodes.length && nodes.length > 0) {
+            badge.className = 'module-progress-badge text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold';
+          } else {
+            badge.className = 'module-progress-badge text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground';
+          }
+        }
+
+        if (phaseBtn) {
+          if (doneCount === nodes.length && nodes.length > 0) {
+            phaseBtn.textContent = 'Reset Phase';
+            phaseBtn.classList.add('text-muted-foreground');
+          } else {
+            phaseBtn.textContent = 'Mark Phase Done';
+            phaseBtn.classList.remove('text-muted-foreground');
+          }
+        }
+      });
+
+      // 4. Syllabus Phase Counters
+      document.querySelectorAll('.syllabus-phase-card').forEach((phase) => {
+        const items = Array.from(phase.querySelectorAll('.syllabus-topic-item'));
+        const doneCount = items.filter((n) => completedTopics.has(n.getAttribute('data-topic-name'))).length;
+        const badge = phase.querySelector('.syllabus-phase-badge');
+        const phaseBtn = phase.querySelector('.mark-phase-btn');
+
+        if (badge) {
+          badge.textContent = `${doneCount}/${items.length} completed`;
+          if (doneCount === items.length && items.length > 0) {
+            badge.className = 'syllabus-phase-badge text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold';
+          } else {
+            badge.className = 'syllabus-phase-badge text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground';
+          }
+        }
+
+        if (phaseBtn) {
+          if (doneCount === items.length && items.length > 0) {
+            phaseBtn.textContent = 'Reset Phase';
+          } else {
+            phaseBtn.textContent = 'Mark Phase Done';
+          }
+        }
+      });
+
+      renderStars();
+    }
+
+    function updateProgress() {
+      const completedCount = completedTopics.size;
+      const percent = totalTopicsCount > 0 ? Math.round((completedCount / totalTopicsCount) * 100) : 0;
+
+      // Compute total completed hours
+      let doneHours = 0;
+      allTopicsList.forEach((t) => {
+        if (completedTopics.has(t.name)) {
+          doneHours += (t.durationHours || 2);
+        }
+      });
+      const roundedDoneHours = Math.round(doneHours);
+
+      if (completedCountEl) completedCountEl.textContent = String(completedCount);
+      if (completedHoursEl) completedHoursEl.textContent = `${roundedDoneHours}h`;
+      if (progressPercentEl) progressPercentEl.textContent = `${percent}%`;
+      if (progressBarFillEl) progressBarFillEl.style.width = `${percent}%`;
+    }
+
+    function updateNextUpBanner() {
+      if (!nextUpBanner) return;
+
+      // First check if there is an in-progress topic
+      let candidate = allTopicsList.find((t) => learningTopics.has(t.name));
+
+      // If not, find the first todo topic
+      if (!candidate) {
+        candidate = allTopicsList.find((t) => !completedTopics.has(t.name) && !skippedTopics.has(t.name));
+      }
+
+      currentNextUpTopic = candidate;
+
+      if (!candidate) {
+        // All completed!
+        if (nextUpTitle) nextUpTitle.textContent = 'Curriculum 100% Completed!';
+        if (nextUpDiffBadge) nextUpDiffBadge.textContent = 'Mastered';
+        if (nextUpDurationBadge) nextUpDurationBadge.textContent = '🎉 All Done';
+        const labelEl = document.getElementById('nextUpLabel');
+        if (labelEl) labelEl.textContent = 'Celebration';
+        if (nextUpActionBtn) {
+          nextUpActionBtn.querySelector('span').textContent = 'Export Progress';
+        }
+      } else {
+        const isLearning = learningTopics.has(candidate.name);
+        const labelEl = document.getElementById('nextUpLabel');
+        if (labelEl) labelEl.textContent = isLearning ? 'Currently In Progress' : 'Recommended Next Step';
+
+        if (nextUpTitle) nextUpTitle.textContent = candidate.name;
+        if (nextUpDiffBadge) nextUpDiffBadge.textContent = candidate.difficulty || 'Beginner';
+        if (nextUpDurationBadge) nextUpDurationBadge.textContent = `⏱️ ${candidate.duration || '2 hours'}`;
+        if (nextUpActionBtn) {
+          nextUpActionBtn.querySelector('span').textContent = isLearning ? 'Continue Topic' : 'Start Topic';
+        }
+      }
+    }
+
+    nextUpActionBtn?.addEventListener('click', () => {
+      if (!currentNextUpTopic) {
+        document.getElementById('exportProgressBtn')?.click();
+        return;
+      }
+      openDrawer(currentNextUpTopic);
+
+      // Scroll to topic node
+      const slugName = slugifyStr(currentNextUpTopic.name);
+      const target = document.getElementById(`topic-node-${slugName}`);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     });
-  });
+
+    // Mark Entire Phase Action
+    document.querySelectorAll('.mark-phase-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const phaseId = btn.getAttribute('data-phase-id');
+        const phaseData = nodesList.find((s) => s.id === phaseId);
+        if (!phaseData || !phaseData.topics) return;
+
+        const phaseTopicNames = phaseData.topics.map((t) => t.name);
+        const allDone = phaseTopicNames.every((n) => completedTopics.has(n));
+
+        if (allDone) {
+          // Reset all to todo
+          phaseTopicNames.forEach((n) => {
+            completedTopics.delete(n);
+            learningTopics.delete(n);
+            skippedTopics.delete(n);
+          });
+        } else {
+          // Mark all as done
+          phaseTopicNames.forEach((n) => {
+            completedTopics.add(n);
+            learningTopics.delete(n);
+            skippedTopics.delete(n);
+          });
+        }
+
+        try {
+          localStorage.setItem(`completedTopics_${slug}`, JSON.stringify([...completedTopics]));
+          localStorage.setItem(`learningTopics_${slug}`, JSON.stringify([...learningTopics]));
+          localStorage.setItem(`skippedTopics_${slug}`, JSON.stringify([...skippedTopics]));
+        } catch (err) {}
+
+        renderAllNodes();
+        updateProgress();
+        updateNextUpBanner();
+        showToast(allDone ? 'Phase reset to Todo.' : 'Phase marked as complete!');
+      });
+    });
+
+    // View Switching
+    function setViewMode(mode) {
+      if (mode === 'syllabus') {
+        btnViewSyllabus?.classList.add('active');
+        btnViewFlowchart?.classList.remove('active');
+        flowchartCanvas?.classList.add('hidden');
+        syllabusCanvas?.classList.remove('hidden');
+        try { localStorage.setItem(`roadmap_view_${slug}`, 'syllabus'); } catch (e) {}
+      } else {
+        btnViewFlowchart?.classList.add('active');
+        btnViewSyllabus?.classList.remove('active');
+        flowchartCanvas?.classList.remove('hidden');
+        syllabusCanvas?.classList.add('hidden');
+        try { localStorage.setItem(`roadmap_view_${slug}`, 'flowchart'); } catch (e) {}
+      }
+    }
+
+    btnViewFlowchart?.addEventListener('click', () => setViewMode('flowchart'));
+    btnViewSyllabus?.addEventListener('click', () => setViewMode('syllabus'));
+
+    // Restore saved view preference
+    const savedView = localStorage.getItem(`roadmap_view_${slug}`);
+    if (savedView === 'syllabus') {
+      setViewMode('syllabus');
+    }
+
+    // Visual Density Toggle
+    let isCompact = localStorage.getItem(`roadmap_density_${slug}`) === 'compact';
+    function updateDensityUI() {
+      if (isCompact) {
+        flowchartCanvas?.classList.add('density-compact');
+        if (densityToggleText) densityToggleText.textContent = 'Detailed';
+      } else {
+        flowchartCanvas?.classList.remove('density-compact');
+        if (densityToggleText) densityToggleText.textContent = 'Compact';
+      }
+    }
+    btnToggleDensity?.addEventListener('click', () => {
+      isCompact = !isCompact;
+      try { localStorage.setItem(`roadmap_density_${slug}`, isCompact ? 'compact' : 'detailed'); } catch (e) {}
+      updateDensityUI();
+    });
+    updateDensityUI();
+
+    // Syllabus Phase collapse buttons & Global Toggle All
+    document.querySelectorAll('.syllabus-toggle-phase-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const card = btn.closest('.syllabus-phase-card');
+        const body = card?.querySelector('.syllabus-phase-body');
+        if (body) {
+          const isCollapsed = body.style.display === 'none';
+          body.style.display = isCollapsed ? '' : 'none';
+          btn.textContent = isCollapsed ? 'Collapse' : 'Expand';
+        }
+      });
+    });
+
+    const btnToggleAllPhases = document.getElementById('btnToggleAllPhases');
+    let allPhasesExpanded = true;
+    btnToggleAllPhases?.addEventListener('click', () => {
+      allPhasesExpanded = !allPhasesExpanded;
+      document.querySelectorAll('.syllabus-phase-card').forEach((card) => {
+        const body = card.querySelector('.syllabus-phase-body');
+        const btn = card.querySelector('.syllabus-toggle-phase-btn');
+        if (body) {
+          body.style.display = allPhasesExpanded ? '' : 'none';
+        }
+        if (btn) {
+          btn.textContent = allPhasesExpanded ? 'Collapse' : 'Expand';
+        }
+      });
+      btnToggleAllPhases.textContent = allPhasesExpanded ? 'Collapse All Phases' : 'Expand All Phases';
+    });
+
+    // Checkpoints in Drawer
+    function loadTakeawaysChecklist(topic) {
+      if (!drawerTakeawaysList) return;
+      const key = `roadmap_takeaways_${slug}_${encodeURIComponent(topic.name)}`;
+      let checkedIndices = new Set();
+      try {
+        checkedIndices = new Set(JSON.parse(localStorage.getItem(key) || '[]'));
+      } catch (e) {}
+
+      const total = topic.takeaways?.length || 0;
+      if (takeawaysProgressBadge) {
+        takeawaysProgressBadge.textContent = `${checkedIndices.size}/${total} checkpoints`;
+      }
+
+      drawerTakeawaysList.innerHTML = (topic.takeaways || []).map((point, idx) => {
+        const isChecked = checkedIndices.has(idx);
+        return `
+          <li class="flex items-start gap-3 text-xs text-foreground/90 bg-card p-3 rounded-xl border border-border cursor-pointer hover:border-primary/40 transition-all group" data-idx="${idx}">
+            <input 
+              type="checkbox" 
+              class="takeaway-checkbox mt-0.5 size-4 rounded text-primary focus:ring-primary/20 cursor-pointer accent-emerald-600" 
+              ${isChecked ? 'checked' : ''} 
+            />
+            <span class="leading-snug select-none ${isChecked ? 'line-through text-muted-foreground' : ''}">${point}</span>
+          </li>
+        `;
+      }).join('');
+
+      drawerTakeawaysList.querySelectorAll('li').forEach((li) => {
+        li.addEventListener('click', (e) => {
+          const checkbox = li.querySelector('.takeaway-checkbox');
+          if (e.target !== checkbox) {
+            checkbox.checked = !checkbox.checked;
+          }
+          const idx = parseInt(li.getAttribute('data-idx') || '0', 10);
+          const span = li.querySelector('span');
+
+          if (checkbox.checked) {
+            checkedIndices.add(idx);
+            span?.classList.add('line-through', 'text-muted-foreground');
+          } else {
+            checkedIndices.delete(idx);
+            span?.classList.remove('line-through', 'text-muted-foreground');
+          }
+
+          try {
+            localStorage.setItem(key, JSON.stringify([...checkedIndices]));
+          } catch (err) {}
+
+          if (takeawaysProgressBadge) {
+            takeawaysProgressBadge.textContent = `${checkedIndices.size}/${total} checkpoints`;
+          }
+        });
+      });
+    }
+
+    // Study Notes in Drawer
+    function loadTopicNotes(topic) {
+      const noteKey = `roadmap_note_${slug}_${encodeURIComponent(topic.name)}`;
+      const saved = localStorage.getItem(noteKey) || '';
+      if (topicNoteTextarea) {
+        topicNoteTextarea.value = saved;
+      }
+      if (noteCharCount) {
+        noteCharCount.textContent = `${saved.length} characters`;
+      }
+      if (notesIndicator) {
+        notesIndicator.style.display = saved.trim().length > 0 ? 'inline-block' : 'none';
+      }
+    }
+
+    function saveTopicNotes() {
+      if (!currentActiveTopic || !topicNoteTextarea) return;
+      const noteKey = `roadmap_note_${slug}_${encodeURIComponent(currentActiveTopic.name)}`;
+      const val = topicNoteTextarea.value;
+      try {
+        localStorage.setItem(noteKey, val);
+      } catch (e) {}
+
+      if (noteSavedStatus) {
+        noteSavedStatus.textContent = 'Saved!';
+        setTimeout(() => {
+          if (noteSavedStatus) noteSavedStatus.textContent = 'Auto-saved locally';
+        }, 1500);
+      }
+      if (noteCharCount) {
+        noteCharCount.textContent = `${val.length} characters`;
+      }
+      if (notesIndicator) {
+        notesIndicator.style.display = val.trim().length > 0 ? 'inline-block' : 'none';
+      }
+    }
+
+    topicNoteTextarea?.addEventListener('input', () => {
+      if (noteSavedStatus) noteSavedStatus.textContent = 'Saving...';
+      clearTimeout(noteSaveTimeout);
+      noteSaveTimeout = setTimeout(saveTopicNotes, 400);
+    });
+
+    clearNoteBtn?.addEventListener('click', () => {
+      if (!currentActiveTopic || !topicNoteTextarea) return;
+      if (confirm('Clear notes for this topic?')) {
+        topicNoteTextarea.value = '';
+        saveTopicNotes();
+      }
+    });
+
+    function updateDrawerStatusButtons(status) {
+      const allBtns = [drawerStatusDone, drawerStatusLearning, drawerStatusSkip];
+      allBtns.forEach((b) => {
+        if (b) {
+          b.className = 'drawer-status-btn inline-flex items-center gap-1 px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer bg-card hover:bg-secondary border border-border text-foreground';
+        }
+      });
+
+      if (status === 'done' && drawerStatusDone) {
+        drawerStatusDone.className = 'drawer-status-btn inline-flex items-center gap-1 px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer bg-emerald-600 text-white border-emerald-600 shadow-xs';
+      } else if (status === 'learning' && drawerStatusLearning) {
+        drawerStatusLearning.className = 'drawer-status-btn inline-flex items-center gap-1 px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer bg-amber-600 text-white border-amber-600 shadow-xs';
+      } else if (status === 'skipped' && drawerStatusSkip) {
+        drawerStatusSkip.className = 'drawer-status-btn inline-flex items-center gap-1 px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer bg-slate-700 text-white border-slate-700 shadow-xs';
+      }
+    }
+
+    function openDrawer(topic) {
+      if (!topic) return;
+      currentActiveTopic = topic;
+
+      // Badges
+      if (drawerBadgeDiff) drawerBadgeDiff.textContent = topic.difficulty;
+      if (drawerBadgeOptional) {
+        drawerBadgeOptional.style.display = topic.optional ? 'inline-block' : 'none';
+      }
+      if (drawerDurationText) drawerDurationText.textContent = topic.duration || '2 hours';
+      if (drawerTopicTitle) drawerTopicTitle.textContent = topic.name;
+      if (drawerDescription) drawerDescription.textContent = topic.description || '';
+
+      // Update URL hash for deep linking without jumping
+      const topicSlug = slugifyStr(topic.name);
+      history.replaceState(null, '', `#${topicSlug}`);
+
+      // Code Section
+      if (topic.codeSnippet && topic.codeSnippet.trim()) {
+        if (drawerCodeSection) drawerCodeSection.classList.remove('hidden');
+        if (drawerCodeText) drawerCodeText.textContent = topic.codeSnippet;
+      } else {
+        if (drawerCodeSection) drawerCodeSection.classList.add('hidden');
+      }
+
+      // Takeaways & Checkpoints
+      if (topic.takeaways && topic.takeaways.length > 0) {
+        if (drawerTakeawaysSection) drawerTakeawaysSection.classList.remove('hidden');
+        loadTakeawaysChecklist(topic);
+      } else {
+        if (drawerTakeawaysSection) drawerTakeawaysSection.classList.add('hidden');
+      }
+
+      // Prerequisites
+      if (topic.prerequisites && topic.prerequisites.length > 0) {
+        if (drawerPrereqsSection) drawerPrereqsSection.classList.remove('hidden');
+        if (drawerPrereqsList) {
+          drawerPrereqsList.innerHTML = topic.prerequisites.map((req) => `
+            <li class="flex items-center gap-2 text-xs text-muted-foreground bg-secondary/40 px-3 py-2 rounded-xl">
+              <span class="w-1.5 h-1.5 rounded-full bg-primary shrink-0"></span>
+              <span>${req}</span>
+            </li>
+          `).join('');
+        }
+      } else {
+        if (drawerPrereqsSection) drawerPrereqsSection.classList.add('hidden');
+      }
+
+      // Resources Tab Data
+      let resCount = 0;
+      if (topic.videoUrl) resCount++;
+      if (topic.links) resCount += topic.links.length;
+      if (topic.references) resCount += topic.references.length;
+
+      if (resourcesCountBadge) resourcesCountBadge.textContent = String(resCount);
+
+      if (topic.videoUrl) {
+        if (drawerVideoSection) drawerVideoSection.classList.remove('hidden');
+        if (drawerVideoLink) drawerVideoLink.href = topic.videoUrl;
+      } else {
+        if (drawerVideoSection) drawerVideoSection.classList.add('hidden');
+      }
+
+      if (topic.links && topic.links.length > 0) {
+        if (drawerLinksSection) drawerLinksSection.classList.remove('hidden');
+        if (drawerLinksContainer) {
+          drawerLinksContainer.innerHTML = topic.links.map((link) => `
+            <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3.5 rounded-xl border border-border bg-card hover:border-primary/50 hover:bg-secondary/40 transition-all group">
+              <span class="text-xs font-medium text-foreground group-hover:text-primary transition-colors">${link.title}</span>
+              <svg class="size-3.5 text-muted-foreground group-hover:text-primary transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          `).join('');
+        }
+      } else {
+        if (drawerLinksSection) drawerLinksSection.classList.add('hidden');
+      }
+
+      if (topic.references && topic.references.length > 0) {
+        if (drawerRefsSection) drawerRefsSection.classList.remove('hidden');
+        if (drawerRefsContainer) {
+          drawerRefsContainer.innerHTML = topic.references.map((ref) => `
+            <a href="${ref.url}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 rounded-xl border border-border/60 text-xs text-muted-foreground hover:text-foreground hover:border-border transition-colors group">
+              <span>${ref.title}</span>
+              <svg class="size-3 opacity-60 group-hover:opacity-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          `).join('');
+        }
+      } else {
+        if (drawerRefsSection) drawerRefsSection.classList.add('hidden');
+      }
+
+      if (drawerEncodeEdgeSearchLink) {
+        drawerEncodeEdgeSearchLink.href = `/blog?q=${encodeURIComponent(topic.name)}`;
+      }
+
+      if (resCount === 0) {
+        if (drawerNoResources) drawerNoResources.classList.remove('hidden');
+      } else {
+        if (drawerNoResources) drawerNoResources.classList.add('hidden');
+      }
+
+      // Load personal notes
+      loadTopicNotes(topic);
+
+      // Star status
+      updateDrawerStarButton();
+
+      // Default to Overview Tab
+      switchTab('overview');
+
+      // Update status buttons in drawer
+      updateDrawerStatusButtons(getTopicStatus(topic.name));
+
+      // Show drawer
+      if (drawerBackdrop) drawerBackdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+      if (drawerBackdrop) drawerBackdrop.classList.remove('open');
+      document.body.style.overflow = '';
+      currentActiveTopic = null;
+    }
+
+    function switchTab(tab) {
+      [tabBtnOverview, tabBtnNotes, tabBtnResources].forEach((b) => {
+        b?.classList.remove('border-primary', 'text-primary');
+        b?.classList.add('border-transparent', 'text-muted-foreground');
+      });
+      [tabContentOverview, tabContentNotes, tabContentResources].forEach((c) => {
+        c?.classList.add('hidden');
+      });
+
+      if (tab === 'notes') {
+        tabBtnNotes?.classList.add('border-primary', 'text-primary');
+        tabBtnNotes?.classList.remove('border-transparent', 'text-muted-foreground');
+        tabContentNotes?.classList.remove('hidden');
+      } else if (tab === 'resources') {
+        tabBtnResources?.classList.add('border-primary', 'text-primary');
+        tabBtnResources?.classList.remove('border-transparent', 'text-muted-foreground');
+        tabContentResources?.classList.remove('hidden');
+      } else {
+        tabBtnOverview?.classList.add('border-primary', 'text-primary');
+        tabBtnOverview?.classList.remove('border-transparent', 'text-muted-foreground');
+        tabContentOverview?.classList.remove('hidden');
+      }
+    }
+
+    tabBtnOverview?.addEventListener('click', () => switchTab('overview'));
+    tabBtnNotes?.addEventListener('click', () => switchTab('notes'));
+    tabBtnResources?.addEventListener('click', () => switchTab('resources'));
+
+    drawerStarBtn?.addEventListener('click', () => {
+      if (currentActiveTopic) {
+        toggleStar(currentActiveTopic.name);
+      }
+    });
+
+    shareTopicBtn?.addEventListener('click', () => {
+      if (!currentActiveTopic) return;
+      const url = `${window.location.origin}${window.location.pathname}#${slugifyStr(currentActiveTopic.name)}`;
+      navigator.clipboard.writeText(url);
+      showToast('Direct link copied to clipboard!');
+    });
+
+    // Attach listeners to Flowchart cards
+    topicNodes.forEach((node, idx) => {
+      const topicName = node.getAttribute('data-topic-name');
+      const toggleBtn = node.querySelector('.status-toggle-btn');
+      const detailsBtn = node.querySelector('.topic-details-btn');
+      const starBtn = node.querySelector('.star-topic-btn');
+
+      node.addEventListener('click', (e) => {
+        if (e.target.closest('.status-toggle-btn') || e.target.closest('.star-topic-btn')) return;
+        const topicData = topicsMap.get(topicName) || { name: topicName, description: '', difficulty: 'beginner' };
+        openDrawer(topicData);
+      });
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          cycleTopicStatus(topicName);
+        });
+      }
+
+      if (starBtn) {
+        starBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleStar(topicName);
+        });
+      }
+
+      if (detailsBtn) {
+        detailsBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const topicData = topicsMap.get(topicName) || { name: topicName, description: '', difficulty: 'beginner' };
+          openDrawer(topicData);
+        });
+      }
+    });
+
+    // Attach listeners to Syllabus Guide items
+    syllabusItems.forEach((item) => {
+      const topicName = item.getAttribute('data-topic-name');
+      const chkBtn = item.querySelector('.syllabus-checkbox-btn');
+      const openBtn = item.querySelector('.open-drawer-syllabus-btn');
+
+      chkBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const cur = getTopicStatus(topicName);
+        setTopicStatus(topicName, cur === 'done' ? 'todo' : 'done');
+      });
+
+      openBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const topicData = topicsMap.get(topicName) || { name: topicName, description: '', difficulty: 'beginner' };
+        openDrawer(topicData);
+      });
+    });
+
+    // Drawer status buttons
+    drawerStatusDone?.addEventListener('click', () => {
+      if (!currentActiveTopic) return;
+      const cur = getTopicStatus(currentActiveTopic.name);
+      setTopicStatus(currentActiveTopic.name, cur === 'done' ? 'todo' : 'done');
+    });
+
+    drawerStatusLearning?.addEventListener('click', () => {
+      if (!currentActiveTopic) return;
+      const cur = getTopicStatus(currentActiveTopic.name);
+      setTopicStatus(currentActiveTopic.name, cur === 'learning' ? 'todo' : 'learning');
+    });
+
+    drawerStatusSkip?.addEventListener('click', () => {
+      if (!currentActiveTopic) return;
+      const cur = getTopicStatus(currentActiveTopic.name);
+      setTopicStatus(currentActiveTopic.name, cur === 'skipped' ? 'todo' : 'skipped');
+    });
+
+    drawerStatusTodo?.addEventListener('click', () => {
+      if (!currentActiveTopic) return;
+      setTopicStatus(currentActiveTopic.name, 'todo');
+    });
+
+    closeDrawerBtn?.addEventListener('click', closeDrawer);
+    drawerBackdrop?.addEventListener('click', (e) => {
+      if (e.target === drawerBackdrop) closeDrawer();
+    });
+
+    // Copy Code button
+    copyCodeBtn?.addEventListener('click', () => {
+      if (!currentActiveTopic || !currentActiveTopic.codeSnippet) return;
+      navigator.clipboard.writeText(currentActiveTopic.codeSnippet);
+      if (copyCodeText) copyCodeText.textContent = 'Copied!';
+      setTimeout(() => {
+        if (copyCodeText) copyCodeText.textContent = 'Copy code';
+      }, 2000);
+    });
+
+    // Keyboard Shortcuts Cheatsheet Modal
+    const shortcutsModal = document.getElementById('shortcutsModal');
+    const openShortcutsBtn = document.getElementById('openShortcutsBtn');
+    const closeShortcutsBtn = document.getElementById('closeShortcutsBtn');
+    const dismissShortcutsBtn = document.getElementById('dismissShortcutsBtn');
+
+    function openShortcuts() {
+      if (shortcutsModal) shortcutsModal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeShortcuts() {
+      if (shortcutsModal) shortcutsModal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    openShortcutsBtn?.addEventListener('click', openShortcuts);
+    closeShortcutsBtn?.addEventListener('click', closeShortcuts);
+    dismissShortcutsBtn?.addEventListener('click', closeShortcuts);
+    shortcutsModal?.addEventListener('click', (e) => {
+      if (e.target === shortcutsModal) closeShortcuts();
+    });
+
+    // Keyboard Navigation
+    window.addEventListener('keydown', (e) => {
+      const isInputActive = document.activeElement === searchInput || document.activeElement === topicNoteTextarea || document.activeElement?.tagName === 'INPUT';
+
+      if (e.key === 'Escape') {
+        closeDrawer();
+        closeResetModal();
+        closeShortcuts();
+      } else if (e.key === '/' && !isInputActive) {
+        e.preventDefault();
+        searchInput?.focus();
+      } else if (!isInputActive) {
+        const visibleNodes = topicNodes.filter((n) => n.style.display !== 'none');
+        if (visibleNodes.length === 0) return;
+
+        if (e.key === 'j' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (focusedTopicIndex < visibleNodes.length - 1) focusedTopicIndex++;
+          else focusedTopicIndex = 0;
+          highlightFocusedTopic(visibleNodes);
+        } else if (e.key === 'k' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (focusedTopicIndex > 0) focusedTopicIndex--;
+          else focusedTopicIndex = visibleNodes.length - 1;
+          highlightFocusedTopic(visibleNodes);
+        } else if (e.key === ' ' && focusedTopicIndex >= 0 && focusedTopicIndex < visibleNodes.length) {
+          e.preventDefault();
+          const target = visibleNodes[focusedTopicIndex];
+          const name = target.getAttribute('data-topic-name');
+          if (name) cycleTopicStatus(name);
+        } else if (e.key === 'Enter' && focusedTopicIndex >= 0 && focusedTopicIndex < visibleNodes.length) {
+          e.preventDefault();
+          const target = visibleNodes[focusedTopicIndex];
+          const name = target.getAttribute('data-topic-name');
+          const topicData = topicsMap.get(name);
+          if (topicData) openDrawer(topicData);
+        } else if ((e.key === 's' || e.key === 'S') && focusedTopicIndex >= 0 && focusedTopicIndex < visibleNodes.length) {
+          e.preventDefault();
+          const target = visibleNodes[focusedTopicIndex];
+          const name = target.getAttribute('data-topic-name');
+          if (name) toggleStar(name);
+        }
+      }
+    });
+
+    function highlightFocusedTopic(visibleNodes) {
+      topicNodes.forEach((n) => n.classList.remove('keyboard-focused'));
+      if (focusedTopicIndex >= 0 && focusedTopicIndex < visibleNodes.length) {
+        const target = visibleNodes[focusedTopicIndex];
+        target.classList.add('keyboard-focused');
+        target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    // Search and Filter Logic
+    const searchInput = document.getElementById('topicSearchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const statusFilterBtns = Array.from(document.querySelectorAll('.status-filter-btn'));
+    const levelBtns = Array.from(document.querySelectorAll('.level-btn'));
+    const emptySearchState = document.getElementById('emptySearchState');
+    const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+
+    let activeStatus = 'all';
+    let activeLevel = 'all';
+    let searchQuery = '';
+
+    function applyFilters() {
+      let visibleCount = 0;
+
+      // Filter Flowchart cards
+      topicNodes.forEach((node) => {
+        const name = node.getAttribute('data-topic-name') || '';
+        const diff = node.getAttribute('data-difficulty') || 'beginner';
+        const isOpt = node.getAttribute('data-optional') === 'true';
+        const isStar = starredTopics.has(name);
+        const status = getTopicStatus(name);
+
+        const topicData = topicsMap.get(name);
+        const desc = topicData?.description || '';
+        const takeaways = (topicData?.takeaways || []).join(' ');
+        const fullText = `${name} ${desc} ${takeaways}`.toLowerCase();
+
+        const matchLevel = activeLevel === 'all' || diff === activeLevel;
+        let matchStatus = true;
+        if (activeStatus === 'done') matchStatus = status === 'done';
+        else if (activeStatus === 'learning') matchStatus = status === 'learning';
+        else if (activeStatus === 'todo') matchStatus = status === 'todo';
+        else if (activeStatus === 'optional') matchStatus = isOpt;
+        else if (activeStatus === 'starred') matchStatus = isStar;
+
+        const matchSearch = !searchQuery || fullText.includes(searchQuery);
+
+        const wrapper = node.closest('.topic-node-wrapper');
+
+        if (matchLevel && matchStatus && matchSearch) {
+          node.style.display = '';
+          if (wrapper) wrapper.style.display = '';
+          visibleCount++;
+        } else {
+          node.style.display = 'none';
+          if (wrapper) wrapper.style.display = 'none';
+        }
+      });
+
+      // Filter Syllabus items
+      syllabusItems.forEach((item) => {
+        const name = item.getAttribute('data-topic-name') || '';
+        const diff = item.getAttribute('data-difficulty') || 'beginner';
+        const isOpt = item.getAttribute('data-optional') === 'true';
+        const isStar = starredTopics.has(name);
+        const status = getTopicStatus(name);
+
+        const topicData = topicsMap.get(name);
+        const desc = topicData?.description || '';
+        const takeaways = (topicData?.takeaways || []).join(' ');
+        const fullText = `${name} ${desc} ${takeaways}`.toLowerCase();
+
+        const matchLevel = activeLevel === 'all' || diff === activeLevel;
+        let matchStatus = true;
+        if (activeStatus === 'done') matchStatus = status === 'done';
+        else if (activeStatus === 'learning') matchStatus = status === 'learning';
+        else if (activeStatus === 'todo') matchStatus = status === 'todo';
+        else if (activeStatus === 'optional') matchStatus = isOpt;
+        else if (activeStatus === 'starred') matchStatus = isStar;
+
+        const matchSearch = !searchQuery || fullText.includes(searchQuery);
+
+        if (matchLevel && matchStatus && matchSearch) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+
+      // Show/hide entire modules in Flowchart
+      document.querySelectorAll('.roadmap-module').forEach((mod) => {
+        const topics = Array.from(mod.querySelectorAll('.topic-node'));
+        const hasVisible = topics.some((t) => t.style.display !== 'none');
+        mod.style.display = hasVisible ? '' : 'none';
+      });
+
+      // Show/hide entire phases in Syllabus
+      document.querySelectorAll('.syllabus-phase-card').forEach((phase) => {
+        const items = Array.from(phase.querySelectorAll('.syllabus-topic-item'));
+        const hasVisible = items.some((t) => t.style.display !== 'none');
+        phase.style.display = hasVisible ? '' : 'none';
+      });
+
+      if (emptySearchState) {
+        emptySearchState.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
+
+      focusedTopicIndex = -1;
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = (e.target.value || '').trim().toLowerCase();
+        if (clearSearchBtn) {
+          clearSearchBtn.style.display = searchQuery ? 'block' : 'none';
+        }
+        applyFilters();
+      });
+    }
+
+    clearSearchBtn?.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      searchQuery = '';
+      clearSearchBtn.style.display = 'none';
+      applyFilters();
+    });
+
+    statusFilterBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        statusFilterBtns.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeStatus = btn.getAttribute('data-status') || 'all';
+        applyFilters();
+      });
+    });
+
+    levelBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        levelBtns.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeLevel = btn.getAttribute('data-level') || 'all';
+        applyFilters();
+      });
+    });
+
+    resetFiltersBtn?.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      searchQuery = '';
+      if (clearSearchBtn) clearSearchBtn.style.display = 'none';
+      statusFilterBtns.forEach((b) => b.classList.remove('active'));
+      statusFilterBtns[0]?.classList.add('active');
+      activeStatus = 'all';
+      levelBtns.forEach((b) => b.classList.remove('active'));
+      levelBtns[0]?.classList.add('active');
+      activeLevel = 'all';
+      applyFilters();
+    });
+
+    // Export Progress
+    const exportBtn = document.getElementById('exportProgressBtn');
+    const exportToast = document.getElementById('exportToast');
+    const exportToastMsg = document.getElementById('exportToastMsg');
+
+    function showToast(msg) {
+      if (!exportToast) return;
+      if (exportToastMsg) exportToastMsg.textContent = msg;
+      exportToast.classList.remove('translate-y-20', 'opacity-0');
+      exportToast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        exportToast.classList.add('translate-y-20', 'opacity-0');
+        exportToast.classList.remove('translate-y-0', 'opacity-100');
+      }, 3000);
+    }
+
+    exportBtn?.addEventListener('click', () => {
+      const completedCount = completedTopics.size;
+      const pct = totalTopicsCount > 0 ? Math.round((completedCount / totalTopicsCount) * 100) : 0;
+      const dateStr = new Date().toISOString().split('T')[0];
+
+      let md = `# ${roadmapTitle} - Study Progress\n\n`;
+      md += `> Exported from EncodeEdge on ${dateStr}\n`;
+      md += `> **Overall Progress**: ${completedCount}/${totalTopicsCount} completed (${pct}%)\n\n`;
+      md += `---\n\n`;
+
+      nodesList.forEach((sec, idx) => {
+        md += `### Phase ${idx + 1}: ${sec.title}\n`;
+        if (sec.description) md += `*${sec.description}*\n\n`;
+
+        sec.topics?.forEach((t) => {
+          const status = getTopicStatus(t.name);
+          const isStar = starredTopics.has(t.name);
+          const mark = status === 'done' ? '[x]' : status === 'learning' ? '[-]' : '[ ]';
+          const starLabel = isStar ? ' ⭐' : '';
+          const statusLabel = status === 'learning' ? ' *(In Progress)*' : status === 'skipped' ? ' *(Skipped)*' : '';
+          md += `- ${mark} **${t.name}** [${t.difficulty}]${statusLabel}${starLabel}\n`;
+
+          const noteKey = `roadmap_note_${slug}_${encodeURIComponent(t.name)}`;
+          const note = localStorage.getItem(noteKey);
+          if (note && note.trim()) {
+            md += `  > **Note**: ${note.trim().replace(/\n/g, '\n  > ')}\n`;
+          }
+        });
+        md += `\n`;
+      });
+
+      try {
+        navigator.clipboard.writeText(md);
+      } catch (err) {}
+
+      try {
+        const blob = new Blob([md], { type: 'text/markdown;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${slug}-study-progress.md`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (err) {}
+
+      showToast('Progress exported & copied to clipboard!');
+    });
+
+    // Reset Progress Modal
+    const resetModal = document.getElementById('resetConfirmModal');
+    const openResetBtn = document.getElementById('openResetModalBtn');
+    const cancelResetBtn = document.getElementById('cancelResetBtn');
+    const confirmResetBtn = document.getElementById('confirmResetBtn');
+
+    function openResetModal() {
+      if (resetModal) resetModal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeResetModal() {
+      if (resetModal) resetModal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    openResetBtn?.addEventListener('click', openResetModal);
+    cancelResetBtn?.addEventListener('click', closeResetModal);
+    resetModal?.addEventListener('click', (e) => {
+      if (e.target === resetModal) closeResetModal();
+    });
+
+    confirmResetBtn?.addEventListener('click', () => {
+      completedTopics.clear();
+      learningTopics.clear();
+      skippedTopics.clear();
+      starredTopics.clear();
+
+      try {
+        localStorage.removeItem(`completedTopics_${slug}`);
+        localStorage.removeItem(`learningTopics_${slug}`);
+        localStorage.removeItem(`skippedTopics_${slug}`);
+        localStorage.removeItem(`starredTopics_${slug}`);
+
+        nodesList.forEach((sec) => {
+          sec.topics?.forEach((t) => {
+            localStorage.removeItem(`roadmap_note_${slug}_${encodeURIComponent(t.name)}`);
+            localStorage.removeItem(`roadmap_takeaways_${slug}_${encodeURIComponent(t.name)}`);
+          });
+        });
+      } catch (e) {
+        console.error(e);
+      }
+
+      renderAllNodes();
+      updateProgress();
+      updateNextUpBanner();
+      closeResetModal();
+      showToast('All learning progress, stars, and notes reset.');
+    });
+
+    // Initial Render
+    renderAllNodes();
+    updateProgress();
+    updateNextUpBanner();
+
+    // Check URL Hash for deep linking
+    if (window.location.hash) {
+      const hash = window.location.hash.substring(1);
+      const matched = allTopicsList.find((t) => slugifyStr(t.name) === hash);
+      if (matched) {
+        setTimeout(() => {
+          openDrawer(matched);
+          const el = document.getElementById(`topic-node-${hash}`);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+      }
+    }
+  }
+
+  // Self-execute immediately if DOM already loaded or wait for ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initRoadmap);
+  } else {
+    initRoadmap();
+  }
+  document.addEventListener('astro:page-load', initRoadmap);
 </script>

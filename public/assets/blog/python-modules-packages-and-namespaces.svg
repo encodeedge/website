@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <pattern id="gridPattern" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.2" fill="#FDA4AF" opacity="0.18" />
+    </pattern>
+  </defs>
+
+  <style>
+    .bg-canvas { fill: #FFF8F0; }
+    .diagram-card { fill: #FFFFFF; stroke: #FDA4AF; stroke-width: 2px; }
+    .diagram-node { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5px; }
+    .diagram-text { fill: #0F172A; }
+    .diagram-subtext { fill: #64748B; }
+    .diagram-line { stroke: #94A3B8; }
+
+    @media (prefers-color-scheme: dark) {
+      .bg-canvas { fill: #191520 !important; }
+      .diagram-card { fill: #1E2538 !important; stroke: #FDA4AF !important; stroke-width: 2px !important; }
+      .diagram-node { fill: #161D2B !important; stroke: #334155 !important; stroke-width: 1.5px !important; }
+      .diagram-text { fill: #F8FAFC !important; }
+      .diagram-subtext { fill: #94A3B8 !important; }
+      .diagram-line { stroke: #475569 !important; }
+    }
+  </style>
+
+  <!-- Clean Tinted Canvas (Distinct from grey page background) -->
+  <rect width="800" height="450" class="bg-canvas" />
+  <rect width="800" height="450" fill="url(#gridPattern)" />
+
+  <!-- Diagram Visual -->
+  
+  <g transform="translate(130, 80)">
+    <!-- Package Folder Node -->
+    <rect x="0" y="20" width="150" height="120" rx="16" fill="#FFFFFF" stroke="#FDA4AF" stroke-width="2" class="diagram-card" />
+    <path d="M 0 35 L 50 35 L 65 50 L 150 50" fill="none" stroke="#FDA4AF" stroke-width="1.5" />
+    <text x="75" y="80" text-anchor="middle" font-family="monospace" font-size="13" font-weight="700" fill="#0F172A" class="diagram-text">package/</text>
+    <text x="75" y="105" text-anchor="middle" font-family="monospace" font-size="11" font-weight="600" fill="#FDA4AF">__init__.py</text>
+
+    <!-- Import Line -->
+    <path d="M 150 80 L 260 80" fill="none" stroke="#CBD5E1" stroke-width="2.5" stroke-dasharray="4 4" class="diagram-line" />
+    <polygon points="265,80 255,75 255,85" fill="#A2D2FF" />
+
+    <!-- sys.modules Cache Box -->
+    <rect x="270" y="10" width="260" height="140" rx="18" fill="#FFFFFF" stroke="#A2D2FF" stroke-width="2" class="diagram-card" />
+    <rect x="290" y="25" width="110" height="24" rx="6" fill="#A2D2FF" opacity="0.25" />
+    <text x="345" y="41" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#0284C7">sys.modules</text>
+
+    <text x="290" y="80" font-family="monospace" font-size="12" font-weight="600" fill="#0F172A" class="diagram-text">"pkg": &lt;module&gt;</text>
+    <text x="290" y="105" font-family="monospace" font-size="12" font-weight="600" fill="#0F172A" class="diagram-text">"pkg.core": &lt;module&gt;</text>
+    <text x="290" y="130" font-family="monospace" font-size="10" font-weight="600" fill="#64748B" class="diagram-subtext">Singleton Cache Map</text>
+  </g>
+
+</svg>

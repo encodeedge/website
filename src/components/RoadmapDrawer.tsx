@@ -1,6 +1,23 @@
 import React, { useEffect, useState } from 'react';
+import { 
+  Check, 
+  Clock, 
+  SkipForward, 
+  RotateCcw, 
+  X, 
+  Copy, 
+  ExternalLink, 
+  Video, 
+  BookOpen, 
+  CheckCircle2, 
+  ListChecks, 
+  Sparkles 
+} from 'lucide-react';
 
-interface TopicData {
+export type TopicStatus = 'done' | 'learning' | 'skipped' | 'todo';
+
+export interface TopicData {
+  id?: string;
   name: string;
   description: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
@@ -12,30 +29,43 @@ interface TopicData {
   videoUrl?: string;
   links?: { title: string; url: string }[];
   references?: { title: string; url: string }[];
+  status?: TopicStatus;
 }
 
 export function RoadmapDrawer() {
   const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState<TopicData | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'resources'>('overview');
+  const [copiedCode, setCopiedCode] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState<TopicStatus>('todo');
 
   useEffect(() => {
     const handleOpen = (event: CustomEvent<TopicData>) => {
       setData(event.detail);
+      setCurrentStatus(event.detail.status || 'todo');
       setIsOpen(true);
       setActiveTab('overview');
+      setCopiedCode(false);
     };
 
     const handleClose = () => {
       setIsOpen(false);
     };
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
     window.addEventListener('roadmap:open-drawer', handleOpen as EventListener);
     window.addEventListener('roadmap:close-drawer', handleClose);
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       window.removeEventListener('roadmap:open-drawer', handleOpen as EventListener);
       window.removeEventListener('roadmap:close-drawer', handleClose);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
@@ -50,126 +80,230 @@ export function RoadmapDrawer() {
 
   if (!isOpen || !data) return null;
 
-  const difficultyColors = {
-    beginner: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    intermediate: 'bg-blue-100 text-blue-800 border-blue-200',
-    advanced: 'bg-purple-100 text-purple-800 border-purple-200',
+  const difficultyBadges = {
+    beginner: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20',
+    intermediate: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
+    advanced: 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20',
+  };
+
+  const setStatus = (status: TopicStatus) => {
+    setCurrentStatus(status);
+    window.dispatchEvent(
+      new CustomEvent('roadmap:update-status', {
+        detail: {
+          topicName: data.name,
+          status,
+        },
+      })
+    );
+  };
+
+  const handleCopyCode = () => {
+    if (data.codeSnippet) {
+      navigator.clipboard.writeText(data.codeSnippet);
+      setCopiedCode(true);
+      setTimeout(() => setCopiedCode(false), 2000);
+    }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-modal="true">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-gray-900/30 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity animate-fade-in"
         onClick={() => setIsOpen(false)}
       />
 
       {/* Drawer Panel */}
-      <div className="relative w-full max-w-xl bg-white h-full shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out animate-slide-in">
+      <div className="relative w-full max-w-xl bg-background border-l border-border h-full shadow-2xl flex flex-col transform transition-transform duration-300 ease-out z-10">
         
         {/* Header */}
-        <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-start bg-gray-50/50">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${difficultyColors[data.difficulty] || 'bg-gray-100 text-gray-800'}`}>
+        <div className="px-6 py-5 border-b border-border flex justify-between items-start bg-card/60 backdrop-blur-md">
+          <div className="space-y-2 max-w-[85%]">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${difficultyBadges[data.difficulty]}`}>
                 {data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1)}
               </span>
               {data.optional && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
                   Optional
                 </span>
               )}
+              {data.duration && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
+                  <Clock className="size-3" />
+                  {data.duration}
+                </span>
+              )}
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 leading-tight">{data.name}</h2>
+            <h2 className="text-2xl font-bold font-display text-foreground leading-tight tracking-tight">
+              {data.name}
+            </h2>
           </div>
           <button 
             onClick={() => setIsOpen(false)}
-            className="p-2 -mr-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+            aria-label="Close topic drawer"
+            className="p-2 -mr-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-full transition-colors cursor-pointer"
           >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="size-5" />
           </button>
         </div>
 
+        {/* Roadmap.sh style Topic Status Bar */}
+        <div className="px-6 py-3 bg-secondary/40 border-b border-border flex items-center justify-between gap-2 overflow-x-auto text-xs">
+          <span className="font-semibold text-muted-foreground shrink-0 flex items-center gap-1.5">
+            <Sparkles className="size-3.5 text-primary" />
+            Topic Status:
+          </span>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              onClick={() => setStatus(currentStatus === 'done' ? 'todo' : 'done')}
+              className={`inline-flex items-center gap-1 px-3 py-1 rounded-md font-semibold transition-all cursor-pointer ${
+                currentStatus === 'done'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'bg-card hover:bg-secondary border border-border text-foreground'
+              }`}
+            >
+              <Check className="size-3.5" />
+              <span>Done</span>
+            </button>
+            <button
+              onClick={() => setStatus(currentStatus === 'learning' ? 'todo' : 'learning')}
+              className={`inline-flex items-center gap-1 px-3 py-1 rounded-md font-semibold transition-all cursor-pointer ${
+                currentStatus === 'learning'
+                  ? 'bg-amber-600 text-white shadow-xs'
+                  : 'bg-card hover:bg-secondary border border-border text-foreground'
+              }`}
+            >
+              <Clock className="size-3.5" />
+              <span>Learning</span>
+            </button>
+            <button
+              onClick={() => setStatus(currentStatus === 'skipped' ? 'todo' : 'skipped')}
+              className={`inline-flex items-center gap-1 px-3 py-1 rounded-md font-semibold transition-all cursor-pointer ${
+                currentStatus === 'skipped'
+                  ? 'bg-slate-700 text-white shadow-xs'
+                  : 'bg-card hover:bg-secondary border border-border text-muted-foreground'
+              }`}
+            >
+              <SkipForward className="size-3.5" />
+              <span>Skip</span>
+            </button>
+            {currentStatus !== 'todo' && (
+              <button
+                onClick={() => setStatus('todo')}
+                title="Reset status"
+                className="p-1 text-muted-foreground hover:text-foreground rounded-md hover:bg-secondary transition-colors cursor-pointer"
+              >
+                <RotateCcw className="size-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Tabs */}
-        <div className="flex border-b border-gray-200 px-6">
+        <div className="flex border-b border-border px-6 bg-card/20">
           <button
             onClick={() => setActiveTab('overview')}
-            className={`py-3 mr-6 text-sm font-medium border-b-2 transition-colors ${
+            className={`py-3 mr-6 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${
               activeTab === 'overview' 
-                ? 'border-indigo-600 text-indigo-600' 
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-primary text-primary' 
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             Overview
           </button>
           <button
             onClick={() => setActiveTab('resources')}
-            className={`py-3 text-sm font-medium border-b-2 transition-colors ${
+            className={`py-3 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${
               activeTab === 'resources' 
-                ? 'border-indigo-600 text-indigo-600' 
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-primary text-primary' 
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
-            Resources
+            Resources &amp; Links
+            {((data.links?.length || 0) + (data.references?.length || 0) + (data.videoUrl ? 1 : 0)) > 0 && (
+              <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-secondary text-secondary-foreground font-mono">
+                {(data.links?.length || 0) + (data.references?.length || 0) + (data.videoUrl ? 1 : 0)}
+              </span>
+            )}
           </button>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        {/* Content Body */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {activeTab === 'overview' && (
             <div className="space-y-6">
+              {/* Description */}
               <div>
-                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">Description</h3>
-                <p className="text-gray-600 leading-relaxed">{data.description}</p>
+                <h3 className="text-xs font-bold font-display uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
+                  <BookOpen className="size-3.5" />
+                  What You Need to Know
+                </h3>
+                <p className="text-foreground/90 leading-relaxed font-body text-sm bg-card p-4 rounded-xl border border-border">
+                  {data.description}
+                </p>
               </div>
 
-              {data.duration && (
-                <div className="flex items-center gap-3 p-3 bg-indigo-50 rounded-lg border border-indigo-100">
-                  <svg className="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <div>
-                    <span className="text-xs font-semibold text-indigo-800 block">Estimated Time</span>
-                    <span className="text-sm text-indigo-900">{data.duration}</span>
-                  </div>
-                </div>
-              )}
-
+              {/* Code Example */}
               {data.codeSnippet && (
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">Code Example</h3>
-                  <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm font-mono">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xs font-bold font-display uppercase tracking-wider text-muted-foreground">
+                      Code Blueprint
+                    </h3>
+                    <button
+                      onClick={handleCopyCode}
+                      className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+                    >
+                      {copiedCode ? (
+                        <>
+                          <Check className="size-3 text-emerald-500" />
+                          <span className="text-emerald-500">Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="size-3" />
+                          <span>Copy code</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <pre className="bg-[#12161f] text-slate-100 p-4 rounded-xl overflow-x-auto text-xs font-mono border border-border/70 leading-relaxed">
                     <code>{data.codeSnippet}</code>
                   </pre>
                 </div>
               )}
 
-              {data.prerequisites && data.prerequisites.length > 0 && (
+              {/* Key Takeaways */}
+              {data.takeaways && data.takeaways.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">Prerequisites</h3>
-                  <ul className="space-y-2">
-                    {data.prerequisites.map((req, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-gray-600">
-                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-400 flex-shrink-0" />
-                        {req}
+                  <h3 className="text-xs font-bold font-display uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1.5">
+                    <ListChecks className="size-3.5" />
+                    Key Milestones
+                  </h3>
+                  <ul className="space-y-2.5">
+                    {data.takeaways.map((point, idx) => (
+                      <li key={idx} className="flex items-start gap-2.5 text-xs text-foreground/90 bg-card p-3 rounded-xl border border-border">
+                        <CheckCircle2 className="size-4 text-emerald-500 shrink-0 mt-0.5" />
+                        <span className="leading-snug">{point}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
 
-              {data.takeaways && data.takeaways.length > 0 && (
+              {/* Prerequisites */}
+              {data.prerequisites && data.prerequisites.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">Key Takeaways</h3>
-                  <ul className="space-y-3">
-                    {data.takeaways.map((point, idx) => (
-                      <li key={idx} className="flex items-start gap-3 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                        <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        {point}
+                  <h3 className="text-xs font-bold font-display uppercase tracking-wider text-muted-foreground mb-3">
+                    Prerequisites
+                  </h3>
+                  <ul className="space-y-2">
+                    {data.prerequisites.map((req, idx) => (
+                      <li key={idx} className="flex items-center gap-2 text-xs text-muted-foreground bg-secondary/30 px-3 py-2 rounded-lg">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                        <span>{req}</span>
                       </li>
                     ))}
                   </ul>
@@ -181,60 +315,77 @@ export function RoadmapDrawer() {
           {activeTab === 'resources' && (
             <div className="space-y-6">
               {(!data.links?.length && !data.references?.length && !data.videoUrl) ? (
-                <div className="text-center py-10 text-gray-500">
-                  <p>No resources available for this topic yet.</p>
+                <div className="text-center py-12 text-muted-foreground text-sm">
+                  <p>No external resources attached to this topic yet.</p>
                 </div>
               ) : (
                 <>
+                  {/* Video Tutorial */}
                   {data.videoUrl && (
-                    <div className="mb-6">
-                      <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">Video Tutorial</h3>
+                    <div>
+                      <h3 className="text-xs font-bold font-display uppercase tracking-wider text-muted-foreground mb-2">
+                        Video Masterclass
+                      </h3>
                       <a 
                         href={data.videoUrl} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="block w-full p-4 bg-red-50 border border-red-100 rounded-lg text-red-700 hover:bg-red-100 transition-colors flex items-center gap-3"
+                        className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-500/15 transition-colors flex items-center justify-between group"
                       >
-                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
-                        <span className="font-medium">Watch Video Tutorial</span>
+                        <div className="flex items-center gap-3">
+                          <Video className="size-5 shrink-0" />
+                          <span className="text-xs font-semibold">Watch Tutorial Video</span>
+                        </div>
+                        <ExternalLink className="size-3.5 group-hover:translate-x-0.5 transition-transform" />
                       </a>
                     </div>
                   )}
 
+                  {/* Recommended Links */}
                   {data.links && data.links.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">Recommended Links</h3>
-                      <div className="space-y-3">
+                      <h3 className="text-xs font-bold font-display uppercase tracking-wider text-muted-foreground mb-3">
+                        Curated Guides &amp; Docs
+                      </h3>
+                      <div className="space-y-2.5">
                         {data.links.map((link, idx) => (
                           <a 
                             key={idx} 
                             href={link.url} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all group"
+                            className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-card hover:border-primary/50 hover:bg-secondary/40 transition-all group"
                           >
-                            <span className="text-sm font-medium text-gray-700 group-hover:text-indigo-700">{link.title}</span>
-                            <svg className="w-4 h-4 text-gray-400 group-hover:text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
+                            <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                              {link.title}
+                            </span>
+                            <ExternalLink className="size-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
                           </a>
                         ))}
                       </div>
                     </div>
                   )}
 
+                  {/* References */}
                   {data.references && data.references.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">References</h3>
-                      <ul className="space-y-2">
+                      <h3 className="text-xs font-bold font-display uppercase tracking-wider text-muted-foreground mb-3">
+                        Further Reading &amp; Standards
+                      </h3>
+                      <div className="space-y-2">
                         {data.references.map((ref, idx) => (
-                          <li key={idx}>
-                            <a href={ref.url} target="_blank" rel="noopener noreferrer" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
-                              {ref.title}
-                            </a>
-                          </li>
+                          <a 
+                            key={idx}
+                            href={ref.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="flex items-center justify-between p-2.5 rounded-lg border border-border/60 text-xs text-muted-foreground hover:text-foreground hover:border-border transition-colors group"
+                          >
+                            <span>{ref.title}</span>
+                            <ExternalLink className="size-3 opacity-60 group-hover:opacity-100" />
+                          </a>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   )}
                 </>

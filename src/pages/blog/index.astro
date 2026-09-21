@@ -22,41 +22,30 @@ const notebookPosts = notebooks
 
     return {
       id: slug,
-      slug: `../notebooks/${slug}`,
+      slug: `/notebooks/${slug}/`,
       collection: 'notebooks',
       data: {
         title,
-        description: frontmatter.description || '',
-        pubDate: frontmatter.pubDate ? new Date(frontmatter.pubDate) : new Date(0),
-        image: frontmatter.image,
-        tags: frontmatter.tags || [],
-        authorName: frontmatter.authorName || 'Encode Edge',
-        authorImage: frontmatter.authorImage,
+        description: frontmatter.description || 'Interactive Jupyter notebook covering core data structures, algorithms, and practical code execution.',
+        pubDate: frontmatter.pubDate ? new Date(frontmatter.pubDate) : new Date('2025-11-01'),
+        image: frontmatter.image || `/assets/notebooks/${slug}/image.png`,
+        tags: frontmatter.tags || ['python', 'notebook', 'hands-on'],
+        topics: ['python'],
+        readTime: 12,
+        featured: false,
+        authorName: frontmatter.authorName || 'Atul Jha',
+        authorImage: frontmatter.authorImage || '/assets/introduction-to-machine-learning/authorImage.png',
       }
     };
   });
 
 const posts = [...blogPosts, ...notebookPosts].sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+	(a, b) => new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf(),
 );
 ---
 
-<DefaultLayout title={SITE_TITLE} description={SITE_DESCRIPTION} >
-	<Background>
-		<div class="py-28 lg:pt-44 lg:pb-32">
-		<section>
-        <div class="container max-w-5xl space-y-4 text-center">
-          <h1 class="text-2xl font-semibold tracking-tight md:text-4xl lg:text-5xl">
-            Blogs
-          </h1>
-
-          <p class="text-muted-foreground max-w-md leading-snug font-medium lg:mx-auto">
-            Explore our blog for insightful articles, personal reflections and
-            more.
-          </p>
-        </div>
-      </section>
-			<BlogPosts posts={posts} client:only='react' />
-		</div>
-	</Background>
+<DefaultLayout title={`Articles & Blueprints | ${SITE_TITLE}`} description={SITE_DESCRIPTION}>
+	<div class="py-10 md:py-14">
+		<BlogPosts posts={posts} client:load />
+	</div>
 </DefaultLayout>

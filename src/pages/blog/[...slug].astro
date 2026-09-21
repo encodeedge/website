@@ -2,8 +2,9 @@
 import { type CollectionEntry, getCollection } from 'astro:content';
 import { render } from 'astro:content';
 
-import { BlogPost } from '@/components/blocks/blog-post';
+import BlogPost from '@/components/blocks/BlogPost.astro';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard } from '@/components/mdx';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('blog');
@@ -18,19 +19,55 @@ const post = Astro.props;
 const { title, description, pubDate, updatedDate } = post.data;
 const { Content } = await render(post);
 
-// Gather featured posts (explicitly those marked `featured: true`) to show in the right sidebar
+// Gather all posts to compute previous/next and related posts
 const allPosts = await getCollection('blog');
+const sortedPosts = [...allPosts].sort(
+  (a, b) => new Date(a.data.pubDate).getTime() - new Date(b.data.pubDate).getTime()
+);
+
+const currentIndex = sortedPosts.findIndex((p) => p.id === post.id);
+const prevPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
+const nextPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
+
+// Find related posts matching same topics or tags
+const matchingRelated = allPosts
+  .filter((p) => p.id !== post.id)
+  .filter((p) => {
+    const hasSharedTopic = p.data.topics?.some((t) => post.data.topics?.includes(t));
+    const hasSharedTag = p.data.tags?.some((tag) => post.data.tags?.includes(tag));
+    return hasSharedTopic || hasSharedTag;
+  });
+
+const relatedPosts = matchingRelated.length >= 3
+  ? matchingRelated.slice(0, 3)
+  : [
+      ...matchingRelated,
+      ...allPosts
+        .filter((p) => p.id !== post.id && !matchingRelated.some((r) => r.id === p.id))
+        .slice(0, 3 - matchingRelated.length),
+    ];
+
+// Featured stories for the right sidebar
 const featured = allPosts
-    .filter((p) => p.data?.featured)
-    .filter((p) => p.id !== post.id) 
-    .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
-    .slice(0, 5);
+  .filter((p) => p.id !== post.id)
+  .sort((a, b) => {
+    if (a.data.featured && !b.data.featured) return -1;
+    if (!a.data.featured && b.data.featured) return 1;
+    return new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime();
+  })
+  .slice(0, 4);
 
 ---
-<DefaultLayout>
-	<div class="py-28 lg:pt-44 lg:pb-32">
-		<BlogPost post={post} featured={featured} client:only='react' >
-			<Content />
+<DefaultLayout title={`${title} | Encode Edge`} description={description}>
+	<div class="py-6 md:py-10">
+		<BlogPost 
+			post={post} 
+			featured={featured} 
+			prevPost={prevPost}
+			nextPost={nextPost}
+			relatedPosts={relatedPosts}
+		>
+			<Content components={{ Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard }} />
 		</BlogPost>
 	</div>
 </DefaultLayout>

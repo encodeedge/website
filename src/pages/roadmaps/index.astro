@@ -15,20 +15,18 @@ const roadmaps = (await getCollection('roadmaps')).sort(
 ---
 
 <DefaultLayout title={`Roadmaps - ${SITE_TITLE}`} description="Learn and master various topics with our curated roadmaps." >
-	<Background>
-		<div class="py-28 lg:pt-44 lg:pb-32">
-		<section>
-        <div class="container max-w-5xl space-y-4 text-center">
-          <h1 class="text-2xl font-semibold tracking-tight md:text-4xl lg:text-5xl">
-            Roadmaps
-          </h1>
-
-          <p class="text-muted-foreground max-w-md leading-snug font-medium lg:mx-auto">
-            Learn and master various topics with our curated roadmaps.
-          </p>
-        </div>
-      </section>
-			<Roadmaps roadmaps={roadmaps} client:only='react' />
+	<div class="py-12 md:py-16 max-w-6xl mx-auto px-4 sm:px-6">
+		<div class="text-center max-w-2xl mx-auto mb-12">
+			<span class="inline-block text-xs font-semibold uppercase tracking-wider bg-black-100 dark:bg-black-800 text-muted-foreground px-3 py-1 rounded-full mb-3">
+				Learning Paths
+			</span>
+			<h1 class="text-4xl sm:text-5xl font-bold font-display tracking-tight text-foreground mb-4">
+				Step-by-Step Roadmaps
+			</h1>
+			<p class="text-base sm:text-lg text-muted-foreground font-body">
+				Master complex engineering domains with our structured visual roadmaps from novice to production expert.
+			</p>
 		</div>
-	</Background>
+		<Roadmaps roadmaps={roadmaps} client:load />
+	</div>
 </DefaultLayout>

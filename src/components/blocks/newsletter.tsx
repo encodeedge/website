@@ -39,13 +39,13 @@ export const Newsletter = () => {
   }, []);
 
   return (
-    <section className="py-24 lg:py-32">
+    <section className="py-12 md:py-16">
       <div className="container">
         <div className="flex flex-col items-center text-center gap-4 max-w-3xl mx-auto">
           <div className="p-3 rounded-full bg-primary/10 text-primary">
             <Mail className="size-6" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
+          <h1 className="text-3xl font-bold font-display tracking-tight md:text-4xl lg:text-5xl">
             Subscribe to our newsletter
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl">

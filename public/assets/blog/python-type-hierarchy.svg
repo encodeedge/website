@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <pattern id="gridPattern" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.2" fill="#FDA4AF" opacity="0.18" />
+    </pattern>
+  </defs>
+
+  <style>
+    .bg-canvas { fill: #FFF8F0; }
+    .diagram-card { fill: #FFFFFF; stroke: #FDA4AF; stroke-width: 2px; }
+    .diagram-node { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5px; }
+    .diagram-text { fill: #0F172A; }
+    .diagram-subtext { fill: #64748B; }
+    .diagram-line { stroke: #94A3B8; }
+
+    @media (prefers-color-scheme: dark) {
+      .bg-canvas { fill: #191520 !important; }
+      .diagram-card { fill: #1E2538 !important; stroke: #FDA4AF !important; stroke-width: 2px !important; }
+      .diagram-node { fill: #161D2B !important; stroke: #334155 !important; stroke-width: 1.5px !important; }
+      .diagram-text { fill: #F8FAFC !important; }
+      .diagram-subtext { fill: #94A3B8 !important; }
+      .diagram-line { stroke: #475569 !important; }
+    }
+  </style>
+
+  <!-- Clean Tinted Canvas (Distinct from grey page background) -->
+  <rect width="800" height="450" class="bg-canvas" />
+  <rect width="800" height="450" fill="url(#gridPattern)" />
+
+  <!-- Diagram Visual -->
+  
+  <g transform="translate(120, 70)">
+    <!-- Root: object -->
+    <rect x="210" y="0" width="140" height="46" rx="12" fill="#FFFFFF" stroke="#FDA4AF" stroke-width="2" class="diagram-card" />
+    <text x="280" y="28" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="700" fill="#0F172A" class="diagram-text">object</text>
+
+    <!-- Branch Lines -->
+    <path d="M 280 46 L 280 90 M 80 90 L 480 90 M 80 90 L 80 130 M 280 90 L 280 130 M 480 90 L 480 130" fill="none" stroke="#CBD5E1" stroke-width="2" class="diagram-line" />
+
+    <!-- Subtypes -->
+    <rect x="20" y="130" width="120" height="42" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" class="diagram-node" />
+    <text x="80" y="156" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="600" fill="#0F172A" class="diagram-text">Numbers</text>
+
+    <rect x="220" y="130" width="120" height="42" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" class="diagram-node" />
+    <text x="280" y="156" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="600" fill="#0F172A" class="diagram-text">Sequences</text>
+
+    <rect x="420" y="130" width="120" height="42" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" class="diagram-node" />
+    <text x="480" y="156" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="600" fill="#0F172A" class="diagram-text">Mappings</text>
+
+    <!-- Leaf Nodes -->
+    <g transform="translate(0, 200)">
+      <rect x="10" y="0" width="60" height="30" rx="8" fill="#FDA4AF" opacity="0.25" />
+      <text x="40" y="19" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#0F172A" class="diagram-text">int</text>
+
+      <rect x="80" y="0" width="60" height="30" rx="8" fill="#FDA4AF" opacity="0.25" />
+      <text x="110" y="19" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#0F172A" class="diagram-text">float</text>
+
+      <rect x="210" y="0" width="60" height="30" rx="8" fill="#E5E795" opacity="0.35" />
+      <text x="240" y="19" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#0F172A" class="diagram-text">list</text>
+
+      <rect x="280" y="0" width="60" height="30" rx="8" fill="#E5E795" opacity="0.35" />
+      <text x="310" y="19" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#0F172A" class="diagram-text">tuple</text>
+
+      <rect x="440" y="0" width="80" height="30" rx="8" fill="#A2D2FF" opacity="0.25" />
+      <text x="480" y="19" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#0F172A" class="diagram-text">dict</text>
+    </g>
+  </g>
+
+</svg>

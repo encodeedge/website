@@ -6,31 +6,32 @@ import DefaultLayout from '@/layouts/DefaultLayout.astro';
 ---
 <DefaultLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
   <Background>
-    <div class="max-w-2xl mx-auto px-4 pt-28 pb-20 lg:pt-44">
-      <div class="text-center mb-12">
-        <h1 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">Contact Us</h1>
-        <p class="text-lg text-slate-600 dark:text-slate-400">
-          Have questions? Send us an email directly.
+    <div class="max-w-2xl mx-auto px-4 py-12 md:py-16">
+      <div class="text-center mb-10">
+        <span class="woords_tag_small mb-2">Get in touch</span>
+        <h1 class="font-display text-3xl md:text-5xl font-bold text-foreground mb-3">Contact Us</h1>
+        <p class="text-base text-muted-foreground">
+          Have questions or ideas? Send us a message directly.
         </p>
       </div>
 
-      <form id="contact-form" class="space-y-6 bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+      <form id="contact-form" class="space-y-5 bg-card p-8 rounded-3xl border border-border shadow-sm">
         <div>
-          <label for="name" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Name</label>
-          <input type="text" id="name" name="name" required class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="Your name" />
+          <label for="name" class="block text-sm font-medium text-foreground mb-2">Name</label>
+          <input type="text" id="name" name="name" required class="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-foreground focus:ring-2 focus:ring-ghost-accent outline-none transition-all" placeholder="Your name" />
         </div>
 
         <div>
-          <label for="email" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Email</label>
-          <input type="email" id="email" name="email" required class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="your@email.com" />
+          <label for="email" class="block text-sm font-medium text-foreground mb-2">Email</label>
+          <input type="email" id="email" name="email" required class="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-foreground focus:ring-2 focus:ring-ghost-accent outline-none transition-all" placeholder="your@email.com" />
         </div>
 
         <div>
-          <label for="message" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Message</label>
-          <textarea id="message" name="message" rows="4" required class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="How can we help?"></textarea>
+          <label for="message" class="block text-sm font-medium text-foreground mb-2">Message</label>
+          <textarea id="message" name="message" rows="4" required class="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-foreground focus:ring-2 focus:ring-ghost-accent outline-none transition-all" placeholder="How can we help?"></textarea>
         </div>
 
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2">
+        <button type="submit" class="woords_btn w-full !bg-ghost-accent !text-black py-3.5 font-bold cursor-pointer text-sm">
           Send Message
         </button>
       </form>

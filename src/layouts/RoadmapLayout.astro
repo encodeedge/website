@@ -17,12 +17,11 @@ const { title, description } = Astro.props;
     <head>		
         <BaseHead title={title} description={description}  />
     </head>
-    <body class={`h-screen antialiased`}
-    >
-        <Navbar client:only='react' />
-        <main>
+    <body class="min-h-screen flex flex-col antialiased bg-background text-foreground">
+        <Navbar client:load />
+        <main class="flex-1">
             <Background>
-                <div class="py-28 lg:pt-44 lg:pb-32">
+                <div class="py-12 md:py-16">
                     <section>
                     </section>
                     <slot />

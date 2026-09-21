@@ -50,7 +50,7 @@ const features = [
 
 const heroCards = [
   {
-    title: "Tutorials & Deep Dives",
+    title: "Tutorials & Guides",
     description: "Project-based, step-by-step walkthroughs with runnable code and visuals.",
     href: "/topics",
     icon: Monitor,
@@ -69,7 +69,7 @@ const heroCards = [
   },
   {
     title: "Subscribe",
-    description: "Weekly tips, deep dives, project updates, and live stream schedules.",
+    description: "Weekly tips, comprehensive guides, project updates, and live stream schedules.",
     href: "/subscribe",
     icon: Mail,
   },

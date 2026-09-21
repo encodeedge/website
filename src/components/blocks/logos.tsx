@@ -23,7 +23,7 @@ type Company = {
 export const Logos = () => {
   const topics: Company[] = [
     {
-      name: "Algorithm Deep Dives",
+      name: "Algorithm Architecture",
       icon: Brain,
       href: "/topics/algorithms",
     },

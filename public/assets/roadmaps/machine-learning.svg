@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="ml-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E121B" />
+      <stop offset="100%" stop-color="#181E2C" />
+    </linearGradient>
+    <linearGradient id="ml-accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E5E795" />
+      <stop offset="100%" stop-color="#A2D2FF" />
+    </linearGradient>
+    <pattern id="grid-pattern" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1" />
+    </pattern>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(0,0,0,0.4)" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#ml-bg)" />
+  <rect width="800" height="500" fill="url(#grid-pattern)" />
+
+  <!-- Flow Connector Lines -->
+  <path d="M 160 250 L 300 170 L 460 170 L 620 250" fill="none" stroke="#E5E795" stroke-width="3" stroke-dasharray="6 6" opacity="0.6" />
+  <path d="M 160 250 L 300 330 L 460 330 L 620 250" fill="none" stroke="#A2D2FF" stroke-width="3" stroke-dasharray="6 6" opacity="0.6" />
+  <path d="M 160 250 L 640 250" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2" />
+
+  <!-- Header Banner -->
+  <g transform="translate(60, 50)">
+    <rect x="0" y="0" width="130" height="26" rx="13" fill="#E5E795" opacity="0.2" />
+    <text x="65" y="17" fill="#E5E795" font-family="system-ui, sans-serif" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1">CURRICULUM</text>
+    <text x="0" y="54" fill="#FFFFFF" font-family="Georgia, serif" font-size="28" font-weight="700" letter-spacing="-0.5">Machine Learning Path</text>
+  </g>
+
+  <!-- Node 1: Mathematics -->
+  <g transform="translate(90, 210)" filter="url(#shadow)">
+    <rect width="130" height="80" rx="16" fill="#1C2333" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />
+    <circle cx="28" cy="28" r="14" fill="#E5E795" />
+    <text x="28" y="33" fill="#000" font-family="system-ui, sans-serif" font-size="12" font-weight="800" text-anchor="middle">01</text>
+    <text x="28" y="60" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="13" font-weight="700">Math &amp; Stats</text>
+    <text x="28" y="73" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="10">Linear Algebra</text>
+  </g>
+
+  <!-- Node 2: Supervised -->
+  <g transform="translate(260, 130)" filter="url(#shadow)">
+    <rect width="140" height="80" rx="16" fill="#1C2333" stroke="#E5E795" stroke-width="1.5" />
+    <circle cx="28" cy="28" r="14" fill="#E5E795" />
+    <text x="28" y="33" fill="#000" font-family="system-ui, sans-serif" font-size="12" font-weight="800" text-anchor="middle">02</text>
+    <text x="28" y="60" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="13" font-weight="700">Supervised ML</text>
+    <text x="28" y="73" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="10">Regression, Trees</text>
+  </g>
+
+  <!-- Node 3: Unsupervised -->
+  <g transform="translate(260, 290)" filter="url(#shadow)">
+    <rect width="140" height="80" rx="16" fill="#1C2333" stroke="#A2D2FF" stroke-width="1.5" />
+    <circle cx="28" cy="28" r="14" fill="#A2D2FF" />
+    <text x="28" y="33" fill="#000" font-family="system-ui, sans-serif" font-size="12" font-weight="800" text-anchor="middle">03</text>
+    <text x="28" y="60" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="13" font-weight="700">Unsupervised</text>
+    <text x="28" y="73" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="10">Clustering &amp; PCA</text>
+  </g>
+
+  <!-- Node 4: Neural Networks -->
+  <g transform="translate(440, 210)" filter="url(#shadow)">
+    <rect width="140" height="80" rx="16" fill="#1C2333" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />
+    <circle cx="28" cy="28" r="14" fill="#FDA4AF" />
+    <text x="28" y="33" fill="#000" font-family="system-ui, sans-serif" font-size="12" font-weight="800" text-anchor="middle">04</text>
+    <text x="28" y="60" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="13" font-weight="700">Deep Networks</text>
+    <text x="28" y="73" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="10">PyTorch &amp; Loss</text>
+  </g>
+
+  <!-- Node 5: MLOps -->
+  <g transform="translate(610, 210)" filter="url(#shadow)">
+    <rect width="130" height="80" rx="16" fill="#1C2333" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+    <circle cx="28" cy="28" r="14" fill="#E9D5FF" />
+    <text x="28" y="33" fill="#000" font-family="system-ui, sans-serif" font-size="12" font-weight="800" text-anchor="middle">05</text>
+    <text x="28" y="60" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="13" font-weight="700">Production</text>
+    <text x="28" y="73" fill="rgba(255,255,255,0.6)" font-family="system-ui, sans-serif" font-size="10">Serving &amp; APIs</text>
+  </g>
+</svg>
+

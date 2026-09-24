@@ -39,4 +39,23 @@ import DefaultLayout from "@/layouts/DefaultLayout.astro";
     </div>
 
   </Background>
+
+  <script is:inline>
+    (function() {
+      try {
+        const path = window.location.pathname;
+        const searchParams = new URLSearchParams(window.location.search);
+        let branch = searchParams.get('branch');
+        if (!branch) {
+          const cookieMatch = document.cookie.match(/ks-branch=([^;]+)/);
+          if (cookieMatch) branch = decodeURIComponent(cookieMatch[1]);
+        }
+        if (branch && (path.startsWith('/blog/') || path.startsWith('/courses/') || path.startsWith('/lessons/'))) {
+          window.location.replace('/preview/start?branch=' + encodeURIComponent(branch) + '&to=' + encodeURIComponent(path));
+        }
+      } catch (e) {
+        // ignore
+      }
+    })();
+  </script>
 </DefaultLayout> 

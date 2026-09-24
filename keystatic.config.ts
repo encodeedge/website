@@ -157,6 +157,11 @@ export const mdxComponents = {
   }),
 };
 
+const siteUrl = process.env.PUBLIC_SITE_URL || 'https://www.encodeedge.com';
+const previewBase = (process.env.NODE_ENV === 'development' || process.env.KEYSTATIC_LOCAL)
+  ? ''
+  : siteUrl;
+
 export default config({
   storage: (process.env.NODE_ENV === 'development' || process.env.KEYSTATIC_LOCAL)
     ? { kind: 'local' }
@@ -180,7 +185,7 @@ export default config({
       label: 'Blogs',
       slugField: 'title',
       path: 'src/content/blog/*',
-      previewUrl: '/blog/{slug}',
+      previewUrl: `${previewBase}/preview/start?branch={branch}&to=/blog/{slug}`,
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
@@ -280,7 +285,7 @@ export default config({
       label: 'FAQs',
       slugField: 'question',
       path: 'src/content/faqs/*',
-      previewUrl: '/faq',
+      previewUrl: `${previewBase}/faq`,
       format: { data: 'yaml' },
       schema: {
         question: fields.text({ label: 'Question', validation: { isRequired: true } }),
@@ -292,7 +297,7 @@ export default config({
       label: 'Roadmaps',
       slugField: 'title',
       path: 'src/content/roadmaps/*',
-      previewUrl: '/roadmaps/{slug}',
+      previewUrl: `${previewBase}/roadmaps#{slug}`,
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
@@ -363,7 +368,7 @@ export default config({
       label: 'Courses',
       slugField: 'title',
       path: 'src/content/courses/*',
-      previewUrl: '/courses/{slug}',
+      previewUrl: `${previewBase}/preview/start?branch={branch}&to=/courses/{slug}`,
       format: { contentField: 'about' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
@@ -432,7 +437,7 @@ export default config({
       label: 'Batches',
       slugField: 'title',
       path: 'src/content/batches/*',
-      previewUrl: '/batches',
+      previewUrl: `${previewBase}/batches`,
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Batch Title' } }),
@@ -457,7 +462,7 @@ export default config({
       label: 'Instructors',
       slugField: 'name',
       path: 'src/content/instructors/*',
-      previewUrl: '/instructors/{slug}',
+      previewUrl: `${previewBase}/instructors/{slug}`,
       format: { contentField: 'bio' },
       schema: {
         name: fields.slug({ name: { label: 'Name' } }),
@@ -482,7 +487,7 @@ export default config({
       label: 'Lessons',
       slugField: 'title',
       path: 'src/content/lessons/*',
-      previewUrl: '/lessons/{slug}',
+      previewUrl: `${previewBase}/preview/start?branch={branch}&to=/lessons/{slug}`,
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
@@ -517,7 +522,7 @@ export default config({
       label: 'Quizzes',
       slugField: 'title',
       path: 'src/content/quizzes/*',
-      previewUrl: '/quizzes/{slug}',
+      previewUrl: `${previewBase}/quizzes/{slug}`,
       format: { data: 'yaml' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
@@ -554,7 +559,7 @@ export default config({
       label: 'Assignments',
       slugField: 'title',
       path: 'src/content/assignments/*',
-      previewUrl: '/assignments/{slug}',
+      previewUrl: `${previewBase}/assignments/{slug}`,
       format: { contentField: 'instructions' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),

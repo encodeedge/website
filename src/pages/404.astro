@@ -50,8 +50,9 @@ import DefaultLayout from "@/layouts/DefaultLayout.astro";
           const cookieMatch = document.cookie.match(/ks-branch=([^;]+)/);
           if (cookieMatch) branch = decodeURIComponent(cookieMatch[1]);
         }
-        if (branch && (path.startsWith('/blog/') || path.startsWith('/courses/') || path.startsWith('/lessons/'))) {
-          window.location.replace('/preview/start?branch=' + encodeURIComponent(branch) + '&to=' + encodeURIComponent(path));
+        if (branch && (path.startsWith('/blog/') || path.startsWith('/courses/') || path.startsWith('/lessons/') || path.startsWith('/preview/start'))) {
+          const targetTo = path.startsWith('/preview/start') ? (searchParams.get('to') || '/blog') : path;
+          window.location.replace('/preview/?branch=' + encodeURIComponent(branch) + '&to=' + encodeURIComponent(targetTo));
         }
       } catch (e) {
         // ignore

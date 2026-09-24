@@ -1,13 +1,25 @@
-import type { APIRoute } from 'astro';
+export const prerender = true;
 
-export const prerender = false;
+export async function GET() {
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Exiting Preview...</title>
+  <script>
+    document.cookie = 'ks-branch=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'ks-draft=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    window.location.replace('/');
+  </script>
+</head>
+<body style="font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #09090b; color: #a1a1aa;">
+  <p>Exiting preview...</p>
+</body>
+</html>`;
 
-export const ALL: APIRoute = async ({ cookies, redirect, request }) => {
-  cookies.delete('ks-branch', { path: '/' });
-  cookies.delete('ks-draft', { path: '/' });
-
-  const referer = request.headers.get('Referer') || '/';
-  const cleanReferer = referer.replace(/\/preview\//, '/');
-  return redirect(cleanReferer, 307);
-};
-
+  return new Response(html, {
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+    },
+  });
+}

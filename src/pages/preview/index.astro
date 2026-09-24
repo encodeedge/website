@@ -1,0 +1,12 @@
+---
+import DefaultLayout from "@/layouts/DefaultLayout.astro";
+import { KeystaticLivePreview } from "@/components/preview/KeystaticLivePreview";
+---
+
+<DefaultLayout
+  title="Live Keystatic Draft Preview | EncodeEdge"
+  description="Real-time draft preview directly from GitHub branch"
+>
+  <KeystaticLivePreview client:only="react" />
+</DefaultLayout>
+

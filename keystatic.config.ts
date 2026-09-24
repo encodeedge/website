@@ -185,7 +185,7 @@ export default config({
       label: 'Blogs',
       slugField: 'title',
       path: 'src/content/blog/*',
-      previewUrl: `${previewBase}/preview/start?branch={branch}&to=/blog/{slug}`,
+      previewUrl: `${previewBase}/preview/?branch={branch}&to=/blog/{slug}`,
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
@@ -368,7 +368,7 @@ export default config({
       label: 'Courses',
       slugField: 'title',
       path: 'src/content/courses/*',
-      previewUrl: `${previewBase}/preview/start?branch={branch}&to=/courses/{slug}`,
+      previewUrl: `${previewBase}/preview/?branch={branch}&to=/courses/{slug}`,
       format: { contentField: 'about' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
@@ -487,7 +487,7 @@ export default config({
       label: 'Lessons',
       slugField: 'title',
       path: 'src/content/lessons/*',
-      previewUrl: `${previewBase}/preview/start?branch={branch}&to=/lessons/{slug}`,
+      previewUrl: `${previewBase}/preview/?branch={branch}&to=/lessons/{slug}`,
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),

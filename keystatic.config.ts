@@ -180,6 +180,7 @@ export default config({
       label: 'Blogs',
       slugField: 'title',
       path: 'src/content/blog/*',
+      previewUrl: '/blog/{slug}',
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
@@ -279,6 +280,7 @@ export default config({
       label: 'FAQs',
       slugField: 'question',
       path: 'src/content/faqs/*',
+      previewUrl: '/faq',
       format: { data: 'yaml' },
       schema: {
         question: fields.text({ label: 'Question', validation: { isRequired: true } }),
@@ -290,6 +292,7 @@ export default config({
       label: 'Roadmaps',
       slugField: 'title',
       path: 'src/content/roadmaps/*',
+      previewUrl: '/roadmaps/{slug}',
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
@@ -360,6 +363,7 @@ export default config({
       label: 'Courses',
       slugField: 'title',
       path: 'src/content/courses/*',
+      previewUrl: '/courses/{slug}',
       format: { contentField: 'about' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
@@ -428,6 +432,7 @@ export default config({
       label: 'Batches',
       slugField: 'title',
       path: 'src/content/batches/*',
+      previewUrl: '/batches',
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Batch Title' } }),
@@ -452,6 +457,7 @@ export default config({
       label: 'Instructors',
       slugField: 'name',
       path: 'src/content/instructors/*',
+      previewUrl: '/instructors/{slug}',
       format: { contentField: 'bio' },
       schema: {
         name: fields.slug({ name: { label: 'Name' } }),
@@ -476,6 +482,7 @@ export default config({
       label: 'Lessons',
       slugField: 'title',
       path: 'src/content/lessons/*',
+      previewUrl: '/lessons/{slug}',
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
@@ -510,6 +517,7 @@ export default config({
       label: 'Quizzes',
       slugField: 'title',
       path: 'src/content/quizzes/*',
+      previewUrl: '/quizzes/{slug}',
       format: { data: 'yaml' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
@@ -546,6 +554,7 @@ export default config({
       label: 'Assignments',
       slugField: 'title',
       path: 'src/content/assignments/*',
+      previewUrl: '/assignments/{slug}',
       format: { contentField: 'instructions' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),

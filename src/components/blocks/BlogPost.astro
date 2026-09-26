@@ -631,17 +631,7 @@ const postId = post.id;
                     href={`/blog/${f.id}/`}
                     class="group flex items-start gap-3 rounded-xl p-2 hover:bg-black-100 dark:hover:bg-black-800 transition-colors"
                   >
-                    {f.data.image ? (
-                      <img
-                        src={f.data.image}
-                        alt={f.data.title}
-                        class="size-11 rounded-lg object-cover border border-border shrink-0 group-hover:scale-105 transition-transform"
-                      />
-                    ) : (
-                      <div class="size-11 rounded-lg bg-black-100 dark:bg-black-800 flex items-center justify-center text-xs font-bold text-muted-foreground shrink-0">
-                        {getInitials(f.data.title)}
-                      </div>
-                    )}
+                    <EditorialPostCover post={f} variant="thumbnail" class="!w-12 !h-12 !rounded-lg shrink-0" />
                     <div class="flex-1 min-w-0">
                       <h4 class="text-xs font-bold font-display text-foreground line-clamp-2 group-hover:underline leading-snug">
                         {f.data.title}

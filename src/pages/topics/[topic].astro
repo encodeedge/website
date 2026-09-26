@@ -22,6 +22,7 @@ import {
   Layers
 } from 'lucide-react';
 import { TOPIC_METADATA } from '@/lib/topics';
+import EditorialPostCover from '@/components/ui/EditorialPostCover.astro';
 
 export async function getStaticPaths() {
   const allPosts = await getCollection('blog');
@@ -223,14 +224,9 @@ const description = meta.description;
             </div>
 
             <article class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 p-6 sm:p-8 rounded-3xl border border-black-150 dark:border-black-800 bg-card hover:shadow-md transition-all">
-              <div class="lg:col-span-6 relative aspect-16/10 overflow-hidden rounded-2xl border border-border/60 bg-black-50 dark:bg-black-900">
-                <a href={`/blog/${leadPost.id}/`} class="absolute inset-0 group overflow-hidden block">
-                  <img
-                    src={leadPost.data.image || '/assets/default-post.svg'}
-                    alt={leadPost.data.title}
-                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
-                    loading="lazy"
-                  />
+              <div class="lg:col-span-6 relative overflow-hidden rounded-2xl border border-border/60 bg-black-50 dark:bg-black-900">
+                <a href={`/blog/${leadPost.id}/`} class="block w-full h-full group overflow-hidden">
+                  <EditorialPostCover post={leadPost} variant="card" class="!mb-0 w-full h-full !rounded-none !border-0" />
                 </a>
               </div>
 
@@ -296,14 +292,9 @@ const description = meta.description;
               {supportingPosts.map((post) => (
                 <article class="flex flex-col justify-between p-5 rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group">
                   <div>
-                    <div class="relative aspect-4/3 overflow-hidden rounded-xl border border-border/60 bg-black-50 dark:bg-black-900 mb-4">
-                      <a href={`/blog/${post.id}/`} class="absolute inset-0 overflow-hidden block">
-                        <img
-                          src={post.data.image || '/assets/default-post.svg'}
-                          alt={post.data.title}
-                          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          loading="lazy"
-                        />
+                    <div class="relative overflow-hidden mb-4">
+                      <a href={`/blog/${post.id}/`} class="block w-full">
+                        <EditorialPostCover post={post} variant="card" class="!mb-0 w-full" />
                       </a>
                     </div>
 

@@ -2,6 +2,7 @@
 import { Background } from '@/components/background';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { Badge } from "@/components/ui/badge";
+import EditorialPostCover from '@/components/ui/EditorialPostCover.astro';
 
 const notebooks = await Astro.glob<any>('./*.astro');
 const filteredNotebooks = notebooks
@@ -48,17 +49,19 @@ const filteredNotebooks = notebooks
 					<div>
 						<a href={notebook.url} class="block group">
 							<div class="p-2.5">
-								{notebook.image ? (
-									<img
-										src={notebook.image}
-										alt={`Hero image for ${notebook.title}`}
-										class="aspect-video w-full rounded-xl object-cover transition-transform duration-500 group-hover:scale-105"
-									/>
-								) : (
-									<div class="aspect-video w-full rounded-xl bg-black-100 dark:bg-black-800 flex items-center justify-center text-muted-foreground">
-										<span class="text-xs font-semibold uppercase tracking-wider">Notebook</span>
-									</div>
-								)}
+								<EditorialPostCover
+									post={{
+										id: notebook.url?.split('/').filter(Boolean).pop() || 'notebook',
+										data: {
+											title: notebook.title,
+											topics: notebook.topics.length ? notebook.topics : ['python'],
+											tags: notebook.tags,
+											readTime: 12,
+										}
+									}}
+									variant="card"
+									class="!mb-0 w-full"
+								/>
 							</div>
 							<div class="px-4 pt-2 pb-3">
 								<h2 class="text-xl font-bold font-display text-foreground group-hover:text-primary transition-colors leading-snug mb-2">

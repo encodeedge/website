@@ -17,6 +17,7 @@ import {
   Send,
   CheckCircle2
 } from 'lucide-react';
+import { TechnicalBlueprintCover } from '@/components/ui/TechnicalBlueprintCover';
 
 // Helper function to format topic slug into a human-readable name
 const formatSlug = (slug: string) => {
@@ -337,16 +338,20 @@ export const BlogPosts: React.FC<BlogPostsProps> = ({ posts }) => {
         {leadPost && (
           <div className="rounded-3xl border border-black-150 dark:border-black-800 bg-background overflow-hidden hover:shadow-xl transition-all duration-300 group">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 items-stretch">
-              {/* Image Section */}
-              <div className="lg:col-span-7 relative aspect-16/10 lg:aspect-auto overflow-hidden bg-black-50 dark:bg-black-900">
+              {/* Technical Blueprint Section */}
+              <div className="lg:col-span-7 relative overflow-hidden bg-black-50 dark:bg-black-900 min-h-[280px] lg:min-h-[380px]">
                 <a href={leadPost.collection === 'notebooks' ? `/notebooks/${leadPost.id}/` : `/blog/${leadPost.id}/`} className="block w-full h-full relative overflow-hidden">
-                  <img
-                    src={leadPost.data.image || '/assets/default-post.svg'}
-                    alt={leadPost.data.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
+                  <TechnicalBlueprintCover
+                    title={leadPost.data.title}
+                    topics={leadPost.data.topics}
+                    readTime={leadPost.data.readTime}
+                    catalogId={leadPost.id}
+                    variant="lead"
+                    className="h-full rounded-none border-0"
+                    showTitle={false}
                   />
                 </a>
-                <div className="absolute top-4 left-4 flex items-center gap-2 pointer-events-none">
+                <div className="absolute top-4 left-4 flex items-center gap-2 pointer-events-none z-20">
                   <span className="woords_tag_secondary_small font-bold shadow-xs">
                     ★ Editorial Lead
                   </span>
@@ -448,36 +453,28 @@ export const BlogPosts: React.FC<BlogPostsProps> = ({ posts }) => {
                   key={post.id}
                   className="flex flex-col rounded-2xl border border-black-150 dark:border-black-800 bg-background hover:shadow-lg transition-all duration-200 group overflow-hidden"
                 >
-                  {/* Image Container with Translucent Visual */}
-                  <div className="relative aspect-16/10 overflow-hidden bg-black-50 dark:bg-black-900 border-b border-border/40">
-                    <a href={postUrl} className="absolute inset-0 overflow-hidden block">
-                      <img
-                        src={post.data.image || '/assets/default-post.svg'}
-                        alt={post.data.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
+                  {/* Technical Blueprint Cover Container */}
+                  <div className="relative overflow-hidden border-b border-border/40">
+                    <a href={postUrl} className="block w-full">
+                      <TechnicalBlueprintCover
+                        title={post.data.title}
+                        topics={post.data.topics}
+                        readTime={post.data.readTime}
+                        catalogId={post.id}
+                        variant="card"
+                        className="rounded-none border-0"
+                        showTitle={true}
                       />
                     </a>
 
-                    {/* Format Badge Overlay */}
-                    <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                      {post.collection === 'notebooks' ? (
+                    {/* Format Badge Overlay for Notebooks */}
+                    {post.collection === 'notebooks' && (
+                      <div className="absolute top-3 left-3 flex items-center gap-1.5 z-20 pointer-events-none">
                         <span className="px-2 py-0.5 rounded-full bg-black/80 text-white backdrop-blur-xs text-[10px] font-bold">
                           ⚡ Notebook
                         </span>
-                      ) : (
-                        <span
-                          className="px-2.5 py-0.5 rounded-full text-[10px] font-bold border backdrop-blur-xs"
-                          style={{
-                            backgroundColor: topicMeta ? `${topicMeta.color}30` : 'rgba(255,255,255,0.85)',
-                            borderColor: topicMeta ? `${topicMeta.color}80` : 'rgba(0,0,0,0.1)',
-                            color: 'inherit',
-                          }}
-                        >
-                          {formatSlug(primaryTopic)}
-                        </span>
-                      )}
-                    </div>
+                      </div>
+                    )}
 
                     {/* Bookmark Action Button */}
                     <button

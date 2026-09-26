@@ -100,24 +100,30 @@ const palette: Record<string, { bgLight: string; bgDark: string; border: string;
   },
 };
 
-const theme = palette[primaryTopic] || palette['artificial-intelligence'];
+const topicSnippets: Record<string, string> = {
+  'python': 'def __call__(self, *x):\n    return self.forward(*x)',
+  'deep-learning': 'loss.backward()\noptimizer.step()',
+  'machine-learning': 'w := w - α · ∇L(w)\nŷ = X · w + b',
+  'data-science': 'df.groupby("cohort").agg(["mean", "std"])\nP(A|B) = P(B|A)P(A) / P(B)',
+  'artificial-intelligence': 'π*(s) = argmax_a ∑ P(s\'|s,a)[R + γV*(s\')]',
+  'nlp': 'Attention(Q,K,V) = softmax(QK^T / √d) · V',
+};
 
-const isLegacyOrSvg = !post?.data?.image || 
-  post.data.image.includes('default-post') || 
-  post.data.image.endsWith('.svg');
-const hasCustomImage = !isLegacyOrSvg;
+const codeSnippet = topicSnippets[primaryTopic] || topicSnippets['artificial-intelligence'];
+
+const theme = palette[primaryTopic] || palette['machine-learning'];
 
 const aspectClass = variant === 'hero' ? 'aspect-16/9 sm:aspect-21/9' : 'aspect-16/10';
 const catalogNum = Math.abs((post?.id || 'post').length % 9) + 1;
 ---
 
 {variant === 'thumbnail' ? (
-  /* Compact 80x80 square thumbnail for Quick Reads */
-  <div class={`relative w-20 h-20 rounded-xl shrink-0 overflow-hidden border border-border/80 bg-linear-to-br ${theme.bgLight} ${theme.bgDark} flex flex-col items-center justify-between p-2 shadow-2xs group-hover:scale-105 transition-transform duration-300 ${className}`}>
+  /* Compact square thumbnail for Quick Reads */
+  <div class={`relative w-20 h-20 rounded-xl shrink-0 overflow-hidden border border-border/80 bg-gradient-to-br ${theme.bgLight} ${theme.bgDark} flex flex-col items-center justify-between p-2 shadow-sm group-hover:scale-105 transition-transform duration-300 ${className}`}>
     <!-- Top badge -->
     <div class="w-full flex items-center justify-between">
       <span 
-        class="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-md shadow-2xs text-black"
+        class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md shadow-xs text-black"
         style={`background-color: ${topicConfig.color};`}
       >
         {monogram}
@@ -136,60 +142,62 @@ const catalogNum = Math.abs((post?.id || 'post').length % 9) + 1;
     </div>
   </div>
 ) : (
-  /* Full Aspect Card or Panoramic Hero Cover */
-  <div class={`relative ${aspectClass} overflow-hidden rounded-xl border border-border/70 bg-card mb-3.5 ${className}`}>
-    {hasCustomImage ? (
-      <img
-        src={post.data.image}
-        alt={post.data.title}
-        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        loading="lazy"
+  /* Full Aspect Technical Blueprint Cover — Clean, Editorial & Code-backed (Zero AI stock images) */
+  <div class={`relative ${aspectClass} overflow-hidden rounded-2xl border border-border/80 bg-card mb-3.5 shadow-sm group-hover:shadow-md transition-all duration-300 ${className}`}>
+    <div class={`w-full h-full bg-gradient-to-br ${theme.bgLight} ${theme.bgDark} ${variant === 'hero' ? 'p-6 sm:p-10' : 'p-5'} flex flex-col justify-between relative overflow-hidden group-hover:scale-[1.01] transition-transform duration-500`}>
+      
+      <!-- Subtle Ambient Glow -->
+      <div 
+        class="absolute -top-12 -right-12 size-40 sm:size-52 rounded-full blur-3xl opacity-35 pointer-events-none"
+        style={`background-color: ${theme.accent};`}
       />
-    ) : (
-      /* Dynamic Woords Editorial Cover */
-      <div class={`w-full h-full bg-linear-to-br ${theme.bgLight} ${theme.bgDark} ${variant === 'hero' ? 'p-6 sm:p-10' : 'p-5'} flex flex-col justify-between relative overflow-hidden group-hover:scale-102 transition-transform duration-500`}>
-        <!-- Subtle Ambient Glow -->
-        <div 
-          class="absolute -top-12 -right-12 size-36 sm:size-48 rounded-full blur-2xl sm:blur-3xl opacity-40 pointer-events-none"
-          style={`background-color: ${theme.accent};`}
-        />
-        
-        <!-- Technical Dot Grid Watermark -->
-        <div class="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] dark:bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
 
-        <!-- Header Row: Category Badge + Read Time -->
-        <div class="relative z-10 flex items-center justify-between">
-          <span 
-            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-black shadow-2xs"
-            style={`background-color: ${topicConfig.color};`}
-          >
-            <IconComponent class="size-3.5 text-black" />
-            {topicConfig.label || primaryTopic.replace(/-/g, ' ')}
-          </span>
+      <!-- Technical Engineering Dot Grid -->
+      <div class="absolute inset-0 opacity-[0.14] dark:opacity-[0.18] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] dark:bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:14px_14px]" />
 
-          <span class="inline-flex items-center gap-1.5 text-[11px] font-mono text-muted-foreground bg-background/70 backdrop-blur-xs px-2.5 py-1 rounded-md border border-border/50">
+      <!-- Formula / Code Snippet Watermark in Background -->
+      <div class="absolute right-4 bottom-10 opacity-[0.12] dark:opacity-[0.20] font-mono text-xs sm:text-sm select-none pointer-events-none text-right leading-tight whitespace-pre">
+        {codeSnippet}
+      </div>
+
+      <!-- Header Row: Category Badge + Read Time + Blueprint Tag -->
+      <div class="relative z-10 flex items-center justify-between gap-2">
+        <span 
+          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-black shadow-xs shrink-0"
+          style={`background-color: ${topicConfig.color};`}
+        >
+          <IconComponent class="size-3 text-black" />
+          {topicConfig.label || primaryTopic.replace(/-/g, ' ')}
+        </span>
+
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1 text-[10px] font-mono text-muted-foreground bg-background/80 dark:bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded-md border border-border/60">
             <Clock class="size-3" />
-            {post?.data?.readTime || 6} min read
+            {post?.data?.readTime || 6}m
           </span>
-        </div>
-
-        <!-- Center Geometric Watermark / Topic Monogram -->
-        <div class="relative z-10 my-auto py-2">
-          <div class={`text-foreground/90 font-display font-bold ${variant === 'hero' ? 'text-2xl sm:text-3xl md:text-4xl' : 'text-lg sm:text-xl'} line-clamp-2 leading-tight tracking-tight`}>
-            {post?.data?.title}
-          </div>
-        </div>
-
-        <!-- Footer Strip -->
-        <div class="relative z-10 flex items-center justify-between text-[11px] text-muted-foreground border-t border-black-100 dark:border-black-800/80 pt-2.5">
-          <span class="font-mono text-[10px] uppercase tracking-wider text-foreground/70">
-            ENCODEEDGE BLUEPRINT
-          </span>
-          <span class="font-mono font-bold text-foreground">
-            {monogram}-0{catalogNum}
+          <span class="hidden sm:inline-block font-mono text-[9px] text-muted-foreground/80 tracking-wider">
+            REF: {monogram}-0{catalogNum}
           </span>
         </div>
       </div>
-    )}
+
+      <!-- Center Typography: Post Title & Abstract -->
+      <div class="relative z-10 my-auto py-3">
+        <div class={`text-foreground font-display font-bold ${variant === 'hero' ? 'text-2xl sm:text-3xl md:text-4xl' : 'text-lg sm:text-xl'} line-clamp-2 leading-[1.25] tracking-tight group-hover:text-primary transition-colors`}>
+          {post?.data?.title}
+        </div>
+      </div>
+
+      <!-- Footer Strip: Blueprint Specs -->
+      <div class="relative z-10 flex items-center justify-between text-[10px] text-muted-foreground border-t border-black/10 dark:border-white/10 pt-2.5">
+        <span class="inline-flex items-center gap-1.5 font-mono uppercase tracking-wider text-foreground/80 font-semibold">
+          <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          VERIFIED BLUEPRINT
+        </span>
+        <span class="font-mono font-bold text-foreground/90">
+          SYS // {monogram}-REV2
+        </span>
+      </div>
+    </div>
   </div>
 )}

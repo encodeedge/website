@@ -62,7 +62,13 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
   description={roadmap.data.description}
 >
 
-<div class="woords_container_small py-6 sm:py-10" id="roadmapContainer" data-slug={roadmap.id} data-title={roadmap.data.title}>
+<div 
+  class="woords_container_small py-6 sm:py-10" 
+  id="roadmapContainer" 
+  data-slug={roadmap.id} 
+  data-title={roadmap.data.title}
+  data-estimated-hours={estimatedHours}
+>
 
   {/* 1. Woords Editorial Breadcrumbs & Header */}
   <div class="mb-8">
@@ -128,10 +134,10 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
   >
     
     {/* Progress Bar & High-Level Actions */}
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-3.5 border-b border-black-150 dark:border-black-800">
+    <div id="toolbarTopSection" class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-3.5 border-b border-black-150 dark:border-black-800">
       
-      {/* Learning Progress & Hours Tracker */}
-      <div class="flex-1 max-w-xl">
+      {/* Learning Progress & Hours Tracker (Desktop / Tablet view; mobile displays floating button) */}
+      <div class="flex-1 max-w-xl hidden md:block" id="topStudyProgressBar">
         <div class="flex items-center justify-between text-xs font-semibold mb-1.5 flex-wrap gap-1">
           <span class="text-foreground flex items-center gap-1.5">
             <svg class="size-3.5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -1199,6 +1205,199 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
   </div>
 </div>
 
+{/* 11. Study Progress Modal Overlay */}
+<div id="studyProgressModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="studyProgressModalTitle">
+  <div class="modal-content max-w-lg p-6 sm:p-7 rounded-3xl space-y-5">
+    {/* Modal Header */}
+    <div class="flex items-center justify-between pb-3 border-b border-border/60">
+      <div class="flex items-center gap-2.5">
+        <div class="size-9 rounded-2xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center shrink-0">
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <h3 id="studyProgressModalTitle" class="text-base sm:text-lg font-bold font-serif text-foreground">Study Progress</h3>
+          <p class="text-[11px] text-muted-foreground">{roadmap.data.title}</p>
+        </div>
+      </div>
+      <button 
+        type="button" 
+        id="closeStudyProgressModalBtn" 
+        class="size-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary flex items-center justify-center cursor-pointer transition-colors"
+        title="Close progress overlay"
+        aria-label="Close"
+      >
+        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    {/* Study Progress Section (Matching the top toolbar section) */}
+    <div class="p-4 sm:p-5 rounded-2xl bg-secondary/50 border border-border/50 space-y-3">
+      <div class="flex items-center justify-between text-xs font-semibold flex-wrap gap-1">
+        <span class="text-foreground flex items-center gap-1.5">
+          <svg class="size-3.5 text-emerald-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Study Progress:
+          <span class="text-muted-foreground font-normal ml-0.5">
+            <strong class="text-foreground font-semibold" id="modalCompletedCountDisplay">0</strong> of {totalTopics} completed
+            <span class="mx-1 text-muted-foreground/50">•</span>
+            <span id="modalCompletedHoursDisplay" class="font-semibold text-foreground">0h</span> of ~{estimatedHours}h
+          </span>
+        </span>
+        <span class="font-mono text-sm sm:text-base font-bold text-emerald-600 dark:text-emerald-400" id="modalProgressPercentDisplay">0%</span>
+      </div>
+      <div class="w-full h-3 rounded-full bg-black-100 dark:bg-black-800 overflow-hidden">
+        <div 
+          id="modalProgressBarFill" 
+          class="h-full bg-linear-to-r from-emerald-500 to-teal-400 transition-all duration-300 rounded-full" 
+          style="width: 0%;"
+        ></div>
+      </div>
+    </div>
+
+    {/* Stats Grid */}
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+      <div class="p-3 rounded-2xl bg-secondary/40 border border-border/40 text-center">
+        <span class="block text-base sm:text-lg font-bold font-mono text-foreground" id="modalStatCompleted">0 / {totalTopics}</span>
+        <span class="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Completed</span>
+      </div>
+      <div class="p-3 rounded-2xl bg-secondary/40 border border-border/40 text-center">
+        <span class="block text-base sm:text-lg font-bold font-mono text-foreground" id="modalStatHours">0h / ~{estimatedHours}h</span>
+        <span class="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Hours Done</span>
+      </div>
+      <div class="col-span-2 sm:col-span-1 p-3 rounded-2xl bg-secondary/40 border border-border/40 text-center">
+        <span class="block text-base sm:text-lg font-bold font-mono text-emerald-600 dark:text-emerald-400" id="modalStatRemaining">{totalTopics} Left</span>
+        <span class="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Remaining</span>
+      </div>
+    </div>
+
+    {/* Roadmap Settings & Actions in Overlay */}
+    <div class="pt-3 border-t border-border/60 space-y-2.5">
+      <div class="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Settings &amp; Actions</div>
+      <div class="flex items-center gap-2 flex-wrap">
+        {/* Dual View Mode Toggle */}
+        <div class="inline-flex p-1 rounded-xl bg-black-100 dark:bg-black-800 border border-black-150 dark:border-black-700">
+          <button 
+            type="button" 
+            id="modalBtnViewFlowchart"
+            class="view-mode-btn active inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer shadow-xs"
+            title="Tree Graph View"
+          >
+            <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="5" r="3" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <circle cx="6" cy="19" r="3" />
+              <circle cx="18" cy="19" r="3" />
+              <path d="M12 12l-6 4" />
+              <path d="M12 12l6 4" />
+            </svg>
+            <span>Tree Graph</span>
+          </button>
+          <button 
+            type="button" 
+            id="modalBtnViewSyllabus"
+            class="view-mode-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer text-muted-foreground hover:text-foreground"
+            title="Syllabus Guide View"
+          >
+            <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="8" y1="6" x2="21" y2="6" />
+              <line x1="8" y1="12" x2="21" y2="12" />
+              <line x1="8" y1="18" x2="21" y2="18" />
+              <line x1="3" y1="6" x2="3.01" y2="6" />
+              <line x1="3" y1="12" x2="3.01" y2="12" />
+              <line x1="3" y1="18" x2="3.01" y2="18" />
+            </svg>
+            <span>Syllabus Guide</span>
+          </button>
+        </div>
+
+        {/* Export Button in Modal */}
+        <button 
+          type="button" 
+          id="modalExportProgressBtn"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-foreground bg-card hover:bg-secondary border border-black-150 dark:border-black-800 transition-colors cursor-pointer shadow-xs"
+          title="Export progress"
+        >
+          <svg class="size-3.5 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>Export</span>
+        </button>
+
+        {/* Reset Button in Modal */}
+        <button 
+          type="button" 
+          id="modalResetProgressBtn"
+          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 transition-colors cursor-pointer shrink-0"
+          title="Reset progress"
+        >
+          <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>Reset</span>
+        </button>
+      </div>
+    </div>
+
+    {/* Close Action */}
+    <div class="pt-1">
+      <button
+        type="button"
+        id="dismissStudyProgressModalBtn"
+        class="w-full py-2.5 rounded-xl text-xs font-semibold bg-secondary hover:bg-secondary/80 text-foreground transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+      >
+        <span>Close Overlay</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+{/* 12. Floating Study Progress Pill Button */}
+<div 
+  id="floatingProgressContainer" 
+  class="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end floating-hidden"
+>
+  <button 
+    type="button"
+    id="floatingProgressBtn"
+    class="group flex items-center gap-2.5 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-full bg-slate-900/95 dark:bg-zinc-900/95 text-white shadow-2xl hover:shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer border border-slate-700/60 dark:border-zinc-700/60 backdrop-blur-md"
+    title="Open Study Progress"
+    aria-label="Open Study Progress"
+  >
+    <div class="relative size-5 flex items-center justify-center shrink-0">
+      <svg class="size-5 transform -rotate-90" viewBox="0 0 36 36">
+        <path
+          class="text-white/20"
+          stroke="currentColor"
+          stroke-width="3.5"
+          fill="none"
+          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+        />
+        <path
+          id="floatingProgressCircle"
+          class="text-emerald-400 transition-all duration-500"
+          stroke="currentColor"
+          stroke-dasharray="0, 100"
+          stroke-width="3.5"
+          stroke-linecap="round"
+          fill="none"
+          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+        />
+      </svg>
+    </div>
+    <div class="flex items-center gap-2 text-xs font-semibold whitespace-nowrap">
+      <span class="font-bold tracking-tight">Study Progress</span>
+      <span id="floatingPillPercent" class="font-mono font-bold text-emerald-400 bg-emerald-500/15 dark:bg-emerald-500/20 px-1.5 py-0.5 rounded-md">0%</span>
+      <span id="floatingPillCount" class="text-[10px] font-mono opacity-80">(0/{totalTopics})</span>
+    </div>
+  </button>
+</div>
+
 {/* Embedded JSON Data for Instant Native Topic Lookup */}
 <script type="application/json" id="roadmap-data" set:html={JSON.stringify(roadmap.data.nodes || [])} />
 
@@ -1207,16 +1406,59 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
 <style>
   /* Sticky Toolbar positioning across all viewports */
   #stickyToolbar {
-    top: calc(var(--site-header-height, 3.5rem) + 0.75rem);
+    top: calc(var(--site-header-height, 7.25rem) + 0.75rem);
   }
-  @media (min-width: 640px) {
+  @media (min-width: 768px) {
     #stickyToolbar {
-      top: calc(var(--site-header-height, 4rem) + 0.75rem);
+      top: calc(var(--site-header-height, 7.75rem) + 0.75rem);
     }
   }
-  @media (min-width: 1280px) {
-    #stickyToolbar {
-      top: calc(var(--site-header-height, 7.5rem) + 0.75rem);
+
+  /* Toolbar Top Section (Progress bar + all settings/buttons) */
+  #toolbarTopSection {
+    transition: opacity 0.25s ease, max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s ease;
+  }
+  #toolbarTopSection.toolbar-top-collapsed {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    max-height: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    pointer-events: none !important;
+  }
+
+  /* Floating Study Progress Motion Animation & Responsive Visibility */
+  #floatingProgressContainer {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .floating-hidden {
+    transform: translateY(4.5rem) scale(0.92);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .floating-visible {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Mobile (< 768px): Always hide that entire top section and only show the floating button */
+  @media (max-width: 767px) {
+    #toolbarTopSection {
+      display: none !important;
+    }
+    #floatingProgressContainer {
+      transform: translateY(0) scale(1) !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      display: flex !important;
     }
   }
 
@@ -1503,6 +1745,9 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
       });
     });
 
+    const estimatedHours = parseInt(container.getAttribute('data-estimated-hours') || '0', 10) || 
+      Math.max(10, Math.round(allTopicsList.reduce((acc, t) => acc + (t.durationHours || 2), 0)));
+
     // LocalStorage State Sets
     let completedTopics = new Set(JSON.parse(localStorage.getItem(`completedTopics_${slug}`) || '[]'));
     let learningTopics = new Set(JSON.parse(localStorage.getItem(`learningTopics_${slug}`) || '[]'));
@@ -1513,12 +1758,175 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
     const syllabusItems = Array.from(document.querySelectorAll('.syllabus-topic-item'));
     const totalTopicsCount = topicNodes.length;
 
+    // Ensure header height CSS variable is accurately measured immediately
+    function syncHeaderHeight() {
+      const header = document.querySelector('header');
+      if (header) {
+        const h = Math.round(header.getBoundingClientRect().height || header.offsetHeight);
+        if (h > 0) {
+          document.documentElement.style.setProperty('--site-header-height', h + 'px');
+        }
+      }
+    }
+    syncHeaderHeight();
+
     // Elements
     const completedCountEl = document.getElementById('completedCountDisplay');
     const completedHoursEl = document.getElementById('completedHoursDisplay');
     const progressPercentEl = document.getElementById('progressPercentDisplay');
     const progressBarFillEl = document.getElementById('progressBarFill');
     const starredFilterCountEl = document.getElementById('starredFilterCount');
+
+    // Floating Progress Bar & Study Progress Modal Controls
+    const floatingContainer = document.getElementById('floatingProgressContainer');
+    const floatingBtn = document.getElementById('floatingProgressBtn');
+    const floatingProgressCircle = document.getElementById('floatingProgressCircle');
+    const floatingPillPercent = document.getElementById('floatingPillPercent');
+    const floatingPillCount = document.getElementById('floatingPillCount');
+
+    // Study Progress Modal Elements
+    const studyProgressModal = document.getElementById('studyProgressModal');
+    const closeStudyProgressModalBtn = document.getElementById('closeStudyProgressModalBtn');
+    const dismissStudyProgressModalBtn = document.getElementById('dismissStudyProgressModalBtn');
+    const modalCompletedCountDisplay = document.getElementById('modalCompletedCountDisplay');
+    const modalCompletedHoursDisplay = document.getElementById('modalCompletedHoursDisplay');
+    const modalProgressPercentDisplay = document.getElementById('modalProgressPercentDisplay');
+    const modalProgressBarFill = document.getElementById('modalProgressBarFill');
+    const modalStatCompleted = document.getElementById('modalStatCompleted');
+    const modalStatHours = document.getElementById('modalStatHours');
+    const modalStatRemaining = document.getElementById('modalStatRemaining');
+
+    function updateFloatingProgress(pct, completed, hours) {
+      if (floatingPillPercent) floatingPillPercent.textContent = `${pct}%`;
+      if (floatingPillCount) floatingPillCount.textContent = `(${completed}/${totalTopicsCount})`;
+      if (floatingProgressCircle) {
+        floatingProgressCircle.setAttribute('stroke-dasharray', `${pct}, 100`);
+      }
+
+      // Sync modal elements
+      if (modalCompletedCountDisplay) modalCompletedCountDisplay.textContent = `${completed}`;
+      if (modalCompletedHoursDisplay) modalCompletedHoursDisplay.textContent = `${hours}h`;
+      if (modalProgressPercentDisplay) modalProgressPercentDisplay.textContent = `${pct}%`;
+      if (modalProgressBarFill) modalProgressBarFill.style.width = `${pct}%`;
+      if (modalStatCompleted) modalStatCompleted.textContent = `${completed} / ${totalTopicsCount}`;
+      if (modalStatHours) modalStatHours.textContent = `${hours}h / ~${estimatedHours}h`;
+      if (modalStatRemaining) {
+        const left = Math.max(0, totalTopicsCount - completed);
+        modalStatRemaining.textContent = `${left} Left`;
+      }
+    }
+
+    // Floating Progress Bar & Study Progress Modal Overlay Controls
+    function handleScrollFloatingProgress() {
+      if (!floatingContainer) return;
+      const isMobile = window.innerWidth < 768;
+      const topSection = document.getElementById('toolbarTopSection') || document.getElementById('topStudyProgressBar');
+
+      if (isMobile) {
+        // Mobile: Always display secondary floating button at bottom and hide that entire top section
+        floatingContainer.classList.remove('floating-hidden', 'translate-y-16', 'opacity-0', 'pointer-events-none');
+        floatingContainer.classList.add('floating-visible');
+        if (topSection) {
+          topSection.classList.add('toolbar-top-collapsed');
+          topSection.style.setProperty('display', 'none', 'important');
+        }
+        return;
+      }
+
+      // Desktop / Tablet (md+):
+      // Show top section when scroll is at top (scrollY <= 50).
+      // As soon as user scrolls past that section (scrollY > 50), hide that full section and animate into floating button at bottom
+      const passedSection = window.scrollY > 50;
+
+      if (passedSection) {
+        floatingContainer.classList.remove('floating-hidden', 'translate-y-16', 'opacity-0', 'pointer-events-none');
+        floatingContainer.classList.add('floating-visible');
+        if (topSection) {
+          topSection.classList.add('toolbar-top-collapsed');
+          topSection.style.setProperty('display', 'none', 'important');
+        }
+      } else {
+        floatingContainer.classList.add('floating-hidden');
+        floatingContainer.classList.remove('floating-visible');
+        if (topSection) {
+          topSection.classList.remove('toolbar-top-collapsed');
+          topSection.style.removeProperty('display');
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScrollFloatingProgress, { passive: true });
+    document.addEventListener('scroll', handleScrollFloatingProgress, { passive: true });
+    window.addEventListener('resize', handleScrollFloatingProgress, { passive: true });
+    handleScrollFloatingProgress();
+
+    function openStudyProgressModal() {
+      if (studyProgressModal) {
+        studyProgressModal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeStudyProgressModal() {
+      if (studyProgressModal) {
+        studyProgressModal.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    }
+
+    floatingBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openStudyProgressModal();
+    });
+
+    closeStudyProgressModalBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeStudyProgressModal();
+    });
+
+    dismissStudyProgressModalBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeStudyProgressModal();
+    });
+
+    studyProgressModal?.addEventListener('click', (e) => {
+      if (e.target === studyProgressModal) {
+        closeStudyProgressModal();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && studyProgressModal?.classList.contains('open')) {
+        closeStudyProgressModal();
+      }
+    });
+
+    // Wire Modal Settings Buttons to main toolbar actions
+    const modalBtnViewFlowchart = document.getElementById('modalBtnViewFlowchart');
+    const modalBtnViewSyllabus = document.getElementById('modalBtnViewSyllabus');
+    const modalExportProgressBtn = document.getElementById('modalExportProgressBtn');
+    const modalResetProgressBtn = document.getElementById('modalResetProgressBtn');
+
+    modalBtnViewFlowchart?.addEventListener('click', () => {
+      document.getElementById('btnViewFlowchart')?.click();
+      modalBtnViewFlowchart.classList.add('active');
+      modalBtnViewSyllabus?.classList.remove('active');
+    });
+
+    modalBtnViewSyllabus?.addEventListener('click', () => {
+      document.getElementById('btnViewSyllabus')?.click();
+      modalBtnViewSyllabus.classList.add('active');
+      modalBtnViewFlowchart?.classList.remove('active');
+    });
+
+    modalExportProgressBtn?.addEventListener('click', () => {
+      document.getElementById('exportProgressBtn')?.click();
+    });
+
+    modalResetProgressBtn?.addEventListener('click', () => {
+      closeStudyProgressModal();
+      document.getElementById('openResetModalBtn')?.click();
+    });
 
     // Next Up Banner
     const nextUpBanner = document.getElementById('nextUpBanner');
@@ -1805,6 +2213,7 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
       if (completedHoursEl) completedHoursEl.textContent = `${roundedDoneHours}h`;
       if (progressPercentEl) progressPercentEl.textContent = `${percent}%`;
       if (progressBarFillEl) progressBarFillEl.style.width = `${percent}%`;
+      updateFloatingProgress(percent, completedCount, roundedDoneHours);
     }
 
     function updateNextUpBanner() {
@@ -1828,7 +2237,8 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
         const labelEl = document.getElementById('nextUpLabel');
         if (labelEl) labelEl.textContent = 'Celebration';
         if (nextUpActionBtn) {
-          nextUpActionBtn.querySelector('span').textContent = 'Export Progress';
+          const span = nextUpActionBtn.querySelector('span');
+          if (span) span.textContent = 'Export Progress';
         }
       } else {
         const isLearning = learningTopics.has(candidate.name);
@@ -1839,7 +2249,8 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
         if (nextUpDiffBadge) nextUpDiffBadge.textContent = candidate.difficulty || 'Beginner';
         if (nextUpDurationBadge) nextUpDurationBadge.textContent = `⏱️ ${candidate.duration || '2 hours'}`;
         if (nextUpActionBtn) {
-          nextUpActionBtn.querySelector('span').textContent = isLearning ? 'Continue Topic' : 'Start Topic';
+          const span = nextUpActionBtn.querySelector('span');
+          if (span) span.textContent = isLearning ? 'Continue Topic' : 'Start Topic';
         }
       }
     }
@@ -2714,6 +3125,8 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
         }, 300);
       }
     }
+
+
     // Ensure header height CSS variable is accurately measured across all viewports
     function syncHeaderHeight() {
       const header = document.querySelector('header');

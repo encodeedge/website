@@ -56,6 +56,24 @@ const { title, description } = Astro.props;
     </head>
     <body class="min-h-screen flex flex-col antialiased bg-background text-foreground">
         <Navbar client:load />
+        <script is:inline>
+          (function() {
+            function syncHeaderHeight() {
+              var header = document.querySelector('header');
+              if (header) {
+                var h = Math.round(header.getBoundingClientRect().height || header.offsetHeight);
+                if (h > 0) {
+                  document.documentElement.style.setProperty('--site-header-height', h + 'px');
+                }
+              }
+            }
+            syncHeaderHeight();
+            document.addEventListener('DOMContentLoaded', syncHeaderHeight);
+            window.addEventListener('load', syncHeaderHeight);
+            window.addEventListener('resize', syncHeaderHeight, { passive: true });
+            window.addEventListener('orientationchange', syncHeaderHeight, { passive: true });
+          })();
+        </script>
         <main class="flex-1"><slot /></main>
         <Footer />
         <script type="module" src="/scripts/cookieconsent-config.js"></script>

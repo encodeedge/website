@@ -38,7 +38,17 @@
 }
 
 :root {
+  --site-header-height: 7.25rem;
   --background: #ffffff;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --site-header-height: 7.75rem;
+  }
+}
+
+:root {
   --foreground: #000000;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);

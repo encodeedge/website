@@ -1,7 +1,7 @@
 ---
 title: "Modern Python for AI & High-Performance Systems"
 shortDescription: "Unlock CPython memory architecture, reference counting, the descriptor protocol, metaclasses, and zero-copy generator streams for massive machine learning workloads."
-coverImage: "/assets/courses/python-mastery-for-ai.svg"
+coverImage: "/assets/courses/python-mastery-for-ai.jpg"
 instructor: "atul-jha"
 level: "intermediate"
 status: "published"

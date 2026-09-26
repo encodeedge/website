@@ -1,0 +1,195 @@
+---
+import { TOPIC_METADATA } from '@/lib/topics';
+import { 
+  Code2, 
+  Brain, 
+  Sparkles, 
+  LineChart, 
+  Bot, 
+  Terminal, 
+  BookOpen, 
+  Layers, 
+  Cpu, 
+  Zap,
+  Clock
+} from 'lucide-react';
+
+interface Props {
+  post: any;
+  variant?: 'thumbnail' | 'card' | 'featured' | 'hero';
+  class?: string;
+}
+
+const { post, variant = 'card', class: className = '' } = Astro.props;
+
+const primaryTopic = post?.data?.topics?.[0] || post?.data?.tags?.[0] || 'machine-learning';
+const topicConfig = TOPIC_METADATA[primaryTopic] || {
+  label: primaryTopic.replace(/-/g, ' ').toUpperCase(),
+  color: '#E5E795', // default lime
+};
+
+// Map topic to icon
+function getTopicIcon(slug: string) {
+  switch (slug) {
+    case 'python':
+      return Terminal;
+    case 'machine-learning':
+      return Brain;
+    case 'deep-learning':
+      return Bot;
+    case 'data-science':
+      return LineChart;
+    case 'artificial-intelligence':
+      return Sparkles;
+    case 'nlp':
+      return Code2;
+    default:
+      return BookOpen;
+  }
+}
+
+const IconComponent = getTopicIcon(primaryTopic);
+
+// Determine topic abbreviation
+const monograms: Record<string, string> = {
+  'python': 'PY',
+  'machine-learning': 'ML',
+  'deep-learning': 'DL',
+  'data-science': 'DS',
+  'artificial-intelligence': 'AI',
+  'nlp': 'NLP',
+};
+const monogram = monograms[primaryTopic] || 'AI';
+
+// Palette mappings for editorial cards
+const palette: Record<string, { bgLight: string; bgDark: string; border: string; accent: string; text: string }> = {
+  'python': {
+    bgLight: 'from-[#FFF7ED] to-[#FFEDD5]',
+    bgDark: 'dark:from-[#1F1710] dark:to-[#2B1E12]',
+    border: '#FED7AA',
+    accent: '#FFB86A',
+    text: '#9A3412',
+  },
+  'machine-learning': {
+    bgLight: 'from-[#FFF1F2] to-[#FFE4E6]',
+    bgDark: 'dark:from-[#201014] dark:to-[#2E141B]',
+    border: '#FECDD3',
+    accent: '#FDA4AF',
+    text: '#9F1239',
+  },
+  'deep-learning': {
+    bgLight: 'from-[#FAF5FF] to-[#F3E8FF]',
+    bgDark: 'dark:from-[#181126] dark:to-[#241538]',
+    border: '#E9D5FF',
+    accent: '#EEA9ED',
+    text: '#6B21A8',
+  },
+  'data-science': {
+    bgLight: 'from-[#F0F9FF] to-[#E0F2FE]',
+    bgDark: 'dark:from-[#0C1826] dark:to-[#11243B]',
+    border: '#BAE6FD',
+    accent: '#A2D2FF',
+    text: '#0369A1',
+  },
+  'artificial-intelligence': {
+    bgLight: 'from-[#FEFCE8] to-[#FEF9C3]',
+    bgDark: 'dark:from-[#1C1F10] dark:to-[#272B12]',
+    border: '#FEF08A',
+    accent: '#E5E795',
+    text: '#854D0E',
+  },
+};
+
+const theme = palette[primaryTopic] || palette['artificial-intelligence'];
+
+const isLegacyOrSvg = !post?.data?.image || 
+  post.data.image.includes('default-post') || 
+  post.data.image.endsWith('.svg');
+const hasCustomImage = !isLegacyOrSvg;
+
+const aspectClass = variant === 'hero' ? 'aspect-16/9 sm:aspect-21/9' : 'aspect-16/10';
+const catalogNum = Math.abs((post?.id || 'post').length % 9) + 1;
+---
+
+{variant === 'thumbnail' ? (
+  /* Compact 80x80 square thumbnail for Quick Reads */
+  <div class={`relative w-20 h-20 rounded-xl shrink-0 overflow-hidden border border-border/80 bg-linear-to-br ${theme.bgLight} ${theme.bgDark} flex flex-col items-center justify-between p-2 shadow-2xs group-hover:scale-105 transition-transform duration-300 ${className}`}>
+    <!-- Top badge -->
+    <div class="w-full flex items-center justify-between">
+      <span 
+        class="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-md shadow-2xs text-black"
+        style={`background-color: ${topicConfig.color};`}
+      >
+        {monogram}
+      </span>
+      <span class="size-1.5 rounded-full" style={`background-color: ${theme.accent};`}></span>
+    </div>
+
+    <!-- Center Icon -->
+    <div class="my-auto text-foreground/80 group-hover:scale-110 transition-transform">
+      <IconComponent class="size-6 text-foreground" />
+    </div>
+
+    <!-- Bottom Read Time -->
+    <div class="text-[9px] font-mono text-muted-foreground font-semibold">
+      {post?.data?.readTime || 5}m read
+    </div>
+  </div>
+) : (
+  /* Full Aspect Card or Panoramic Hero Cover */
+  <div class={`relative ${aspectClass} overflow-hidden rounded-xl border border-border/70 bg-card mb-3.5 ${className}`}>
+    {hasCustomImage ? (
+      <img
+        src={post.data.image}
+        alt={post.data.title}
+        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        loading="lazy"
+      />
+    ) : (
+      /* Dynamic Woords Editorial Cover */
+      <div class={`w-full h-full bg-linear-to-br ${theme.bgLight} ${theme.bgDark} ${variant === 'hero' ? 'p-6 sm:p-10' : 'p-5'} flex flex-col justify-between relative overflow-hidden group-hover:scale-102 transition-transform duration-500`}>
+        <!-- Subtle Ambient Glow -->
+        <div 
+          class="absolute -top-12 -right-12 size-36 sm:size-48 rounded-full blur-2xl sm:blur-3xl opacity-40 pointer-events-none"
+          style={`background-color: ${theme.accent};`}
+        />
+        
+        <!-- Technical Dot Grid Watermark -->
+        <div class="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] dark:bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
+
+        <!-- Header Row: Category Badge + Read Time -->
+        <div class="relative z-10 flex items-center justify-between">
+          <span 
+            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-black shadow-2xs"
+            style={`background-color: ${topicConfig.color};`}
+          >
+            <IconComponent class="size-3.5 text-black" />
+            {topicConfig.label || primaryTopic.replace(/-/g, ' ')}
+          </span>
+
+          <span class="inline-flex items-center gap-1.5 text-[11px] font-mono text-muted-foreground bg-background/70 backdrop-blur-xs px-2.5 py-1 rounded-md border border-border/50">
+            <Clock class="size-3" />
+            {post?.data?.readTime || 6} min read
+          </span>
+        </div>
+
+        <!-- Center Geometric Watermark / Topic Monogram -->
+        <div class="relative z-10 my-auto py-2">
+          <div class={`text-foreground/90 font-display font-bold ${variant === 'hero' ? 'text-2xl sm:text-3xl md:text-4xl' : 'text-lg sm:text-xl'} line-clamp-2 leading-tight tracking-tight`}>
+            {post?.data?.title}
+          </div>
+        </div>
+
+        <!-- Footer Strip -->
+        <div class="relative z-10 flex items-center justify-between text-[11px] text-muted-foreground border-t border-black-100 dark:border-black-800/80 pt-2.5">
+          <span class="font-mono text-[10px] uppercase tracking-wider text-foreground/70">
+            ENCODEEDGE BLUEPRINT
+          </span>
+          <span class="font-mono font-bold text-foreground">
+            {monogram}-0{catalogNum}
+          </span>
+        </div>
+      </div>
+    )}
+  </div>
+)}

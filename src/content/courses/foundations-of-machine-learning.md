@@ -1,7 +1,7 @@
 ---
 title: "Machine Learning Foundations & Statistical Modeling"
 shortDescription: "Develop unshakeable intuition for machine learning mathematics: loss functions, gradient descent optimization, regularized regression, and validation strategies."
-coverImage: "/assets/courses/foundations-of-machine-learning.svg"
+coverImage: "/assets/courses/foundations-of-machine-learning.jpg"
 instructor: "atul-jha"
 level: "beginner"
 status: "published"

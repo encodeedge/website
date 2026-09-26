@@ -1,54 +1,130 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="100%" height="100%">
   <defs>
-    <pattern id="dotGrid" width="28" height="28" patternUnits="userSpaceOnUse">
-      <circle cx="2" cy="2" r="1.2" fill="#FFB86A" opacity="0.2" class="dot-color" />
+    <!-- Background Gradients -->
+    <linearGradient id="defBgLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDFBF7" />
+      <stop offset="50%" stop-color="#F8F6F0" />
+      <stop offset="100%" stop-color="#F2EFE9" />
+    </linearGradient>
+
+    <linearGradient id="cardGradLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#FAF8F5" stop-opacity="0.9" />
+    </linearGradient>
+
+    <linearGradient id="accentGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E5E795" stop-opacity="0.6" />
+      <stop offset="50%" stop-color="#FDA4AF" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#A2D2FF" stop-opacity="0.6" />
+    </linearGradient>
+
+    <!-- Dot Grid Pattern -->
+    <pattern id="dotGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.2" fill="#000000" opacity="0.06" />
     </pattern>
+
+    <!-- Filter for Card Drop Shadow -->
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="rgba(0,0,0,0.06)" />
+    </filter>
   </defs>
 
   <style>
-    .bg-canvas { fill: #FFF8F0; }
-    .card-box { fill: #FFFFFF; stroke: #FFB86A; stroke-width: 2px; }
-    .top-bar { fill: #FFF2E2; }
-    .icon-box { fill: #FFFDF9; stroke: #FFB86A; stroke-opacity: 0.5; }
-    .title-text { fill: #0F172A; }
-    .subtitle-text { fill: #64748B; }
+    .bg-canvas { fill: url(#defBgLight); }
+    .card-border { stroke: rgba(0, 0, 0, 0.08); stroke-width: 1.5; }
+    .title-text { font-family: 'Fraunces', Georgia, serif; font-size: 38px; font-weight: 700; fill: #0F172A; }
+    .subtitle-text { font-family: 'DM Sans', system-ui, sans-serif; font-size: 15px; fill: #64748B; }
+    .tag-text { font-family: 'DM Sans', system-ui, sans-serif; font-size: 11px; font-weight: 700; fill: #000000; letter-spacing: 1.5px; }
+    .mono-accent { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #94A3B8; }
 
     @media (prefers-color-scheme: dark) {
-      .bg-canvas { fill: #191520 !important; }
-      .card-box { fill: #1E2538 !important; stroke: #FFB86A !important; stroke-width: 2px !important; }
-      .top-bar { fill: #281F30 !important; }
-      .icon-box { fill: #231C2C !important; stroke: #FFB86A !important; stroke-opacity: 0.5 !important; }
+      .bg-canvas { fill: #0C0F17 !important; }
+      .card-box { fill: #151B26 !important; }
+      .card-border { stroke: rgba(255, 255, 255, 0.1) !important; }
       .title-text { fill: #F8FAFC !important; }
       .subtitle-text { fill: #94A3B8 !important; }
+      .mono-accent { fill: #64748B !important; }
     }
   </style>
 
-  <!-- Distinct Tinted Canvas (Not grey) -->
-  <rect width="1200" height="675" class="bg-canvas" />
-  <rect width="1200" height="675" fill="url(#dotGrid)" />
+  <!-- Background Base -->
+  <rect width="100%" height="100%" class="bg-canvas" />
+  <rect width="100%" height="100%" fill="url(#dotGrid)" />
 
-  <!-- Central Editorial Frame -->
-  <g transform="translate(350, 175)">
-    <rect width="500" height="320" rx="20" class="card-box" />
-    
-    <!-- Top Header Bar -->
-    <path d="M 0 20 Q 0 0 20 0 L 480 0 Q 500 0 500 20 L 500 56 L 0 56 Z" class="top-bar" />
-    <line x1="0" y1="56" x2="500" y2="56" stroke="#FFB86A" stroke-opacity="0.3" stroke-width="1.5" />
+  <!-- Ambient Color Waves -->
+  <circle cx="280" cy="200" r="260" fill="#E5E795" opacity="0.25" filter="blur(60px)" />
+  <circle cx="920" cy="460" r="280" fill="#A2D2FF" opacity="0.2" filter="blur(60px)" />
+  <circle cx="620" cy="540" r="180" fill="#FDA4AF" opacity="0.15" filter="blur(50px)" />
 
-    <!-- Three Window Dots -->
-    <circle cx="28" cy="28" r="5" fill="#FDA4AF" />
-    <circle cx="46" cy="28" r="5" fill="#FFB86A" />
-    <circle cx="64" cy="28" r="5" fill="#A2D2FF" />
+  <!-- Central Editorial Card Container -->
+  <g transform="translate(140, 95)" filter="url(#softShadow)">
+    <rect width="920" height="485" rx="28" fill="url(#cardGradLight)" class="card-box card-border" />
 
-    <text x="250" y="34" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700" fill="#64748B" letter-spacing="1">ENCODE EDGE</text>
+    <!-- Top Accent Rainbow Bar -->
+    <rect x="0" y="0" width="920" height="6" rx="3" fill="url(#accentGlow)" />
 
-    <!-- Content -->
-    <g transform="translate(40, 90)">
-      <rect x="175" y="0" width="70" height="70" rx="16" class="icon-box" stroke-width="1.5" />
-      <text x="210" y="44" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="24" font-weight="900" fill="#FFB86A">&lt;/&gt;</text>
+    <!-- Card Content -->
+    <g transform="translate(60, 60)">
+      <!-- Editorial Pill Tag -->
+      <rect x="0" y="0" width="160" height="30" rx="15" fill="#E5E795" />
+      <text x="80" y="19.5" text-anchor="middle" class="tag-text">PRACTICAL AI &amp; ML</text>
 
-      <text x="210" y="110" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" font-weight="700" class="title-text">Engineering Article</text>
-      <text x="210" y="135" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="500" class="subtitle-text">Architecture • Math • Production Code</text>
+      <!-- Main Heading -->
+      <text x="0" y="85" class="title-text">EncodeEdge Engineering Journal</text>
+      <text x="0" y="122" class="subtitle-text">Production Architectures • Mathematical Formulations • Verified Code</text>
+
+      <!-- Geometric Technical Diagram Motif -->
+      <g transform="translate(0, 160)">
+        <!-- Node 1: Input Matrix -->
+        <rect x="0" y="0" width="220" height="120" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" opacity="0.9" />
+        <rect x="16" y="16" width="60" height="20" rx="6" fill="#A2D2FF" opacity="0.3" />
+        <text x="46" y="30" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#0284C7">INPUT [N, D]</text>
+        <circle cx="40" cy="65" r="5" fill="#3B82F6" />
+        <circle cx="70" cy="65" r="5" fill="#3B82F6" />
+        <circle cx="100" cy="65" r="5" fill="#3B82F6" />
+        <circle cx="40" cy="90" r="5" fill="#93C5FD" />
+        <circle cx="70" cy="90" r="5" fill="#93C5FD" />
+        <circle cx="100" cy="90" r="5" fill="#93C5FD" />
+        <text x="135" y="82" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="600" fill="#64748B">X · W + b</text>
+
+        <!-- Connecting Vector -->
+        <path d="M 220 60 L 290 60" stroke="#94A3B8" stroke-width="2" stroke-dasharray="4,4" />
+        <polygon points="288,56 298,60 288,64" fill="#94A3B8" />
+
+        <!-- Node 2: Activation / Computation -->
+        <g transform="translate(300, 0)">
+          <rect x="0" y="0" width="220" height="120" rx="14" fill="#FFFFFF" stroke="#FDA4AF" stroke-width="1.5" opacity="0.9" />
+          <rect x="16" y="16" width="70" height="20" rx="6" fill="#FDA4AF" opacity="0.3" />
+          <text x="51" y="30" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#E11D48">ACTIVATION</text>
+          
+          <!-- Sigmoid / ReLU Curve -->
+          <path d="M 30 95 Q 85 95 110 60 T 190 25" fill="none" stroke="#E11D48" stroke-width="2.5" />
+          <text x="110" y="105" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="600" fill="#94A3B8">σ(z) = 1 / (1 + e^-z)</text>
+        </g>
+
+        <!-- Connecting Vector -->
+        <path d="M 520 60 L 590 60" stroke="#94A3B8" stroke-width="2" stroke-dasharray="4,4" />
+        <polygon points="588,56 598,60 588,64" fill="#94A3B8" />
+
+        <!-- Node 3: Loss Optimization -->
+        <g transform="translate(600, 0)">
+          <rect x="0" y="0" width="200" height="120" rx="14" fill="#FFFFFF" stroke="#E5E795" stroke-width="1.5" opacity="0.9" />
+          <rect x="16" y="16" width="60" height="20" rx="6" fill="#E5E795" opacity="0.4" />
+          <text x="46" y="30" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#4D5305">OPTIMIZER</text>
+
+          <!-- Gradient Descent Arrow -->
+          <path d="M 30 45 Q 90 100 160 55" fill="none" stroke="#10B981" stroke-width="2" />
+          <circle cx="95" cy="88" r="4" fill="#10B981" />
+          <text x="100" y="105" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#059669">∇L(θ) → min</text>
+        </g>
+      </g>
+
+      <!-- Footer Metadata Bar -->
+      <g transform="translate(0, 320)">
+        <line x1="0" y1="0" x2="800" y2="0" stroke="rgba(0,0,0,0.06)" stroke-width="1" />
+        <text x="0" y="25" class="mono-accent">ENCODEEDGE.COM • CODE-BACKED AI &amp; PYTHON TUTORIALS</text>
+        <text x="800" y="25" text-anchor="end" class="mono-accent">READ, FORK &amp; EXECUTE</text>
+      </g>
     </g>
   </g>
 </svg>

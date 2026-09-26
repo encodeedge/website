@@ -23,6 +23,7 @@ import {
   Rss,
   GraduationCap
 } from 'lucide-react';
+import EditorialPostCover from '@/components/ui/EditorialPostCover.astro';
 
 const allPosts = await getCollection('blog');
 const sortedPosts = allPosts.sort(
@@ -41,7 +42,18 @@ const roadmaps = await getCollection('roadmaps');
 
 // Courses collection for the Video Lessons & Applied Courses section
 const allCourses = await getCollection('courses');
-const featuredCourse = allCourses.find((c) => c.id === 'applied-deep-learning') || allCourses[0];
+const showcaseCourseOrder = ['applied-deep-learning', 'python-mastery-for-ai', 'foundations-of-machine-learning'];
+const showcaseCourses = showcaseCourseOrder
+  .map((id) => allCourses.find((c) => c.id === id))
+  .filter(Boolean) as any[];
+if (showcaseCourses.length < 3) {
+  allCourses.forEach((c) => {
+    if (!showcaseCourses.some((sc) => sc.id === c.id) && showcaseCourses.length < 3) {
+      showcaseCourses.push(c);
+    }
+  });
+}
+const featuredCourse = showcaseCourses[0] || allCourses[0];
 
 // Live Podcast episodes fetched from RSS feed
 const podcastEpisodes = await getPodcastEpisodes();
@@ -94,16 +106,9 @@ const TOPIC_CARDS = [
       <div class="woords_container_small grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
         {quickReads.map((post) => (
           <div class="flex items-center space-x-3.5 group">
-            <div class="relative w-20 h-20 rounded-xl shrink-0 overflow-hidden border border-border/80 bg-card">
-              <a href={`/blog/${post.id}/`} class="absolute inset-0 overflow-hidden block">
-                <img
-                  src={post.data.image || '/assets/default-post.svg'}
-                  alt={post.data.title}
-                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  loading="lazy"
-                />
-              </a>
-            </div>
+            <a href={`/blog/${post.id}/`} class="block shrink-0">
+              <EditorialPostCover post={post} variant="thumbnail" />
+            </a>
             <div class="flex flex-col gap-y-1 min-w-0">
               <h3 class="font-bold font-display text-xs leading-snug hover:underline line-clamp-2 text-foreground">
                 <a href={`/blog/${post.id}/`}>{post.data.title}</a>
@@ -241,23 +246,16 @@ const TOPIC_CARDS = [
           return (
             <article class="flex flex-col justify-between p-5 rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group">
               <div>
-                <div class="relative aspect-16/10 overflow-hidden rounded-xl border border-border/70 bg-card mb-3.5">
-                  <a href={`/blog/${post.id}/`} class="absolute inset-0 overflow-hidden block">
-                    <img
-                      src={post.data.image || '/assets/default-post.svg'}
-                      alt={post.data.title}
-                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                  </a>
+                <a href={`/blog/${post.id}/`} class="block relative">
+                  <EditorialPostCover post={post} variant="card" />
                   {idx === 0 && (
-                    <div class="absolute top-2.5 left-2.5 z-20">
+                    <div class="absolute top-2.5 left-2.5 z-20 pointer-events-none">
                       <span class="woords_tag_secondary_small font-bold shadow-xs">
                         ★ Featured
                       </span>
                     </div>
                   )}
-                </div>
+                </a>
 
                 <div class="flex items-center gap-2 mb-2">
                   <span class="woords_tag_small">
@@ -375,169 +373,61 @@ const TOPIC_CARDS = [
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {/* 1. Featured Video Course */}
-      <div class="rounded-2xl border border-black-150 dark:border-black-800 bg-card p-5 flex flex-col justify-between hover:shadow-md transition-all group">
-        <div>
-          <div class="relative aspect-16/10 rounded-xl overflow-hidden mb-3.5 bg-black-900 border border-border/60">
-            <img
-              src="/assets/welcome-to-encode-edge-your-path-to-practical-ai-mastery/cover.svg"
-              alt="Applied Deep Learning"
-              class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-300"
-              loading="lazy"
-            />
-            <div class="absolute inset-0 bg-black/25 flex items-center justify-center">
+      {showcaseCourses.map((course) => {
+        const cover = course.data.coverImage || `/assets/courses/${course.id}.svg`;
+        const chapterCount = course.data.chapters?.length || 3;
+        const levelText = course.data.level ? `${course.data.level.charAt(0).toUpperCase() + course.data.level.slice(1)} Level` : 'Applied Course';
+        return (
+          <div class="rounded-2xl border border-black-150 dark:border-black-800 bg-card p-5 flex flex-col justify-between hover:shadow-md transition-all group">
+            <div>
+              <div class="relative aspect-16/10 rounded-xl overflow-hidden mb-3.5 bg-black-900 border border-border/60">
+                <a href={`/courses/${course.id}/`} class="block w-full h-full relative overflow-hidden">
+                  <img
+                    src={cover}
+                    alt={course.data.title}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                  <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+                    <div class="size-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                      <Play class="size-4 fill-current ml-0.5" />
+                    </div>
+                  </div>
+                  <span class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-black/80 text-white backdrop-blur-xs">
+                    Course
+                  </span>
+                </a>
+              </div>
+
+              <div class="flex items-center gap-2 mb-2">
+                <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
+                  {levelText}
+                </span>
+              </div>
+
+              <h4 class="text-base font-bold font-display text-foreground group-hover:text-primary transition-colors leading-snug mb-1.5">
+                <a href={`/courses/${course.id}/`}>
+                  {course.data.title}
+                </a>
+              </h4>
+              <p class="text-xs text-muted-foreground line-clamp-2 leading-relaxed font-body">
+                {course.data.shortDescription}
+              </p>
+            </div>
+
+            <div class="flex items-center justify-between pt-3 mt-4 border-t border-black-150 dark:border-black-800 text-xs">
+              <span class="text-muted-foreground font-medium">{chapterCount} Video Modules</span>
               <a
-                href={featuredCourse ? `/courses/${featuredCourse.id}/` : '/courses'}
-                class="size-10 rounded-full bg-primary text-black flex items-center justify-center shadow-xs hover:scale-110 transition-transform cursor-pointer"
-                aria-label="Start course"
+                href={`/courses/${course.id}/`}
+                class="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary transition-colors"
               >
-                <Play class="size-4 fill-black ml-0.5" />
+                <span>Explore Course</span>
+                <ArrowRight class="size-3" />
               </a>
             </div>
-            <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-black/80 text-white">
-              Course
-            </span>
           </div>
-
-          <div class="flex items-center gap-2 mb-2">
-            <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/20 text-foreground">
-              Video Course • {featuredCourse?.data.level || 'Advanced'}
-            </span>
-          </div>
-
-          <h4 class="text-base font-bold font-display text-foreground group-hover:text-primary transition-colors leading-snug mb-1.5">
-            <a href={featuredCourse ? `/courses/${featuredCourse.id}/` : '/courses'}>
-              {featuredCourse?.data.title || 'Applied Deep Learning: From Data to Production'}
-            </a>
-          </h4>
-          <p class="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-            {featuredCourse?.data.shortDescription || 'Master practical deep learning execution, PyTorch training loops, and real-world deployment.'}
-          </p>
-        </div>
-
-        <div class="flex items-center justify-between pt-3 mt-4 border-t border-black-150 dark:border-black-800 text-xs">
-          <span class="text-muted-foreground font-medium">2 Video Chapters</span>
-          <a
-            href={featuredCourse ? `/courses/${featuredCourse.id}/` : '/courses'}
-            class="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary transition-colors"
-          >
-            <span>Open Course</span>
-            <ArrowRight class="size-3" />
-          </a>
-        </div>
-      </div>
-
-      {/* 2. Python Video Tutorial */}
-      <div class="rounded-2xl border border-black-150 dark:border-black-800 bg-card p-5 flex flex-col justify-between hover:shadow-md transition-all group">
-        <div>
-          <div class="relative aspect-16/10 rounded-xl overflow-hidden mb-3.5 bg-black-900 border border-border/60">
-            <img
-              src="/assets/python-variables-and-memory-references/cover.svg"
-              alt="Python Variables & Memory"
-              class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-300"
-              loading="lazy"
-            />
-            <div class="absolute inset-0 bg-black/25 flex items-center justify-center">
-              <a 
-                href="https://www.youtube.com/watch?v=khKv-8q7YmY" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="size-10 rounded-full bg-white/90 text-black flex items-center justify-center shadow-xs hover:scale-110 transition-transform"
-                aria-label="Play Python tutorial video"
-              >
-                <Play class="size-4 fill-black ml-0.5" />
-              </a>
-            </div>
-            <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-black/80 text-white">
-              45 min
-            </span>
-          </div>
-
-          <div class="flex items-center gap-2 mb-2">
-            <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FFB86A]/30 text-foreground">
-              Python Video Tutorial
-            </span>
-          </div>
-
-          <h4 class="text-base font-bold font-display text-foreground group-hover:text-primary transition-colors leading-snug mb-1.5">
-            <a href="https://www.youtube.com/watch?v=khKv-8q7YmY" target="_blank" rel="noopener noreferrer">
-              Variables, Data Types &amp; Memory Walkthrough
-            </a>
-          </h4>
-          <p class="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-            Step-by-step video lecture explaining variable binding, primitive types, and CPython references.
-          </p>
-        </div>
-
-        <div class="flex items-center justify-between pt-3 mt-4 border-t border-black-150 dark:border-black-800 text-xs">
-          <a href="/roadmaps/python/" class="text-muted-foreground hover:text-foreground font-medium">
-            From Python Track
-          </a>
-          <a 
-            href="https://www.youtube.com/watch?v=khKv-8q7YmY" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary"
-          >
-            <span>Watch Video</span>
-            <ExternalLink class="size-3" />
-          </a>
-        </div>
-      </div>
-
-      {/* 3. Interactive Jupyter Code Lab */}
-      <div class="rounded-2xl border border-black-150 dark:border-black-800 bg-card p-5 flex flex-col justify-between hover:shadow-md transition-all group">
-        <div>
-          <div class="relative aspect-16/10 rounded-xl overflow-hidden mb-3.5 bg-black-900 border border-border/60">
-            <img
-              src="/assets/python-type-hierarchy/cover.svg"
-              alt="Interactive Python Code Labs"
-              class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-300"
-              loading="lazy"
-            />
-            <div class="absolute inset-0 bg-black/25 flex items-center justify-center">
-              <a 
-                href="/notebooks/Tuples/" 
-                class="size-10 rounded-full bg-white/90 text-black flex items-center justify-center shadow-xs hover:scale-110 transition-transform"
-                aria-label="Open Jupyter lab"
-              >
-                <Code2 class="size-4 text-black" />
-              </a>
-            </div>
-            <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-primary text-black">
-              Interactive Lab
-            </span>
-          </div>
-
-          <div class="flex items-center gap-2 mb-2">
-            <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#A2D2FF]/30 text-foreground">
-              Browser Code Lab
-            </span>
-          </div>
-
-          <h4 class="text-base font-bold font-display text-foreground group-hover:text-primary transition-colors leading-snug mb-1.5">
-            <a href="/notebooks/Tuples/">
-              Working with Tuples &amp; Structures
-            </a>
-          </h4>
-          <p class="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-            Run and inspect Python code directly in your browser with zero local environment setup required.
-          </p>
-        </div>
-
-        <div class="flex items-center justify-between pt-3 mt-4 border-t border-black-150 dark:border-black-800 text-xs">
-          <a href="/notebooks" class="text-muted-foreground hover:text-foreground font-medium">
-            All Notebooks
-          </a>
-          <a 
-            href="/notebooks/Tuples/" 
-            class="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary"
-          >
-            <span>Launch Lab</span>
-            <ArrowRight class="size-3" />
-          </a>
-        </div>
-      </div>
+        );
+      })}
     </div>
   </section>
 
@@ -775,16 +665,9 @@ const TOPIC_CARDS = [
       {recentBlogPosts.map((post) => (
         <article class="flex flex-col justify-between p-5 rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group">
           <div>
-            <div class="relative aspect-16/10 overflow-hidden rounded-xl border border-border/70 bg-card mb-3.5">
-              <a href={`/blog/${post.id}/`} class="absolute inset-0 overflow-hidden block">
-                <img
-                  src={post.data.image || '/assets/default-post.svg'}
-                  alt={post.data.title}
-                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
-                />
-              </a>
-            </div>
+            <a href={`/blog/${post.id}/`} class="block">
+              <EditorialPostCover post={post} variant="card" />
+            </a>
 
             <div class="flex items-center space-x-2 mb-2">
               <span class="woords_tag_small">

@@ -1,7 +1,7 @@
 ---
 title: "Applied Deep Learning"
 shortDescription: "Master deep neural networks from mathematical foundations to production Transformers. Implement backprop from scratch, train deep CNNs, and build modern self-attention mechanisms with PyTorch."
-coverImage: "/assets/courses/applied-deep-learning.svg"
+coverImage: "/assets/courses/applied-deep-learning.jpg"
 instructor: "atul-jha"
 level: "advanced"
 status: "published"

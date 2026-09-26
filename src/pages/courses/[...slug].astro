@@ -5,6 +5,7 @@ import { CourseCurriculumAccordion } from '@/components/ui/course-curriculum-acc
 import { CourseProgressCard } from '@/components/ui/course-progress-card';
 import { CoursePrerequisiteFlow } from '@/components/interactive/CoursePrerequisiteFlow';
 import { CourseFlashcardsDrawer } from '@/components/interactive/CourseFlashcardsDrawer';
+import { CourseCertificate } from '@/components/interactive/CourseCertificate';
 import { 
   Clock, 
   BookOpen, 
@@ -158,8 +159,14 @@ const totalDurationStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
           <GraduationCap class="w-4 h-4 text-primary" />
           <span>Instructor: <strong class="text-foreground">{instructor?.data.name || 'Atul Jha'}</strong></span>
         </div>
-        <div class="ml-auto">
+        <div class="ml-auto flex items-center gap-2 flex-wrap">
           <CourseFlashcardsDrawer initialCategory={course.id} client:load />
+          <CourseCertificate
+            courseId={course.id}
+            courseTitle={course.data.title}
+            instructorName={instructor?.data.name || 'Atul Jha'}
+            client:load
+          />
         </div>
       </div>
     </header>

@@ -172,10 +172,12 @@ export default config({
   ui: {
     brand: { name: 'EncodeEdge' },
     navigation: {
-      'Site Settings': ['siteSettings', 'featureFlags'],
+      'Site Settings': ['siteSettings', 'featureFlags', 'announcementBanner'],
+      'Design & Navigation': ['navigationSettings', 'footerSettings'],
+      'Marketing': ['seoSettings', 'integrationsSettings'],
       'Content': ['blogs', 'faqs', 'roadmaps'],
       'Components': ['components'],
-      'LMS Core': ['courses', 'batches', 'instructors'],
+      'LMS Core': ['courses', 'batches', 'instructors', 'liveClasses'],
       'LMS Material': ['lessons', 'quizzes', 'assignments'],
       'LMS Administration': ['certificates'],
     }
@@ -192,6 +194,38 @@ export default config({
         siteDescription: fields.text({
           label: 'Default Meta Description',
           multiline: true,
+        }),
+        // ── Brand Colors ───────────────────────────────────────────────────
+        primaryColor: fields.text({
+          label: 'Primary Color',
+          description: 'Use a hex value (e.g. #6366f1)',
+          defaultValue: '#6366f1',
+        }),
+        accentColor: fields.text({
+          label: 'Accent Color',
+          description: 'Use a hex value (e.g. #E5E795)',
+          defaultValue: '#E5E795',
+        }),
+        backgroundColor: fields.text({
+          label: 'Background Color (Light Mode)',
+          description: 'Use a hex value (e.g. #ffffff)',
+          defaultValue: '#ffffff',
+        }),
+        darkBackgroundColor: fields.text({
+          label: 'Background Color (Dark Mode)',
+          description: 'Use a hex value (e.g. #09090b)',
+          defaultValue: '#09090b',
+        }),
+        // ── Logo & Favicon ──────────────────────────────────────────────────
+        logo: fields.image({
+          label: 'Site Logo',
+          publicPath: '/logos/',
+          directory: 'public/logos',
+        }),
+        favicon: fields.image({
+          label: 'Favicon',
+          publicPath: '/',
+          directory: 'public',
         }),
         socialLinks: fields.object({
           github: fields.text({ label: 'GitHub URL' }),
@@ -297,6 +331,176 @@ export default config({
             defaultValue: 20,
           }),
         }, { label: 'Spaced Repetition Quiz Mode' }),
+      },
+    }),
+
+    // ─── Announcement Banner ───────────────────────────────────────────────
+    announcementBanner: singleton({
+      label: 'Announcement Banner',
+      path: 'src/content/settings/announcement',
+      schema: {
+        enabled: fields.checkbox({
+          label: 'Show Announcement Banner',
+          defaultValue: false,
+        }),
+        message: fields.text({
+          label: 'Banner Message',
+          defaultValue: "New courses just launched!",
+        }),
+        linkText: fields.text({
+          label: 'Link Label',
+          defaultValue: "See what's new",
+        }),
+        linkUrl: fields.text({
+          label: 'Link URL',
+          defaultValue: '/courses',
+        }),
+        style: fields.select({
+          label: 'Style',
+          options: [
+            { label: 'Blue', value: 'info' },
+            { label: 'Green', value: 'success' },
+            { label: 'Amber', value: 'warning' },
+            { label: 'Gradient', value: 'promo' },
+          ],
+          defaultValue: 'info',
+        }),
+        dismissible: fields.checkbox({
+          label: 'Allow users to dismiss',
+          defaultValue: true,
+        }),
+      },
+    }),
+
+    // ─── Navigation Settings ───────────────────────────────────────────────
+    navigationSettings: singleton({
+      label: 'Navigation Settings',
+      path: 'src/content/settings/navigation',
+      schema: {
+        navLinks: fields.array(
+          fields.object({
+            label: fields.text({ label: 'Label' }),
+            href: fields.text({ label: 'URL' }),
+            icon: fields.text({ label: 'Icon (optional)' }),
+            openInNewTab: fields.checkbox({ label: 'Open in New Tab', defaultValue: false }),
+          }),
+          {
+            label: 'Navigation Links',
+            itemLabel: props => props.fields.label.value,
+          }
+        ),
+        showSearch: fields.checkbox({ label: 'Show Search', defaultValue: true }),
+        showSubscribeButton: fields.checkbox({ label: 'Show Subscribe Button', defaultValue: true }),
+        subscribeButtonText: fields.text({ label: 'Subscribe Button Text', defaultValue: 'Subscribe' }),
+        subscribeButtonUrl: fields.text({ label: 'Subscribe Button URL', defaultValue: '/subscribe' }),
+      },
+    }),
+
+    // ─── Footer Settings ───────────────────────────────────────────────────
+    footerSettings: singleton({
+      label: 'Footer Settings',
+      path: 'src/content/settings/footer',
+      schema: {
+        tagline: fields.text({ label: 'Footer Tagline' }),
+        columns: fields.array(
+          fields.object({
+            heading: fields.text({ label: 'Column Heading' }),
+            links: fields.array(
+              fields.object({
+                label: fields.text({ label: 'Link Label' }),
+                href: fields.text({ label: 'Link URL' }),
+              }),
+              { label: 'Links', itemLabel: props => props.fields.label.value }
+            ),
+          }),
+          {
+            label: 'Footer Columns',
+            itemLabel: props => props.fields.heading.value,
+          }
+        ),
+        copyrightText: fields.text({
+          label: 'Copyright Text',
+          defaultValue: '© 2025 EncodeEdge. All rights reserved.',
+        }),
+        socialLinks: fields.object({
+          github: fields.text({ label: 'GitHub URL' }),
+          twitter: fields.text({ label: 'Twitter URL' }),
+          linkedin: fields.text({ label: 'LinkedIn URL' }),
+          youtube: fields.text({ label: 'YouTube URL' }),
+          rss: fields.text({ label: 'RSS Feed URL' }),
+        }, { label: 'Social Links' }),
+        showNewsletter: fields.checkbox({
+          label: 'Show Newsletter Signup in Footer',
+          defaultValue: true,
+        }),
+      },
+    }),
+
+    // ─── SEO Settings ─────────────────────────────────────────────────────
+    seoSettings: singleton({
+      label: 'SEO Settings',
+      path: 'src/content/settings/seo',
+      schema: {
+        defaultOgImage: fields.image({
+          label: 'Default OG Image',
+          publicPath: '/assets/',
+          directory: 'public/assets',
+        }),
+        twitterHandle: fields.text({
+          label: 'Twitter Handle',
+          defaultValue: '@encodeedge',
+        }),
+        defaultKeywords: fields.text({
+          label: 'Default Keywords (comma-separated)',
+          multiline: true,
+        }),
+        googleSiteVerification: fields.text({
+          label: 'Google Search Console Verification Code',
+        }),
+        robotsNoIndex: fields.checkbox({
+          label: 'Block all search engines (noindex)',
+          defaultValue: false,
+        }),
+        schemaOrgType: fields.select({
+          label: 'Schema.org Type',
+          options: [
+            { label: 'EducationalOrganization', value: 'EducationalOrganization' },
+            { label: 'Organization', value: 'Organization' },
+            { label: 'WebSite', value: 'WebSite' },
+          ],
+          defaultValue: 'EducationalOrganization',
+        }),
+      },
+    }),
+
+    // ─── Integrations Settings ─────────────────────────────────────────────
+    integrationsSettings: singleton({
+      label: 'Integrations',
+      path: 'src/content/settings/integrations',
+      schema: {
+        googleAnalytics: fields.object({
+          enabled: fields.checkbox({ label: 'Enable Google Analytics', defaultValue: false }),
+          measurementId: fields.text({ label: 'GA4 Measurement ID e.g. G-XXXXXXXX' }),
+        }, { label: 'Google Analytics' }),
+        crispChat: fields.object({
+          enabled: fields.checkbox({ label: 'Enable Crisp Chat', defaultValue: false }),
+          websiteId: fields.text({ label: 'Crisp Website ID' }),
+        }, { label: 'Crisp Chat' }),
+        convertKit: fields.object({
+          enabled: fields.checkbox({ label: 'Enable ConvertKit', defaultValue: false }),
+          formId: fields.text({ label: 'ConvertKit Form ID' }),
+          apiKey: fields.text({ label: 'ConvertKit API Key' }),
+        }, { label: 'ConvertKit' }),
+        discord: fields.object({
+          enabled: fields.checkbox({ label: 'Enable Discord Widget', defaultValue: false }),
+          widgetServerId: fields.text({ label: 'Discord Widget Server ID' }),
+          inviteUrl: fields.text({ label: 'Discord Invite URL' }),
+        }, { label: 'Discord' }),
+        posthog: fields.object({
+          enabled: fields.checkbox({ label: 'Enable PostHog', defaultValue: false }),
+          apiKey: fields.text({ label: 'PostHog API Key' }),
+          apiHost: fields.text({ label: 'PostHog API Host', defaultValue: 'https://app.posthog.com' }),
+        }, { label: 'PostHog' }),
       },
     }),
   },
@@ -551,6 +755,34 @@ export default config({
           }),
           { label: 'Chapters', itemLabel: props => props.fields.title.value }
         ),
+        // ── Enrollment ─────────────────────────────────────────────────────
+        enrollmentMode: fields.select({
+          label: 'Enrollment Mode',
+          options: [
+            { label: 'Free', value: 'free' },
+            { label: 'Paid/Stripe', value: 'paid' },
+            { label: 'Waitlist', value: 'waitlist' },
+            { label: 'Invite Only', value: 'invite' },
+          ],
+          defaultValue: 'free',
+        }),
+        price: fields.number({
+          label: 'Price (USD)',
+          description: 'Only used when enrollment mode is Paid',
+        }),
+        stripeProductId: fields.text({
+          label: 'Stripe Product ID',
+          description: 'For paid enrollment',
+        }),
+        waitlistUrl: fields.text({ label: 'Waitlist Form URL' }),
+        maxEnrollments: fields.number({
+          label: 'Max Students (0 = unlimited)',
+          defaultValue: 0,
+        }),
+        prerequisites: fields.array(
+          fields.text({ label: 'Prerequisite' }),
+          { label: 'Prerequisites', itemLabel: props => props.value }
+        ),
         about: fields.mdx({ label: 'About this Course', extension: 'md' }),
       }
     }),
@@ -601,6 +833,38 @@ export default config({
         ),
         bio: fields.mdx({ label: 'Bio', extension: 'md' }),
       }
+    }),
+
+    liveClasses: collection({
+      label: 'Live Classes',
+      slugField: 'title',
+      path: 'src/content/live-classes/*',
+      format: { data: 'yaml' },
+      schema: {
+        title: fields.slug({ name: { label: 'Title' } }),
+        description: fields.text({ label: 'Description', multiline: true }),
+        course: fields.relationship({ label: 'Course', collection: 'courses' }),
+        instructor: fields.relationship({ label: 'Instructor', collection: 'instructors' }),
+        scheduledAt: fields.datetime({ label: 'Scheduled Date & Time' }),
+        durationMinutes: fields.number({ label: 'Duration (minutes)', defaultValue: 60 }),
+        meetingUrl: fields.text({ label: 'Meeting URL (Zoom/Meet/Teams)' }),
+        recordingUrl: fields.text({ label: 'Recording URL (after class)' }),
+        maxParticipants: fields.number({ label: 'Max Participants', defaultValue: 100 }),
+        status: fields.select({
+          label: 'Status',
+          options: [
+            { label: 'Scheduled', value: 'scheduled' },
+            { label: 'Live', value: 'live' },
+            { label: 'Completed', value: 'completed' },
+            { label: 'Cancelled', value: 'cancelled' },
+          ],
+          defaultValue: 'scheduled',
+        }),
+        tags: fields.array(
+          fields.text({ label: 'Tag' }),
+          { label: 'Tags', itemLabel: props => props.value }
+        ),
+      },
     }),
 
     // --- LMS Material ---

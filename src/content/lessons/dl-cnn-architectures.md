@@ -12,9 +12,9 @@ As deep networks exceed 20+ layers, optimization degrades because gradients repe
 
 ResNet introduced the **identity shortcut**:
 
-$$y = \mathcal{F}(x, \{W_i\}) + x$$
+$$y = \mathcal F(x, \lbrace W_i \rbrace) + x$$
 
-Instead of learning an unreferenced underlying mapping $\mathcal{H}(x)$, the network explicitly learns the residual $\mathcal{F}(x) = \mathcal{H}(x) - x$. If identity mapping is optimal, optimizer weights can simply decay toward zero.
+Instead of learning an unreferenced underlying mapping $\mathcal H(x)$, the network explicitly learns the residual $\mathcal F(x) = \mathcal H(x) - x$. If identity mapping is optimal, optimizer weights can simply decay toward zero.
 
 ```python
 class ResidualBlock(nn.Module):

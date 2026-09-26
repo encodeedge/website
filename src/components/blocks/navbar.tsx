@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { label: "Topics", href: "/topics" },
   { label: "Blog", href: "/blog" },
   { label: "Courses", href: "/courses" },
+  { label: "Live", href: "/live-classes" },
   { label: "About", href: "/about" },
   { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },

@@ -4,6 +4,8 @@ import { Footer } from '@/components/blocks/footer';
 import { Navbar } from '@/components/blocks/navbar';
 import { AchievementsTrigger } from '@/components/ui/achievements-panel';
 import { NewsletterBanner } from '@/components/ui/newsletter-banner';
+import { AnnouncementBanner } from '@/components/ui/announcement-banner';
+import { PeerStudyRooms } from '@/components/interactive/PeerStudyRooms';
 
 const { title, description } = Astro.props;
 ---
@@ -57,6 +59,16 @@ const { title, description } = Astro.props;
     onload="renderMathInElement(document.body);"></script>
     </head>
     <body class="min-h-screen flex flex-col antialiased bg-background text-foreground">
+        <AnnouncementBanner
+          client:load
+          enabled={true}
+          message="🚀 New courses just launched — Deep Learning, LLMs & Python Mastery!"
+          linkText="Explore courses"
+          linkUrl="/courses"
+          style="promo"
+          dismissible={true}
+          bannerId="launch-2025"
+        />
         <Navbar client:load />
         <script is:inline>
           (function() {
@@ -79,6 +91,7 @@ const { title, description } = Astro.props;
         <main class="flex-1"><slot /></main>
         <AchievementsTrigger client:load />
         <NewsletterBanner client:load />
+        <PeerStudyRooms client:load />
         <Footer />
         <script type="module" src="/scripts/cookieconsent-config.js"></script>
     </body>

@@ -1,0 +1,40 @@
+---
+import { getCollection } from 'astro:content';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { LiveClassScheduler } from '@/components/interactive/LiveClassScheduler';
+import { CourseLeaderboard } from '@/components/interactive/CourseLeaderboard';
+import { Calendar, Trophy } from 'lucide-react';
+---
+
+<DefaultLayout title="Live Classes & Leaderboard | EncodeEdge" description="Join live sessions, attend office hours, and see where you rank among top learners.">
+  <div class="py-8 md:py-16 container mx-auto px-4 max-w-6xl space-y-16">
+
+    <!-- Hero -->
+    <div class="text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm font-bold">
+        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+        1 Live Session In Progress
+      </div>
+      <h1 class="text-4xl md:text-5xl font-extrabold font-display text-foreground">
+        Live Classes <span class="text-primary">&</span> Community
+      </h1>
+      <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+        Attend live coding sessions, ask questions in real time, and watch recordings when you can't make it live.
+      </p>
+    </div>
+
+    <!-- Live Class Scheduler -->
+    <section>
+      <LiveClassScheduler client:load />
+    </section>
+
+    <!-- Divider -->
+    <div class="border-t border-border/60"></div>
+
+    <!-- Leaderboard -->
+    <section>
+      <CourseLeaderboard client:load />
+    </section>
+
+  </div>
+</DefaultLayout>

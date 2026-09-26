@@ -20,6 +20,7 @@ interface TechnicalBlueprintCoverProps {
   variant?: 'thumbnail' | 'card' | 'lead' | 'hero';
   className?: string;
   showTitle?: boolean;
+  badge?: string;
 }
 
 const MONOGRAMS: Record<string, string> = {
@@ -82,6 +83,39 @@ const TOPIC_SNIPPETS: Record<string, string> = {
   nlp: 'Attention(Q,K,V) = softmax(QK^T / √d) · V',
 };
 
+const SCHEMATICS: Record<string, { nodes: string[]; formula: string; type: string }> = {
+  python: {
+    type: 'OBJECT_MEMORY_MODEL',
+    nodes: ['PyObject_HEAD', 'tp_dict / Slots', 'Heap Alloc', 'GC Ref Tracker'],
+    formula: 'sys.getrefcount(obj) == 1 ⟹ DECREF 0 ⟹ tp_dealloc()',
+  },
+  'machine-learning': {
+    type: 'OPTIMIZATION_PIPELINE',
+    nodes: ['Feature Tensor X', 'Hypothesis h_θ(x)', 'Loss Function J(θ)', 'AdamW ∇J Step'],
+    formula: 'w_{t+1} = w_t - η / √(v̂_t + ε) · m̂_t',
+  },
+  'deep-learning': {
+    type: 'TRANSFORMER_BLOCK',
+    nodes: ['Token Embeddings', 'Multi-Head Attn', 'RMSNorm & Residual', 'SwiGLU MLP Block'],
+    formula: 'Attention(Q, K, V) = softmax(Q K^T / √d_k) · V',
+  },
+  'data-science': {
+    type: 'ANALYTIC_DECOMPOSITION',
+    nodes: ['Raw Input Stream', 'Vectorized Transform', 'Covariance Σ Matrix', 'SVD Eigen Projection'],
+    formula: 'X = U · Σ · V^T  |  P(Y|X) = (P(X|Y)·P(Y)) / P(X)',
+  },
+  'artificial-intelligence': {
+    type: 'AUTONOMOUS_POLICY',
+    nodes: ['Environment State S', 'Policy Network π_θ', 'Action Trajectory', 'Bellman Return Q*'],
+    formula: "Q*(s, a) = E [ r + γ max_{a'} Q*(s', a') ]",
+  },
+  nlp: {
+    type: 'SEQUENCE_ENCODING',
+    nodes: ['Subword Tokenizer', 'Rotary Pos Embed', 'Masked Attention', 'Unembed Logits'],
+    formula: 'softmax(logits / τ) ⟹ P(w_t | w_{<t})',
+  },
+};
+
 function getTopicIcon(slug: string) {
   switch (slug) {
     case 'python':
@@ -110,6 +144,7 @@ export const TechnicalBlueprintCover: React.FC<TechnicalBlueprintCoverProps> = (
   variant = 'card',
   className = '',
   showTitle = true,
+  badge,
 }) => {
   const primaryTopic = topic || (topics && topics[0]) || 'machine-learning';
   const topicConfig = TOPIC_METADATA[primaryTopic] || {
@@ -121,12 +156,13 @@ export const TechnicalBlueprintCover: React.FC<TechnicalBlueprintCoverProps> = (
   const IconComponent = getTopicIcon(primaryTopic);
   const monogram = MONOGRAMS[primaryTopic] || 'AI';
   const codeSnippet = TOPIC_SNIPPETS[primaryTopic] || TOPIC_SNIPPETS['machine-learning'];
+  const schematic = SCHEMATICS[primaryTopic] || SCHEMATICS['machine-learning'];
   const catalogNum = Math.abs(catalogId.length % 9) + 1;
 
   if (variant === 'thumbnail') {
     return (
       <div
-        className={`relative w-20 h-20 rounded-xl shrink-0 overflow-hidden border border-border/80 bg-gradient-to-br ${theme.bgLight} ${theme.bgDark} flex flex-col items-center justify-between p-2 shadow-xs group-hover:scale-105 transition-transform duration-300 ${className}`}
+        className={`relative ${className.includes('size-') || className.includes('w-') ? '' : 'w-20 h-20'} rounded-xl shrink-0 overflow-hidden border border-border/80 bg-gradient-to-br ${theme.bgLight} ${theme.bgDark} flex flex-col items-center justify-between p-2 shadow-xs group-hover:scale-105 transition-transform duration-300 ${className}`}
       >
         <div className="w-full flex items-center justify-between">
           <span
@@ -151,7 +187,7 @@ export const TechnicalBlueprintCover: React.FC<TechnicalBlueprintCoverProps> = (
     variant === 'hero'
       ? 'aspect-16/9 sm:aspect-21/9'
       : variant === 'lead'
-      ? 'aspect-16/10 lg:aspect-auto lg:h-full'
+      ? 'aspect-16/10 lg:aspect-auto lg:h-full min-h-[280px] sm:min-h-[340px]'
       : 'aspect-16/10';
 
   return (
@@ -179,15 +215,22 @@ export const TechnicalBlueprintCover: React.FC<TechnicalBlueprintCoverProps> = (
 
         {/* Top Spec Bar */}
         <div className="relative z-10 flex items-center justify-between gap-2">
-          <span
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-black shadow-xs shrink-0"
-            style={{ backgroundColor: topicConfig.color }}
-          >
-            <IconComponent className="size-3 text-black" />
-            {topicConfig.label || primaryTopic.replace(/-/g, ' ')}
-          </span>
+          <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+            <span
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-black shadow-xs shrink-0"
+              style={{ backgroundColor: topicConfig.color }}
+            >
+              <IconComponent className="size-3 text-black" />
+              {topicConfig.label || primaryTopic.replace(/-/g, ' ')}
+            </span>
+            {badge && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-background/90 text-foreground backdrop-blur-xs border border-border/60 shadow-xs shrink-0">
+                {badge}
+              </span>
+            )}
+          </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <span className="inline-flex items-center gap-1 text-[10px] font-mono text-muted-foreground bg-background/80 dark:bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded-md border border-border/60">
               <Clock className="size-3" />
               {readTime}m
@@ -198,8 +241,40 @@ export const TechnicalBlueprintCover: React.FC<TechnicalBlueprintCoverProps> = (
           </div>
         </div>
 
-        {/* Center Title (Optional, used on card variants) */}
-        {showTitle && title && (
+        {/* Schematic Flow for Lead Variant */}
+        {variant === 'lead' && (
+          <div className="relative z-10 my-auto py-3 flex flex-col justify-center gap-3">
+            <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground/90 pb-1 border-b border-black/5 dark:border-white/5">
+              <span className="flex items-center gap-1.5 font-bold tracking-wider text-foreground/90">
+                <span className="size-2 rounded-full animate-ping" style={{ backgroundColor: theme.accent }} />
+                SCHEMATIC // {schematic.type}
+              </span>
+              <span className="text-[10px] tracking-widest uppercase opacity-75">SPEC v2.4</span>
+            </div>
+
+            {/* Stage Flow Nodes */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 py-1">
+              {schematic.nodes.map((nodeName, idx) => (
+                <div
+                  key={idx}
+                  className="relative p-2.5 rounded-xl border border-black/10 dark:border-white/10 bg-background/70 dark:bg-black/40 backdrop-blur-xs flex flex-col justify-between shadow-2xs group-hover:border-primary/40 transition-colors"
+                >
+                  <span className="text-[9px] font-mono text-muted-foreground font-semibold">STAGE 0{idx + 1}</span>
+                  <span className="text-[11px] font-bold font-mono text-foreground mt-1 truncate">{nodeName}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Formula / Kernel Row */}
+            <div className="px-3 py-1.5 rounded-lg bg-black/5 dark:bg-white/5 font-mono text-[11px] text-foreground/85 border border-black/5 dark:border-white/5 flex items-center justify-between overflow-x-auto scrollbar-none">
+              <span className="text-muted-foreground shrink-0 mr-2 text-[10px] font-bold">KERNEL:</span>
+              <code className="text-[10px] sm:text-[11px] font-semibold text-primary truncate">{schematic.formula}</code>
+            </div>
+          </div>
+        )}
+
+        {/* Center Title for Hero or Card when showTitle is true */}
+        {variant !== 'lead' && showTitle && title && (
           <div className="relative z-10 my-auto py-3">
             <div
               className={`text-foreground font-display font-bold ${
@@ -209,6 +284,15 @@ export const TechnicalBlueprintCover: React.FC<TechnicalBlueprintCoverProps> = (
               } line-clamp-2 leading-[1.25] tracking-tight group-hover:text-primary transition-colors`}
             >
               {title}
+            </div>
+          </div>
+        )}
+
+        {/* Visual Topic Monogram for Card when showTitle is false */}
+        {variant !== 'lead' && !showTitle && (
+          <div className="relative z-10 my-auto flex items-center justify-center py-2">
+            <div className="size-14 sm:size-16 rounded-2xl border border-black/10 dark:border-white/10 bg-background/60 dark:bg-black/40 backdrop-blur-xs flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform duration-300">
+              <IconComponent className="size-7 sm:size-8 text-foreground/90" />
             </div>
           </div>
         )}

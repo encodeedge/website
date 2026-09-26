@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 
-import { Background } from '@/components/background';
 import { BlogPosts } from '@/components/blocks/blog-posts';
 import { SITE_TITLE, SITE_DESCRIPTION } from '@/consts';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
@@ -12,35 +11,53 @@ const notebooks = await Astro.glob<any>('/src/pages/notebooks/*.astro');
 const notebookPosts = notebooks
   .filter((n) => !n.file.endsWith('index.astro'))
   .map((n) => {
-    const frontmatter = n.frontmatter || n;
-    const url = n.url || '';
-    const slug = url.split('/').filter(Boolean).pop() || '';
-    const title = frontmatter.title || slug
-      .split('-')
-      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+    const filename = n.file.split('/').pop()?.replace('.astro', '') || '';
+    const title = filename
+      .replace(/-/g, ' ')
+      .replace(/\b\w/g, (c: string) => c.toUpperCase());
 
     return {
-      id: slug,
-      slug: `/notebooks/${slug}/`,
+      id: filename,
+      slug: `/notebooks/${filename}/`,
       collection: 'notebooks',
       data: {
         title,
-        description: frontmatter.description || 'Interactive Jupyter notebook covering core data structures, algorithms, and practical code execution.',
-        pubDate: frontmatter.pubDate ? new Date(frontmatter.pubDate) : new Date('2025-11-01'),
-        image: frontmatter.image || `/assets/notebooks/${slug}/image.png`,
-        tags: frontmatter.tags || ['python', 'notebook', 'hands-on'],
+        description: 'Interactive Jupyter notebook covering core data structures, algorithms, and practical code execution.',
+        pubDate: '2025-12-01T00:00:00.000Z',
+        image: `/assets/notebooks/${filename}/Cover_Image.png`,
+        tags: ['python', 'notebook', 'hands-on'],
         topics: ['python'],
         readTime: 12,
         featured: false,
-        authorName: frontmatter.authorName || 'Atul Jha',
-        authorImage: frontmatter.authorImage || '/assets/introduction-to-machine-learning/authorImage.png',
+        authorName: 'Atul Jha',
+        authorImage: '/assets/introduction-to-machine-learning/authorImage.png',
       }
     };
   });
 
-const posts = [...blogPosts, ...notebookPosts].sort(
-	(a, b) => new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf(),
+// Format all posts into clean JSON-serializable structures for React hydration
+const posts = [
+  ...blogPosts.map((p) => ({
+    id: p.id,
+    slug: `/blog/${p.id}/`,
+    collection: 'blog',
+    data: {
+      title: p.data.title,
+      description: p.data.description,
+      pubDate: p.data.pubDate ? new Date(p.data.pubDate).toISOString() : new Date().toISOString(),
+      updatedDate: p.data.updatedDate ? new Date(p.data.updatedDate).toISOString() : undefined,
+      readTime: p.data.readTime || 6,
+      image: p.data.image || '/assets/default-post.svg',
+      authorImage: p.data.authorImage || '/assets/introduction-to-machine-learning/authorImage.png',
+      authorName: p.data.authorName || 'Atul Jha',
+      topics: p.data.topics || ['machine-learning'],
+      tags: p.data.tags || [],
+      featured: p.data.featured || false,
+    },
+  })),
+  ...notebookPosts,
+].sort(
+  (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
 );
 ---
 

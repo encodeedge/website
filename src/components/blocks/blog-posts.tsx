@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { slugify } from '@/utils/slugs';
 import { TOPIC_METADATA } from '@/lib/topics';
+import { TechnicalBlueprintCover } from '@/components/ui/TechnicalBlueprintCover';
 import { 
   Search, 
   X, 
@@ -108,24 +109,26 @@ export const BlogPosts: React.FC<BlogPostsProps> = ({ posts }) => {
   const filteredPosts = useMemo(() => {
     return posts
       .filter(post => {
-        // Topic filter
+        // Topic & format filter
         if (selectedTopic === 'notebooks') {
           if (post.collection !== 'notebooks') return false;
+        } else if (selectedTopic === 'guides') {
+          if (post.collection === 'notebooks') return false;
         } else if (selectedTopic === 'bookmarks') {
           if (!bookmarkedIds.includes(post.id)) return false;
         } else if (selectedTopic !== 'all') {
-          const postTopics = post.data.topics || [];
+          const postTopics = post.data?.topics || [];
           if (!postTopics.includes(selectedTopic)) return false;
         }
 
         // Search query filter
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase().trim();
-          const matchTitle = post.data.title.toLowerCase().includes(q);
-          const matchDesc = (post.data.description || '').toLowerCase().includes(q);
-          const matchAuthor = (post.data.authorName || '').toLowerCase().includes(q);
-          const matchTags = (post.data.tags || []).some(t => t.toLowerCase().includes(q));
-          const matchTopics = (post.data.topics || []).some(t => t.toLowerCase().includes(q));
+          const matchTitle = (post.data?.title || '').toLowerCase().includes(q);
+          const matchDesc = (post.data?.description || '').toLowerCase().includes(q);
+          const matchAuthor = (post.data?.authorName || '').toLowerCase().includes(q);
+          const matchTags = (post.data?.tags || []).some(t => t.toLowerCase().includes(q));
+          const matchTopics = (post.data?.topics || []).some(t => t.toLowerCase().includes(q));
           if (!matchTitle && !matchDesc && !matchAuthor && !matchTags && !matchTopics) {
             return false;
           }
@@ -147,12 +150,12 @@ export const BlogPosts: React.FC<BlogPostsProps> = ({ posts }) => {
       });
   }, [posts, selectedTopic, searchQuery, sortBy, bookmarkedIds]);
 
-  // Lead Featured post (first post in list if unfiltered, or first matching post if matches)
-  const isDefaultView = selectedTopic === 'all' && searchQuery.trim() === '';
-  const leadPost = isDefaultView && filteredPosts.length > 0 ? filteredPosts[0] : null;
-  const leadTopic = (leadPost?.data.topics || [])[0] || 'python';
+  // Lead Featured post: dynamically spotlight the top blueprint for current filter
+  const leadPost = filteredPosts.length > 0 ? filteredPosts[0] : null;
+  const leadTopic = (leadPost?.data?.topics || [])[0] || 'machine-learning';
   const leadTopicMeta = TOPIC_METADATA[leadTopic];
-  const gridPosts = isDefaultView ? filteredPosts.slice(1) : filteredPosts;
+  // Remaining posts are arranged in the 3-column grid
+  const gridPosts = filteredPosts.length > 1 ? filteredPosts.slice(1) : [];
 
   const totalNotebooks = posts.filter(p => p.collection === 'notebooks').length;
   const totalArticles = posts.filter(p => p.collection !== 'notebooks').length;
@@ -183,24 +186,44 @@ export const BlogPosts: React.FC<BlogPostsProps> = ({ posts }) => {
 
         {/* Quick Stats Row */}
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary text-xs font-medium text-foreground">
+          <button
+            type="button"
+            onClick={() => setSelectedTopic(selectedTopic === 'guides' ? 'all' : 'guides')}
+            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+              selectedTopic === 'guides'
+                ? 'bg-foreground text-background font-bold shadow-xs'
+                : 'bg-secondary text-foreground hover:bg-black-150 dark:hover:bg-black-800'
+            }`}
+          >
             <BookOpen className="size-3.5 text-muted-foreground" />
             <strong className="font-bold">{totalArticles}</strong> Guides
-          </span>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary text-xs font-medium text-foreground">
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSelectedTopic(selectedTopic === 'notebooks' ? 'all' : 'notebooks')}
+            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+              selectedTopic === 'notebooks'
+                ? 'bg-amber-500 text-black font-bold shadow-xs'
+                : 'bg-secondary text-foreground hover:bg-black-150 dark:hover:bg-black-800'
+            }`}
+          >
             <Code2 className="size-3.5 text-amber-500" />
             <strong className="font-bold">{totalNotebooks}</strong> Interactive Notebooks
-          </span>
+          </button>
+
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary text-xs font-medium text-foreground">
             <Clock className="size-3.5 text-muted-foreground" />
             Weekly Updates
           </span>
+
           {bookmarkedIds.length > 0 && (
             <button
+              type="button"
               onClick={() => setSelectedTopic(selectedTopic === 'bookmarks' ? 'all' : 'bookmarks')}
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer ${
                 selectedTopic === 'bookmarks'
-                  ? 'bg-amber-500 text-black font-semibold'
+                  ? 'bg-amber-500 text-black font-semibold shadow-xs'
                   : 'bg-amber-500/15 text-amber-600 dark:text-amber-400 hover:bg-amber-500/25'
               }`}
             >
@@ -229,8 +252,9 @@ export const BlogPosts: React.FC<BlogPostsProps> = ({ posts }) => {
               />
               {searchQuery && (
                 <button
+                  type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                   aria-label="Clear search"
                 >
                   <X className="size-4" />
@@ -258,6 +282,7 @@ export const BlogPosts: React.FC<BlogPostsProps> = ({ posts }) => {
           {/* Topic Pills Bar */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1 scrollbar-none">
             <button
+              type="button"
               onClick={() => setSelectedTopic('all')}
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 selectedTopic === 'all'
@@ -274,10 +299,11 @@ export const BlogPosts: React.FC<BlogPostsProps> = ({ posts }) => {
               return (
                 <button
                   key={topic}
+                  type="button"
                   onClick={() => setSelectedTopic(isSelected ? 'all' : topic)}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
                     isSelected
-                      ? 'bg-black text-white dark:bg-white dark:text-black font-semibold shadow-xs'
+                      ? 'bg-foreground text-background font-bold shadow-xs'
                       : 'bg-black-100 dark:bg-black-800 text-muted-foreground hover:text-foreground hover:bg-black-150 dark:hover:bg-black-700'
                   }`}
                 >
@@ -292,10 +318,11 @@ export const BlogPosts: React.FC<BlogPostsProps> = ({ posts }) => {
 
             {/* Dedicated Notebooks Filter */}
             <button
+              type="button"
               onClick={() => setSelectedTopic(selectedTopic === 'notebooks' ? 'all' : 'notebooks')}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
                 selectedTopic === 'notebooks'
-                  ? 'bg-amber-500 text-black shadow-xs'
+                  ? 'bg-amber-500 text-black shadow-xs font-bold'
                   : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20'
               }`}
             >
@@ -309,7 +336,7 @@ export const BlogPosts: React.FC<BlogPostsProps> = ({ posts }) => {
               Showing <strong className="text-foreground">{filteredPosts.length}</strong> of {posts.length} blueprints
               {selectedTopic !== 'all' && (
                 <span className="ml-1.5 font-medium">
-                  in <span className="text-foreground font-semibold">"{selectedTopic === 'notebooks' ? 'Interactive Notebooks' : selectedTopic === 'bookmarks' ? 'Saved' : formatSlug(selectedTopic)}"</span>
+                  in <span className="text-foreground font-semibold">"{selectedTopic === 'notebooks' ? 'Interactive Notebooks' : selectedTopic === 'guides' ? 'Guides' : selectedTopic === 'bookmarks' ? 'Saved' : formatSlug(selectedTopic)}"</span>
                 </span>
               )}
               {searchQuery && (
@@ -321,6 +348,7 @@ export const BlogPosts: React.FC<BlogPostsProps> = ({ posts }) => {
 
             {(selectedTopic !== 'all' || searchQuery.trim()) && (
               <button
+                type="button"
                 onClick={() => {
                   setSelectedTopic('all');
                   setSearchQuery('');
@@ -337,64 +365,80 @@ export const BlogPosts: React.FC<BlogPostsProps> = ({ posts }) => {
         {leadPost && (
           <div className="rounded-3xl border border-black-150 dark:border-black-800 bg-background overflow-hidden hover:shadow-xl transition-all duration-300 group">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 items-stretch">
-              {/* Image Section */}
-              <div className="lg:col-span-7 relative aspect-16/10 lg:aspect-auto overflow-hidden bg-black-50 dark:bg-black-900">
-                <a href={leadPost.collection === 'notebooks' ? `/notebooks/${leadPost.id}/` : `/blog/${leadPost.id}/`} className="block w-full h-full relative overflow-hidden">
-                  <img
-                    src={leadPost.data.image || '/assets/default-post.svg'}
-                    alt={leadPost.data.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
+              {/* Lead Blueprint Visual Section */}
+              <div className="lg:col-span-7 relative min-h-[300px] sm:min-h-[380px] flex flex-col justify-stretch bg-card overflow-hidden border-b lg:border-b-0 lg:border-r border-border/60">
+                <a
+                  href={leadPost.collection === 'notebooks' ? `/notebooks/${leadPost.id}/` : `/blog/${leadPost.id}/`}
+                  className="block w-full h-full relative group/cover"
+                >
+                  <TechnicalBlueprintCover
+                    variant="lead"
+                    topic={leadTopic}
+                    topics={leadPost.data?.topics}
+                    title={leadPost.data?.title}
+                    readTime={leadPost.data?.readTime}
+                    catalogId={leadPost.id}
+                    showTitle={false}
+                    badge={leadPost.collection === 'notebooks' ? '⚡ Interactive Notebook' : '★ Featured'}
+                    className="h-full !rounded-none !border-0"
                   />
                 </a>
-                <div className="absolute top-4 left-4 flex items-center gap-2 pointer-events-none">
-                  <span className="woords_tag_secondary_small font-bold shadow-xs">
-                    ★ Editorial Lead
-                  </span>
-                  {leadPost.collection === 'notebooks' && (
-                    <span className="px-2.5 py-0.5 rounded-full bg-black/75 text-white backdrop-blur-sm text-[11px] font-semibold">
-                      ⚡ Interactive Notebook
-                    </span>
-                  )}
-                </div>
               </div>
 
               {/* Text Section */}
               <div className="lg:col-span-5 p-6 sm:p-8 lg:p-10 flex flex-col justify-between space-y-6">
                 <div className="space-y-4">
-                  {/* Topic & Read Time */}
-                  <div className="flex flex-wrap items-center gap-2">
-                    {(leadPost.data.topics || []).map((topic: string) => {
-                      const meta = TOPIC_METADATA[topic];
-                      return (
-                        <span
-                          key={topic}
-                          className="px-2.5 py-1 rounded-full text-xs font-semibold border"
-                          style={{
-                            backgroundColor: `${meta?.color || '#FDA4AF'}20`,
-                            borderColor: `${meta?.color || '#FDA4AF'}60`,
-                            color: 'inherit',
-                          }}
-                        >
-                          {formatSlug(topic)}
-                        </span>
-                      );
-                    })}
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Clock className="size-3" />
-                      {leadPost.data.readTime || 8} min read
-                    </span>
+                  {/* Topic, Read Time & Bookmark Row */}
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {(leadPost.data?.topics || []).map((topic: string) => {
+                        const meta = TOPIC_METADATA[topic];
+                        return (
+                          <button
+                            key={topic}
+                            type="button"
+                            onClick={() => setSelectedTopic(topic)}
+                            className="px-2.5 py-1 rounded-full text-xs font-semibold border transition-transform hover:scale-105 cursor-pointer"
+                            style={{
+                              backgroundColor: `${meta?.color || '#FDA4AF'}20`,
+                              borderColor: `${meta?.color || '#FDA4AF'}60`,
+                              color: 'inherit',
+                            }}
+                          >
+                            {formatSlug(topic)}
+                          </button>
+                        );
+                      })}
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="size-3" />
+                        {leadPost.data?.readTime || 8} min read
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={(e) => toggleBookmark(e, leadPost.id)}
+                      className="size-8 rounded-full border border-border bg-background hover:bg-black-100 dark:hover:bg-black-800 flex items-center justify-center text-foreground transition-all cursor-pointer shadow-xs"
+                      title={bookmarkedIds.includes(leadPost.id) ? 'Remove bookmark' : 'Bookmark this article'}
+                    >
+                      {bookmarkedIds.includes(leadPost.id) ? (
+                        <BookmarkCheck className="size-4 text-amber-500 fill-amber-500" />
+                      ) : (
+                        <Bookmark className="size-4 text-muted-foreground hover:text-foreground" />
+                      )}
+                    </button>
                   </div>
 
                   {/* Title */}
                   <h2 className="font-display font-bold text-2xl sm:text-3xl text-foreground leading-snug group-hover:text-primary transition-colors">
                     <a href={leadPost.collection === 'notebooks' ? `/notebooks/${leadPost.id}/` : `/blog/${leadPost.id}/`}>
-                      {leadPost.data.title}
+                      {leadPost.data?.title}
                     </a>
                   </h2>
 
                   {/* Description */}
                   <p className="text-muted-foreground text-sm sm:text-base leading-relaxed line-clamp-3 font-body">
-                    {leadPost.data.description}
+                    {leadPost.data?.description}
                   </p>
                 </div>
 
@@ -402,20 +446,20 @@ export const BlogPosts: React.FC<BlogPostsProps> = ({ posts }) => {
                 <div className="pt-6 border-t border-border/60 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-2.5">
                     <Avatar className="size-8 border">
-                      <AvatarImage src={leadPost.data.authorImage} alt={leadPost.data.authorName} />
+                      <AvatarImage src={leadPost.data?.authorImage} alt={leadPost.data?.authorName} />
                       <AvatarFallback className="text-[11px]">
-                        {leadPost.data.authorName ? leadPost.data.authorName.charAt(0) : 'E'}
+                        {leadPost.data?.authorName ? leadPost.data.authorName.charAt(0) : 'E'}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <a
-                        href={`/authors/${slugify(leadPost.data.authorName || 'Atul Jha')}`}
+                        href={`/authors/${slugify(leadPost.data?.authorName || 'Atul Jha')}`}
                         className="text-xs font-semibold text-foreground hover:underline block leading-tight"
                       >
-                        {leadPost.data.authorName || 'Atul Jha'}
+                        {leadPost.data?.authorName || 'Atul Jha'}
                       </a>
                       <div className="text-[11px] text-muted-foreground">
-                        {format(new Date(leadPost.data.pubDate), 'dd MMM yyyy')}
+                        {format(new Date(leadPost.data?.pubDate || new Date()), 'dd MMM yyyy')}
                       </div>
                     </div>
                   </div>
@@ -438,9 +482,9 @@ export const BlogPosts: React.FC<BlogPostsProps> = ({ posts }) => {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {gridPosts.map((post) => {
               const postUrl = post.collection === 'notebooks' ? `/notebooks/${post.id}/` : `/blog/${post.id}/`;
-              const pubDate = post.data.pubDate ? new Date(post.data.pubDate) : new Date();
+              const pubDate = post.data?.pubDate ? new Date(post.data.pubDate) : new Date();
               const isBookmarked = bookmarkedIds.includes(post.id);
-              const primaryTopic = (post.data.topics || [])[0] || 'machine-learning';
+              const primaryTopic = (post.data?.topics || [])[0] || 'machine-learning';
               const topicMeta = TOPIC_METADATA[primaryTopic];
 
               return (
@@ -448,41 +492,27 @@ export const BlogPosts: React.FC<BlogPostsProps> = ({ posts }) => {
                   key={post.id}
                   className="flex flex-col rounded-2xl border border-black-150 dark:border-black-800 bg-background hover:shadow-lg transition-all duration-200 group overflow-hidden"
                 >
-                  {/* Image Container with Translucent Visual */}
+                  {/* Blueprint Visual Cover */}
                   <div className="relative aspect-16/10 overflow-hidden bg-black-50 dark:bg-black-900 border-b border-border/40">
                     <a href={postUrl} className="absolute inset-0 overflow-hidden block">
-                      <img
-                        src={post.data.image || '/assets/default-post.svg'}
-                        alt={post.data.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
+                      <TechnicalBlueprintCover
+                        variant="card"
+                        topic={primaryTopic}
+                        topics={post.data?.topics}
+                        title={post.data?.title}
+                        readTime={post.data?.readTime}
+                        catalogId={post.id}
+                        showTitle={false}
+                        badge={post.collection === 'notebooks' ? '⚡ Notebook' : undefined}
+                        className="w-full h-full !rounded-none !border-0"
                       />
                     </a>
 
-                    {/* Format Badge Overlay */}
-                    <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                      {post.collection === 'notebooks' ? (
-                        <span className="px-2 py-0.5 rounded-full bg-black/80 text-white backdrop-blur-xs text-[10px] font-bold">
-                          ⚡ Notebook
-                        </span>
-                      ) : (
-                        <span
-                          className="px-2.5 py-0.5 rounded-full text-[10px] font-bold border backdrop-blur-xs"
-                          style={{
-                            backgroundColor: topicMeta ? `${topicMeta.color}30` : 'rgba(255,255,255,0.85)',
-                            borderColor: topicMeta ? `${topicMeta.color}80` : 'rgba(0,0,0,0.1)',
-                            color: 'inherit',
-                          }}
-                        >
-                          {formatSlug(primaryTopic)}
-                        </span>
-                      )}
-                    </div>
-
                     {/* Bookmark Action Button */}
                     <button
+                      type="button"
                       onClick={(e) => toggleBookmark(e, post.id)}
-                      className="absolute top-3 right-3 size-8 rounded-full bg-background/85 hover:bg-background backdrop-blur-xs flex items-center justify-center text-foreground transition-all cursor-pointer shadow-xs"
+                      className="absolute top-3 right-3 z-20 size-8 rounded-full bg-background/85 hover:bg-background backdrop-blur-xs flex items-center justify-center text-foreground transition-all cursor-pointer shadow-xs"
                       title={isBookmarked ? 'Remove bookmark' : 'Bookmark this article'}
                     >
                       {isBookmarked ? (

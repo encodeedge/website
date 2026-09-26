@@ -274,9 +274,9 @@ export default config({
       },
     }),
 
-    // ─── Feature Flags & Content for New Features ────────────────────────────
+    // ─── Feature Flags ───────────────────────────────────────────────────────
     featureFlags: singleton({
-      label: 'Feature Flags & Widget Copy',
+      label: 'Feature Flags',
       path: 'src/content/settings/features',
       schema: {
         // ── Newsletter Banner ─────────────────────────────────────────────

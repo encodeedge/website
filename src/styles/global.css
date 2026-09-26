@@ -513,3 +513,65 @@ body {
   background-color: rgba(255, 255, 255, 0.02);
 }
 
+/* Hide internal scrollbars across all browsers while preserving smooth scrolling */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.scrollbar-none,
+.no-scrollbar,
+#blog-sidebar,
+#toc-list,
+#highlights-list {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar,
+#blog-sidebar::-webkit-scrollbar,
+#toc-list::-webkit-scrollbar,
+#highlights-list::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Table of Contents link styling in blog post */
+.toc-link {
+  color: var(--muted-foreground, #71717a);
+  transition: all 0.15s ease;
+}
+.toc-link:hover {
+  color: var(--foreground, #000000) !important;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.dark .toc-link:hover {
+  color: var(--foreground, #ffffff) !important;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.toc-link.is-active {
+  background-color: var(--foreground, #000000) !important;
+  color: var(--background, #ffffff) !important;
+  font-weight: 600;
+}
+.dark .toc-link.is-active {
+  background-color: var(--foreground, #ffffff) !important;
+  color: var(--background, #000000) !important;
+}
+.toc-link.is-active:hover {
+  background-color: var(--foreground, #000000) !important;
+  color: var(--background, #ffffff) !important;
+  opacity: 0.9;
+}
+.dark .toc-link.is-active:hover {
+  background-color: var(--foreground, #ffffff) !important;
+  color: var(--background, #000000) !important;
+  opacity: 0.9;
+}
+
+

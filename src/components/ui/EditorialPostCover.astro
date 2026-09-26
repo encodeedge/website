@@ -18,9 +18,10 @@ interface Props {
   post: any;
   variant?: 'thumbnail' | 'card' | 'featured' | 'hero';
   class?: string;
+  badge?: string;
 }
 
-const { post, variant = 'card', class: className = '' } = Astro.props;
+const { post, variant = 'card', class: className = '', badge } = Astro.props;
 
 const primaryTopic = post?.data?.topics?.[0] || post?.data?.tags?.[0] || 'machine-learning';
 const topicConfig = TOPIC_METADATA[primaryTopic] || {
@@ -113,32 +114,32 @@ const codeSnippet = topicSnippets[primaryTopic] || topicSnippets['artificial-int
 
 const theme = palette[primaryTopic] || palette['machine-learning'];
 
-const aspectClass = variant === 'hero' ? 'aspect-16/9 sm:aspect-21/9' : 'aspect-16/10';
+const aspectClass = variant === 'hero' ? 'aspect-16/9 sm:aspect-16/8 sm:min-h-[260px]' : 'aspect-16/10';
 const catalogNum = Math.abs((post?.id || 'post').length % 9) + 1;
 ---
 
 {variant === 'thumbnail' ? (
-  /* Compact square thumbnail for Quick Reads */
-  <div class={`relative w-20 h-20 rounded-xl shrink-0 overflow-hidden border border-border/80 bg-gradient-to-br ${theme.bgLight} ${theme.bgDark} flex flex-col items-center justify-between p-2 shadow-sm group-hover:scale-105 transition-transform duration-300 ${className}`}>
+  /* Compact square thumbnail for Quick Reads & Sidebar Widgets */
+  <div class={`relative ${className.includes('size-') ? '' : 'size-14'} rounded-xl shrink-0 overflow-hidden border border-border/80 bg-gradient-to-br ${theme.bgLight} ${theme.bgDark} flex flex-col items-center justify-between p-1.5 shadow-xs group-hover:scale-105 transition-transform duration-300 ${className}`}>
     <!-- Top badge -->
-    <div class="w-full flex items-center justify-between">
+    <div class="w-full flex items-center justify-between leading-none">
       <span 
-        class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md shadow-xs text-black"
+        class="text-[8px] font-mono font-bold px-1 py-0.5 rounded shadow-2xs text-black"
         style={`background-color: ${topicConfig.color};`}
       >
         {monogram}
       </span>
-      <span class="size-1.5 rounded-full" style={`background-color: ${theme.accent};`}></span>
+      <span class="size-1 rounded-full" style={`background-color: ${theme.accent};`}></span>
     </div>
 
     <!-- Center Icon -->
     <div class="my-auto text-foreground/80 group-hover:scale-110 transition-transform">
-      <IconComponent class="size-6 text-foreground" />
+      <IconComponent class="size-4 text-foreground" />
     </div>
 
     <!-- Bottom Read Time -->
-    <div class="text-[9px] font-mono text-muted-foreground font-semibold">
-      {post?.data?.readTime || 5}m read
+    <div class="text-[8px] font-mono text-muted-foreground font-semibold leading-none">
+      {post?.data?.readTime || 5}m
     </div>
   </div>
 ) : (
@@ -162,13 +163,20 @@ const catalogNum = Math.abs((post?.id || 'post').length % 9) + 1;
 
       <!-- Header Row: Category Badge + Read Time + Blueprint Tag -->
       <div class="relative z-10 flex items-center justify-between gap-2">
-        <span 
-          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-black shadow-xs shrink-0"
-          style={`background-color: ${topicConfig.color};`}
-        >
-          <IconComponent class="size-3 text-black" />
-          {topicConfig.label || primaryTopic.replace(/-/g, ' ')}
-        </span>
+        <div class="flex items-center gap-1.5 flex-wrap min-w-0">
+          <span 
+            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-black shadow-xs shrink-0"
+            style={`background-color: ${topicConfig.color};`}
+          >
+            <IconComponent class="size-3 text-black" />
+            {topicConfig.label || primaryTopic.replace(/-/g, ' ')}
+          </span>
+          {badge && (
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-background/90 text-foreground backdrop-blur-xs border border-border/60 shadow-xs shrink-0">
+              {badge}
+            </span>
+          )}
+        </div>
 
         <div class="flex items-center gap-2">
           <span class="inline-flex items-center gap-1 text-[10px] font-mono text-muted-foreground bg-background/80 dark:bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded-md border border-border/60">

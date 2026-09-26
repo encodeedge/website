@@ -123,6 +123,7 @@ const BlogPost: React.FC<BlogPostProps> = ({
   } = post.data;
 
   const contentRef = useRef<HTMLElement | null>(null);
+  const tocListRef = useRef<HTMLUListElement | null>(null);
   const [headings, setHeadings] = useState<Array<{ id: string; text: string; level: number }>>([]);
   const [activeId, setActiveId] = useState<string>("");
   const [scrollProgress, setScrollProgress] = useState<number>(0);
@@ -353,6 +354,23 @@ const BlogPost: React.FC<BlogPostProps> = ({
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [headings, readTime]);
+
+  // Auto-scroll TOC container so active link is always centered and more items display as user scrolls
+  useEffect(() => {
+    if (!activeId || !tocListRef.current) return;
+    const container = tocListRef.current;
+    if (headings.length > 0 && activeId === headings[0].id) {
+      container.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    const activeEl = container.querySelector(`a[href="#${activeId}"]`) as HTMLElement | null;
+    if (activeEl) {
+      const containerRect = container.getBoundingClientRect();
+      const linkRect = activeEl.getBoundingClientRect();
+      const targetScroll = container.scrollTop + (linkRect.top - containerRect.top) - (containerRect.height / 2) + (linkRect.height / 2);
+      container.scrollTo({ top: Math.max(0, Math.round(targetScroll)), behavior: "smooth" });
+    }
+  }, [activeId, headings]);
 
   const handleCopyLink = () => {
     if (typeof window !== "undefined") {
@@ -810,7 +828,7 @@ const BlogPost: React.FC<BlogPostProps> = ({
           </main>
 
           {/* 5. Sticky Editorial Sidebar */}
-          <aside className="hidden xl:block sticky top-20 space-y-5 print:hidden">
+          <aside className="hidden xl:block sticky top-[calc(var(--site-header-height,7.75rem)+1.5rem)] space-y-4 print:hidden max-h-[calc(100vh-var(--site-header-height,7.75rem)-2rem)] overflow-y-auto overscroll-contain pt-2.5 px-1 pb-6 scrollbar-none">
             {/* Table of Contents with Progress */}
             {headings.length > 0 && (
               <div className="border border-black-150 dark:border-black-800 rounded-2xl p-5 bg-card shadow-xs">
@@ -837,15 +855,26 @@ const BlogPost: React.FC<BlogPostProps> = ({
                   />
                 </div>
 
-                <ul className="space-y-0.5 list-none pl-0 text-xs max-h-[340px] overflow-y-auto">
+                <ul ref={tocListRef} className="space-y-1 list-none pl-0 py-1 text-xs max-h-[138px] overflow-y-auto scrollbar-none scroll-smooth relative">
                   {headings.map((h) => (
                     <li key={h.id} className={h.level === 3 ? "pl-3.5" : ""}>
                       <a
                         href={`#${h.id}`}
-                        className={`block rounded-lg px-2.5 py-1.5 transition-all duration-150 leading-snug ${
-                          activeId === h.id
-                            ? "bg-foreground text-background font-semibold shadow-xs"
-                            : "text-muted-foreground hover:text-foreground hover:bg-black-100 dark:hover:bg-black-800"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const target = document.getElementById(h.id);
+                          if (target) {
+                            const headerOffset = 136;
+                            const elementPosition = target.getBoundingClientRect().top + window.scrollY;
+                            window.scrollTo({
+                              top: Math.max(0, elementPosition - headerOffset),
+                              behavior: "smooth"
+                            });
+                            history.pushState(null, "", `#${h.id}`);
+                          }
+                        }}
+                        className={`toc-link block rounded-lg px-2.5 py-1.5 leading-snug ${
+                          activeId === h.id ? "is-active shadow-xs" : ""
                         }`}
                       >
                         {h.level === 3 && <span className="text-muted-foreground/40 mr-1">–</span>}

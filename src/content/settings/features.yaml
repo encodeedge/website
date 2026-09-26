@@ -1,16 +1,16 @@
 newsletterBanner:
   enabled: true
-  headline: "Join 2,000+ learners getting weekly AI & ML insights"
-  subtext: "No spam. Unsubscribe anytime. Free forever."
-  buttonLabel: "Join free"
+  headline: Join 2,000+ learners getting weekly AI & ML insights
+  subtext: No spam. Unsubscribe anytime. Free forever.
+  buttonLabel: Join free
   delaySeconds: 30
 globalSearch:
-  enabled: true
-  placeholder: "Search articles, roadmaps, quizzes, courses..."
+  enabled: false
+  placeholder: Search articles, roadmaps, quizzes, courses...
 articleAI:
-  enabled: true
-  buttonLabel: "Ask AI"
-  welcomeMessage: "Hi! I'm your AI tutor for this article. Ask me anything about this topic! 🧠"
+  enabled: false
+  buttonLabel: Ask AI
+  welcomeMessage: Hi! I'm your AI tutor for this article. Ask me anything about this topic! 🧠
 gamification:
   enabled: true
   xpPerCorrectAnswer: 10
@@ -20,11 +20,11 @@ spacedRepetition:
   enabled: true
   maxHistoryPerQuiz: 20
 peerStudyRooms:
-  enabled: true
+  enabled: false
 liveClasses:
-  enabled: true
-  showInNav: true
+  enabled: false
+  showInNav: false
 courseCertificates:
-  enabled: true
+  enabled: false
 courseLeaderboard:
-  enabled: true
+  enabled: false

@@ -4,6 +4,7 @@ import { X, Menu, Github, Twitter, Linkedin, Rss } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { GITHUB_URL } from "@/consts";
 import { cn } from "@/lib/utils";
+import { GlobalSearch } from "@/components/ui/global-search";
 
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
@@ -148,6 +149,8 @@ export const Navbar = () => {
 
             {/* Right Column: Actions (Subscribe & Theme Toggle) */}
             <div className="flex items-center justify-end space-x-2.5 sm:space-x-3 xl:col-span-1">
+              <GlobalSearch />
+
               <a
                 href="/subscribe"
                 className="woords_btn shadow-xs text-xs font-semibold shrink-0"

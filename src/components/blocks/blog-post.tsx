@@ -6,6 +6,7 @@ import { slugify } from "@/utils/slugs";
 import FAQs from "@/components/blocks/faqs";
 import References from "@/components/blocks/references";
 import { TOPIC_METADATA } from "@/lib/topics";
+import { ArticleAI } from "@/components/ui/article-ai";
 import {
   Clock,
   Calendar,
@@ -754,6 +755,12 @@ const BlogPost: React.FC<BlogPostProps> = ({
                 )}
                 <span>{isBookmarked ? "Saved to Reading List" : "Save for Later"}</span>
               </button>
+
+              {/* AI Ask button */}
+              <ArticleAI
+                articleTitle={post.data.title}
+                articleDescription={post.data.description}
+              />
             </div>
 
             {/* Prev / Next Navigation */}

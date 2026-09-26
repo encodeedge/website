@@ -2,6 +2,8 @@
 import BaseHead from '@/components/BaseHead.astro';
 import { Footer } from '@/components/blocks/footer';
 import { Navbar } from '@/components/blocks/navbar';
+import { AchievementsTrigger } from '@/components/ui/achievements-panel';
+import { NewsletterBanner } from '@/components/ui/newsletter-banner';
 
 const { title, description } = Astro.props;
 ---
@@ -75,6 +77,8 @@ const { title, description } = Astro.props;
           })();
         </script>
         <main class="flex-1"><slot /></main>
+        <AchievementsTrigger client:load />
+        <NewsletterBanner client:load />
         <Footer />
         <script type="module" src="/scripts/cookieconsent-config.js"></script>
     </body>

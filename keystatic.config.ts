@@ -1,5 +1,5 @@
 // keystatic.config.ts
-import { config, fields, collection } from '@keystatic/core';
+import { config, fields, collection, singleton } from '@keystatic/core';
 import { block, wrapper } from '@keystatic/core/content-components';
 
 export const mdxComponents = {
@@ -172,12 +172,133 @@ export default config({
   ui: {
     brand: { name: 'EncodeEdge' },
     navigation: {
+      'Site Settings': ['siteSettings', 'featureFlags'],
       'Content': ['blogs', 'faqs', 'roadmaps'],
       'Components': ['components'],
       'LMS Core': ['courses', 'batches', 'instructors'],
       'LMS Material': ['lessons', 'quizzes', 'assignments'],
-      'LMS Administration': ['certificates']
+      'LMS Administration': ['certificates'],
     }
+  },
+
+  singletons: {
+    // ─── Site-wide Settings ────────────────────────────────────────────────
+    siteSettings: singleton({
+      label: 'Site Settings',
+      path: 'src/content/settings/site',
+      schema: {
+        siteName: fields.text({ label: 'Site Name', defaultValue: 'EncodeEdge' }),
+        siteTagline: fields.text({ label: 'Tagline / Hero Subtitle', multiline: false }),
+        siteDescription: fields.text({
+          label: 'Default Meta Description',
+          multiline: true,
+        }),
+        socialLinks: fields.object({
+          github: fields.text({ label: 'GitHub URL' }),
+          twitter: fields.text({ label: 'X / Twitter URL' }),
+          linkedin: fields.text({ label: 'LinkedIn URL' }),
+          youtube: fields.text({ label: 'YouTube URL' }),
+        }, { label: 'Social Links' }),
+      },
+    }),
+
+    // ─── Feature Flags & Content for New Features ────────────────────────────
+    featureFlags: singleton({
+      label: 'Feature Flags & Widget Copy',
+      path: 'src/content/settings/features',
+      schema: {
+        // ── Newsletter Banner ─────────────────────────────────────────────
+        newsletterBanner: fields.object({
+          enabled: fields.checkbox({
+            label: 'Enable Newsletter Banner',
+            description: 'Show the sticky newsletter subscribe banner on all pages (appears after 30s).',
+            defaultValue: true,
+          }),
+          headline: fields.text({
+            label: 'Headline',
+            defaultValue: 'Join 2,000+ learners getting weekly AI & ML insights',
+          }),
+          subtext: fields.text({
+            label: 'Subtext',
+            defaultValue: 'No spam. Unsubscribe anytime. Free forever.',
+          }),
+          buttonLabel: fields.text({
+            label: 'CTA Button Label',
+            defaultValue: 'Join free',
+          }),
+          delaySeconds: fields.number({
+            label: 'Show Delay (seconds)',
+            description: 'How long to wait before showing the banner.',
+            defaultValue: 30,
+          }),
+        }, { label: 'Newsletter Banner' }),
+
+        // ── Global Search ──────────────────────────────────────────────────
+        globalSearch: fields.object({
+          enabled: fields.checkbox({
+            label: 'Enable Global Search (⌘K)',
+            description: 'Show the search trigger in the navbar.',
+            defaultValue: true,
+          }),
+          placeholder: fields.text({
+            label: 'Search Input Placeholder',
+            defaultValue: 'Search articles, roadmaps, quizzes, courses...',
+          }),
+        }, { label: 'Global Search' }),
+
+        // ── AI Ask-the-Article ─────────────────────────────────────────────
+        articleAI: fields.object({
+          enabled: fields.checkbox({
+            label: 'Enable AI Ask-the-Article',
+            description: 'Show the "Ask AI" button on blog posts. Requires PUBLIC_GEMINI_API_KEY env var.',
+            defaultValue: true,
+          }),
+          buttonLabel: fields.text({
+            label: 'Button Label',
+            defaultValue: 'Ask AI',
+          }),
+          welcomeMessage: fields.text({
+            label: 'AI Tutor Welcome Message',
+            multiline: true,
+            defaultValue: "Hi! I'm your AI tutor for this article. Ask me anything about this topic! 🧠",
+          }),
+        }, { label: 'AI Ask-the-Article' }),
+
+        // ── Gamification & Achievements ────────────────────────────────────
+        gamification: fields.object({
+          enabled: fields.checkbox({
+            label: 'Enable Gamification & Achievements',
+            description: 'Show the XP/badge floating button and achievement panel.',
+            defaultValue: true,
+          }),
+          xpPerCorrectAnswer: fields.number({
+            label: 'XP per Correct Quiz Answer',
+            defaultValue: 10,
+          }),
+          xpBonusPerfectQuiz: fields.number({
+            label: 'Bonus XP for Perfect Quiz',
+            defaultValue: 25,
+          }),
+          streakEnabled: fields.checkbox({
+            label: 'Enable Day Streak Tracking',
+            defaultValue: true,
+          }),
+        }, { label: 'Gamification & Achievements' }),
+
+        // ── Spaced Repetition ──────────────────────────────────────────────
+        spacedRepetition: fields.object({
+          enabled: fields.checkbox({
+            label: 'Enable Spaced Repetition Review Mode',
+            description: 'Show the "Review Wrong Answers" mode on quiz pages.',
+            defaultValue: true,
+          }),
+          maxHistoryPerQuiz: fields.number({
+            label: 'Max Stored Attempts per Quiz',
+            defaultValue: 20,
+          }),
+        }, { label: 'Spaced Repetition Quiz Mode' }),
+      },
+    }),
   },
 
   collections: {

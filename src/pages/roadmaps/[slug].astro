@@ -2214,6 +2214,11 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
       if (progressPercentEl) progressPercentEl.textContent = `${percent}%`;
       if (progressBarFillEl) progressBarFillEl.style.width = `${percent}%`;
       updateFloatingProgress(percent, completedCount, roundedDoneHours);
+
+      // ── Achievements integration ──────────────────────────────────────
+      window.dispatchEvent(new CustomEvent('ee_roadmap_progress', {
+        detail: { completedCount, totalCount: totalTopicsCount, percent }
+      }));
     }
 
     function updateNextUpBanner() {

@@ -1,0 +1,6 @@
+enabled: true
+message: New courses just launched!
+linkText: See what's new
+linkUrl: /courses
+style: info
+dismissible: true

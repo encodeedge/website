@@ -21,6 +21,20 @@ CookieConsent.run({
         },
         analytics: {}
     },
+    onConsent: function({ cookie }) {
+        if (typeof window.gtag === 'function') {
+            window.gtag('consent', 'update', {
+                analytics_storage: CookieConsent.acceptedCategory('analytics') ? 'granted' : 'denied'
+            });
+        }
+    },
+    onChange: function({ changedCategories }) {
+        if (changedCategories.includes('analytics') && typeof window.gtag === 'function') {
+            window.gtag('consent', 'update', {
+                analytics_storage: CookieConsent.acceptedCategory('analytics') ? 'granted' : 'denied'
+            });
+        }
+    },
     language: {
         default: "en",
         autoDetect: "browser",

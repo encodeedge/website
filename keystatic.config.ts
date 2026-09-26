@@ -558,9 +558,32 @@ export default config({
       path: 'src/content/settings/integrations',
       schema: {
         googleAnalytics: fields.object({
-          enabled: fields.checkbox({ label: 'Enable Google Analytics', defaultValue: false }),
-          measurementId: fields.text({ label: 'GA4 Measurement ID e.g. G-XXXXXXXX' }),
-        }, { label: 'Google Analytics' }),
+          enabled: fields.checkbox({ label: 'Enable Google Analytics', defaultValue: true }),
+          measurementId: fields.text({
+            label: 'GA4 Measurement ID',
+            description: 'Your Google Analytics 4 Measurement ID (e.g. G-5WBXFR71Y5)',
+            defaultValue: 'G-5WBXFR71Y5',
+          }),
+          debugMode: fields.checkbox({
+            label: 'Debug Mode (GA4 DebugView)',
+            description: 'Enable only when testing in GA4 DebugView. Uncheck for real-time and production reports.',
+            defaultValue: false,
+          }),
+          excludeInternalTraffic: fields.checkbox({
+            label: 'Tag Localhost as Internal Traffic',
+            description: 'Tags localhost and development traffic so your own testing does not skew analytics reports.',
+            defaultValue: true,
+          }),
+          sendPageViewOnLoad: fields.checkbox({
+            label: 'Automatic Page View Tracking',
+            defaultValue: true,
+          }),
+          trackEngagement: fields.checkbox({
+            label: 'Track Rich Learning Engagement',
+            description: 'Automatically tracks reading depth (25%, 50%, 75%, 90%), lesson completions, and quiz submissions.',
+            defaultValue: true,
+          }),
+        }, { label: 'Google Analytics 4' }),
         crispChat: fields.object({
           enabled: fields.checkbox({ label: 'Enable Crisp Chat', defaultValue: false }),
           websiteId: fields.text({ label: 'Crisp Website ID' }),

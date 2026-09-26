@@ -2,6 +2,7 @@
 import BaseHead from "@/components/BaseHead.astro";
 import { Footer } from "@/components/blocks/footer";
 import { Navbar } from "@/components/blocks/navbar";
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics.astro";
 
 const { title, description } = Astro.props;
 ---
@@ -10,41 +11,8 @@ const { title, description } = Astro.props;
   <head>
     <BaseHead title={title} description={description} />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.css" />
-    {
-      (
-        <>            
-              <script type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=G-5WBXFR71Y5"></script>
-
-                <script type="text/partytown">
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag() {
-                    dataLayer.push(arguments);
-                    }
-                    gtag("js", new Date());
-                    gtag("consent", "default", {
-                        ad_storage: "granted",
-                        ad_user_data: "granted",
-                        ad_personalization: "granted",
-                        analytics_storage: "granted",
-                    });
-
-                    gtag("config", "G-5WBXFR71Y5", {
-                        debug_mode: true,
-                    });
-                </script>
-                <script is:inline>
-                    function updateConsents() {
-                    console.log('updateConsents called');
-                    gtag('consent', 'update', {
-                        ad_storage: 'granted',
-                        ad_user_data: 'granted',
-                        ad_personalization: 'granted',
-                        analytics_storage: 'granted',
-                        });
-                    }
-                </script>
-        </>
-    )}
+    <!-- Google Analytics 4 (Keystatic-controlled & consent-aware) -->
+    <GoogleAnalytics />
   </head>
   <body class="min-h-screen flex flex-col antialiased bg-background text-foreground">
     <Navbar client:load />

@@ -9,6 +9,7 @@ import {
   computeXPState,
   getXP,
 } from '@/lib/achievements';
+import { trackQuizAttempt } from '@/lib/analytics';
 
 type Question = {
   question: string;
@@ -152,6 +153,7 @@ export const InteractiveQuiz = ({
           total: questions.length,
           wrongIndices,
         });
+        trackQuizAttempt(quizId, totalCorrect, questions.length, totalCorrect >= Math.ceil(questions.length * 0.7));
       } catch { /* noop */ }
     }
 

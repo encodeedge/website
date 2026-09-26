@@ -1,6 +1,10 @@
 googleAnalytics:
   enabled: true
   measurementId: "G-5WBXFR71Y5"
+  debugMode: false
+  excludeInternalTraffic: true
+  sendPageViewOnLoad: true
+  trackEngagement: true
 crispChat:
   enabled: false
   websiteId: ""

@@ -1,0 +1,145 @@
+---
+import { getIntegrationsSettings } from '@/lib/settings';
+
+const integrations = await getIntegrationsSettings();
+const ga = integrations.googleAnalytics;
+
+const isEnabled = ga.enabled && ga.measurementId && ga.measurementId.trim() !== '';
+const measurementId = ga.measurementId;
+const isDev = import.meta.env.DEV;
+---
+
+{isEnabled && (
+  <>
+    <!-- Global Google Analytics 4 (gtag.js) -->
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`} is:inline></script>
+    <script is:inline define:vars={{ measurementId, debugMode: ga.debugMode, excludeInternal: ga.excludeInternalTraffic, sendPageView: ga.sendPageViewOnLoad, trackEngagement: ga.trackEngagement, isDev }}>
+      (function() {
+        // 1. Check if user or admin has opted out of tracking
+        var OPT_OUT_KEY = 'encodeedge_ga_optout';
+        var isOptedOut = false;
+        try {
+          isOptedOut = localStorage.getItem(OPT_OUT_KEY) === 'true';
+        } catch(e) {}
+
+        if (isOptedOut) {
+          window['ga-disable-' + measurementId] = true;
+          console.info('[GA4] Tracking is disabled via admin opt-out setting.');
+          return;
+        }
+
+        // 2. Initialize dataLayer and gtag function
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          window.dataLayer.push(arguments);
+        }
+        window.gtag = gtag;
+
+        gtag('js', new Date());
+
+        // 3. Set Default Privacy Consent
+        gtag('consent', 'default', {
+          ad_storage: 'granted',
+          ad_user_data: 'granted',
+          ad_personalization: 'granted',
+          analytics_storage: 'granted',
+        });
+
+        // 4. Detect internal/development traffic
+        var hostname = window.location.hostname;
+        var isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.indexOf('github.dev') !== -1 || hostname.indexOf('app.github.dev') !== -1 || hostname.indexOf('.internal') !== -1;
+        var shouldMarkInternal = excludeInternal && isLocal;
+
+        // 5. Build Configuration
+        var configOptions = {
+          send_page_view: sendPageView,
+          cookie_flags: 'SameSite=None;Secure',
+        };
+
+        // Enable debug_mode only if explicitly requested in Keystatic or in dev testing
+        if (debugMode) {
+          configOptions.debug_mode = true;
+        }
+
+        // Tag internal traffic for clean GA4 filtering
+        if (shouldMarkInternal) {
+          configOptions.traffic_type = 'internal';
+        }
+
+        gtag('config', measurementId, configOptions);
+
+        // 6. Global helper to toggle analytics opt-out for site owners
+        window.toggleAnalyticsOptOut = function() {
+          try {
+            var current = localStorage.getItem(OPT_OUT_KEY) === 'true';
+            var next = !current;
+            localStorage.setItem(OPT_OUT_KEY, String(next));
+            if (next) {
+              window['ga-disable-' + measurementId] = true;
+              alert('Google Analytics disabled for this browser. Your visits will no longer be tracked.');
+            } else {
+              delete window['ga-disable-' + measurementId];
+              alert('Google Analytics re-enabled for this browser.');
+            }
+          } catch(e) {
+            console.error('Failed to toggle opt-out:', e);
+          }
+        };
+
+        // 7. Rich Educational & Reading Engagement Tracking
+        if (trackEngagement) {
+          var scrollDepths = [25, 50, 75, 90];
+          var trackedDepths = {};
+
+          function handleScrollDepth() {
+            var docElem = document.documentElement;
+            var docBody = document.body;
+            var scrollTop = window.pageYOffset || docElem.scrollTop || docBody.scrollTop || 0;
+            var scrollHeight = Math.max(
+              docBody.scrollHeight, docElem.scrollHeight,
+              docBody.offsetHeight, docElem.offsetHeight,
+              docBody.clientHeight, docElem.clientHeight
+            );
+            var clientHeight = window.innerHeight || docElem.clientHeight || docBody.clientHeight || 0;
+            var totalScrollable = scrollHeight - clientHeight;
+            if (totalScrollable <= 100) return;
+
+            var currentPercent = Math.round((scrollTop / totalScrollable) * 100);
+
+            for (var i = 0; i < scrollDepths.length; i++) {
+              var threshold = scrollDepths[i];
+              if (currentPercent >= threshold && !trackedDepths[threshold]) {
+                trackedDepths[threshold] = true;
+                gtag('event', 'scroll_depth', {
+                  depth_percentage: threshold,
+                  page_path: window.location.pathname,
+                  page_title: document.title,
+                });
+              }
+            }
+          }
+
+          var scrollTimeout;
+          window.addEventListener('scroll', function() {
+            if (scrollTimeout) clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(handleScrollDepth, 150);
+          }, { passive: true });
+
+          // Track external links cleanly
+          document.addEventListener('click', function(e) {
+            var target = e.target && e.target.closest ? e.target.closest('a') : null;
+            if (!target || !target.href) return;
+            var url = target.href;
+            if (url.indexOf('http') === 0 && url.indexOf(window.location.hostname) === -1) {
+              gtag('event', 'click_external', {
+                link_url: url,
+                link_text: (target.innerText || '').trim().substring(0, 100),
+                outbound: true,
+              });
+            }
+          }, { passive: true });
+        }
+      })();
+    </script>
+  </>
+)}

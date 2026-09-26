@@ -272,3 +272,109 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     return DEFAULT_SITE_SETTINGS;
   }
 }
+
+export interface IntegrationsSettings {
+  googleAnalytics: {
+    enabled: boolean;
+    measurementId: string;
+    debugMode: boolean;
+    excludeInternalTraffic: boolean;
+    sendPageViewOnLoad: boolean;
+    trackEngagement: boolean;
+  };
+  crispChat: {
+    enabled: boolean;
+    websiteId: string;
+  };
+  convertKit: {
+    enabled: boolean;
+    formId: string;
+    apiKey: string;
+  };
+  discord: {
+    enabled: boolean;
+    widgetServerId: string;
+    inviteUrl: string;
+  };
+  posthog: {
+    enabled: boolean;
+    apiKey: string;
+    apiHost: string;
+  };
+}
+
+export const DEFAULT_INTEGRATIONS_SETTINGS: IntegrationsSettings = {
+  googleAnalytics: {
+    enabled: true,
+    measurementId: 'G-5WBXFR71Y5',
+    debugMode: false,
+    excludeInternalTraffic: true,
+    sendPageViewOnLoad: true,
+    trackEngagement: true,
+  },
+  crispChat: {
+    enabled: false,
+    websiteId: '',
+  },
+  convertKit: {
+    enabled: false,
+    formId: '',
+    apiKey: '',
+  },
+  discord: {
+    enabled: false,
+    widgetServerId: '',
+    inviteUrl: '',
+  },
+  posthog: {
+    enabled: false,
+    apiKey: '',
+    apiHost: 'https://app.posthog.com',
+  },
+};
+
+/**
+ * Read integrations settings from Keystatic with comprehensive fallbacks.
+ */
+export async function getIntegrationsSettings(): Promise<IntegrationsSettings> {
+  try {
+    const reader = getReader();
+    const integrations = await reader.singletons.integrationsSettings.read();
+    if (!integrations) return DEFAULT_INTEGRATIONS_SETTINGS;
+
+    const ga = (integrations as any).googleAnalytics;
+    return {
+      googleAnalytics: {
+        enabled: ga?.enabled ?? DEFAULT_INTEGRATIONS_SETTINGS.googleAnalytics.enabled,
+        measurementId: ga?.measurementId || DEFAULT_INTEGRATIONS_SETTINGS.googleAnalytics.measurementId,
+        debugMode: ga?.debugMode ?? DEFAULT_INTEGRATIONS_SETTINGS.googleAnalytics.debugMode,
+        excludeInternalTraffic: ga?.excludeInternalTraffic ?? DEFAULT_INTEGRATIONS_SETTINGS.googleAnalytics.excludeInternalTraffic,
+        sendPageViewOnLoad: ga?.sendPageViewOnLoad ?? DEFAULT_INTEGRATIONS_SETTINGS.googleAnalytics.sendPageViewOnLoad,
+        trackEngagement: ga?.trackEngagement ?? DEFAULT_INTEGRATIONS_SETTINGS.googleAnalytics.trackEngagement,
+      },
+      crispChat: {
+        enabled: integrations.crispChat?.enabled ?? DEFAULT_INTEGRATIONS_SETTINGS.crispChat.enabled,
+        websiteId: integrations.crispChat?.websiteId || DEFAULT_INTEGRATIONS_SETTINGS.crispChat.websiteId,
+      },
+      convertKit: {
+        enabled: integrations.convertKit?.enabled ?? DEFAULT_INTEGRATIONS_SETTINGS.convertKit.enabled,
+        formId: integrations.convertKit?.formId || DEFAULT_INTEGRATIONS_SETTINGS.convertKit.formId,
+        apiKey: integrations.convertKit?.apiKey || DEFAULT_INTEGRATIONS_SETTINGS.convertKit.apiKey,
+      },
+      discord: {
+        enabled: integrations.discord?.enabled ?? DEFAULT_INTEGRATIONS_SETTINGS.discord.enabled,
+        widgetServerId: integrations.discord?.widgetServerId || DEFAULT_INTEGRATIONS_SETTINGS.discord.widgetServerId,
+        inviteUrl: integrations.discord?.inviteUrl || DEFAULT_INTEGRATIONS_SETTINGS.discord.inviteUrl,
+      },
+      posthog: {
+        enabled: integrations.posthog?.enabled ?? DEFAULT_INTEGRATIONS_SETTINGS.posthog.enabled,
+        apiKey: integrations.posthog?.apiKey || DEFAULT_INTEGRATIONS_SETTINGS.posthog.apiKey,
+        apiHost: integrations.posthog?.apiHost || DEFAULT_INTEGRATIONS_SETTINGS.posthog.apiHost,
+      },
+    };
+  } catch (error) {
+    console.warn('[Keystatic Settings] Failed to load integrationsSettings, using defaults:', error);
+    return DEFAULT_INTEGRATIONS_SETTINGS;
+  }
+}
+

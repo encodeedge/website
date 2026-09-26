@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2, Circle, Sparkles } from 'lucide-react';
+import { trackLessonCompletion } from '@/lib/analytics';
 
 interface LessonCompletionToggleProps {
   itemId: string;
@@ -39,6 +40,7 @@ export const LessonCompletionToggle: React.FC<LessonCompletionToggleProps> = ({ 
       } else {
         list.push(itemId);
         setIsCompleted(true);
+        trackLessonCompletion(courseId, itemId);
       }
 
       localStorage.setItem(`lms_completed_${courseId}`, JSON.stringify(list));

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Search, X, BookOpen, Map, HelpCircle, GraduationCap, ArrowRight, Loader2, Clock, Sparkles } from 'lucide-react';
+import { trackSearchQuery } from '@/lib/analytics';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface SearchItem {
@@ -142,10 +143,18 @@ export const GlobalSearch = () => {
     setTimeout(() => inputRef.current?.focus(), 50);
   }, [open]);
 
-  // Search as you type
+  // Search as you type & track search query
   useEffect(() => {
     setActiveIndex(0);
-    setResults(searchItems(allItems, query));
+    const matched = searchItems(allItems, query);
+    setResults(matched);
+
+    if (query.trim().length >= 3) {
+      const timer = setTimeout(() => {
+        trackSearchQuery(query, matched.length);
+      }, 700);
+      return () => clearTimeout(timer);
+    }
   }, [query, allItems]);
 
   // Body scroll lock

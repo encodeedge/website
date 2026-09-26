@@ -6,6 +6,7 @@ import { AchievementsTrigger } from '@/components/ui/achievements-panel';
 import { NewsletterBanner } from '@/components/ui/newsletter-banner';
 import { AnnouncementBanner } from '@/components/ui/announcement-banner';
 import { PeerStudyRooms } from '@/components/interactive/PeerStudyRooms';
+import GoogleAnalytics from '@/components/analytics/GoogleAnalytics.astro';
 import { getFeatureFlags, getAnnouncementBanner, getSiteSettings } from '@/lib/settings';
 
 const { title, description } = Astro.props;
@@ -19,43 +20,8 @@ const site = await getSiteSettings();
     <head>		
         <BaseHead title={title} description={description}  />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.css" />
-        <!-- Google tag (gtag.js) -->
-        {
-             (
-            <>
-                <script type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=G-5WBXFR71Y5"></script>
-
-                <script type="text/partytown">
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag() {
-                    dataLayer.push(arguments);
-                    }
-                    gtag("js", new Date());
-                    gtag("consent", "default", {
-                        ad_storage: "granted",
-                        ad_user_data: "granted",
-                        ad_personalization: "granted",
-                        analytics_storage: "granted",
-                    });
-
-                    gtag("config", "G-5WBXFR71Y5", {
-                        debug_mode: true,
-                    });
-                </script>
-                <script is:inline>
-                    function updateConsents() {
-                    console.log('updateConsents called');
-                    gtag('consent', 'update', {
-                        ad_storage: 'granted',
-                        ad_user_data: 'granted',
-                        ad_personalization: 'granted',
-                        analytics_storage: 'granted',
-                        });
-                    }
-                </script>
-
-            </>
-        )}
+        <!-- Google Analytics 4 (Keystatic-controlled & consent-aware) -->
+        <GoogleAnalytics />
 
         <!-- Katex and Math formula render tag scripts -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.27/dist/katex.min.css" integrity="sha384-Pu5+C18nP5dwykLJOhd2U4Xen7rjScHN/qusop27hdd2drI+lL5KvX7YntvT8yew" crossorigin="anonymous">

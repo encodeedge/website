@@ -74,7 +74,17 @@ const XPFlash = ({ amount }: { amount: number | null }) => {
 };
 
 // ─── Main Quiz Component ─────────────────────────────────────────────────────
-export const InteractiveQuiz = ({ questions, quizId }: { questions: Question[]; quizId?: string }) => {
+export const InteractiveQuiz = ({
+  questions,
+  quizId,
+  spacedRepetitionEnabled = true,
+  gamificationEnabled = true,
+}: {
+  questions: Question[];
+  quizId?: string;
+  spacedRepetitionEnabled?: boolean;
+  gamificationEnabled?: boolean;
+}) => {
   const [courseId, setCourseId] = useState<string | null>(null);
   const [correctResults, setCorrectResults] = useState<Record<number, boolean>>({});
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
@@ -234,7 +244,7 @@ export const InteractiveQuiz = ({ questions, quizId }: { questions: Question[]; 
 
   return (
     <>
-      <AchievementToast />
+      {gamificationEnabled && <AchievementToast />}
 
       <div className="space-y-8 mt-6">
         {/* ─── Quiz Header Bar ─────────────────────────────────────── */}
@@ -257,14 +267,16 @@ export const InteractiveQuiz = ({ questions, quizId }: { questions: Question[]; 
 
           <div className="flex items-center gap-3 flex-wrap">
             {/* XP Level Badge */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-600 dark:text-violet-400">
-              <Star className="w-3.5 h-3.5" />
-              <span className="text-xs font-bold">{xpState.levelName}</span>
-              <span className="text-[10px] text-muted-foreground">({xpState.total} XP)</span>
-            </div>
+            {gamificationEnabled && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-600 dark:text-violet-400">
+                <Star className="w-3.5 h-3.5" />
+                <span className="text-xs font-bold">{xpState.levelName}</span>
+                <span className="text-[10px] text-muted-foreground">({xpState.total} XP)</span>
+              </div>
+            )}
 
             {/* Streak Badge */}
-            {currentStreak > 0 && (
+            {gamificationEnabled && currentStreak > 0 && (
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-600 dark:text-orange-400">
                 <Flame className="w-3.5 h-3.5" />
                 <span className="text-xs font-bold">{currentStreak} day streak</span>
@@ -272,7 +284,7 @@ export const InteractiveQuiz = ({ questions, quizId }: { questions: Question[]; 
             )}
 
             {/* Review Mode badge */}
-            {mode === 'review' && (
+            {spacedRepetitionEnabled && mode === 'review' && (
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400">
                 <Brain className="w-3.5 h-3.5" />
                 <span className="text-xs font-bold">Spaced Review · {reviewIndices.length} Qs</span>
@@ -339,7 +351,7 @@ export const InteractiveQuiz = ({ questions, quizId }: { questions: Question[]; 
               <Button onClick={resetQuiz} variant="outline" size="sm" className="gap-1.5">
                 <RotateCcw className="w-3.5 h-3.5" /> Retry All
               </Button>
-              {wrongCount > 0 && (
+              {spacedRepetitionEnabled && wrongCount > 0 && (
                 <Button onClick={startReviewMode} size="sm" className="gap-1.5 bg-blue-600 hover:bg-blue-700 text-white border-0">
                   <Brain className="w-3.5 h-3.5" /> Review Wrong ({wrongCount})
                 </Button>
@@ -371,7 +383,7 @@ export const InteractiveQuiz = ({ questions, quizId }: { questions: Question[]; 
         )}
 
         {/* ─── Previous session wrong answers CTA ─────────────────── */}
-        {mode === 'normal' && !allAnswered && quizId && (() => {
+        {spacedRepetitionEnabled && mode === 'normal' && !allAnswered && quizId && (() => {
           let prevWrong: number[] = [];
           try { prevWrong = getWrongIndicesForQuiz(quizId); } catch { /* noop */ }
           if (prevWrong.length === 0) return null;

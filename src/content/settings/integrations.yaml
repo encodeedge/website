@@ -1,0 +1,18 @@
+googleAnalytics:
+  enabled: true
+  measurementId: "G-5WBXFR71Y5"
+crispChat:
+  enabled: false
+  websiteId: ""
+convertKit:
+  enabled: false
+  formId: ""
+  apiKey: ""
+discord:
+  enabled: false
+  widgetServerId: ""
+  inviteUrl: ""
+posthog:
+  enabled: false
+  apiKey: ""
+  apiHost: "https://app.posthog.com"

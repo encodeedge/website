@@ -1,6 +1,6 @@
 enabled: true
-message: New courses just launched!
-linkText: See what's new
-linkUrl: /courses
-style: info
+message: "🚀 New courses just launched — Deep Learning, LLMs & Python Mastery!"
+linkText: "Explore courses"
+linkUrl: "/courses"
+style: "promo"
 dismissible: true

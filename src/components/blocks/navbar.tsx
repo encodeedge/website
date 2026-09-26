@@ -18,10 +18,20 @@ const NAV_ITEMS = [
   { label: "Contact", href: "/contact" },
 ];
 
-export const Navbar = () => {
+interface NavbarProps {
+  enableSearch?: boolean;
+  enableLive?: boolean;
+}
+
+export const Navbar = ({ enableSearch = true, enableLive = true }: NavbarProps) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [pathname, setPathname] = useState("");
   const [mounted, setMounted] = useState(false);
+
+  const navItems = NAV_ITEMS.filter((item) => {
+    if (item.href === "/live-classes" && !enableLive) return false;
+    return true;
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -127,7 +137,7 @@ export const Navbar = () => {
             {/* Center Column: Navigation Links (Desktop) */}
             <nav className="hidden xl:flex items-center justify-center">
               <ul className="flex items-center space-x-1 font-medium text-sm">
-                {NAV_ITEMS.map((item) => {
+                {navItems.map((item) => {
                   const active = isActive(item.href);
                   return (
                     <li key={item.href}>
@@ -150,7 +160,7 @@ export const Navbar = () => {
 
             {/* Right Column: Actions (Subscribe & Theme Toggle) */}
             <div className="flex items-center justify-end space-x-2.5 sm:space-x-3 xl:col-span-1">
-              <GlobalSearch />
+              {enableSearch && <GlobalSearch />}
 
               <a
                 href="/subscribe"
@@ -207,7 +217,7 @@ export const Navbar = () => {
                 {/* Drawer Navigation */}
                 <nav className="mt-6">
                   <ul className="space-y-1">
-                    {NAV_ITEMS.map((item) => {
+                    {navItems.map((item) => {
                       const active = isActive(item.href);
                       return (
                         <li key={item.href}>

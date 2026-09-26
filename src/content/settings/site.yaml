@@ -1,0 +1,13 @@
+siteName: "EncodeEdge"
+siteTagline: "The Modern Developer & AI Engineer Learning Platform"
+siteDescription: "Master Artificial Intelligence, Deep Learning, and Modern Software Engineering with interactive visual roadmaps and labs."
+themePreset: "indigo"
+primaryColor: "#6366f1"
+accentColor: "#E5E795"
+backgroundColor: "#ffffff"
+darkBackgroundColor: "#09090b"
+socialLinks:
+  github: "https://github.com/encodeedge"
+  twitter: "https://x.com/encodeedge"
+  linkedin: "https://linkedin.com/company/encodeedge"
+  youtube: "https://youtube.com/@encodeedge"

@@ -6,6 +6,10 @@ import References from "@/components/blocks/references";
 import { TOPIC_METADATA } from "@/lib/topics";
 import { CodeSandboxRunner } from "@/components/interactive/CodeSandboxRunner";
 import EditorialPostCover from "@/components/ui/EditorialPostCover.astro";
+import { ArticleAI } from "@/components/ui/article-ai";
+import { getFeatureFlags } from "@/lib/settings";
+
+const flags = await getFeatureFlags();
 
 interface Props {
   post: any;
@@ -890,6 +894,16 @@ const postId = post.id;
       Copy
     </button>
   </div>
+
+  {/* 13. AI Ask-the-Article Floating Button */}
+  {flags.articleAI.enabled && (
+    <ArticleAI
+      client:load
+      articleTitle={title}
+      articleDescription={description}
+      enabled={flags.articleAI.enabled}
+    />
+  )}
 </article>
 
 {/* Client-side Script with Robust Vanilla JS (100% Reliability, Zero Hydration Errors) */}

@@ -72,6 +72,7 @@ interface BlogPostProps {
   prevPost?: any;
   nextPost?: any;
   relatedPosts?: Array<any>;
+  enableAI?: boolean;
 }
 
 const formatSlug = (slug: string) => {
@@ -103,6 +104,7 @@ const BlogPost: React.FC<BlogPostProps> = ({
   prevPost,
   nextPost,
   relatedPosts,
+  enableAI = true,
 }) => {
   const {
     title,
@@ -760,6 +762,7 @@ const BlogPost: React.FC<BlogPostProps> = ({
               <ArticleAI
                 articleTitle={post.data.title}
                 articleDescription={post.data.description}
+                enabled={enableAI}
               />
             </div>
 

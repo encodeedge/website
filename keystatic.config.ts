@@ -195,26 +195,64 @@ export default config({
           label: 'Default Meta Description',
           multiline: true,
         }),
-        // ── Brand Colors ───────────────────────────────────────────────────
+        // ── Brand Colors & Palette Presets ─────────────────────────────────
+        themePreset: fields.select({
+          label: 'Theme & Palette Preset',
+          description: 'Pick an instant coordinated color palette or choose "Custom Hex" to define your own below.',
+          options: [
+            { label: '🟣 Indigo Modern (Primary #6366f1, Accent #E5E795)', value: 'indigo' },
+            { label: '🟢 Emerald Tech (Primary #10b981, Accent #38bdf8)', value: 'emerald' },
+            { label: '🟣 Electric Violet (Primary #8b5cf6, Accent #f43f5e)', value: 'violet' },
+            { label: '🟠 Sunset Amber (Primary #f59e0b, Accent #ec4899)', value: 'amber' },
+            { label: '🔵 Cyber Cyan (Primary #06b6d4, Accent #a855f7)', value: 'cyan' },
+            { label: '🔴 Crimson Ruby (Primary #ef4444, Accent #f59e0b)', value: 'crimson' },
+            { label: '🎨 Custom Hex (Use custom hex codes specified below)', value: 'custom' },
+          ],
+          defaultValue: 'indigo',
+        }),
         primaryColor: fields.text({
-          label: 'Primary Color',
-          description: 'Use a hex value (e.g. #6366f1)',
+          label: 'Primary Brand Color (Hex)',
+          description: 'Hex code (e.g. #6366f1). Used for buttons, active items, and primary accents.',
           defaultValue: '#6366f1',
+          validation: {
+            pattern: {
+              regex: /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/,
+              message: 'Please enter a valid hex color code, e.g. #6366f1',
+            },
+          },
         }),
         accentColor: fields.text({
-          label: 'Accent Color',
-          description: 'Use a hex value (e.g. #E5E795)',
+          label: 'Accent Brand Color (Hex)',
+          description: 'Hex code (e.g. #E5E795). Used for secondary badges and highlight pills.',
           defaultValue: '#E5E795',
+          validation: {
+            pattern: {
+              regex: /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/,
+              message: 'Please enter a valid hex color code, e.g. #E5E795',
+            },
+          },
         }),
         backgroundColor: fields.text({
-          label: 'Background Color (Light Mode)',
-          description: 'Use a hex value (e.g. #ffffff)',
+          label: 'Background Color - Light Mode (Hex)',
+          description: 'Hex code for light mode background (e.g. #ffffff).',
           defaultValue: '#ffffff',
+          validation: {
+            pattern: {
+              regex: /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/,
+              message: 'Please enter a valid hex color code, e.g. #ffffff',
+            },
+          },
         }),
         darkBackgroundColor: fields.text({
-          label: 'Background Color (Dark Mode)',
-          description: 'Use a hex value (e.g. #09090b)',
+          label: 'Background Color - Dark Mode (Hex)',
+          description: 'Hex code for dark mode background (e.g. #09090b).',
           defaultValue: '#09090b',
+          validation: {
+            pattern: {
+              regex: /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/,
+              message: 'Please enter a valid hex color code, e.g. #09090b',
+            },
+          },
         }),
         // ── Logo & Favicon ──────────────────────────────────────────────────
         logo: fields.image({
@@ -331,6 +369,47 @@ export default config({
             defaultValue: 20,
           }),
         }, { label: 'Spaced Repetition Quiz Mode' }),
+
+        // ── Peer Study Rooms ───────────────────────────────────────────────
+        peerStudyRooms: fields.object({
+          enabled: fields.checkbox({
+            label: 'Enable Peer Study Rooms',
+            description: 'Show the floating "Study Rooms" button and virtual study rooms modal.',
+            defaultValue: true,
+          }),
+        }, { label: 'Peer Study Rooms' }),
+
+        // ── Live Classes ───────────────────────────────────────────────────
+        liveClasses: fields.object({
+          enabled: fields.checkbox({
+            label: 'Enable Live Classes Page',
+            description: 'Enable the /live-classes page and scheduler.',
+            defaultValue: true,
+          }),
+          showInNav: fields.checkbox({
+            label: 'Show "Live" in Navigation Bar',
+            description: 'Display the Live link in the main navigation menu.',
+            defaultValue: true,
+          }),
+        }, { label: 'Live Classes' }),
+
+        // ── Course Certificates ────────────────────────────────────────────
+        courseCertificates: fields.object({
+          enabled: fields.checkbox({
+            label: 'Enable Course Certificates',
+            description: 'Show the "Generate Certificate" button on course pages.',
+            defaultValue: true,
+          }),
+        }, { label: 'Course Certificates' }),
+
+        // ── Course Leaderboard ─────────────────────────────────────────────
+        courseLeaderboard: fields.object({
+          enabled: fields.checkbox({
+            label: 'Enable Course Leaderboard',
+            description: 'Show the leaderboard podium and student ranking on live classes page.',
+            defaultValue: true,
+          }),
+        }, { label: 'Course Leaderboard' }),
       },
     }),
 

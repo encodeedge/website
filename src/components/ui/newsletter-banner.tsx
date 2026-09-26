@@ -5,7 +5,19 @@ const DISMISS_KEY = 'ee_newsletter_banner_dismissed';
 const SUBSCRIBE_KEY = 'ee_newsletter_subscribed';
 const SHOW_DELAY_MS = 30000; // 30 seconds
 
-export const NewsletterBanner = () => {
+interface NewsletterBannerProps {
+  headline?: string;
+  subtext?: string;
+  buttonLabel?: string;
+  delaySeconds?: number;
+}
+
+export const NewsletterBanner = ({
+  headline = 'Join 2,000+ learners getting weekly AI & ML insights',
+  subtext = 'No spam. Unsubscribe anytime. Free forever.',
+  buttonLabel = 'Join free',
+  delaySeconds = 30,
+}: NewsletterBannerProps) => {
   const [visible, setVisible] = useState(false);
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
@@ -18,10 +30,10 @@ export const NewsletterBanner = () => {
       if (sessionStorage.getItem(DISMISS_KEY)) return;
     } catch { /* ignore */ }
 
-    // Wait 30s then show
-    const timer = setTimeout(() => setVisible(true), SHOW_DELAY_MS);
+    // Wait configured delay (in seconds) then show
+    const timer = setTimeout(() => setVisible(true), (delaySeconds || 30) * 1000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [delaySeconds]);
 
   const dismiss = () => {
     setVisible(false);
@@ -70,10 +82,10 @@ export const NewsletterBanner = () => {
             </div>
             <div>
               <div className="text-sm font-bold text-white leading-snug">
-                Join 2,000+ learners getting weekly AI & ML insights
+                {headline}
               </div>
               <div className="text-xs text-slate-400 mt-0.5">
-                No spam. Unsubscribe anytime. Free forever.
+                {subtext}
               </div>
             </div>
           </div>
@@ -109,7 +121,7 @@ export const NewsletterBanner = () => {
                   <span>Joining...</span>
                 ) : (
                   <>
-                    <span>Join free</span>
+                    <span>{buttonLabel}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}

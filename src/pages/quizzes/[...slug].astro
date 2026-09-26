@@ -6,6 +6,7 @@ import { CourseNavigation } from '@/components/ui/course-navigation';
 import { LessonCurriculumDrawer } from '@/components/ui/lesson-curriculum-drawer';
 import { getCoursesMap } from '@/utils/course-map';
 import { HelpCircle, Clock, Award } from 'lucide-react';
+import { getFeatureFlags } from '@/lib/settings';
 
 export async function getStaticPaths() {
   const quizzes = await getCollection('quizzes');
@@ -17,6 +18,7 @@ export async function getStaticPaths() {
 
 const { quiz } = Astro.props;
 const coursesMap = await getCoursesMap();
+const flags = await getFeatureFlags();
 ---
 
 <DefaultLayout title={`${quiz.data.title} | Checkpoint Quiz`} description={quiz.data.description || quiz.data.title}>
@@ -71,6 +73,8 @@ const coursesMap = await getCoursesMap();
         <InteractiveQuiz 
           questions={quiz.data.questions} 
           quizId={quiz.id} 
+          spacedRepetitionEnabled={flags.spacedRepetition.enabled}
+          gamificationEnabled={flags.gamification.enabled}
           client:load 
         />
       </div>

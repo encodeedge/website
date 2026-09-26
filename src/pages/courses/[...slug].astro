@@ -6,6 +6,7 @@ import { CourseProgressCard } from '@/components/ui/course-progress-card';
 import { CoursePrerequisiteFlow } from '@/components/interactive/CoursePrerequisiteFlow';
 import { CourseFlashcardsDrawer } from '@/components/interactive/CourseFlashcardsDrawer';
 import { CourseCertificate } from '@/components/interactive/CourseCertificate';
+import { getFeatureFlags } from '@/lib/settings';
 import { 
   Clock, 
   BookOpen, 
@@ -29,6 +30,7 @@ export async function getStaticPaths() {
 
 const { course } = Astro.props;
 const { Content } = await render(course);
+const flags = await getFeatureFlags();
 
 const allLessons = await getCollection('lessons');
 const allQuizzes = await getCollection('quizzes');
@@ -161,12 +163,14 @@ const totalDurationStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
         </div>
         <div class="ml-auto flex items-center gap-2 flex-wrap">
           <CourseFlashcardsDrawer initialCategory={course.id} client:load />
-          <CourseCertificate
-            courseId={course.id}
-            courseTitle={course.data.title}
-            instructorName={instructor?.data.name || 'Atul Jha'}
-            client:load
-          />
+          {flags.courseCertificates.enabled && (
+            <CourseCertificate
+              courseId={course.id}
+              courseTitle={course.data.title}
+              instructorName={instructor?.data.name || 'Atul Jha'}
+              client:load
+            />
+          )}
         </div>
       </div>
     </header>

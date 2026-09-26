@@ -1,0 +1,30 @@
+tagline: "Demystifying modern Python, Machine Learning, and algorithms with clear, code-backed blueprints."
+columns:
+  - heading: "Explore"
+    links:
+      - label: "Roadmaps"
+        href: "/roadmaps"
+      - label: "Courses"
+        href: "/courses"
+      - label: "Live Classes"
+        href: "/live-classes"
+      - label: "Blog Articles"
+        href: "/blog"
+  - heading: "Community"
+    links:
+      - label: "About Us"
+        href: "/about"
+      - label: "FAQ"
+        href: "/faq"
+      - label: "Newsletter"
+        href: "/subscribe"
+      - label: "Contact"
+        href: "/contact"
+copyrightText: "© 2025 EncodeEdge. All rights reserved."
+socialLinks:
+  github: "https://github.com/encodeedge"
+  twitter: "https://x.com/encodeedge"
+  linkedin: "https://linkedin.com/company/encodeedge"
+  youtube: "https://youtube.com/@encodeedge"
+  rss: "/rss.xml"
+showNewsletter: true

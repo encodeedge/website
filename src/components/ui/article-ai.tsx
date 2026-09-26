@@ -12,6 +12,7 @@ interface ArticleAIProps {
   articleTitle: string;
   articleDescription: string;
   articleExcerpt?: string;
+  enabled?: boolean;
 }
 
 // ─── Gemini free tier (set PUBLIC_GEMINI_API_KEY in .env) ────────────────────
@@ -243,7 +244,7 @@ const ChatPanel = ({
 };
 
 // ─── Exported component — renders a FIXED floating pill (always visible) ─────
-export const ArticleAI = ({ articleTitle, articleDescription, articleExcerpt }: ArticleAIProps) => {
+export const ArticleAI = ({ articleTitle, articleDescription, articleExcerpt, enabled = true }: ArticleAIProps) => {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -252,7 +253,7 @@ export const ArticleAI = ({ articleTitle, articleDescription, articleExcerpt }: 
 
   const context = `${articleTitle}. ${articleDescription}${articleExcerpt ? ` ${articleExcerpt.slice(0, 500)}` : ''}`;
 
-  if (!mounted) return null;
+  if (!mounted || enabled === false) return null;
 
   return (
     <>

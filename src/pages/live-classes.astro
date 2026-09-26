@@ -3,7 +3,10 @@ import { getCollection } from 'astro:content';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { LiveClassScheduler } from '@/components/interactive/LiveClassScheduler';
 import { CourseLeaderboard } from '@/components/interactive/CourseLeaderboard';
-import { Calendar, Trophy } from 'lucide-react';
+import { Calendar, Trophy, AlertCircle } from 'lucide-react';
+import { getFeatureFlags } from '@/lib/settings';
+
+const flags = await getFeatureFlags();
 ---
 
 <DefaultLayout title="Live Classes & Leaderboard | EncodeEdge" description="Join live sessions, attend office hours, and see where you rank among top learners.">
@@ -23,18 +26,39 @@ import { Calendar, Trophy } from 'lucide-react';
       </p>
     </div>
 
-    <!-- Live Class Scheduler -->
-    <section>
-      <LiveClassScheduler client:load />
-    </section>
+    {flags.liveClasses.enabled ? (
+      <>
+        <!-- Live Class Scheduler -->
+        <section>
+          <LiveClassScheduler client:load />
+        </section>
 
-    <!-- Divider -->
-    <div class="border-t border-border/60"></div>
+        {flags.courseLeaderboard.enabled && (
+          <>
+            <!-- Divider -->
+            <div class="border-t border-border/60"></div>
 
-    <!-- Leaderboard -->
-    <section>
-      <CourseLeaderboard client:load />
-    </section>
+            <!-- Leaderboard -->
+            <section>
+              <CourseLeaderboard client:load />
+            </section>
+          </>
+        )}
+      </>
+    ) : (
+      <div class="p-12 text-center rounded-2xl border border-border bg-card max-w-xl mx-auto space-y-3">
+        <AlertCircle class="w-10 h-10 text-muted-foreground mx-auto opacity-40" />
+        <h2 class="text-xl font-bold font-display text-foreground">Live Sessions Currently Paused</h2>
+        <p class="text-sm text-muted-foreground leading-relaxed">
+          Live classes are currently undergoing schedule updates. Check back soon or explore our self-paced courses.
+        </p>
+        <div class="pt-2">
+          <a href="/courses" class="inline-flex px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm">
+            Browse Courses →
+          </a>
+        </div>
+      </div>
+    )}
 
   </div>
 </DefaultLayout>

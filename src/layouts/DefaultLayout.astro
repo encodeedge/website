@@ -6,8 +6,13 @@ import { AchievementsTrigger } from '@/components/ui/achievements-panel';
 import { NewsletterBanner } from '@/components/ui/newsletter-banner';
 import { AnnouncementBanner } from '@/components/ui/announcement-banner';
 import { PeerStudyRooms } from '@/components/interactive/PeerStudyRooms';
+import { getFeatureFlags, getAnnouncementBanner, getSiteSettings } from '@/lib/settings';
 
 const { title, description } = Astro.props;
+
+const flags = await getFeatureFlags();
+const announcement = await getAnnouncementBanner();
+const site = await getSiteSettings();
 ---
 
 <html lang="en">
@@ -57,19 +62,35 @@ const { title, description } = Astro.props;
         <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.27/dist/katex.min.js" integrity="sha384-2B8pfmZZ6JlVoScJm/5hQfNS2TI/6hPqDZInzzPc8oHpN5SgeNOf4LzREO6p5YtZ" crossorigin="anonymous"></script>
         <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.27/dist/contrib/auto-render.min.js" integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"
     onload="renderMathInElement(document.body);"></script>
+
+        <style define:vars={{
+          brandPrimary: site.primaryColor,
+          brandAccent: site.accentColor,
+        }}>
+          :root {
+            --brand-primary: var(--brandPrimary);
+            --brand-accent: var(--brandAccent);
+          }
+        </style>
     </head>
     <body class="min-h-screen flex flex-col antialiased bg-background text-foreground">
-        <AnnouncementBanner
+        {announcement.enabled && (
+          <AnnouncementBanner
+            client:load
+            enabled={announcement.enabled}
+            message={announcement.message}
+            linkText={announcement.linkText}
+            linkUrl={announcement.linkUrl}
+            style={announcement.style}
+            dismissible={announcement.dismissible}
+            bannerId="keystatic-announcement"
+          />
+        )}
+        <Navbar
           client:load
-          enabled={true}
-          message="🚀 New courses just launched — Deep Learning, LLMs & Python Mastery!"
-          linkText="Explore courses"
-          linkUrl="/courses"
-          style="promo"
-          dismissible={true}
-          bannerId="launch-2025"
+          enableSearch={flags.globalSearch.enabled}
+          enableLive={flags.liveClasses.showInNav}
         />
-        <Navbar client:load />
         <script is:inline>
           (function() {
             function syncHeaderHeight() {
@@ -89,9 +110,17 @@ const { title, description } = Astro.props;
           })();
         </script>
         <main class="flex-1"><slot /></main>
-        <AchievementsTrigger client:load />
-        <NewsletterBanner client:load />
-        <PeerStudyRooms client:load />
+        {flags.gamification.enabled && <AchievementsTrigger client:load />}
+        {flags.newsletterBanner.enabled && (
+          <NewsletterBanner
+            client:load
+            headline={flags.newsletterBanner.headline}
+            subtext={flags.newsletterBanner.subtext}
+            buttonLabel={flags.newsletterBanner.buttonLabel}
+            delaySeconds={flags.newsletterBanner.delaySeconds}
+          />
+        )}
+        {flags.peerStudyRooms.enabled && <PeerStudyRooms client:load />}
         <Footer />
         <script type="module" src="/scripts/cookieconsent-config.js"></script>
     </body>

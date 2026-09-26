@@ -5,17 +5,17 @@ newsletterBanner:
   buttonLabel: Join free
   delaySeconds: 30
 globalSearch:
-  enabled: true
+  enabled: false
   placeholder: Search articles, roadmaps, quizzes, courses...
 articleAI:
   enabled: false
   buttonLabel: Ask AI
   welcomeMessage: Hi! I'm your AI tutor for this article. Ask me anything about this topic! 🧠
 gamification:
-  enabled: true
+  enabled: false
   xpPerCorrectAnswer: 10
   xpBonusPerfectQuiz: 25
-  streakEnabled: true
+  streakEnabled: false
 spacedRepetition:
   enabled: true
   maxHistoryPerQuiz: 20

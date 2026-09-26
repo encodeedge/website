@@ -5,7 +5,7 @@ newsletterBanner:
   buttonLabel: Join free
   delaySeconds: 30
 globalSearch:
-  enabled: false
+  enabled: true
   placeholder: Search articles, roadmaps, quizzes, courses...
 articleAI:
   enabled: false

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { PenLine, X, Download, Trash2, Check, Sparkles } from 'lucide-react';
+import { PenLine, X, Download, Trash2, Check, Sparkles, ShieldCheck } from 'lucide-react';
+import { persistentStorage } from '@/lib/storage';
 
 interface LearnerNotesDrawerProps {
   lessonId: string;
@@ -15,21 +16,21 @@ export const LearnerNotesDrawer: React.FC<LearnerNotesDrawerProps> = ({
   const [savedStatus, setSavedStatus] = useState(false);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(`lms_notes_${lessonId}`);
-      if (stored) {
-        setNotes(stored);
-      }
-    } catch (e) {
-      console.error(e);
-    }
+    // Immediate synchronous load from memory/localStorage
+    const initialNotes = persistentStorage.getSync<string>(`lms_notes_${lessonId}`, '');
+    if (initialNotes) setNotes(initialNotes);
+
+    // Asynchronous load from IndexedDB
+    persistentStorage.get<string>(`lms_notes_${lessonId}`, '').then((stored) => {
+      if (stored) setNotes(stored);
+    });
   }, [lessonId]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
     setNotes(val);
     try {
-      localStorage.setItem(`lms_notes_${lessonId}`, val);
+      await persistentStorage.set(`lms_notes_${lessonId}`, val);
       setSavedStatus(true);
       setTimeout(() => setSavedStatus(false), 1500);
     } catch (err) {
@@ -48,10 +49,10 @@ export const LearnerNotesDrawer: React.FC<LearnerNotesDrawerProps> = ({
     URL.revokeObjectURL(url);
   };
 
-  const handleClear = () => {
+  const handleClear = async () => {
     if (confirm('Clear notes for this lesson?')) {
       setNotes('');
-      localStorage.removeItem(`lms_notes_${lessonId}`);
+      await persistentStorage.remove(`lms_notes_${lessonId}`);
     }
   };
 
@@ -73,12 +74,15 @@ export const LearnerNotesDrawer: React.FC<LearnerNotesDrawerProps> = ({
             {/* Header */}
             <div className="p-5 border-b border-border flex items-center justify-between bg-muted/20">
               <div className="space-y-1 pr-4 min-w-0">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
                     Study Scratchpad
                   </span>
+                  <span className="flex items-center gap-1 text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
+                    <ShieldCheck className="w-3 h-3" /> Durable Storage
+                  </span>
                   {savedStatus && (
-                    <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                    <span className="flex items-center gap-1 text-[10px] font-semibold text-primary">
                       <Check className="w-3 h-3" /> Autosaved
                     </span>
                   )}

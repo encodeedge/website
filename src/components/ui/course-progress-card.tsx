@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Award, Clock, BookOpen, CheckCircle, ArrowRight, RotateCcw, Users, Sparkles } from 'lucide-react';
 import { CourseCertificateModal } from '../interactive/CourseCertificateModal';
+import { persistentStorage } from '@/lib/storage';
 
 interface FlatItem {
   id: string;
@@ -29,19 +30,19 @@ export const CourseProgressCard: React.FC<CourseProgressCardProps> = ({
   useEffect(() => {
     setIsClient(true);
     const updateProgress = () => {
-      try {
-        const stored = localStorage.getItem(`lms_completed_${courseId}`);
-        if (stored) {
-          setCompletedIds(JSON.parse(stored));
-        }
-      } catch (e) {
-        console.error(e);
+      const stored = persistentStorage.getSync<string[]>(`lms_completed_${courseId}`, []);
+      if (Array.isArray(stored)) {
+        setCompletedIds(stored);
       }
     };
 
     updateProgress();
     window.addEventListener('lms_progress_updated', updateProgress);
-    return () => window.removeEventListener('lms_progress_updated', updateProgress);
+    window.addEventListener('ee_storage_change', updateProgress);
+    return () => {
+      window.removeEventListener('lms_progress_updated', updateProgress);
+      window.removeEventListener('ee_storage_change', updateProgress);
+    };
   }, [courseId]);
 
   const total = flatItems.length;
@@ -51,9 +52,9 @@ export const CourseProgressCard: React.FC<CourseProgressCardProps> = ({
   // Find next uncompleted item
   const nextItem = flatItems.find(item => !completedIds.includes(item.id)) || flatItems[0];
 
-  const handleReset = () => {
+  const handleReset = async () => {
     if (confirm('Are you sure you want to reset your progress for this course?')) {
-      localStorage.removeItem(`lms_completed_${courseId}`);
+      await persistentStorage.remove(`lms_completed_${courseId}`);
       setCompletedIds([]);
       window.dispatchEvent(new Event('lms_progress_updated'));
     }

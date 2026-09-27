@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2, Circle, Sparkles } from 'lucide-react';
 import { trackLessonCompletion } from '@/lib/analytics';
+import { persistentStorage } from '@/lib/storage';
 
 interface LessonCompletionToggleProps {
   itemId: string;
@@ -15,35 +16,36 @@ export const LessonCompletionToggle: React.FC<LessonCompletionToggleProps> = ({ 
     const cId = params.get('course');
     if (cId) {
       setCourseId(cId);
-      try {
-        const stored = localStorage.getItem(`lms_completed_${cId}`);
-        if (stored) {
-          const list: string[] = JSON.parse(stored);
+      // Synchronous read for instantaneous initial state
+      const initialList = persistentStorage.getSync<string[]>(`lms_completed_${cId}`, []);
+      setIsCompleted(Array.isArray(initialList) && initialList.includes(itemId));
+
+      // Asynchronous reconcile with IndexedDB
+      persistentStorage.get<string[]>(`lms_completed_${cId}`, []).then((list) => {
+        if (Array.isArray(list)) {
           setIsCompleted(list.includes(itemId));
         }
-      } catch (e) {
-        console.error(e);
-      }
+      });
     }
   }, [itemId]);
 
   if (!courseId) return null;
 
-  const toggle = () => {
+  const toggle = async () => {
     try {
-      const stored = localStorage.getItem(`lms_completed_${courseId}`);
-      let list: string[] = stored ? JSON.parse(stored) : [];
+      const list = await persistentStorage.get<string[]>(`lms_completed_${courseId}`, []) || [];
+      let updatedList: string[];
 
       if (list.includes(itemId)) {
-        list = list.filter(id => id !== itemId);
+        updatedList = list.filter(id => id !== itemId);
         setIsCompleted(false);
       } else {
-        list.push(itemId);
+        updatedList = [...list, itemId];
         setIsCompleted(true);
         trackLessonCompletion(courseId, itemId);
       }
 
-      localStorage.setItem(`lms_completed_${courseId}`, JSON.stringify(list));
+      await persistentStorage.set(`lms_completed_${courseId}`, updatedList);
       window.dispatchEvent(new Event('lms_progress_updated'));
     } catch (e) {
       console.error(e);

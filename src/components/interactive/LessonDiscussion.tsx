@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   UserCheck
 } from 'lucide-react';
+import { persistentStorage } from '@/lib/storage';
 
 interface QuestionReply {
   id: string;
@@ -107,32 +108,32 @@ export const LessonDiscussion: React.FC<LessonDiscussionProps> = ({ lessonId, le
 
   // Load persisted threads or fallback to seed
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(storageKey);
-      if (stored) {
-        setThreads(JSON.parse(stored));
-      } else {
-        const initial = DEFAULT_SEEDS[lessonId] || DEFAULT_SEEDS['default'];
-        setThreads(initial);
-        localStorage.setItem(storageKey, JSON.stringify(initial));
-      }
-
-      const upvotesStored = localStorage.getItem(`lms_upvotes_${lessonId}`);
-      if (upvotesStored) {
-        setUserUpvotes(new Set(JSON.parse(upvotesStored)));
-      }
-    } catch (e) {
-      console.error(e);
+    // Immediate synchronous load
+    const stored = persistentStorage.getSync<QuestionThread[]>(storageKey);
+    if (stored && Array.isArray(stored) && stored.length > 0) {
+      setThreads(stored);
+    } else {
+      const initial = DEFAULT_SEEDS[lessonId] || DEFAULT_SEEDS['default'];
+      setThreads(initial);
+      persistentStorage.set(storageKey, initial);
     }
+
+    const upvotesStored = persistentStorage.getSync<string[]>(`lms_upvotes_${lessonId}`);
+    if (upvotesStored && Array.isArray(upvotesStored)) {
+      setUserUpvotes(new Set(upvotesStored));
+    }
+
+    // Async hydration from IndexedDB
+    persistentStorage.get<QuestionThread[]>(storageKey).then((asyncStored) => {
+      if (asyncStored && Array.isArray(asyncStored) && asyncStored.length > 0) {
+        setThreads(asyncStored);
+      }
+    });
   }, [lessonId]);
 
   const saveThreads = (updated: QuestionThread[]) => {
     setThreads(updated);
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(updated));
-    } catch (e) {
-      console.error(e);
-    }
+    persistentStorage.set(storageKey, updated);
   };
 
   const handlePostQuestion = (e: React.FormEvent) => {
@@ -182,11 +183,7 @@ export const LessonDiscussion: React.FC<LessonDiscussionProps> = ({ lessonId, le
 
     setUserUpvotes(nextUpvotes);
     saveThreads(updated);
-    try {
-      localStorage.setItem(`lms_upvotes_${lessonId}`, JSON.stringify([...nextUpvotes]));
-    } catch (e) {
-      console.error(e);
-    }
+    persistentStorage.set(`lms_upvotes_${lessonId}`, [...nextUpvotes]);
   };
 
   const handlePostReply = (threadId: string) => {

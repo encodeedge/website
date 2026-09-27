@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   Flame, 
   Award, 
@@ -15,8 +15,15 @@ import {
   GraduationCap,
   Trophy,
   Activity,
-  BookmarkCheck
+  BookmarkCheck,
+  ShieldCheck,
+  HardDrive,
+  Download,
+  Upload,
+  RefreshCw,
+  Database
 } from 'lucide-react';
+import { persistentStorage, getStorageEstimate, requestPersistence } from '@/lib/storage';
 import { CourseCertificateModal } from './CourseCertificateModal';
 
 interface ChapterItem {
@@ -67,11 +74,80 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ courses }) =
   const [activeTab, setActiveTab] = useState<'all' | 'in-progress' | 'completed'>('all');
   const [selectedCertCourse, setSelectedCertCourse] = useState<CourseData | null>(null);
   const [savedNotes, setSavedNotes] = useState<{ lessonId: string; note: string }[]>([]);
+  const [storageInfo, setStorageInfo] = useState<{
+    usageMB: number;
+    quotaMB: number;
+    percentUsed: number;
+    isPersisted: boolean;
+  }>({ usageMB: 0.1, quotaMB: 100, percentUsed: 0.1, isPersisted: false });
+  const [isRequestingPersist, setIsRequestingPersist] = useState(false);
+  const [backupStatus, setBackupStatus] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const refreshStorageInfo = async () => {
+    try {
+      const info = await getStorageEstimate();
+      setStorageInfo(info);
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleRequestPersistence = async () => {
+    setIsRequestingPersist(true);
+    try {
+      await requestPersistence();
+      await refreshStorageInfo();
+    } finally {
+      setIsRequestingPersist(false);
+    }
+  };
+
+  const handleExportBackup = async () => {
+    try {
+      const json = await persistentStorage.exportBackup();
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `encodeedge-learning-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setBackupStatus('Backup exported successfully!');
+      setTimeout(() => setBackupStatus(null), 3500);
+    } catch {
+      setBackupStatus('Export failed.');
+      setTimeout(() => setBackupStatus(null), 3000);
+    }
+  };
+
+  const handleImportBackup = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const content = evt.target?.result as string;
+        const res = await persistentStorage.importBackup(content);
+        if (res.success) {
+          setBackupStatus(`Restored ${res.importedCount} items! Reloading...`);
+          setTimeout(() => window.location.reload(), 1500);
+        } else {
+          setBackupStatus('Failed to import backup file.');
+          setTimeout(() => setBackupStatus(null), 3000);
+        }
+      } catch {
+        setBackupStatus('Invalid backup file.');
+        setTimeout(() => setBackupStatus(null), 3000);
+      }
+    };
+    reader.readAsText(file);
+  };
 
   useEffect(() => {
-    // 1. Compute streak from localStorage
+    // 1. Compute streak from persistentStorage / localStorage
     try {
-      const storedStreak = parseInt(localStorage.getItem('lms_streak_days') || '4', 10);
+      const storedStreak = parseInt(String(persistentStorage.getSync('lms_streak_days', 4)), 10);
       setStreakDays(isNaN(storedStreak) ? 4 : storedStreak);
     } catch {
       setStreakDays(4);
@@ -95,13 +171,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ courses }) =
         });
       });
 
-      let completedList: string[] = [];
-      try {
-        const stored = localStorage.getItem(`lms_completed_${course.id}`);
-        if (stored) completedList = JSON.parse(stored);
-      } catch (e) {
-        console.error(e);
-      }
+      let completedList: string[] = persistentStorage.getSync<string[]>(`lms_completed_${course.id}`, []) || [];
 
       const completedCount = completedList.length;
       grandTotalCompleted += completedCount;
@@ -127,23 +197,28 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ courses }) =
     setProgressMap(nextMap);
     setTotalCompletedCount(grandTotalCompleted);
 
-    // 3. Scan for saved notes in localStorage
+    // 3. Scan for saved notes in storage
     const notes: { lessonId: string; note: string }[] = [];
-    try {
+    if (typeof localStorage !== 'undefined') {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i) || '';
         if (key.startsWith('lms_notes_')) {
           const lessonId = key.replace('lms_notes_', '');
-          const note = localStorage.getItem(key) || '';
+          const note = persistentStorage.getSync<string>(key, '') || '';
           if (note.trim()) {
             notes.push({ lessonId, note: note.trim() });
           }
         }
       }
-    } catch (e) {
-      console.error(e);
     }
     setSavedNotes(notes);
+
+    // 4. Query browser storage health & persistence
+    refreshStorageInfo();
+
+    const handleStoragePersisted = () => refreshStorageInfo();
+    window.addEventListener('ee_storage_persisted', handleStoragePersisted);
+    return () => window.removeEventListener('ee_storage_persisted', handleStoragePersisted);
   }, [courses]);
 
   // Find most relevant course to resume (highest progress < 100% or first)
@@ -475,6 +550,108 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ courses }) =
           </div>
         </div>
       )}
+
+      {/* 4. Browser Storage Durability & Data Sovereignty */}
+      <div className="p-6 rounded-3xl border border-border/80 bg-card space-y-5 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="size-8 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
+              <Database className="size-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="font-bold font-display text-base text-foreground">
+                  Browser Storage & Data Durability
+                </h3>
+                {storageInfo.isPersisted ? (
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[11px] font-bold inline-flex items-center gap-1">
+                    <ShieldCheck className="size-3" /> Guaranteed Non-Evictable
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-[11px] font-bold inline-flex items-center gap-1">
+                    <HardDrive className="size-3" /> Standard Storage (Best-Effort)
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Backed by <strong>IndexedDB</strong> to store your code labs, streak history, notes, and module progress with high capacity and durability.
+              </p>
+            </div>
+          </div>
+
+          {backupStatus && (
+            <div className="px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold animate-in fade-in">
+              {backupStatus}
+            </div>
+          )}
+        </div>
+
+        {/* Quota & Action Bar */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 rounded-2xl bg-muted/20 border border-border/60 items-center">
+          <div className="md:col-span-6 space-y-1.5">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-semibold text-foreground flex items-center gap-1.5">
+                <HardDrive className="size-3.5 text-primary" /> Browser Disk Allocation
+              </span>
+              <span className="font-mono text-xs text-muted-foreground">
+                {storageInfo.usageMB} MB of {storageInfo.quotaMB > 1024 ? `${(storageInfo.quotaMB / 1024).toFixed(1)} GB` : `${storageInfo.quotaMB} MB`} ({storageInfo.percentUsed}%)
+              </span>
+            </div>
+            <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
+              <div 
+                className="h-full bg-primary rounded-full transition-all duration-500" 
+                style={{ width: `${Math.max(storageInfo.percentUsed, 1)}%` }} 
+              />
+            </div>
+            <p className="text-[10px] text-muted-foreground">
+              {storageInfo.isPersisted 
+                ? 'Your browser has granted permanent storage. Data will never be automatically purged by the browser under disk pressure.'
+                : 'Click "Enable Permanent Storage" to request non-evictable persistence from your browser.'}
+            </p>
+          </div>
+
+          <div className="md:col-span-6 flex items-center justify-start md:justify-end gap-2 flex-wrap">
+            {!storageInfo.isPersisted && (
+              <button
+                type="button"
+                onClick={handleRequestPersistence}
+                disabled={isRequestingPersist}
+                className="px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-opacity inline-flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
+              >
+                <ShieldCheck className="size-3.5" />
+                <span>{isRequestingPersist ? 'Requesting...' : 'Enable Permanent Storage'}</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={handleExportBackup}
+              className="px-3 py-2 rounded-xl border border-border/80 bg-card hover:bg-muted text-xs font-semibold text-foreground inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+              title="Download a JSON snapshot of all your course completions, quiz answers, and study notes"
+            >
+              <Download className="size-3.5 text-muted-foreground" />
+              <span>Export Backup</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="px-3 py-2 rounded-xl border border-border/80 bg-card hover:bg-muted text-xs font-semibold text-foreground inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+              title="Restore your learning records from a JSON backup file"
+            >
+              <Upload className="size-3.5 text-muted-foreground" />
+              <span>Restore Backup</span>
+            </button>
+            <input 
+              ref={fileInputRef} 
+              type="file" 
+              accept=".json" 
+              onChange={handleImportBackup} 
+              className="hidden" 
+            />
+          </div>
+        </div>
+      </div>
 
       {/* Certificate Modal */}
       {selectedCertCourse && (

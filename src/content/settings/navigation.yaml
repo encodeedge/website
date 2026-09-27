@@ -1,32 +1,29 @@
 navLinks:
-  - label: "Home"
-    href: "/"
+  - label: Home
+    href: /
     openInNewTab: false
-  - label: "Roadmaps"
-    href: "/roadmaps"
+  - label: Roadmaps
+    href: /roadmaps
     openInNewTab: false
-  - label: "Topics"
-    href: "/topics"
+  - label: Topics
+    href: /topics
     openInNewTab: false
-  - label: "Blog"
-    href: "/blog"
+  - label: Blogs
+    href: /blog
     openInNewTab: false
-  - label: "Courses"
-    href: "/courses"
+  - label: Courses
+    href: courses
     openInNewTab: false
-  - label: "Live"
-    href: "/live-classes"
+  - label: About
+    href: /about
     openInNewTab: false
-  - label: "About"
-    href: "/about"
+  - label: FAQ
+    href: /faq
     openInNewTab: false
-  - label: "FAQ"
-    href: "/faq"
-    openInNewTab: false
-  - label: "Contact"
-    href: "/contact"
+  - label: Contact
+    href: /contact
     openInNewTab: false
 showSearch: true
 showSubscribeButton: true
-subscribeButtonText: "Subscribe"
-subscribeButtonUrl: "/subscribe"
+subscribeButtonText: Subscribe
+subscribeButtonUrl: /subscribe

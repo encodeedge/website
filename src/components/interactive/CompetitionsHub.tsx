@@ -10,6 +10,7 @@ import {
   Flame, 
   DollarSign, 
   Check, 
+  CheckCircle2,
   Share2, 
   Layers, 
   BarChart3, 
@@ -18,7 +19,9 @@ import {
   Zap,
   Globe,
   Award,
-  ChevronRight
+  ChevronRight,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { 
   ACTIVE_COMPETITIONS, 
@@ -53,12 +56,14 @@ export interface CompetitionsHubProps {
   initialCompetitions?: Competition[];
   enableSync?: boolean;
   autoSync?: boolean;
+  hideCompleted?: boolean;
 }
 
 export const CompetitionsHub: React.FC<CompetitionsHubProps> = ({
   initialCompetitions,
   enableSync = true,
   autoSync = true,
+  hideCompleted = true,
 }) => {
   const [competitions, setCompetitions] = useState<Competition[]>(
     initialCompetitions && initialCompetitions.length > 0 ? initialCompetitions : ACTIVE_COMPETITIONS
@@ -72,6 +77,8 @@ export const CompetitionsHub: React.FC<CompetitionsHubProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('All Tracks');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All Difficulties');
   const [selectedReward, setSelectedReward] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'ending-soon' | 'completed'>('all');
+  const [hideCompletedState, setHideCompletedState] = useState<boolean>(hideCompleted);
   const [sortBy, setSortBy] = useState<SortOption>('deadline');
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -106,7 +113,7 @@ export const CompetitionsHub: React.FC<CompetitionsHubProps> = ({
     setSyncStatus('idle');
 
     try {
-      // Recalculate remaining days and status based on real-time clock
+      // Recalculate remaining days and expiration status based on real-time clock
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       const now = new Date();
@@ -115,11 +122,12 @@ export const CompetitionsHub: React.FC<CompetitionsHubProps> = ({
           if (!c.deadline) return c;
           const deadlineDate = new Date(c.deadline);
           const diffTime = deadlineDate.getTime() - now.getTime();
-          const daysRemaining = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+          const isPast = diffTime <= 0;
+          const daysRemaining = isPast ? 0 : Math.ceil(diffTime / (1000 * 60 * 60 * 24));
           return {
             ...c,
             daysRemaining,
-            status: daysRemaining <= 7 ? ('ending-soon' as const) : c.status,
+            status: isPast ? ('completed' as const) : (daysRemaining <= 7 ? ('ending-soon' as const) : ('active' as const)),
           };
         })
       );
@@ -145,6 +153,13 @@ export const CompetitionsHub: React.FC<CompetitionsHubProps> = ({
 
   const filteredCompetitions = useMemo(() => {
     return competitions.filter((item) => {
+      // Completed / Status filter
+      if (statusFilter !== 'all') {
+        if (item.status !== statusFilter) return false;
+      } else if (hideCompletedState) {
+        if (item.status === 'completed') return false;
+      }
+
       // Platform filter
       if (selectedPlatform !== 'all' && item.platform !== selectedPlatform) {
         return false;
@@ -180,6 +195,10 @@ export const CompetitionsHub: React.FC<CompetitionsHubProps> = ({
 
       return true;
     }).sort((a, b) => {
+      // Push completed challenges to the end
+      if (a.status === 'completed' && b.status !== 'completed') return 1;
+      if (b.status === 'completed' && a.status !== 'completed') return -1;
+
       if (sortBy === 'deadline') {
         return a.daysRemaining - b.daysRemaining;
       }
@@ -194,7 +213,7 @@ export const CompetitionsHub: React.FC<CompetitionsHubProps> = ({
       }
       return 0;
     });
-  }, [competitions, searchQuery, selectedPlatform, selectedCategory, selectedDifficulty, selectedReward, sortBy]);
+  }, [competitions, searchQuery, selectedPlatform, selectedCategory, selectedDifficulty, selectedReward, statusFilter, hideCompletedState, sortBy]);
 
   const handleCopyLink = (id: string, url: string) => {
     navigator.clipboard.writeText(url).then(() => {
@@ -209,6 +228,8 @@ export const CompetitionsHub: React.FC<CompetitionsHubProps> = ({
     setSelectedCategory('All Tracks');
     setSelectedDifficulty('All Difficulties');
     setSelectedReward('all');
+    setStatusFilter('all');
+    setHideCompletedState(hideCompleted);
     setSortBy('deadline');
   };
 
@@ -409,8 +430,8 @@ export const CompetitionsHub: React.FC<CompetitionsHubProps> = ({
           </div>
         </div>
 
-        {/* Row 4: Secondary Filters (Difficulty & Reward Type) */}
-        <div className="flex flex-wrap items-center gap-4 pt-3 border-t border-black-150 dark:border-black-800 text-xs">
+        {/* Row 4: Secondary Filters (Difficulty, Reward Type & Status) */}
+        <div className="flex flex-wrap items-center gap-3.5 pt-3 border-t border-black-150 dark:border-black-800 text-xs">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-muted-foreground">Difficulty:</span>
             <select
@@ -437,6 +458,34 @@ export const CompetitionsHub: React.FC<CompetitionsHubProps> = ({
             </select>
           </div>
 
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-muted-foreground">Status:</span>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as any)}
+              className="py-1 px-2.5 rounded-lg border border-black-150 dark:border-black-800 bg-background text-xs font-medium text-foreground cursor-pointer"
+            >
+              <option value="all">All Challenges</option>
+              <option value="active">Active Only ({stats.activeCount})</option>
+              <option value="ending-soon">Ending Soon ({stats.endingSoonCount})</option>
+              <option value="completed">Completed ({stats.completedCount || 0})</option>
+            </select>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setHideCompletedState(!hideCompletedState)}
+            className={`inline-flex items-center gap-1.5 py-1 px-2.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
+              hideCompletedState 
+                ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                : 'border-black-150 dark:border-black-800 bg-background text-muted-foreground hover:text-foreground'
+            }`}
+            title={hideCompletedState ? 'Completed challenges are hidden by default' : 'Showing all including completed challenges'}
+          >
+            {hideCompletedState ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
+            <span>{hideCompletedState ? 'Hide Ended' : 'Show Ended'}</span>
+          </button>
+
           <div className="ml-auto flex items-center gap-3 text-xs text-muted-foreground font-mono">
             {lastSyncText && (
               <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -456,12 +505,17 @@ export const CompetitionsHub: React.FC<CompetitionsHubProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCompetitions.map((comp) => {
             const platformMeta = PLATFORMS[comp.platform] || PLATFORMS.kaggle;
-            const isEndingSoon = comp.daysRemaining <= 15;
+            const isCompleted = comp.status === 'completed';
+            const isEndingSoon = !isCompleted && comp.daysRemaining <= 15;
 
             return (
               <article
                 key={comp.id}
-                className="flex flex-col justify-between p-6 rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group relative"
+                className={`flex flex-col justify-between p-6 rounded-2xl border transition-all duration-200 group relative ${
+                  isCompleted 
+                    ? 'border-black-150 dark:border-black-800 bg-card/60 opacity-80 hover:opacity-100'
+                    : 'border-black-150 dark:border-black-800 bg-card hover:shadow-md hover:-translate-y-0.5'
+                }`}
               >
                 {/* Header: Platform & Status Badges */}
                 <div>
@@ -472,7 +526,12 @@ export const CompetitionsHub: React.FC<CompetitionsHubProps> = ({
                     </span>
 
                     <div className="flex items-center gap-1.5">
-                      {isEndingSoon ? (
+                      {isCompleted ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black-100 dark:bg-black-850 text-muted-foreground border border-black-200 dark:border-black-800">
+                          <CheckCircle2 className="size-3 text-muted-foreground" />
+                          Completed
+                        </span>
+                      ) : isEndingSoon ? (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
                           <span className="size-1.5 rounded-full bg-rose-500 animate-pulse"></span>
                           Ending Soon
@@ -521,10 +580,18 @@ export const CompetitionsHub: React.FC<CompetitionsHubProps> = ({
                     </div>
 
                     <div>
-                      <div className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider">Time Remaining</div>
-                      <div className={`font-bold font-mono mt-0.5 flex items-center gap-1 ${isEndingSoon ? 'text-rose-600 dark:text-rose-400' : 'text-foreground'}`}>
+                      <div className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider">
+                        {isCompleted ? 'Deadline' : 'Time Remaining'}
+                      </div>
+                      <div className={`font-bold font-mono mt-0.5 flex items-center gap-1 ${
+                        isCompleted 
+                          ? 'text-muted-foreground' 
+                          : isEndingSoon 
+                            ? 'text-rose-600 dark:text-rose-400' 
+                            : 'text-foreground'
+                      }`}>
                         <Clock className="size-3 shrink-0" />
-                        <span>{comp.daysRemaining} days</span>
+                        <span>{isCompleted ? 'Closed' : `${comp.daysRemaining} days`}</span>
                       </div>
                     </div>
 
@@ -587,9 +654,13 @@ export const CompetitionsHub: React.FC<CompetitionsHubProps> = ({
                     href={comp.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-foreground text-background hover:opacity-90 transition-opacity shadow-xs"
+                    className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-opacity shadow-xs ${
+                      isCompleted
+                        ? 'bg-black-100 dark:bg-black-850 text-foreground hover:bg-black-200 dark:hover:bg-black-800 border border-black-200 dark:border-black-700'
+                        : 'bg-foreground text-background hover:opacity-90'
+                    }`}
                   >
-                    <span>Enter on {comp.platformName}</span>
+                    <span>{isCompleted ? 'View Results & Leaderboard' : `Enter on ${comp.platformName}`}</span>
                     <ExternalLink className="size-3" />
                   </a>
                 </div>

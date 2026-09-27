@@ -206,7 +206,7 @@ const competitions = defineCollection({
     rewardType: z.enum(['cash', 'credits', 'jobs', 'knowledge']).default('cash'),
     deadline: z.string().optional(),
     teamsCount: z.number().default(0),
-    status: z.enum(['active', 'ending-soon', 'upcoming']).default('active'),
+    status: z.enum(['active', 'ending-soon', 'upcoming', 'completed']).default('active'),
     description: z.string().optional(),
     problemStatement: z.string().optional(),
     evaluationMetric: z.string().optional(),

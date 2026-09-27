@@ -793,6 +793,11 @@ export default config({
             description: 'Automatically check and sync fresh competitions in background on page visit (debounced 10 mins).',
             defaultValue: true,
           }),
+          hideCompletedCompetitions: fields.checkbox({
+            label: 'Hide Completed Competitions by Default',
+            description: 'Automatically hide competitions whose deadlines have passed from the main listing.',
+            defaultValue: true,
+          }),
           maxCompetitionsDisplay: fields.number({
             label: 'Max Competitions to Display',
             description: 'Total number of active competitions to show on /competitions.',
@@ -1389,6 +1394,7 @@ export default config({
             { label: 'Active', value: 'active' },
             { label: 'Ending Soon', value: 'ending-soon' },
             { label: 'Upcoming', value: 'upcoming' },
+            { label: 'Completed / Closed', value: 'completed' },
           ],
           defaultValue: 'active',
         }),

@@ -417,6 +417,7 @@ export interface SourcesSettings {
     autoSyncOnPageLoad: boolean;
     enableCompetitionsSync: boolean;
     autoSyncCompetitions: boolean;
+    hideCompletedCompetitions: boolean;
     maxCompetitionsDisplay: number;
     feedTimeoutMs: number;
   };
@@ -522,6 +523,7 @@ export const DEFAULT_SOURCES_SETTINGS: SourcesSettings = {
     autoSyncOnPageLoad: true,
     enableCompetitionsSync: true,
     autoSyncCompetitions: true,
+    hideCompletedCompetitions: true,
     maxCompetitionsDisplay: 24,
     feedTimeoutMs: 3800,
   },
@@ -586,6 +588,7 @@ export async function getSourcesSettings(): Promise<SourcesSettings> {
         autoSyncOnPageLoad: ds?.autoSyncOnPageLoad ?? DEFAULT_SOURCES_SETTINGS.displaySettings.autoSyncOnPageLoad,
         enableCompetitionsSync: ds?.enableCompetitionsSync ?? DEFAULT_SOURCES_SETTINGS.displaySettings.enableCompetitionsSync,
         autoSyncCompetitions: ds?.autoSyncCompetitions ?? DEFAULT_SOURCES_SETTINGS.displaySettings.autoSyncCompetitions,
+        hideCompletedCompetitions: ds?.hideCompletedCompetitions ?? DEFAULT_SOURCES_SETTINGS.displaySettings.hideCompletedCompetitions,
         maxCompetitionsDisplay: Number(ds?.maxCompetitionsDisplay) || DEFAULT_SOURCES_SETTINGS.displaySettings.maxCompetitionsDisplay,
         feedTimeoutMs: Number(ds?.feedTimeoutMs) || DEFAULT_SOURCES_SETTINGS.displaySettings.feedTimeoutMs,
       },

@@ -12,7 +12,8 @@ const keystaticCompetitions: Competition[] = (keystaticRaw || []).map((entry: an
   const deadlineDate = data.deadline ? new Date(data.deadline) : new Date(Date.now() + 30 * 86400000);
   const now = new Date();
   const diffTime = deadlineDate.getTime() - now.getTime();
-  const daysRemaining = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+  const isPast = diffTime <= 0;
+  const daysRemaining = isPast ? 0 : Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   const platformNameMap: Record<string, string> = {
     kaggle: 'Kaggle',
@@ -41,7 +42,7 @@ const keystaticCompetitions: Competition[] = (keystaticRaw || []).map((entry: an
     teamsCount: data.teamsCount || 0,
     deadline: data.deadline || deadlineDate.toISOString().split('T')[0],
     daysRemaining,
-    status: data.status || (daysRemaining < 7 ? 'ending-soon' : 'active'),
+    status: isPast ? 'completed' : (data.status || (daysRemaining <= 7 ? 'ending-soon' : 'active')),
     tags: data.tags || ['AI', 'Machine Learning'],
     featured: data.featured ?? false,
     evaluationMetric: data.evaluationMetric,
@@ -54,6 +55,7 @@ const keystaticCompetitions: Competition[] = (keystaticRaw || []).map((entry: an
 const { competitions, sourcesSettings } = await getAggregatedCompetitions(keystaticCompetitions);
 const enableSync = sourcesSettings?.displaySettings?.enableCompetitionsSync ?? true;
 const autoSync = sourcesSettings?.displaySettings?.autoSyncCompetitions ?? true;
+const hideCompleted = sourcesSettings?.displaySettings?.hideCompletedCompetitions ?? true;
 ---
 
 <DefaultLayout 
@@ -85,6 +87,7 @@ const autoSync = sourcesSettings?.displaySettings?.autoSyncCompetitions ?? true;
         initialCompetitions={competitions} 
         enableSync={enableSync}
         autoSync={autoSync}
+        hideCompleted={hideCompleted}
       />
     </section>
   </div>

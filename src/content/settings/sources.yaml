@@ -74,5 +74,6 @@ displaySettings:
   autoSyncOnPageLoad: true
   enableCompetitionsSync: true
   autoSyncCompetitions: true
-  maxCompetitionsDisplay: 40
+  hideCompletedCompetitions: true
+  maxCompetitionsDisplay: 24
   feedTimeoutMs: 3800

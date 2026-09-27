@@ -1,0 +1,34 @@
+---
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { CompetitionsHub } from '@/components/interactive/CompetitionsHub';
+import { Trophy, Sparkles, Flame, ExternalLink, Rss } from 'lucide-react';
+---
+
+<DefaultLayout 
+  title="Active AI & ML Competitions | Kaggle, HackerRank, DrivenData & Zindi | EncodeEdge" 
+  description="Discover live AI/ML competitions, data science hackathons, and benchmarks across Kaggle, HackerRank, DrivenData, Hugging Face, and Zindi. Filter by track, cash prizes, and deadlines."
+>
+  <div class="py-8 md:py-16 container mx-auto px-4 max-w-6xl space-y-12">
+    {/* Hero Section */}
+    <div class="text-center space-y-4 max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-bold">
+        <Trophy class="size-3.5" />
+        <span>Multi-Platform AI/ML Aggregator</span>
+        <span class="size-1.5 rounded-full bg-amber-500 animate-pulse ml-0.5"></span>
+      </div>
+
+      <h1 class="text-4xl md:text-5xl font-extrabold font-display text-foreground tracking-tight leading-tight">
+        Active AI &amp; ML <span class="text-primary">Competitions</span>
+      </h1>
+
+      <p class="text-sm md:text-base text-muted-foreground leading-relaxed">
+        Test your algorithmic models against real-world benchmarks. Aggregated active challenges, prize pools, and community leaderboards across <strong class="text-foreground">Kaggle</strong>, <strong class="text-foreground">HackerRank</strong>, <strong class="text-foreground">DrivenData</strong>, <strong class="text-foreground">Hugging Face</strong>, and <strong class="text-foreground">Zindi</strong>.
+      </p>
+    </div>
+
+    {/* Interactive Competitions Hub Component */}
+    <section>
+      <CompetitionsHub client:load />
+    </section>
+  </div>
+</DefaultLayout>

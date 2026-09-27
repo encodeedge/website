@@ -1,0 +1,21 @@
+title: EncodeEdge Autonomous AI Agent Hackathon
+platform: kaggle
+url: https://www.kaggle.com/competitions
+hostName: EncodeEdge & Open Source AI Alliance
+category: NLP & LLMs
+difficulty: Advanced
+prizePool: $25,000 + Compute Grants
+prizeAmountUSD: 25000
+rewardType: cash
+deadline: "2026-11-20"
+teamsCount: 420
+status: active
+description: Build autonomous multi-agent software engineering systems capable of reading GitHub issues, generating verified patches, and validating regression suites.
+problemStatement: Optimize agent decision loops to solve SWE-bench verified tasks within strict token budgets and execution sandboxes.
+evaluationMetric: Pass@1 on Verified Benchmarks
+tags:
+  - AI Agents
+  - LLMs
+  - SWE-bench
+  - PyTorch
+featured: true

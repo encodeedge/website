@@ -177,6 +177,7 @@ export default config({
       'Design & Navigation': ['navigationSettings', 'footerSettings'],
       'Marketing': ['seoSettings', 'integrationsSettings'],
       'Content': ['blogs', 'faqs', 'roadmaps'],
+      'Competitions': ['competitions'],
       'Components': ['components'],
       'LMS Core': ['courses', 'batches', 'instructors', 'liveClasses'],
       'LMS Material': ['lessons', 'quizzes', 'assignments'],
@@ -1250,6 +1251,84 @@ export default config({
           directory: 'public/assets/certificates',
         }),
       }
+    }),
+
+    // --- Active Competitions & Challenges ---
+    competitions: collection({
+      label: 'Competitions & Hackathons',
+      slugField: 'title',
+      path: 'src/content/competitions/*',
+      format: { data: 'yaml' },
+      schema: {
+        title: fields.slug({ name: { label: 'Title' } }),
+        platform: fields.select({
+          label: 'Platform',
+          options: [
+            { label: 'Kaggle', value: 'kaggle' },
+            { label: 'HackerRank', value: 'hackerrank' },
+            { label: 'DrivenData', value: 'drivendata' },
+            { label: 'Hugging Face', value: 'huggingface' },
+            { label: 'Zindi', value: 'zindi' },
+            { label: 'AIcrowd', value: 'aicrowd' },
+          ],
+          defaultValue: 'kaggle',
+        }),
+        url: fields.text({ label: 'Competition URL', validation: { isRequired: true } }),
+        hostName: fields.text({ label: 'Host Organization / Company', defaultValue: 'Community Host' }),
+        category: fields.select({
+          label: 'Track / Category',
+          options: [
+            { label: 'NLP & LLMs', value: 'NLP & LLMs' },
+            { label: 'Computer Vision', value: 'Computer Vision' },
+            { label: 'Tabular & Predictive', value: 'Tabular & Predictive' },
+            { label: 'Reinforcement Learning', value: 'Reinforcement Learning' },
+            { label: 'Multimodal', value: 'Multimodal' },
+            { label: 'Audio & Speech', value: 'Audio & Speech' },
+          ],
+          defaultValue: 'NLP & LLMs',
+        }),
+        difficulty: fields.select({
+          label: 'Difficulty Level',
+          options: [
+            { label: 'Beginner', value: 'Beginner' },
+            { label: 'Intermediate', value: 'Intermediate' },
+            { label: 'Advanced', value: 'Advanced' },
+            { label: 'Expert', value: 'Expert' },
+          ],
+          defaultValue: 'Intermediate',
+        }),
+        prizePool: fields.text({ label: 'Prize Pool Display (e.g. $50,000)', defaultValue: '$10,000' }),
+        prizeAmountUSD: fields.number({ label: 'Prize Amount in USD (numeric for sorting)', defaultValue: 10000 }),
+        rewardType: fields.select({
+          label: 'Reward Type',
+          options: [
+            { label: 'Cash Prizes', value: 'cash' },
+            { label: 'Compute & Credits', value: 'credits' },
+            { label: 'Jobs & Interviews', value: 'jobs' },
+            { label: 'Knowledge & Medals', value: 'knowledge' },
+          ],
+          defaultValue: 'cash',
+        }),
+        deadline: fields.text({ label: 'Deadline (ISO Date or Text e.g. 2026-11-30)', defaultValue: '2026-11-30' }),
+        teamsCount: fields.number({ label: 'Registered Teams Count', defaultValue: 100 }),
+        status: fields.select({
+          label: 'Status',
+          options: [
+            { label: 'Active', value: 'active' },
+            { label: 'Ending Soon', value: 'ending-soon' },
+            { label: 'Upcoming', value: 'upcoming' },
+          ],
+          defaultValue: 'active',
+        }),
+        description: fields.text({ label: 'Short Description', multiline: true }),
+        problemStatement: fields.text({ label: 'Problem Statement / Objective (Optional)', multiline: true }),
+        evaluationMetric: fields.text({ label: 'Evaluation Metric (Optional, e.g. LogLoss, Macro F1)' }),
+        tags: fields.array(fields.text({ label: 'Tag' }), {
+          label: 'Tags',
+          itemLabel: (props) => props.value,
+        }),
+        featured: fields.checkbox({ label: 'Featured Challenge', defaultValue: false }),
+      },
     }),
   },
 });

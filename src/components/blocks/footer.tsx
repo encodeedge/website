@@ -7,6 +7,7 @@ export function Footer() {
     { name: "Topics", href: "/topics" },
     { name: "Blog", href: "/blog" },
     { name: "Courses", href: "/courses" },
+    { name: "Competitions", href: "/competitions" },
     { name: "About", href: "/about" },
     { name: "FAQ", href: "/faq" },
     { name: "Subscribe", href: "/subscribe" },

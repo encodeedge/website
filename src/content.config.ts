@@ -192,4 +192,27 @@ const components = defineCollection({
   }),
 });
 
-export const collections = { blog, faqs, roadmaps, instructors, lessons, courses, batches, quizzes, assignments, certificates, components };
+const competitions = defineCollection({
+  loader: glob({ base: "./src/content/competitions", pattern: "**/*.{yaml,yml,json,md}" }),
+  schema: z.object({
+    title: z.string(),
+    platform: z.string().default('kaggle'),
+    url: z.string(),
+    hostName: z.string().default('Community'),
+    category: z.string().default('NLP & LLMs'),
+    difficulty: z.string().default('Intermediate'),
+    prizePool: z.string().default('$10,000'),
+    prizeAmountUSD: z.number().optional(),
+    rewardType: z.enum(['cash', 'credits', 'jobs', 'knowledge']).default('cash'),
+    deadline: z.string().optional(),
+    teamsCount: z.number().default(0),
+    status: z.enum(['active', 'ending-soon', 'upcoming']).default('active'),
+    description: z.string().optional(),
+    problemStatement: z.string().optional(),
+    evaluationMetric: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+    featured: z.boolean().optional(),
+  }),
+});
+
+export const collections = { blog, faqs, roadmaps, instructors, lessons, courses, batches, quizzes, assignments, certificates, components, competitions };

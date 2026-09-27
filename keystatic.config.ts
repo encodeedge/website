@@ -357,6 +357,11 @@ export default config({
             label: 'Enable Day Streak Tracking',
             defaultValue: true,
           }),
+          quizMinimumPassPercentage: fields.number({
+            label: 'Default Quiz Minimum Pass %',
+            description: 'Default score % needed to mark quiz completed (0 = complete on submit even if wrong answers).',
+            defaultValue: 0,
+          }),
         }, { label: 'Gamification & Achievements' }),
 
         // ── Spaced Repetition ──────────────────────────────────────────────
@@ -1254,6 +1259,16 @@ export default config({
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
         description: fields.text({ label: 'Description', multiline: true }),
+        passingScorePercentage: fields.number({
+          label: 'Minimum Passing Percentage (0-100)',
+          defaultValue: 0,
+          description: 'Required percentage to mark completed. Set to 0 to complete upon submission regardless of score.',
+        }),
+        markCompletedOnAttempt: fields.checkbox({
+          label: 'Always Mark Complete on Submission',
+          defaultValue: true,
+          description: 'Automatically mark the quiz as completed once all questions are answered, even if answers are incorrect.',
+        }),
         questions: fields.array(
           fields.object({
             question: fields.text({ label: 'Question', multiline: true, validation: { isRequired: true } }),

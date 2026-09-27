@@ -10,9 +10,6 @@ import { CodeSandboxRunner } from '@/components/interactive/CodeSandboxRunner';
 import { NeuralPlayground } from '@/components/interactive/NeuralPlayground';
 import { GradientDescentLab } from '@/components/interactive/GradientDescentLab';
 import { MemoryExplorer } from '@/components/interactive/MemoryExplorer';
-import { AttentionVisualizer } from '@/components/interactive/AttentionVisualizer';
-import { ConvolutionVisualizer } from '@/components/interactive/ConvolutionVisualizer';
-import { LessonDiscussion } from '@/components/interactive/LessonDiscussion';
 import { getCoursesMap } from '@/utils/course-map';
 import { Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox } from '@/components/mdx';
 import { Clock, PlayCircle, FileText, CheckCircle2, FlaskConical } from 'lucide-react';
@@ -125,18 +122,6 @@ const coursesMap = await getCoursesMap();
       </div>
     )}
 
-    {lesson.data.interactiveLab === 'attention-visualizer' && (
-      <div class="my-8">
-        <AttentionVisualizer client:load />
-      </div>
-    )}
-
-    {lesson.data.interactiveLab === 'convolution-visualizer' && (
-      <div class="my-8">
-        <ConvolutionVisualizer client:load />
-      </div>
-    )}
-
     {(lesson.data.interactiveLab === 'code-sandbox' || lesson.data.interactiveLab === 'custom-sandbox' || (lesson.data.lessonType === 'lab' && (!lesson.data.interactiveLab || lesson.data.interactiveLab === 'none'))) && (
       <div class="my-8">
         <CodeSandboxRunner 
@@ -160,11 +145,6 @@ const coursesMap = await getCoursesMap();
     <!-- Lesson Markdown Prose Content -->
     <div class="prose prose-lg dark:prose-invert max-w-none font-body leading-relaxed pt-4">
       <Content components={{ Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox }} />
-    </div>
-
-    <!-- Lesson Discussion & Community Q&A -->
-    <div class="pt-8 border-t border-border/60">
-      <LessonDiscussion client:load lessonId={lesson.id} lessonTitle={lesson.data.title} />
     </div>
 
     <!-- Bottom Actions: Completion Toggle + Bottom Navigation -->

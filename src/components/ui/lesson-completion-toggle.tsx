@@ -5,35 +5,80 @@ import { persistentStorage } from '@/lib/storage';
 
 interface LessonCompletionToggleProps {
   itemId: string;
+  courseId?: string;
+  coursesMap?: Record<string, any>;
 }
 
-export const LessonCompletionToggle: React.FC<LessonCompletionToggleProps> = ({ itemId }) => {
-  const [courseId, setCourseId] = useState<string | null>(null);
+export const LessonCompletionToggle: React.FC<LessonCompletionToggleProps> = ({ 
+  itemId, 
+  courseId: initialCourseId,
+  coursesMap
+}) => {
+  const [effectiveCourseId, setEffectiveCourseId] = useState<string | null>(initialCourseId || null);
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const cId = params.get('course');
-    if (cId) {
-      setCourseId(cId);
-      // Synchronous read for instantaneous initial state
-      const initialList = persistentStorage.getSync<string[]>(`lms_completed_${cId}`, []);
-      setIsCompleted(Array.isArray(initialList) && initialList.includes(itemId));
+    let cId = initialCourseId;
 
-      // Asynchronous reconcile with IndexedDB
+    if (!cId && typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      cId = params.get('course') || undefined;
+    }
+
+    if (!cId && coursesMap) {
+      cId = Object.keys(coursesMap).find(id => 
+        coursesMap[id]?.flatItems?.some((i: any) => i.id === itemId)
+      );
+    }
+
+    if (cId) {
+      setEffectiveCourseId(cId);
+
+      // Check synchronous cache & localStorage
+      const syncList = persistentStorage.getSync<string[]>(`lms_completed_${cId}`, []);
+      if (Array.isArray(syncList) && syncList.includes(itemId)) {
+        setIsCompleted(true);
+      } else if (typeof window !== 'undefined') {
+        try {
+          const stored = localStorage.getItem(`lms_completed_${cId}`);
+          if (stored) {
+            const list = JSON.parse(stored);
+            if (Array.isArray(list) && list.includes(itemId)) {
+              setIsCompleted(true);
+            }
+          }
+        } catch {}
+      }
+
+      // Reconcile with IndexedDB asynchronously
       persistentStorage.get<string[]>(`lms_completed_${cId}`, []).then((list) => {
         if (Array.isArray(list)) {
           setIsCompleted(list.includes(itemId));
         }
-      });
+      }).catch(() => {});
     }
-  }, [itemId]);
+  }, [itemId, initialCourseId, coursesMap]);
 
-  if (!courseId) return null;
+  // Listen to external progress updates
+  useEffect(() => {
+    if (!effectiveCourseId) return;
+
+    const handleUpdate = () => {
+      const list = persistentStorage.getSync<string[]>(`lms_completed_${effectiveCourseId}`, []);
+      if (Array.isArray(list)) {
+        setIsCompleted(list.includes(itemId));
+      }
+    };
+
+    window.addEventListener('lms_progress_updated', handleUpdate);
+    return () => window.removeEventListener('lms_progress_updated', handleUpdate);
+  }, [effectiveCourseId, itemId]);
 
   const toggle = async () => {
+    if (!effectiveCourseId) return;
+
     try {
-      const list = await persistentStorage.get<string[]>(`lms_completed_${courseId}`, []) || [];
+      const list = await persistentStorage.get<string[]>(`lms_completed_${effectiveCourseId}`, []) || [];
       let updatedList: string[];
 
       if (list.includes(itemId)) {
@@ -42,20 +87,28 @@ export const LessonCompletionToggle: React.FC<LessonCompletionToggleProps> = ({ 
       } else {
         updatedList = [...list, itemId];
         setIsCompleted(true);
-        trackLessonCompletion(courseId, itemId);
+        trackLessonCompletion(effectiveCourseId, itemId);
       }
 
-      await persistentStorage.set(`lms_completed_${courseId}`, updatedList);
-      window.dispatchEvent(new Event('lms_progress_updated'));
+      await persistentStorage.set(`lms_completed_${effectiveCourseId}`, updatedList);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`lms_completed_${effectiveCourseId}`, JSON.stringify(updatedList));
+      }
+
+      window.dispatchEvent(new CustomEvent('lms_progress_updated', {
+        detail: { courseId: effectiveCourseId, itemId }
+      }));
+      window.dispatchEvent(new Event('storage'));
     } catch (e) {
-      console.error(e);
+      console.error('Failed to toggle lesson completion:', e);
     }
   };
 
   return (
     <button
       onClick={toggle}
-      className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all border shadow-sm ${
+      type="button"
+      className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all border shadow-xs cursor-pointer select-none ${
         isCompleted
           ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
           : 'bg-card text-muted-foreground border-border hover:text-foreground hover:bg-muted/50'
@@ -76,3 +129,4 @@ export const LessonCompletionToggle: React.FC<LessonCompletionToggleProps> = ({ 
   );
 };
 
+export default LessonCompletionToggle;

@@ -146,6 +146,8 @@ const quizzes = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
+    passingScorePercentage: z.number().default(0),
+    markCompletedOnAttempt: z.boolean().default(true),
     questions: z.array(z.object({
       question: z.string(),
       type: z.enum(['mcq', 'msq', 'answer']).default('mcq'),

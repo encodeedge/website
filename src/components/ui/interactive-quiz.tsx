@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from './button';
-import { CheckCircle2, AlertCircle, RotateCcw, Trophy, Sparkles, Brain, RefreshCw, Flame, Zap, Star } from 'lucide-react';
+import { CheckCircle2, Circle, AlertCircle, RotateCcw, Trophy, Sparkles, Brain, RefreshCw, Flame, Zap, Star } from 'lucide-react';
 import {
   recordQuizAttempt,
   getWrongIndicesForQuiz,
@@ -10,6 +10,7 @@ import {
   getXP,
 } from '@/lib/achievements';
 import { trackQuizAttempt } from '@/lib/analytics';
+import { persistentStorage } from '@/lib/storage';
 
 type Question = {
   question: string;
@@ -78,15 +79,23 @@ const XPFlash = ({ amount }: { amount: number | null }) => {
 export const InteractiveQuiz = ({
   questions,
   quizId,
+  courseId: initialCourseId,
+  coursesMap,
+  passingScorePercentage = 0,
+  markCompletedOnAttempt = true,
   spacedRepetitionEnabled = true,
   gamificationEnabled = true,
 }: {
   questions: Question[];
   quizId?: string;
+  courseId?: string;
+  coursesMap?: Record<string, any>;
+  passingScorePercentage?: number;
+  markCompletedOnAttempt?: boolean;
   spacedRepetitionEnabled?: boolean;
   gamificationEnabled?: boolean;
 }) => {
-  const [courseId, setCourseId] = useState<string | null>(null);
+  const [effectiveCourseId, setEffectiveCourseId] = useState<string | null>(initialCourseId || null);
   const [correctResults, setCorrectResults] = useState<Record<number, boolean>>({});
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
 
@@ -105,21 +114,44 @@ export const InteractiveQuiz = ({
   // Track whether we've already recorded the attempt (avoid double-recording)
   const attemptRecorded = useRef(false);
 
+  // Resolve course ID and check existing completion
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const cId = params.get('course');
+    let cId = initialCourseId;
+    if (!cId && typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      cId = params.get('course') || undefined;
+    }
+    if (!cId && coursesMap && quizId) {
+      cId = Object.keys(coursesMap).find(id =>
+        coursesMap[id]?.flatItems?.some((i: any) => i.id === quizId)
+      );
+    }
+
     if (cId) {
-      setCourseId(cId);
+      setEffectiveCourseId(cId);
       if (quizId) {
-        try {
-          const stored = localStorage.getItem(`lms_completed_${cId}`);
-          if (stored) {
-            const list: string[] = JSON.parse(stored);
-            if (list.includes(quizId)) setIsCompleted(true);
+        // Sync check
+        const syncList = persistentStorage.getSync<string[]>(`lms_completed_${cId}`, []);
+        if (Array.isArray(syncList) && syncList.includes(quizId)) {
+          setIsCompleted(true);
+        } else if (typeof window !== 'undefined') {
+          try {
+            const stored = localStorage.getItem(`lms_completed_${cId}`);
+            if (stored) {
+              const list: string[] = JSON.parse(stored);
+              if (list.includes(quizId)) setIsCompleted(true);
+            }
+          } catch {}
+        }
+        // Async check
+        persistentStorage.get<string[]>(`lms_completed_${cId}`, []).then(list => {
+          if (Array.isArray(list) && list.includes(quizId)) {
+            setIsCompleted(true);
           }
-        } catch (e) { console.error(e); }
+        }).catch(() => {});
       }
     }
+
     try {
       const streak = getStreak();
       setCurrentStreak(streak.currentStreak);
@@ -130,7 +162,79 @@ export const InteractiveQuiz = ({
     };
     window.addEventListener('ee_xp_updated', xpHandler);
     return () => window.removeEventListener('ee_xp_updated', xpHandler);
-  }, [quizId]);
+  }, [quizId, initialCourseId, coursesMap]);
+
+  // Listen to external progress updates
+  useEffect(() => {
+    if (!effectiveCourseId || !quizId) return;
+    const handleProgressUpdate = () => {
+      const list = persistentStorage.getSync<string[]>(`lms_completed_${effectiveCourseId}`, []);
+      if (Array.isArray(list) && list.includes(quizId)) {
+        setIsCompleted(true);
+      }
+    };
+    window.addEventListener('lms_progress_updated', handleProgressUpdate);
+    return () => window.removeEventListener('lms_progress_updated', handleProgressUpdate);
+  }, [effectiveCourseId, quizId]);
+
+  const markQuizCompletedInStorage = async (targetCourseId: string) => {
+    if (!quizId) return;
+    try {
+      setIsCompleted(true);
+      const list = await persistentStorage.get<string[]>(`lms_completed_${targetCourseId}`, []) || [];
+      if (!list.includes(quizId)) {
+        const nextList = [...list, quizId];
+        await persistentStorage.set(`lms_completed_${targetCourseId}`, nextList);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(`lms_completed_${targetCourseId}`, JSON.stringify(nextList));
+        }
+        window.dispatchEvent(new CustomEvent('lms_progress_updated', {
+          detail: { courseId: targetCourseId, itemId: quizId }
+        }));
+        window.dispatchEvent(new Event('storage'));
+      }
+    } catch (e) {
+      console.error('Failed to save quiz completion:', e);
+    }
+  };
+
+  const toggleManualCompletion = async () => {
+    if (!quizId) return;
+    const targetCourses: string[] = [];
+    if (effectiveCourseId) targetCourses.push(effectiveCourseId);
+    if (coursesMap) {
+      Object.keys(coursesMap).forEach(cId => {
+        if (coursesMap[cId]?.flatItems?.some((i: any) => i.id === quizId) && !targetCourses.includes(cId)) {
+          targetCourses.push(cId);
+        }
+      });
+    }
+
+    const nextCompleted = !isCompleted;
+    setIsCompleted(nextCompleted);
+
+    for (const cId of targetCourses) {
+      try {
+        const list = await persistentStorage.get<string[]>(`lms_completed_${cId}`, []) || [];
+        let nextList: string[];
+        if (nextCompleted) {
+          nextList = list.includes(quizId) ? list : [...list, quizId];
+        } else {
+          nextList = list.filter(id => id !== quizId);
+        }
+        await persistentStorage.set(`lms_completed_${cId}`, nextList);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(`lms_completed_${cId}`, JSON.stringify(nextList));
+        }
+        window.dispatchEvent(new CustomEvent('lms_progress_updated', {
+          detail: { courseId: cId, itemId: quizId }
+        }));
+        window.dispatchEvent(new Event('storage'));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
 
   // ── Handle quiz completion side-effects in useEffect (NOT inside setState updater) ──
   useEffect(() => {
@@ -157,18 +261,22 @@ export const InteractiveQuiz = ({
       } catch { /* noop */ }
     }
 
-    // LMS completion (if all correct)
-    if (totalCorrect === questions.length && courseId && quizId) {
+    // Determine completion: mark complete if user answers all questions, or meets passing threshold
+    const percentage = questions.length > 0 ? Math.round((totalCorrect / questions.length) * 100) : 100;
+    const minPass = passingScorePercentage ?? 0;
+    const passed = markCompletedOnAttempt || minPass === 0 || percentage >= minPass || totalCorrect === questions.length;
+
+    if (passed && quizId) {
       setIsCompleted(true);
-      try {
-        const stored = localStorage.getItem(`lms_completed_${courseId}`);
-        let list: string[] = stored ? JSON.parse(stored) : [];
-        if (!list.includes(quizId)) {
-          list.push(quizId);
-          localStorage.setItem(`lms_completed_${courseId}`, JSON.stringify(list));
-          window.dispatchEvent(new Event('lms_progress_updated'));
-        }
-      } catch { /* noop */ }
+      if (effectiveCourseId) {
+        markQuizCompletedInStorage(effectiveCourseId);
+      } else if (coursesMap) {
+        Object.keys(coursesMap).forEach(cId => {
+          if (coursesMap[cId]?.flatItems?.some((i: any) => i.id === quizId)) {
+            markQuizCompletedInStorage(cId);
+          }
+        });
+      }
     }
 
     // Update streak display
@@ -176,7 +284,7 @@ export const InteractiveQuiz = ({
       const streak = getStreak();
       setCurrentStreak(streak.currentStreak);
     } catch { /* noop */ }
-  }, [correctResults, questions.length, quizId, courseId]);
+  }, [correctResults, questions.length, quizId, effectiveCourseId, coursesMap, passingScorePercentage, markCompletedOnAttempt]);
 
   // ── Simple, pure state updater (no side effects here) ───────────────────
   const handleQuestionResult = useCallback((index: number, correct: boolean) => {
@@ -227,7 +335,6 @@ export const InteractiveQuiz = ({
 
   const resetQuiz = () => {
     setCorrectResults({});
-    setIsCompleted(false);
     setMode('normal');
     setReviewResults({});
     setReviewCompleted(false);
@@ -293,13 +400,20 @@ export const InteractiveQuiz = ({
               </div>
             )}
 
-            {/* Completed badge */}
-            {isCompleted && mode === 'normal' && (
-              <div className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Quiz Complete & Saved!</span>
-              </div>
-            )}
+            {/* Completed toggle badge */}
+            <button
+              type="button"
+              onClick={toggleManualCompletion}
+              className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-all cursor-pointer shadow-xs select-none ${
+                isCompleted
+                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
+                  : 'bg-card text-muted-foreground border-border hover:text-foreground hover:bg-muted/60'
+              }`}
+              title={isCompleted ? "Quiz completed! Click to mark as incomplete" : "Click to mark quiz as completed"}
+            >
+              <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-emerald-500' : 'text-muted-foreground'}`} />
+              <span>{isCompleted ? 'Quiz Complete ✓' : 'Mark as Complete'}</span>
+            </button>
           </div>
         </div>
 
@@ -331,7 +445,7 @@ export const InteractiveQuiz = ({
         {/* ─── Normal Mode: All Answered Summary ──────────────────── */}
         {mode === 'normal' && allAnswered && (
           <div className={`p-5 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
-            score === questions.length
+            score === questions.length || isCompleted
               ? 'border-emerald-500/30 bg-emerald-500/5'
               : wrongCount > 0
               ? 'border-amber-500/30 bg-amber-500/5'
@@ -341,15 +455,31 @@ export const InteractiveQuiz = ({
               <div className="text-lg font-bold font-display text-foreground">
                 {score === questions.length
                   ? '🎉 Perfect! All correct!'
+                  : isCompleted
+                  ? `✓ Quiz Completed! (${score}/${questions.length} correct)`
                   : `${score}/${questions.length} correct — keep going!`}
               </div>
               <div className="text-sm text-muted-foreground mt-0.5 flex items-center gap-2">
                 <Zap className="w-3.5 h-3.5 text-amber-500" />
                 +{score * 10 + (score === questions.length ? 25 : 0)} XP earned
                 {wrongCount > 0 && ` · ${wrongCount} wrong answer${wrongCount > 1 ? 's' : ''}`}
+                {isCompleted && ` · Saved to course syllabus`}
               </div>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
+              <Button 
+                onClick={toggleManualCompletion} 
+                variant={isCompleted ? "outline" : "default"} 
+                size="sm" 
+                className={`gap-1.5 font-semibold cursor-pointer ${
+                  isCompleted 
+                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20' 
+                    : 'bg-emerald-600 hover:bg-emerald-700 text-white border-0'
+                }`}
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>{isCompleted ? 'Completed ✓' : 'Mark as Complete'}</span>
+              </Button>
               <Button onClick={resetQuiz} variant="outline" size="sm" className="gap-1.5">
                 <RotateCcw className="w-3.5 h-3.5" /> Retry All
               </Button>

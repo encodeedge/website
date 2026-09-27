@@ -19,6 +19,9 @@ export async function getStaticPaths() {
 const { quiz } = Astro.props;
 const coursesMap = await getCoursesMap();
 const flags = await getFeatureFlags();
+const matchingCourseId = Object.keys(coursesMap).find(cId => 
+  coursesMap[cId]?.flatItems?.some((i: any) => i.id === quiz.id)
+);
 ---
 
 <DefaultLayout title={`${quiz.data.title} | Checkpoint Quiz`} description={quiz.data.description || quiz.data.title}>
@@ -73,6 +76,10 @@ const flags = await getFeatureFlags();
         <InteractiveQuiz 
           questions={quiz.data.questions} 
           quizId={quiz.id} 
+          courseId={matchingCourseId}
+          coursesMap={coursesMap}
+          passingScorePercentage={quiz.data.passingScorePercentage ?? flags.gamification?.quizMinimumPassPercentage ?? 0}
+          markCompletedOnAttempt={quiz.data.markCompletedOnAttempt ?? true}
           spacedRepetitionEnabled={flags.spacedRepetition.enabled}
           gamificationEnabled={flags.gamification.enabled}
           client:load 

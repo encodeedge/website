@@ -32,8 +32,16 @@ export const LessonCurriculumDrawer: React.FC<LessonCurriculumDrawerProps> = ({
   const [completedIds, setCompletedIds] = useState<string[]>([]);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const cId = params.get('course');
+    let cId: string | null = null;
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      cId = params.get('course');
+    }
+    if ((!cId || !coursesMap[cId]) && currentItemId) {
+      cId = Object.keys(coursesMap).find(id =>
+        coursesMap[id]?.flatItems?.some((i: any) => i.id === currentItemId)
+      ) || null;
+    }
     if (cId && coursesMap[cId]) {
       setCourseId(cId);
       try {
@@ -45,7 +53,7 @@ export const LessonCurriculumDrawer: React.FC<LessonCurriculumDrawerProps> = ({
         console.error(e);
       }
     }
-  }, [coursesMap]);
+  }, [coursesMap, currentItemId]);
 
   useEffect(() => {
     const handleUpdate = () => {

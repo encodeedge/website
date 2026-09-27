@@ -32,6 +32,7 @@ export interface FeatureFlags {
     xpPerCorrectAnswer: number;
     xpBonusPerfectQuiz: number;
     streakEnabled: boolean;
+    quizMinimumPassPercentage: number;
   };
   spacedRepetition: {
     enabled: boolean;
@@ -74,6 +75,7 @@ export const DEFAULT_FEATURE_FLAGS: FeatureFlags = {
     xpPerCorrectAnswer: 10,
     xpBonusPerfectQuiz: 25,
     streakEnabled: true,
+    quizMinimumPassPercentage: 0,
   },
   spacedRepetition: {
     enabled: true,
@@ -189,6 +191,7 @@ export async function getFeatureFlags(): Promise<FeatureFlags> {
         xpPerCorrectAnswer: flags.gamification?.xpPerCorrectAnswer ?? DEFAULT_FEATURE_FLAGS.gamification.xpPerCorrectAnswer,
         xpBonusPerfectQuiz: flags.gamification?.xpBonusPerfectQuiz ?? DEFAULT_FEATURE_FLAGS.gamification.xpBonusPerfectQuiz,
         streakEnabled: flags.gamification?.streakEnabled ?? DEFAULT_FEATURE_FLAGS.gamification.streakEnabled,
+        quizMinimumPassPercentage: (flags.gamification as any)?.quizMinimumPassPercentage ?? DEFAULT_FEATURE_FLAGS.gamification.quizMinimumPassPercentage,
       },
       spacedRepetition: {
         enabled: flags.spacedRepetition?.enabled ?? DEFAULT_FEATURE_FLAGS.spacedRepetition.enabled,

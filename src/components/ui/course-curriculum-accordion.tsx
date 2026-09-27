@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { PlayCircle, FileText, HelpCircle, Briefcase, CheckCircle2, ChevronDown, Clock, FlaskConical } from 'lucide-react';
+import { 
+  PlayCircle, 
+  FileText, 
+  HelpCircle, 
+  Briefcase, 
+  CheckCircle2, 
+  Circle, 
+  ChevronDown, 
+  Clock, 
+  FlaskConical 
+} from 'lucide-react';
+import { persistentStorage } from '@/lib/storage';
 
 export type CurriculumItem = {
   id: string;
@@ -25,19 +36,83 @@ export const CourseCurriculumAccordion: React.FC<CourseCurriculumAccordionProps>
   const [openChapters, setOpenChapters] = useState<Record<number, boolean>>({ 0: true });
   const [completedItems, setCompletedItems] = useState<string[]>([]);
 
-  useEffect(() => {
+  const loadCompletionState = () => {
     try {
-      const stored = localStorage.getItem(`course_progress_${courseId}`);
-      if (stored) {
-        setCompletedItems(JSON.parse(stored));
+      // 1. Synchronous persistentStorage read
+      const syncList = persistentStorage.getSync<string[]>(`lms_completed_${courseId}`, []);
+      if (Array.isArray(syncList) && syncList.length > 0) {
+        setCompletedItems(syncList);
+        return;
+      }
+
+      // 2. Direct localStorage fallback
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem(`lms_completed_${courseId}`);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            setCompletedItems(parsed);
+            return;
+          }
+        }
       }
     } catch {
-      // Ignore storage errors
+      // Ignore parse errors
     }
+
+    // 3. Asynchronous IndexedDB reconciliation
+    persistentStorage.get<string[]>(`lms_completed_${courseId}`, []).then((asyncList) => {
+      if (Array.isArray(asyncList)) {
+        setCompletedItems(asyncList);
+      }
+    }).catch(() => {});
+  };
+
+  useEffect(() => {
+    loadCompletionState();
+
+    const handleUpdate = () => {
+      loadCompletionState();
+    };
+
+    window.addEventListener('lms_progress_updated', handleUpdate);
+    window.addEventListener('ee_storage_change', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+
+    return () => {
+      window.removeEventListener('lms_progress_updated', handleUpdate);
+      window.removeEventListener('ee_storage_change', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
   }, [courseId]);
 
   const toggleChapter = (idx: number) => {
     setOpenChapters(prev => ({ ...prev, [idx]: !prev[idx] }));
+  };
+
+  const toggleItemCompletion = async (itemId: string) => {
+    try {
+      const currentList = await persistentStorage.get<string[]>(`lms_completed_${courseId}`, []) || completedItems;
+      let nextList: string[];
+
+      if (currentList.includes(itemId)) {
+        nextList = currentList.filter(id => id !== itemId);
+      } else {
+        nextList = [...currentList, itemId];
+      }
+
+      setCompletedItems(nextList);
+      await persistentStorage.set(`lms_completed_${courseId}`, nextList);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`lms_completed_${courseId}`, JSON.stringify(nextList));
+      }
+
+      window.dispatchEvent(new CustomEvent('lms_progress_updated', {
+        detail: { courseId, itemId }
+      }));
+    } catch (e) {
+      console.error('Failed to toggle completion:', e);
+    }
   };
 
   const getItemIcon = (type: string, lessonType?: string) => {
@@ -78,6 +153,7 @@ export const CourseCurriculumAccordion: React.FC<CourseCurriculumAccordionProps>
         const isOpen = openChapters[chIdx] ?? false;
         const totalItems = chapter.items.length;
         const finishedInChapter = chapter.items.filter(item => completedItems.includes(item.id)).length;
+        const isChapterComplete = finishedInChapter === totalItems && totalItems > 0;
 
         return (
           <div 
@@ -86,16 +162,16 @@ export const CourseCurriculumAccordion: React.FC<CourseCurriculumAccordionProps>
           >
             <button
               onClick={() => toggleChapter(chIdx)}
-              className="w-full flex items-center justify-between p-5 text-left bg-muted/20 hover:bg-muted/40 transition-colors"
+              className="w-full flex items-center justify-between p-5 text-left bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer select-none"
             >
               <div className="space-y-1 pr-4">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                     Chapter {chIdx + 1}
                   </span>
-                  {finishedInChapter === totalItems && totalItems > 0 && (
+                  {isChapterComplete && (
                     <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Complete
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Complete
                     </span>
                   )}
                 </div>
@@ -109,7 +185,11 @@ export const CourseCurriculumAccordion: React.FC<CourseCurriculumAccordionProps>
                 )}
               </div>
               <div className="flex items-center gap-3 shrink-0">
-                <span className="text-xs text-muted-foreground bg-background px-2.5 py-1 rounded-full border border-border">
+                <span className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                  isChapterComplete 
+                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-semibold' 
+                    : 'text-muted-foreground bg-background border-border'
+                }`}>
                   {finishedInChapter}/{totalItems} done
                 </span>
                 <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
@@ -127,12 +207,26 @@ export const CourseCurriculumAccordion: React.FC<CourseCurriculumAccordionProps>
                       className="flex items-center justify-between p-4 hover:bg-muted/40 transition-colors group"
                     >
                       <div className="flex items-center gap-3 flex-1 min-w-0 pr-4">
-                        <div className="shrink-0">
+                        {/* Interactive completion toggle checkbox */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleItemCompletion(item.id);
+                          }}
+                          title={isDone ? "Mark as incomplete" : "Mark as completed"}
+                          aria-label={isDone ? `Mark ${item.title} as incomplete` : `Mark ${item.title} as completed`}
+                          className="shrink-0 p-1 -ml-1 rounded-lg hover:bg-muted transition-colors cursor-pointer"
+                        >
                           {isDone ? (
-                            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 fill-emerald-500/10" />
                           ) : (
-                            getItemIcon(item.type, item.lessonType)
+                            <Circle className="w-5 h-5 text-muted-foreground/60 hover:text-primary transition-colors" />
                           )}
+                        </button>
+
+                        <div className="shrink-0 opacity-80">
+                          {getItemIcon(item.type, item.lessonType)}
                         </div>
 
                         <div className="flex items-center gap-2 min-w-0 flex-wrap">
@@ -140,7 +234,7 @@ export const CourseCurriculumAccordion: React.FC<CourseCurriculumAccordionProps>
                           <a 
                             href={item.url}
                             className={`text-sm font-medium hover:underline truncate group-hover:text-primary transition-colors ${
-                              isDone ? 'text-muted-foreground' : 'text-foreground'
+                              isDone ? 'text-muted-foreground line-through decoration-muted-foreground/40' : 'text-foreground'
                             }`}
                           >
                             {item.title}
@@ -157,7 +251,11 @@ export const CourseCurriculumAccordion: React.FC<CourseCurriculumAccordionProps>
                         )}
                         <a 
                           href={item.url}
-                          className="text-xs font-semibold px-3 py-1 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-colors"
+                          className={`text-xs font-semibold px-3 py-1 rounded-full transition-colors ${
+                            isDone 
+                              ? 'bg-muted text-muted-foreground hover:bg-muted/80' 
+                              : 'bg-secondary hover:bg-secondary/80 text-foreground'
+                          }`}
                         >
                           {isDone ? 'Review' : 'Start →'}
                         </a>
@@ -174,3 +272,4 @@ export const CourseCurriculumAccordion: React.FC<CourseCurriculumAccordionProps>
   );
 };
 
+export default CourseCurriculumAccordion;

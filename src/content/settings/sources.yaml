@@ -1,0 +1,34 @@
+newsSources:
+  - name: TechCrunch AI
+    url: https://techcrunch.com/category/artificial-intelligence/feed/
+    category: Frontier AI
+    badgeColor: rose
+    fetchLimit: 3
+    enabled: true
+  - name: Google AI News
+    url: https://blog.google/technology/ai/rss/
+    category: Research
+    badgeColor: blue
+    fetchLimit: 3
+    enabled: true
+  - name: Hugging Face Blog
+    url: https://huggingface.co/blog/feed.xml
+    category: Open Source
+    badgeColor: amber
+    fetchLimit: 3
+    enabled: true
+
+podcastSources:
+  - title: Practical AI
+    feedUrl: https://changelog.com/practicalai/feed
+    siteUrl: https://changelog.com/practicalai
+    badgeText: Practical AI
+    isSpotlight: true
+    enabled: true
+
+displaySettings:
+  homepageNewsLimit: 6
+  homepagePodcastLimit: 3
+  enableLiveClientSync: true
+  autoSyncOnPageLoad: true
+  feedTimeoutMs: 3800

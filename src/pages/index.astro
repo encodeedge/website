@@ -4,7 +4,8 @@ import { format } from 'date-fns';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { slugify } from '@/utils/slugs';
-import { getPodcastEpisodes, AI_NEWS_DISPATCHES } from '@/lib/feeds';
+import { getPodcastEpisodes, getAiNewsDispatches } from '@/lib/feeds';
+import { getSourcesSettings } from '@/lib/settings';
 import { TOPIC_METADATA } from '@/lib/topics';
 import { 
   ArrowRight, 
@@ -21,7 +22,8 @@ import {
   Volume2, 
   Code2,
   Rss,
-  GraduationCap
+  GraduationCap,
+  RefreshCw
 } from 'lucide-react';
 import EditorialPostCover from '@/components/ui/EditorialPostCover.astro';
 
@@ -55,10 +57,17 @@ if (showcaseCourses.length < 3) {
 }
 const featuredCourse = showcaseCourses[0] || allCourses[0];
 
-// Live Podcast episodes fetched from RSS feed
-const podcastEpisodes = await getPodcastEpisodes();
+// Live syndicated feeds (auto-updated from live RSS/Atom feeds configured in Keystatic)
+const sourcesConfig = await getSourcesSettings();
+const [aiNewsDispatches, podcastEpisodes] = await Promise.all([
+  getAiNewsDispatches(sourcesConfig.displaySettings.homepageNewsLimit),
+  getPodcastEpisodes(),
+]);
 const spotlightEpisode = podcastEpisodes[0];
-const companionEpisodes = podcastEpisodes.slice(1, 4);
+const companionEpisodes = podcastEpisodes.slice(1, (sourcesConfig.displaySettings.homepagePodcastLimit || 3) + 1);
+const activePodcastSource = sourcesConfig.podcastSources.find((p) => p.enabled) || sourcesConfig.podcastSources[0];
+const enableLiveClientSync = sourcesConfig.displaySettings.enableLiveClientSync;
+const autoSyncOnPageLoad = sourcesConfig.displaySettings.autoSyncOnPageLoad ?? true;
 
 // Recent blog posts for the dedicated blog section
 const recentBlogPosts = sortedPosts.slice(0, 6);
@@ -424,7 +433,7 @@ const TOPIC_CARDS = [
     </div>
   </section>
 
-  {/* 7. AI & Tech Radar / Dispatches (Curated Technical Briefings & Releases) */}
+  {/* 7. AI & Tech Radar / Dispatches (Curated Technical Briefings & Releases from Syndicated Feeds) */}
   <section class="woords_container_small mb-20" id="ai-news">
     <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-black-150 dark:border-black-800 gap-4">
       <div>
@@ -433,26 +442,39 @@ const TOPIC_CARDS = [
             <Newspaper class="size-3 mr-1 text-primary" />
             Industry Radar
           </span>
-          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-500/10 text-rose-600 dark:text-rose-400">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
             <span class="size-1.5 rounded-full bg-rose-500 animate-pulse"></span>
-            Live Updates
+            Syndicated Feeds
           </span>
         </div>
         <h2 class="font-bold font-display text-2xl sm:text-3xl md:text-4xl text-foreground tracking-tight">
           AI &amp; Tech Intelligence
         </h2>
         <p class="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xl">
-          Curated technical developments, frontier model releases, and silicon benchmarks.
+          Live technical developments, frontier model releases, and silicon benchmarks automatically synced from industry feeds.
         </p>
       </div>
-      <a href="/rss.xml" class="woords_btn text-xs font-semibold shrink-0">
-        <span>Site RSS Feed</span>
-        <Rss class="size-3.5" />
-      </a>
+      <div class="flex items-center gap-2.5 shrink-0">
+        {enableLiveClientSync && (
+          <button
+            id="sync-news-btn"
+            type="button"
+            class="woords_btn text-xs font-semibold cursor-pointer group"
+            title="Refresh syndicated feeds"
+          >
+            <RefreshCw class="size-3.5 group-hover:rotate-180 transition-transform duration-500" />
+            <span id="sync-news-btn-text">Sync Feeds</span>
+          </button>
+        )}
+        <a href="/rss.xml" class="woords_btn text-xs font-semibold shrink-0">
+          <span>Site RSS</span>
+          <Rss class="size-3.5" />
+        </a>
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {AI_NEWS_DISPATCHES.map((news) => (
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="ai-news-grid">
+      {aiNewsDispatches.map((news) => (
         <article class="flex flex-col justify-between p-5 rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group">
           <div>
             <div class="flex items-center justify-between gap-2 mb-3">
@@ -465,7 +487,7 @@ const TOPIC_CARDS = [
               </span>
             </div>
 
-            <h3 class="font-bold font-display text-lg text-foreground group-hover:text-primary group-hover:underline leading-snug mb-2">
+            <h3 class="font-bold font-display text-lg text-foreground group-hover:text-primary group-hover:underline leading-snug mb-2 line-clamp-2">
               <a href={news.url} target={news.isExternal ? '_blank' : '_self'} rel={news.isExternal ? 'noopener noreferrer' : undefined}>
                 {news.title}
               </a>
@@ -477,12 +499,12 @@ const TOPIC_CARDS = [
           </div>
 
           <div class="mt-5 pt-3 border-t border-black-150 dark:border-black-800 flex items-center justify-between text-xs text-muted-foreground">
-            <span class="font-semibold text-foreground/80">{news.source}</span>
+            <span class="font-semibold text-foreground/80 truncate max-w-[150px]">{news.source}</span>
             <a 
               href={news.url} 
               target={news.isExternal ? '_blank' : '_self'} 
               rel={news.isExternal ? 'noopener noreferrer' : undefined}
-              class="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary transition-colors"
+              class="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary transition-colors shrink-0"
             >
               <span>{news.isExternal ? 'Read Source' : 'Read Article'}</span>
               {news.isExternal ? <ExternalLink class="size-3" /> : <ArrowRight class="size-3" />}
@@ -502,6 +524,10 @@ const TOPIC_CARDS = [
             <Headphones class="size-3 mr-1 text-primary" />
             Audio Briefings
           </span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+            <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            Syndicated Audio
+          </span>
         </div>
         <h2 class="font-bold font-display text-2xl sm:text-3xl md:text-4xl text-foreground tracking-tight">
           AI Engineering Podcasts &amp; Audio
@@ -510,18 +536,31 @@ const TOPIC_CARDS = [
           Technical discussions on reasoning architectures, production AI models, and real engineering trade-offs.
         </p>
       </div>
-      <a 
-        href="https://changelog.com/practicalai" 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        class="woords_btn text-xs font-semibold shrink-0"
-      >
-        <span>Practical AI Feed</span>
-        <ExternalLink class="size-3.5" />
-      </a>
+      <div class="flex items-center gap-2.5 shrink-0">
+        {enableLiveClientSync && (
+          <button
+            id="sync-podcasts-btn"
+            type="button"
+            class="woords_btn text-xs font-semibold cursor-pointer group"
+            title="Refresh syndicated podcast episodes"
+          >
+            <RefreshCw class="size-3.5 group-hover:rotate-180 transition-transform duration-500" />
+            <span id="sync-podcasts-btn-text">Sync Episodes</span>
+          </button>
+        )}
+        <a 
+          href={activePodcastSource?.siteUrl || 'https://changelog.com/practicalai'} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="woords_btn text-xs font-semibold shrink-0"
+        >
+          <span>{activePodcastSource?.badgeText || activePodcastSource?.title || 'Practical AI'}</span>
+          <ExternalLink class="size-3.5" />
+        </a>
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="podcasts-grid">
       {/* 1. Spotlight Episode with Compact Mini Player */}
       {spotlightEpisode && (
         <div class="p-5 rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:shadow-md transition-all flex flex-col justify-between group">
@@ -698,9 +737,10 @@ const TOPIC_CARDS = [
     </div>
   </section>
 
-  {/* Client-side script for inline interactive podcast playback */}
+  {/* Client-side script for inline interactive podcast playback & live feed synchronization */}
   <script is:inline>
     document.addEventListener('DOMContentLoaded', () => {
+      // 1. Audio Player Logic
       const audio = document.getElementById('podcast-audio');
       const playBtn = document.getElementById('podcast-play-btn');
       const playIcon = document.getElementById('podcast-play-icon');
@@ -708,23 +748,24 @@ const TOPIC_CARDS = [
       const timeDisplay = document.getElementById('podcast-time');
       const progress = document.getElementById('podcast-progress');
 
-      if (audio && playBtn) {
-        playBtn.addEventListener('click', () => {
+      function setupAudio() {
+        if (!audio || !playBtn) return;
+        playBtn.onclick = () => {
           if (audio.paused) {
             audio.play().then(() => {
               playIcon?.classList.add('hidden');
               pauseIcon?.classList.remove('hidden');
             }).catch((err) => {
-              console.warn('Audio play request failed:', err);
+              console.warn('Audio playback failed:', err);
             });
           } else {
             audio.pause();
             playIcon?.classList.remove('hidden');
             pauseIcon?.classList.add('hidden');
           }
-        });
+        };
 
-        audio.addEventListener('timeupdate', () => {
+        audio.ontimeupdate = () => {
           if (audio.duration && progress) {
             const percent = (audio.currentTime / audio.duration) * 100;
             progress.style.width = percent + '%';
@@ -736,13 +777,173 @@ const TOPIC_CARDS = [
             const durS = Math.floor((audio.duration || 0) % 60);
             timeDisplay.textContent = `${curM}:${curS < 10 ? '0' : ''}${curS} / ${durM || 45}:${durS < 10 ? '0' : ''}${durS}`;
           }
-        });
+        };
 
-        audio.addEventListener('ended', () => {
+        audio.onended = () => {
           playIcon?.classList.remove('hidden');
           pauseIcon?.classList.add('hidden');
           if (progress) progress.style.width = '0%';
+        };
+      }
+      setupAudio();
+
+      // Helper: Format relative time
+      function formatTimeAgo(dateStr) {
+        try {
+          const past = new Date(dateStr).getTime();
+          const diffMin = Math.floor((Date.now() - past) / 60000);
+          if (diffMin < 60) return `${Math.max(1, diffMin)}m ago`;
+          const diffHours = Math.floor(diffMin / 60);
+          if (diffHours < 24) return `${diffHours}h ago`;
+          const diffDays = Math.floor(diffHours / 24);
+          if (diffDays === 1) return 'Yesterday';
+          if (diffDays < 7) return `${diffDays}d ago`;
+          return `${Math.floor(diffDays / 7)}w ago`;
+        } catch {
+          return 'Recent';
+        }
+      }
+
+      // Helper: Clean HTML
+      function stripHtml(html) {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        return div.textContent || div.innerText || '';
+      }
+
+      // 2. Client-side Live News Sync
+      const syncNewsBtn = document.getElementById('sync-news-btn');
+      const syncNewsBtnText = document.getElementById('sync-news-btn-text');
+      const newsGrid = document.getElementById('ai-news-grid');
+
+      if (syncNewsBtn && newsGrid) {
+        syncNewsBtn.addEventListener('click', async () => {
+          const icon = syncNewsBtn.querySelector('svg');
+          icon?.classList.add('animate-spin');
+          if (syncNewsBtnText) syncNewsBtnText.textContent = 'Syncing...';
+
+          try {
+            const feedUrl = encodeURIComponent('https://techcrunch.com/category/artificial-intelligence/feed/');
+            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${feedUrl}`);
+            const data = await res.json();
+
+            if (data.status === 'ok' && Array.isArray(data.items) && data.items.length > 0) {
+              const freshItems = data.items.slice(0, 6);
+              newsGrid.innerHTML = freshItems.map(item => {
+                const timeAgo = formatTimeAgo(item.pubDate);
+                const summary = stripHtml(item.description || item.content || '').slice(0, 160) + '...';
+                let tag = 'Frontier AI';
+                let badgeColor = 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20';
+                const lower = (item.title + ' ' + summary).toLowerCase();
+                if (lower.includes('agent')) {
+                  tag = 'AI Agents';
+                  badgeColor = 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20';
+                } else if (lower.includes('chip') || lower.includes('nvidia') || lower.includes('gpu')) {
+                  tag = 'AI Silicon';
+                  badgeColor = 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20';
+                } else if (lower.includes('open source') || lower.includes('weights')) {
+                  tag = 'Open Source';
+                  badgeColor = 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20';
+                }
+
+                return `
+                  <article class="flex flex-col justify-between p-5 rounded-2xl border border-black-150 dark:border-black-800 bg-card hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group">
+                    <div>
+                      <div class="flex items-center justify-between gap-2 mb-3">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${badgeColor}">
+                          ${tag}
+                        </span>
+                        <span class="text-[11px] text-muted-foreground font-mono flex items-center gap-1">
+                          <svg class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                          ${timeAgo}
+                        </span>
+                      </div>
+                      <h3 class="font-bold font-display text-lg text-foreground group-hover:text-primary group-hover:underline leading-snug mb-2 line-clamp-2">
+                        <a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a>
+                      </h3>
+                      <p class="text-xs text-muted-foreground line-clamp-3 leading-relaxed font-body">${summary}</p>
+                    </div>
+                    <div class="mt-5 pt-3 border-t border-black-150 dark:border-black-800 flex items-center justify-between text-xs text-muted-foreground">
+                      <span class="font-semibold text-foreground/80 truncate max-w-[150px]">${item.author || 'TechCrunch AI'}</span>
+                      <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary transition-colors shrink-0">
+                        <span>Read Source</span>
+                        <svg class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                      </a>
+                    </div>
+                  </article>
+                `;
+              }).join('');
+
+              if (syncNewsBtnText) syncNewsBtnText.textContent = 'Synced!';
+            } else {
+              if (syncNewsBtnText) syncNewsBtnText.textContent = 'Up to Date';
+            }
+          } catch (err) {
+            console.error('Error syncing AI news:', err);
+            if (syncNewsBtnText) syncNewsBtnText.textContent = 'Up to Date';
+          } finally {
+            icon?.classList.remove('animate-spin');
+            setTimeout(() => {
+              if (syncNewsBtnText) syncNewsBtnText.textContent = 'Sync Feeds';
+            }, 2500);
+          }
         });
+      }
+
+      // 3. Client-side Live Podcast Sync
+      const syncPodcastsBtn = document.getElementById('sync-podcasts-btn');
+      const syncPodcastsBtnText = document.getElementById('sync-podcasts-btn-text');
+
+      if (syncPodcastsBtn) {
+        syncPodcastsBtn.addEventListener('click', async () => {
+          const icon = syncPodcastsBtn.querySelector('svg');
+          icon?.classList.add('animate-spin');
+          if (syncPodcastsBtnText) syncPodcastsBtnText.textContent = 'Syncing...';
+
+          try {
+            const feedUrl = encodeURIComponent('https://changelog.com/practicalai/feed');
+            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${feedUrl}`);
+            const data = await res.json();
+
+            if (data.status === 'ok' && Array.isArray(data.items) && data.items.length > 0) {
+              const latestEp = data.items[0];
+              const audioUrl = latestEp.enclosure?.link;
+              if (audio && audioUrl && audio.src !== audioUrl) {
+                audio.src = audioUrl;
+                audio.load();
+              }
+              if (syncPodcastsBtnText) syncPodcastsBtnText.textContent = 'Synced!';
+            } else {
+              if (syncPodcastsBtnText) syncPodcastsBtnText.textContent = 'Up to Date';
+            }
+          } catch (err) {
+            console.error('Error syncing podcasts:', err);
+            if (syncPodcastsBtnText) syncPodcastsBtnText.textContent = 'Up to Date';
+          } finally {
+            icon?.classList.remove('animate-spin');
+            setTimeout(() => {
+              if (syncPodcastsBtnText) syncPodcastsBtnText.textContent = 'Sync Episodes';
+            }, 2500);
+          }
+        });
+      }
+
+      // 4. Background Auto-Sync on Page Load (debounced with localStorage to prevent API spam)
+      const AUTO_SYNC_ENABLED = {JSON.stringify(autoSyncOnPageLoad)};
+      const AUTO_SYNC_CACHE_KEY = 'encodeedge_feeds_last_sync';
+      const AUTO_SYNC_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes cache window
+
+      if (AUTO_SYNC_ENABLED) {
+        const lastSync = Number(localStorage.getItem(AUTO_SYNC_CACHE_KEY) || '0');
+        const now = Date.now();
+        if (now - lastSync >= AUTO_SYNC_INTERVAL_MS) {
+          // Delay briefly (1.2s) after initial paint so page loads critical assets first
+          setTimeout(() => {
+            if (syncNewsBtn) syncNewsBtn.click();
+            if (syncPodcastsBtn) syncPodcastsBtn.click();
+            localStorage.setItem(AUTO_SYNC_CACHE_KEY, String(Date.now()));
+          }, 1200);
+        }
       }
     });
   </script>

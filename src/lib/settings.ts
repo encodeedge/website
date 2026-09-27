@@ -378,3 +378,131 @@ export async function getIntegrationsSettings(): Promise<IntegrationsSettings> {
   }
 }
 
+export interface NewsSourceConfig {
+  name: string;
+  url: string;
+  category: string;
+  badgeColor: string;
+  fetchLimit: number;
+  enabled: boolean;
+}
+
+export interface PodcastSourceConfig {
+  title: string;
+  feedUrl: string;
+  siteUrl: string;
+  badgeText: string;
+  isSpotlight: boolean;
+  enabled: boolean;
+}
+
+export interface SourcesSettings {
+  newsSources: NewsSourceConfig[];
+  podcastSources: PodcastSourceConfig[];
+  displaySettings: {
+    homepageNewsLimit: number;
+    homepagePodcastLimit: number;
+    enableLiveClientSync: boolean;
+    autoSyncOnPageLoad: boolean;
+    feedTimeoutMs: number;
+  };
+}
+
+export const DEFAULT_SOURCES_SETTINGS: SourcesSettings = {
+  newsSources: [
+    {
+      name: 'TechCrunch AI',
+      url: 'https://techcrunch.com/category/artificial-intelligence/feed/',
+      category: 'Frontier AI',
+      badgeColor: 'rose',
+      fetchLimit: 3,
+      enabled: true,
+    },
+    {
+      name: 'Google AI News',
+      url: 'https://blog.google/technology/ai/rss/',
+      category: 'Research',
+      badgeColor: 'blue',
+      fetchLimit: 3,
+      enabled: true,
+    },
+    {
+      name: 'Hugging Face Blog',
+      url: 'https://huggingface.co/blog/feed.xml',
+      category: 'Open Source',
+      badgeColor: 'amber',
+      fetchLimit: 3,
+      enabled: true,
+    },
+  ],
+  podcastSources: [
+    {
+      title: 'Practical AI',
+      feedUrl: 'https://changelog.com/practicalai/feed',
+      siteUrl: 'https://changelog.com/practicalai',
+      badgeText: 'Practical AI',
+      isSpotlight: true,
+      enabled: true,
+    },
+  ],
+  displaySettings: {
+    homepageNewsLimit: 6,
+    homepagePodcastLimit: 3,
+    enableLiveClientSync: true,
+    autoSyncOnPageLoad: true,
+    feedTimeoutMs: 3800,
+  },
+};
+
+/**
+ * Read syndication and media feed sources from Keystatic with comprehensive fallbacks.
+ */
+export async function getSourcesSettings(): Promise<SourcesSettings> {
+  try {
+    const reader = getReader();
+    const sources = await reader.singletons.sources.read();
+    if (!sources) return DEFAULT_SOURCES_SETTINGS;
+
+    const rawNews = sources.newsSources as any[];
+    const newsSources: NewsSourceConfig[] = Array.isArray(rawNews) && rawNews.length > 0
+      ? rawNews.map((s: any) => ({
+          name: s.name || 'Untitled Feed',
+          url: s.url || '',
+          category: s.category || 'Frontier AI',
+          badgeColor: s.badgeColor || 'rose',
+          fetchLimit: Number(s.fetchLimit) || 3,
+          enabled: s.enabled !== false,
+        }))
+      : DEFAULT_SOURCES_SETTINGS.newsSources;
+
+    const rawPodcasts = sources.podcastSources as any[];
+    const podcastSources: PodcastSourceConfig[] = Array.isArray(rawPodcasts) && rawPodcasts.length > 0
+      ? rawPodcasts.map((p: any) => ({
+          title: p.title || 'Untitled Podcast',
+          feedUrl: p.feedUrl || '',
+          siteUrl: p.siteUrl || '',
+          badgeText: p.badgeText || 'Practical AI',
+          isSpotlight: p.isSpotlight !== false,
+          enabled: p.enabled !== false,
+        }))
+      : DEFAULT_SOURCES_SETTINGS.podcastSources;
+
+    const ds = (sources as any).displaySettings;
+
+    return {
+      newsSources,
+      podcastSources,
+      displaySettings: {
+        homepageNewsLimit: Number(ds?.homepageNewsLimit) || DEFAULT_SOURCES_SETTINGS.displaySettings.homepageNewsLimit,
+        homepagePodcastLimit: Number(ds?.homepagePodcastLimit) || DEFAULT_SOURCES_SETTINGS.displaySettings.homepagePodcastLimit,
+        enableLiveClientSync: ds?.enableLiveClientSync ?? DEFAULT_SOURCES_SETTINGS.displaySettings.enableLiveClientSync,
+        autoSyncOnPageLoad: ds?.autoSyncOnPageLoad ?? DEFAULT_SOURCES_SETTINGS.displaySettings.autoSyncOnPageLoad,
+        feedTimeoutMs: Number(ds?.feedTimeoutMs) || DEFAULT_SOURCES_SETTINGS.displaySettings.feedTimeoutMs,
+      },
+    };
+  } catch (error) {
+    console.warn('[Keystatic Settings] Failed to load sources settings, using defaults:', error);
+    return DEFAULT_SOURCES_SETTINGS;
+  }
+}
+

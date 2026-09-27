@@ -173,6 +173,7 @@ export default config({
     brand: { name: 'EncodeEdge' },
     navigation: {
       'Site Settings': ['siteSettings', 'featureFlags', 'announcementBanner'],
+      'Feeds & Sources': ['sources'],
       'Design & Navigation': ['navigationSettings', 'footerSettings'],
       'Marketing': ['seoSettings', 'integrationsSettings'],
       'Content': ['blogs', 'faqs', 'roadmaps'],
@@ -603,6 +604,133 @@ export default config({
           apiKey: fields.text({ label: 'PostHog API Key' }),
           apiHost: fields.text({ label: 'PostHog API Host', defaultValue: 'https://app.posthog.com' }),
         }, { label: 'PostHog' }),
+      },
+    }),
+
+    // ─── Syndication & Media Sources ──────────────────────────────────────────
+    sources: singleton({
+      label: 'Feed & Media Sources',
+      path: 'src/content/settings/sources',
+      schema: {
+        // ── AI News Feeds ───────────────────────────────────────────────────
+        newsSources: fields.array(
+          fields.object({
+            name: fields.text({
+              label: 'Source Name',
+              description: 'e.g. TechCrunch AI, Google AI News, Hugging Face Blog',
+              validation: { isRequired: true },
+            }),
+            url: fields.text({
+              label: 'RSS / Atom Feed URL',
+              description: 'Public XML feed URL (RSS or Atom format)',
+              validation: { isRequired: true },
+            }),
+            category: fields.select({
+              label: 'Default Technical Category',
+              options: [
+                { label: 'Frontier AI / Models', value: 'Frontier AI' },
+                { label: 'AI Agents & Systems', value: 'AI Agents' },
+                { label: 'AI Silicon & Hardware', value: 'AI Silicon' },
+                { label: 'Research & Papers', value: 'Research' },
+                { label: 'Open Source AI', value: 'Open Source' },
+                { label: 'Industry & Policy', value: 'Industry' },
+                { label: 'Engineering & Code', value: 'Engineering' },
+              ],
+              defaultValue: 'Frontier AI',
+            }),
+            badgeColor: fields.select({
+              label: 'Tag Badge Accent Color',
+              options: [
+                { label: 'Rose (Red / Pink)', value: 'rose' },
+                { label: 'Blue (Indigo / Tech)', value: 'blue' },
+                { label: 'Amber (Orange / Warning)', value: 'amber' },
+                { label: 'Emerald (Green / Agent)', value: 'emerald' },
+                { label: 'Violet (Purple / Silicon)', value: 'violet' },
+              ],
+              defaultValue: 'rose',
+            }),
+            fetchLimit: fields.number({
+              label: 'Max Items to Fetch from Feed',
+              defaultValue: 3,
+            }),
+            enabled: fields.checkbox({
+              label: 'Feed Active / Enabled',
+              defaultValue: true,
+            }),
+          }),
+          {
+            label: 'AI & Tech News RSS Feeds',
+            description: 'Feeds aggregated into the AI & Tech Intelligence section on the homepage.',
+            itemLabel: (props) => `${props.fields.name.value || 'Untitled Feed'} (${props.fields.enabled.value ? 'Active' : 'Disabled'})`,
+          }
+        ),
+
+        // ── Podcast Feeds ───────────────────────────────────────────────────
+        podcastSources: fields.array(
+          fields.object({
+            title: fields.text({
+              label: 'Podcast / Show Name',
+              description: 'e.g. Practical AI, Latent Space, Changelog AI',
+              validation: { isRequired: true },
+            }),
+            feedUrl: fields.text({
+              label: 'Podcast RSS Feed URL',
+              description: 'Podcast feed URL with audio enclosures',
+              validation: { isRequired: true },
+            }),
+            siteUrl: fields.text({
+              label: 'Show Website / Show Notes URL',
+              defaultValue: 'https://changelog.com/practicalai',
+            }),
+            badgeText: fields.text({
+              label: 'Badge Label',
+              defaultValue: 'Audio Briefing',
+            }),
+            isSpotlight: fields.checkbox({
+              label: 'Spotlight Audio Episode',
+              description: 'When enabled, the latest episode from this feed will load into the homepage mini player.',
+              defaultValue: true,
+            }),
+            enabled: fields.checkbox({
+              label: 'Podcast Active / Enabled',
+              defaultValue: true,
+            }),
+          }),
+          {
+            label: 'Audio & Podcast RSS Feeds',
+            description: 'Feeds powering the AI Engineering Podcasts section and inline audio previews.',
+            itemLabel: (props) => `${props.fields.title.value || 'Untitled Podcast'} (${props.fields.enabled.value ? 'Active' : 'Disabled'})`,
+          }
+        ),
+
+        // ── Display & Sync Settings ─────────────────────────────────────────
+        displaySettings: fields.object({
+          homepageNewsLimit: fields.number({
+            label: 'Homepage News Items Count',
+            description: 'Number of articles to display in the AI news grid (default 6).',
+            defaultValue: 6,
+          }),
+          homepagePodcastLimit: fields.number({
+            label: 'Homepage Podcast Episodes Count',
+            description: 'Number of companion episodes to display (default 3).',
+            defaultValue: 3,
+          }),
+          enableLiveClientSync: fields.checkbox({
+            label: 'Enable Live Client-Side Syncing',
+            description: 'Allows website visitors to click "Sync Feeds" and "Sync Episodes" for instant updates.',
+            defaultValue: true,
+          }),
+          autoSyncOnPageLoad: fields.checkbox({
+            label: 'Auto-Sync on Page Load',
+            description: 'Automatically check and update to fresh feeds in the background when a user visits the homepage (cached for 10 minutes).',
+            defaultValue: true,
+          }),
+          feedTimeoutMs: fields.number({
+            label: 'Server Fetch Timeout (ms)',
+            description: 'Maximum time to wait when fetching external feeds before using fallback cache (default 3800ms).',
+            defaultValue: 3800,
+          }),
+        }, { label: 'Display & Sync Configuration' }),
       },
     }),
   },

@@ -3,6 +3,8 @@ export const prerender = false;
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { 
   ShieldCheck, 
+  ShieldAlert, 
+  AlertTriangle,
   Award, 
   Calendar, 
   CheckCircle2, 
@@ -10,26 +12,58 @@ import {
   ExternalLink, 
   Share2, 
   ArrowLeft,
-  Building,
-  GraduationCap,
-  Sparkles
+  Building, 
+  GraduationCap, 
+  Sparkles,
+  Search,
+  Lock
 } from 'lucide-react';
 import { getCollection } from 'astro:content';
+import { verifyCertificateSignature } from '@/lib/certificate-security';
 
 const { id } = Astro.params;
 
 // Search params for dynamic student info
 const url = new URL(Astro.request.url);
-const studentName = url.searchParams.get('student') || 'Verified Student';
-const courseParam = url.searchParams.get('course') || 'applied-deep-learning';
+const rawStudentName = url.searchParams.get('student') || '';
+const rawCourseParam = url.searchParams.get('course') || '';
 const grade = url.searchParams.get('grade') || 'With Distinction';
+const dateParam = url.searchParams.get('date') || '';
+const providedSig = url.searchParams.get('sig') || '';
 
+// 1. Check against official static certificates collection (Keystatic CMS)
+const certificatesCollection = await getCollection('certificates');
+const matchingStaticCert = certificatesCollection.find(
+  c => c.id === id || c.data.title === id || c.data.course === id
+);
+
+// 2. Check cryptographic signature for dynamic student-claimed certificates
+let isCryptographicallyVerified = false;
+if (id && rawStudentName && rawCourseParam && providedSig) {
+  isCryptographicallyVerified = await verifyCertificateSignature({
+    certId: id,
+    studentName: rawStudentName,
+    courseId: rawCourseParam,
+    issueDate: dateParam,
+    grade: grade,
+  }, providedSig);
+}
+
+const isValidCredential = Boolean(matchingStaticCert || isCryptographicallyVerified);
+
+// Load matched course details
 const courses = await getCollection('courses');
-const matchedCourse = courses.find(c => c.id === courseParam) || courses[0];
+const matchedCourse = courses.find(c => c.id === rawCourseParam) || 
+  (matchingStaticCert?.data?.course ? courses.find(c => c.id === matchingStaticCert.data.course) : null) || 
+  courses[0];
+
+const studentName = isValidCredential 
+  ? rawStudentName 
+  : (rawStudentName ? `${rawStudentName} (Unverified)` : 'Unknown');
 
 const courseTitle = matchedCourse?.data?.title || 'Applied Deep Learning: From Foundations to Transformers';
 const instructor = matchedCourse?.data?.instructor || 'Atul Jha';
-const issueDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+const issueDate = dateParam || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
 const skills = [
   'Deep Neural Networks',
@@ -41,13 +75,17 @@ const skills = [
 ---
 
 <DefaultLayout 
-  title={`Credential Verification: ${id} | EncodeEdge Academy`}
-  description={`Official verified credential for ${studentName} in ${courseTitle}. Issued by EncodeEdge.`}
+  title={isValidCredential 
+    ? `Verified Credential: ${studentName} - ${courseTitle} | EncodeEdge` 
+    : `Verification Failed: ${id} | EncodeEdge`}
+  description={isValidCredential 
+    ? `Official verified credential for ${studentName} in ${courseTitle}. Issued by EncodeEdge.` 
+    : 'Credential verification status for EncodeEdge Learning Academy.'}
 >
   <div class="py-12 md:py-20 container mx-auto px-4 max-w-3xl space-y-8">
     
     {/* Back link */}
-    <div>
+    <div class="flex items-center justify-between">
       <a 
         href="/courses" 
         class="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
@@ -55,126 +93,229 @@ const skills = [
         <ArrowLeft className="size-3.5" />
         <span>Back to All Courses</span>
       </a>
+
+      <a 
+        href="/verify" 
+        class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline transition-colors"
+      >
+        <Search className="size-3.5" />
+        <span>Verify Another Credential</span>
+      </a>
     </div>
 
-    {/* Verification Card */}
-    <div class="rounded-3xl border border-border/80 bg-card overflow-hidden shadow-lg">
-      
-      {/* Verified Banner */}
-      <div class="bg-gradient-to-r from-emerald-500/15 via-emerald-500/10 to-transparent border-b border-emerald-500/20 p-6 sm:p-8 flex items-center justify-between flex-wrap gap-4">
-        <div class="flex items-center gap-3.5">
-          <div class="size-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0 shadow-xs">
-            <ShieldCheck className="size-6" />
-          </div>
-          <div>
-            <span class="text-[11px] font-extrabold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 block">
-              Official Verified Credential
-            </span>
-            <h1 class="text-xl sm:text-2xl font-extrabold font-display text-foreground">
-              EncodeEdge Certificate of Mastery
-            </h1>
-          </div>
-        </div>
-
-        <div class="px-3.5 py-1.5 rounded-full bg-card border border-border/80 text-xs font-mono font-bold text-foreground shadow-xs">
-          ID: {id}
-        </div>
-      </div>
-
-      <div class="p-6 sm:p-10 space-y-8">
+    {isValidCredential ? (
+      /* ==================== VALID CREDENTIAL CARD ==================== */
+      <div class="rounded-3xl border border-border/80 bg-card overflow-hidden shadow-xl animate-in fade-in duration-300">
         
-        {/* Recipient Details */}
-        <div class="space-y-2 border-b border-border/60 pb-6 text-center sm:text-left">
-          <span class="text-xs text-muted-foreground uppercase font-semibold tracking-wider">
-            This certifies that
-          </span>
-          <h2 class="text-3xl sm:text-4xl font-black font-display text-foreground tracking-tight">
-            {studentName}
-          </h2>
-          <p class="text-sm sm:text-base text-muted-foreground font-body max-w-xl">
-            has successfully fulfilled all curriculum requirements, passed hands-on coding labs, and demonstrated practical mastery in:
-          </p>
-          <div class="text-lg sm:text-xl font-bold font-display text-primary pt-1">
-            {courseTitle}
-          </div>
-        </div>
-
-        {/* Credential Attributes 2x2 Grid */}
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-          <div class="p-4 rounded-2xl bg-muted/20 border border-border/60 space-y-1">
-            <span class="text-muted-foreground font-semibold flex items-center gap-1.5">
-              <Calendar className="size-3.5 text-primary" /> Issue Date
-            </span>
-            <div class="font-bold text-sm text-foreground">{issueDate}</div>
-            <div class="text-[11px] text-muted-foreground">Permanent Lifetime Credential</div>
-          </div>
-
-          <div class="p-4 rounded-2xl bg-muted/20 border border-border/60 space-y-1">
-            <span class="text-muted-foreground font-semibold flex items-center gap-1.5">
-              <Award className="size-3.5 text-amber-500" /> Academic Standing
-            </span>
-            <div class="font-bold text-sm text-foreground">{grade}</div>
-            <div class="text-[11px] text-muted-foreground">Top Quartile Performance</div>
-          </div>
-
-          <div class="p-4 rounded-2xl bg-muted/20 border border-border/60 space-y-1">
-            <span class="text-muted-foreground font-semibold flex items-center gap-1.5">
-              <GraduationCap className="size-3.5 text-blue-500" /> Instructor
-            </span>
-            <div class="font-bold text-sm text-foreground">{instructor}</div>
-            <div class="text-[11px] text-muted-foreground">EncodeEdge Curriculum Lead</div>
-          </div>
-
-          <div class="p-4 rounded-2xl bg-muted/20 border border-border/60 space-y-1">
-            <span class="text-muted-foreground font-semibold flex items-center gap-1.5">
-              <Building className="size-3.5 text-purple-500" /> Issuing Organization
-            </span>
-            <div class="font-bold text-sm text-foreground">EncodeEdge Academy</div>
-            <div class="text-[11px] text-muted-foreground">Verified Educational Authority</div>
-          </div>
-        </div>
-
-        {/* Competencies Validated */}
-        <div class="space-y-3">
-          <h3 class="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="size-3.5 text-primary" /> Competencies & Skills Validated
-          </h3>
-          <div class="flex flex-wrap gap-2">
-            {skills.map((skill, sIdx) => (
-              <span 
-                key={sIdx}
-                class="px-3 py-1.5 rounded-xl bg-card border border-border/80 text-xs font-semibold text-foreground flex items-center gap-1.5 shadow-xs"
-              >
-                <CheckCircle2 className="size-3 text-emerald-500" />
-                <span>{skill}</span>
+        {/* Verified Banner */}
+        <div class="bg-gradient-to-r from-emerald-500/15 via-emerald-500/10 to-transparent border-b border-emerald-500/20 p-6 sm:p-8 flex items-center justify-between flex-wrap gap-4">
+          <div class="flex items-center gap-3.5">
+            <div class="size-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0 shadow-xs">
+              <ShieldCheck className="size-6" />
+            </div>
+            <div>
+              <span class="text-[11px] font-extrabold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 block">
+                Official Verified Credential
               </span>
-            ))}
+              <h1 class="text-xl sm:text-2xl font-extrabold font-display text-foreground">
+                EncodeEdge Certificate of Mastery
+              </h1>
+            </div>
+          </div>
+
+          <div class="px-3.5 py-1.5 rounded-full bg-card border border-border/80 text-xs font-mono font-bold text-foreground shadow-xs">
+            ID: {id}
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div class="pt-4 border-t border-border/60 flex items-center justify-between flex-wrap gap-3">
-          <div class="flex items-center gap-2">
+        <div class="p-6 sm:p-10 space-y-8">
+          
+          {/* Recipient Details */}
+          <div class="space-y-2 border-b border-border/60 pb-6 text-center sm:text-left">
+            <span class="text-xs text-muted-foreground uppercase font-semibold tracking-wider">
+              This certifies that
+            </span>
+            <h2 class="text-3xl sm:text-4xl font-black font-display text-foreground tracking-tight">
+              {studentName}
+            </h2>
+            <p class="text-sm sm:text-base text-muted-foreground font-body max-w-xl">
+              has successfully fulfilled all curriculum requirements, passed hands-on coding labs, and demonstrated practical mastery in:
+            </p>
+            <div class="text-lg sm:text-xl font-bold font-display text-primary pt-1">
+              {courseTitle}
+            </div>
+          </div>
+
+          {/* Cryptographic Security Badge */}
+          <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-start gap-3">
+            <Lock className="size-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+            <div class="text-xs space-y-0.5">
+              <div class="font-bold text-emerald-700 dark:text-emerald-300">
+                Cryptographically Signed &amp; Tamper-Proof
+              </div>
+              <p class="text-muted-foreground text-[11px] leading-relaxed">
+                This credential was authenticated with a SHA-256 HMAC digital signature issued by EncodeEdge. Any alteration to the recipient name, course track, or completion parameters invalidates this verification.
+              </p>
+            </div>
+          </div>
+
+          {/* Credential Attributes 2x2 Grid */}
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 rounded-2xl bg-muted/20 border border-border/60 space-y-1">
+              <span class="text-muted-foreground font-semibold flex items-center gap-1.5">
+                <Calendar className="size-3.5 text-primary" /> Issue Date
+              </span>
+              <div class="font-bold text-sm text-foreground">{issueDate}</div>
+              <div class="text-[11px] text-muted-foreground">Permanent Lifetime Credential</div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-muted/20 border border-border/60 space-y-1">
+              <span class="text-muted-foreground font-semibold flex items-center gap-1.5">
+                <Award className="size-3.5 text-amber-500" /> Academic Standing
+              </span>
+              <div class="font-bold text-sm text-foreground">{grade}</div>
+              <div class="text-[11px] text-muted-foreground">Top Quartile Performance</div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-muted/20 border border-border/60 space-y-1">
+              <span class="text-muted-foreground font-semibold flex items-center gap-1.5">
+                <GraduationCap className="size-3.5 text-blue-500" /> Instructor
+              </span>
+              <div class="font-bold text-sm text-foreground">{instructor}</div>
+              <div class="text-[11px] text-muted-foreground">EncodeEdge Curriculum Lead</div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-muted/20 border border-border/60 space-y-1">
+              <span class="text-muted-foreground font-semibold flex items-center gap-1.5">
+                <Building className="size-3.5 text-purple-500" /> Issuing Organization
+              </span>
+              <div class="font-bold text-sm text-foreground">EncodeEdge Academy</div>
+              <div class="text-[11px] text-muted-foreground">Verified Educational Authority</div>
+            </div>
+          </div>
+
+          {/* Competencies Validated */}
+          <div class="space-y-3">
+            <h3 class="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="size-3.5 text-primary" /> Competencies &amp; Skills Validated
+            </h3>
+            <div class="flex flex-wrap gap-2">
+              {skills.map((skill, sIdx) => (
+                <span 
+                  key={sIdx}
+                  class="px-3 py-1.5 rounded-xl bg-card border border-border/80 text-xs font-semibold text-foreground flex items-center gap-1.5 shadow-xs"
+                >
+                  <CheckCircle2 className="size-3 text-emerald-500" />
+                  <span>{skill}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div class="pt-4 border-t border-border/60 flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center gap-2">
+              <a
+                href={`https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(courseTitle)}&organizationName=EncodeEdge&issueYear=${new Date().getFullYear()}&issueMonth=${new Date().getMonth() + 1}&certId=${id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="px-4 py-2.5 rounded-xl bg-[#0A66C2] hover:bg-[#004182] text-white text-xs font-bold shadow-sm transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+              >
+                <ExternalLink className="size-3.5" />
+                <span>Add to LinkedIn Profile</span>
+              </a>
+            </div>
+
             <a
-              href={`https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(courseTitle)}&organizationName=EncodeEdge&issueYear=${new Date().getFullYear()}&issueMonth=${new Date().getMonth() + 1}&certId=${id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="px-4 py-2.5 rounded-xl bg-[#0A66C2] hover:bg-[#004182] text-white text-xs font-bold shadow-sm transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+              href="/dashboard"
+              class="px-4 py-2.5 rounded-xl bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold border border-border/80 transition-colors inline-flex items-center gap-1.5"
             >
-              <ExternalLink className="size-3.5" />
-              <span>Add to LinkedIn Profile</span>
+              <span>Go to My Learning Dashboard</span>
             </a>
           </div>
 
-          <a
-            href="/dashboard"
-            class="px-4 py-2.5 rounded-xl bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold border border-border/80 transition-colors inline-flex items-center gap-1.5"
-          >
-            <span>Go to My Learning Dashboard</span>
-          </a>
+        </div>
+      </div>
+    ) : (
+      /* ==================== TAMPERED / INVALID CREDENTIAL CARD ==================== */
+      <div class="rounded-3xl border border-destructive/40 bg-card overflow-hidden shadow-xl animate-in fade-in duration-300">
+        
+        {/* Failed Banner */}
+        <div class="bg-gradient-to-r from-destructive/15 via-destructive/10 to-transparent border-b border-destructive/20 p-6 sm:p-8 flex items-center justify-between flex-wrap gap-4">
+          <div class="flex items-center gap-3.5">
+            <div class="size-12 rounded-2xl bg-destructive/20 border border-destructive/30 flex items-center justify-center text-destructive shrink-0 shadow-xs">
+              <ShieldAlert className="size-6" />
+            </div>
+            <div>
+              <span class="text-[11px] font-extrabold uppercase tracking-widest text-destructive block">
+                Security Alert: Verification Failed
+              </span>
+              <h1 class="text-xl sm:text-2xl font-extrabold font-display text-foreground">
+                Invalid or Tampered Credential Link
+              </h1>
+            </div>
+          </div>
+
+          <div class="px-3.5 py-1.5 rounded-full bg-destructive/10 border border-destructive/25 text-xs font-mono font-bold text-destructive">
+            ID: {id}
+          </div>
+        </div>
+
+        <div class="p-6 sm:p-10 space-y-6">
+          <div class="space-y-3">
+            <h2 class="text-lg font-bold text-foreground">
+              Why did this credential fail verification?
+            </h2>
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              EncodeEdge cryptographically signs all authentic certificates with a private cryptographic HMAC signature. This verification URL failed because:
+            </p>
+            <ul class="text-xs text-muted-foreground space-y-2 list-disc list-inside bg-muted/30 p-4 rounded-2xl border border-border/60">
+              <li><strong>URL Parameters Modified:</strong> The student name, course identifier, or issue date was altered in the browser address bar.</li>
+              <li><strong>Missing or Invalid Signature:</strong> The security token (<code class="text-destructive font-mono">sig</code>) is absent or does not match our official key.</li>
+              <li><strong>Unregistered Credential ID:</strong> The ID <code class="font-mono">{id}</code> was not generated by our official learning academy.</li>
+            </ul>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-muted/40 border border-border/80 space-y-3">
+            <h3 class="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+              <Search className="size-3.5 text-primary" /> Verify a Genuine Certificate
+            </h3>
+            <p class="text-xs text-muted-foreground">
+              If you received a certificate from a candidate or completed a course yourself, ensure you are using the exact original link or enter the credential ID below:
+            </p>
+            <form action="/verify" method="GET" class="flex flex-col sm:flex-row items-stretch gap-2 pt-1">
+              <input
+                type="text"
+                name="id"
+                placeholder="Enter Credential ID (e.g. EE-APPL-4921-2026)"
+                class="flex-1 px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary/40 shadow-xs"
+                required
+              />
+              <button
+                type="submit"
+                class="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 transition-opacity shadow-xs cursor-pointer"
+              >
+                Search Credential
+              </button>
+            </form>
+          </div>
+
+          <div class="pt-4 border-t border-border/60 flex items-center justify-between flex-wrap gap-3 text-xs">
+            <span class="text-muted-foreground">
+              Need assistance? Contact our registrar at <a href="mailto:support@encodeedge.com" class="text-primary hover:underline">support@encodeedge.com</a>
+            </span>
+            <a
+              href="/courses"
+              class="font-semibold text-primary hover:underline inline-flex items-center gap-1"
+            >
+              <span>Explore Verified Courses</span>
+              <ExternalLink className="size-3" />
+            </a>
+          </div>
         </div>
 
       </div>
-    </div>
+    )}
+
   </div>
 </DefaultLayout>

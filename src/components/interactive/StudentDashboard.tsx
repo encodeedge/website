@@ -583,6 +583,9 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ courses }) =
           courseId={selectedCertCourse.id}
           isOpen={true}
           onClose={() => setSelectedCertCourse(null)}
+          isCourseCompleted={progressMap[selectedCertCourse.id]?.isComplete}
+          totalItems={progressMap[selectedCertCourse.id]?.totalItems}
+          completedItems={progressMap[selectedCertCourse.id]?.completedItems}
         />
       )}
     </div>

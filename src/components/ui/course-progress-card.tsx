@@ -187,6 +187,9 @@ export const CourseProgressCard: React.FC<CourseProgressCardProps> = ({
         courseTitle={courseTitle}
         isOpen={showCertModal}
         onClose={() => setShowCertModal(false)}
+        isCourseCompleted={percent === 100}
+        totalItems={totalCount}
+        completedItems={completedCount}
       />
     </>
   );

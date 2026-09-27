@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Award, Download, Share2, Check, X, QrCode, ExternalLink, Sparkles, Shield, Copy } from 'lucide-react';
 import { persistentStorage } from '@/lib/storage';
+import { signCertificatePayload, buildVerifiedCertificateUrl } from '@/lib/certificate-security';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface CertificateData {
@@ -177,8 +178,32 @@ export const CourseCertificate = ({
     totalHours,
   };
 
+  const [signature, setSignature] = useState('');
+
   const verificationId = generateVerificationId(courseId, name || 'learner', new Date().toISOString());
-  const verificationUrl = getVerificationUrl(verificationId);
+
+  useEffect(() => {
+    if (name.trim()) {
+      signCertificatePayload({
+        certId: verificationId,
+        studentName: name.trim(),
+        courseId,
+        issueDate: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        grade: GRADE_CONFIG[grade].label,
+      }).then(sig => setSignature(sig)).catch(() => {});
+    }
+  }, [name, courseId, grade, verificationId]);
+
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://encodeedge.com';
+  const verificationUrl = signature
+    ? buildVerifiedCertificateUrl(origin, {
+        certId: verificationId,
+        studentName: name.trim() || 'Learner',
+        courseId,
+        issueDate: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        grade: GRADE_CONFIG[grade].label,
+      }, signature)
+    : getVerificationUrl(verificationId);
 
   const copyLink = async () => {
     try {

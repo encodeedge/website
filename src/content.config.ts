@@ -177,7 +177,7 @@ const assignments = defineCollection({
 });
 
 const certificates = defineCollection({
-  loader: glob({ base: "./src/content/certificates", pattern: "**/*.{md,mdx,json}" }),
+  loader: glob({ base: "./src/content/certificates", pattern: "**/*.{yaml,yml,json,md,mdx}" }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),

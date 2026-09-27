@@ -1195,16 +1195,36 @@ export default config({
           defaultValue: 'video'
         }),
         interactiveLab: fields.select({
-          label: 'Interactive Lab Embed',
-          description: 'Optionally embed a specialized interactive simulation widget into this lesson',
+          label: 'Interactive Lab Simulator',
+          description: 'Optionally embed a specialized interactive simulation widget or live code runner into this lesson',
           options: [
-            { label: 'None', value: 'none' },
-            { label: 'CPython Stack & Heap Memory Explorer', value: 'memory-explorer' },
+            { label: 'None (No Lab)', value: 'none' },
+            { label: 'Lesson-Tailored Code Sandbox', value: 'code-sandbox' },
             { label: 'Neural Network & Activation Playground', value: 'neural-playground' },
             { label: 'Loss Surface & Gradient Descent Optimizer Lab', value: 'gradient-descent' },
-            { label: 'Interactive Code Sandbox', value: 'code-sandbox' },
+            { label: 'CPython Stack & Heap Memory Explorer', value: 'memory-explorer' },
+            { label: 'Custom Code Sandbox (User-Defined Code)', value: 'custom-sandbox' },
           ],
           defaultValue: 'none',
+        }),
+        interactiveLabTitle: fields.text({
+          label: 'Interactive Lab Title (Optional)',
+          description: 'Override the default lab title (e.g. "2D Convolution Kernel & Feature Maps Lab"). If left blank, automatically adapts to the lesson topic.',
+        }),
+        interactiveLabDescription: fields.text({
+          label: 'Interactive Lab Description (Optional)',
+          description: 'Custom learning objective or instructions for this lab.',
+          multiline: true,
+        }),
+        customLabCode: fields.text({
+          label: 'Custom Lab Code (Optional Python)',
+          description: 'Custom executable Python code for this lesson sandbox (used when type is Code Sandbox or Custom Sandbox).',
+          multiline: true,
+        }),
+        customLabOutput: fields.text({
+          label: 'Custom Expected Output (Optional)',
+          description: 'Expected terminal execution output lines, separated by line breaks.',
+          multiline: true,
         }),
         videoUrl: fields.text({ label: 'Video URL', description: 'YouTube or Vimeo embed URL' }),
         duration: fields.number({ label: 'Duration (in minutes)' }),

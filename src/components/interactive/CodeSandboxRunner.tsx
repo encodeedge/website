@@ -12,6 +12,7 @@ interface CodeSandboxRunnerProps {
   contentId?: string;
   initialSnippetId?: string;
   titleOverride?: string;
+  descriptionOverride?: string;
   customSnippet?: CodeSnippet;
   showPresetTabs?: boolean;
   categoryScope?: string;
@@ -21,6 +22,7 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
   contentId,
   initialSnippetId,
   titleOverride,
+  descriptionOverride,
   customSnippet,
   showPresetTabs = true,
   categoryScope,
@@ -33,22 +35,37 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
     return undefined;
   }, [categoryScope, contentId, initialSnippetId]);
 
+  // Combined snippet map including any custom snippet passed per-lesson
+  const snippetMap = useMemo<Record<string, CodeSnippet>>(() => {
+    if (customSnippet) {
+      return { ...CONTENT_SNIPPETS, [customSnippet.id]: customSnippet };
+    }
+    return CONTENT_SNIPPETS;
+  }, [customSnippet]);
+
   // Available snippets filtered strictly by category if scoped
   const availableSnippets = useMemo<CodeSnippet[]>(() => {
+    let list: CodeSnippet[] = [];
     if (scopedCategory) {
       const filtered = getSnippetsForCategory(scopedCategory);
-      if (filtered.length > 0) return filtered;
+      list = filtered.length > 0 ? filtered : Object.values(CONTENT_SNIPPETS);
+    } else {
+      list = Object.values(CONTENT_SNIPPETS);
     }
-    return Object.values(CONTENT_SNIPPETS);
-  }, [scopedCategory]);
+
+    if (customSnippet && !list.some(s => s.id === customSnippet.id)) {
+      list = [customSnippet, ...list];
+    }
+    return list;
+  }, [scopedCategory, customSnippet]);
 
   // Resolve initial default snippet
   const resolvedDefault = useMemo<CodeSnippet>(() => {
     if (customSnippet) return customSnippet;
     if (contentId) return getSnippetForContent(contentId);
-    if (initialSnippetId && CONTENT_SNIPPETS[initialSnippetId]) return CONTENT_SNIPPETS[initialSnippetId];
+    if (initialSnippetId && snippetMap[initialSnippetId]) return snippetMap[initialSnippetId];
     return availableSnippets[0] || CONTENT_SNIPPETS['dl-perceptrons-and-backprop'];
-  }, [contentId, initialSnippetId, customSnippet, availableSnippets]);
+  }, [contentId, initialSnippetId, customSnippet, availableSnippets, snippetMap]);
 
   // STABLE list of preset snippets strictly within the scoped category
   const presetSnippets = useMemo<CodeSnippet[]>(() => {
@@ -71,7 +88,7 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
   }, [resolvedDefault]);
 
   // Current active snippet
-  const currentSnippet = CONTENT_SNIPPETS[selectedId] || resolvedDefault;
+  const currentSnippet = snippetMap[selectedId] || resolvedDefault;
 
   // Handle switching code snippet
   const handleSelect = (snippet: CodeSnippet) => {
@@ -115,7 +132,7 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="font-bold font-display text-base text-foreground">
-                {titleOverride || `${currentSnippet.category}: Interactive Lab`}
+                {titleOverride || `${currentSnippet.shortTitle || currentSnippet.title}: Interactive Lab`}
               </h3>
               <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                 {currentSnippet.category}
@@ -128,7 +145,7 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
               )}
             </div>
             <p className="text-xs text-muted-foreground font-body line-clamp-1">
-              {currentSnippet.description || 'Run and inspect verified algorithms directly in your browser.'}
+              {descriptionOverride || currentSnippet.description || 'Run and inspect verified algorithms directly in your browser.'}
             </p>
           </div>
         </div>

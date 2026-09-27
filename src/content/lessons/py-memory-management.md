@@ -2,6 +2,9 @@
 title: "CPython Memory Internals, Reference Counts & Garbage Collection"
 description: "Understanding PyObject headers, arena allocators, cyclic reference detection, and weakref mechanics."
 lessonType: "article"
+interactiveLab: "memory-explorer"
+interactiveLabTitle: "CPython Memory & Reference Counting Explorer"
+interactiveLabDescription: "Trace heap vs stack memory addresses, inspect ob_refcnt increments, and visualize cyclic references."
 videoUrl: ""
 duration: 20
 ---

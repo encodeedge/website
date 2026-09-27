@@ -2,6 +2,7 @@
 title: "Welcome to Applied Deep Learning"
 description: "An overview of the course roadmap, prerequisites, compute setup with PyTorch and Google Colab, and core learning outcomes."
 lessonType: "video"
+interactiveLab: "none"
 videoUrl: "https://www.youtube.com/embed/aircAruvnKk"
 duration: 14
 ---

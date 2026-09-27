@@ -2,6 +2,9 @@
 title: "Scaled Dot-Product & Multi-Head Self-Attention"
 description: "The math behind Query, Key, and Value projections, softmax temperature scaling, and attention masks."
 lessonType: "video"
+interactiveLab: "code-sandbox"
+interactiveLabTitle: "Scaled Dot-Product Attention Implementation Lab"
+interactiveLabDescription: "Compute Q, K, V dot-products, scale attention scores by sqrt(d_k), apply softmax normalization, and extract context vectors."
 videoUrl: "https://www.youtube.com/embed/kCc8FmEb1nY"
 duration: 34
 ---

@@ -2,6 +2,9 @@
 title: "Tokenization, Context Windows & High-Dimensional Embeddings"
 description: "Byte-Pair Encoding (BPE), SentencePiece, vector representations, and semantic distance metrics."
 lessonType: "article"
+interactiveLab: "code-sandbox"
+interactiveLabTitle: "Vector Embeddings & Semantic Cosine Distance Lab"
+interactiveLabDescription: "Compute dot product similarity scores, normalize high-dimensional vectors, and rank semantic text chunks."
 videoUrl: ""
 duration: 20
 ---

@@ -2,6 +2,9 @@
 title: "Gradient Descent, Convex Optimization & Learning Rates"
 description: "Mathematical derivation of parameter updates, learning rate schedules, and momentum."
 lessonType: "video"
+interactiveLab: "code-sandbox"
+interactiveLabTitle: "Gradient Descent Optimization & Learning Rate Lab"
+interactiveLabDescription: "Compute partial derivatives dMSE/dm and dMSE/dc iteratively to converge on optimal parameters."
 videoUrl: "https://www.youtube.com/embed/sDv4f4s2SB8"
 duration: 22
 ---

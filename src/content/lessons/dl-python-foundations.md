@@ -2,6 +2,9 @@
 title: "Vectorized Operations with NumPy & PyTorch Tensors"
 description: "Understanding stride mechanics, broadcasting rules, tensor shapes, and zero-copy operations in memory."
 lessonType: "article"
+interactiveLab: "code-sandbox"
+interactiveLabTitle: "Vectorized Tensor Broadcasting & Strides Lab"
+interactiveLabDescription: "Benchmark vectorized tensor broadcasting against explicit Python loops and inspect memory layout strides."
 videoUrl: ""
 duration: 22
 ---

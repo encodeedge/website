@@ -2,6 +2,9 @@
 title: "Ordinary Least Squares & Closed-Form Normal Equation"
 description: "Deriving analytical OLS solution via linear algebra, matrix inversion, and condition numbers."
 lessonType: "article"
+interactiveLab: "code-sandbox"
+interactiveLabTitle: "Ordinary Least Squares Normal Equation Lab"
+interactiveLabDescription: "Compute analytical weights via (X^T X)^(-1) X^T y and compare against iterative optimization."
 videoUrl: ""
 duration: 24
 ---

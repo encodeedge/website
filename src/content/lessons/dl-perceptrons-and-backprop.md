@@ -2,6 +2,9 @@
 title: "Multi-Layer Perceptrons & Computational Graphs"
 description: "Deriving automatic differentiation, loss calculation, forward passes, and backward gradients via the chain rule."
 lessonType: "video"
+interactiveLab: "code-sandbox"
+interactiveLabTitle: "Perceptron Forward Pass & Manual Backpropagation Lab"
+interactiveLabDescription: "Derive analytical gradients with the chain rule, compute forward pre-activation, and inspect weight updates."
 videoUrl: "https://www.youtube.com/embed/VMj-3S1tku0"
 duration: 28
 ---

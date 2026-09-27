@@ -396,14 +396,28 @@ export interface PodcastSourceConfig {
   enabled: boolean;
 }
 
+export interface CompetitionSourceConfig {
+  name: string;
+  platformId: string;
+  url: string;
+  feedUrl?: string;
+  category: string;
+  fetchLimit: number;
+  enabled: boolean;
+}
+
 export interface SourcesSettings {
   newsSources: NewsSourceConfig[];
   podcastSources: PodcastSourceConfig[];
+  competitionSources: CompetitionSourceConfig[];
   displaySettings: {
     homepageNewsLimit: number;
     homepagePodcastLimit: number;
     enableLiveClientSync: boolean;
     autoSyncOnPageLoad: boolean;
+    enableCompetitionsSync: boolean;
+    autoSyncCompetitions: boolean;
+    maxCompetitionsDisplay: number;
     feedTimeoutMs: number;
   };
 }
@@ -445,11 +459,70 @@ export const DEFAULT_SOURCES_SETTINGS: SourcesSettings = {
       enabled: true,
     },
   ],
+  competitionSources: [
+    {
+      name: 'Kaggle',
+      platformId: 'kaggle',
+      url: 'https://www.kaggle.com/competitions',
+      feedUrl: 'https://www.kaggle.com/competitions',
+      category: 'all',
+      fetchLimit: 6,
+      enabled: true,
+    },
+    {
+      name: 'HackerRank',
+      platformId: 'hackerrank',
+      url: 'https://www.hackerrank.com/contests',
+      feedUrl: 'https://www.hackerrank.com/contests',
+      category: 'all',
+      fetchLimit: 4,
+      enabled: true,
+    },
+    {
+      name: 'DrivenData',
+      platformId: 'drivendata',
+      url: 'https://www.drivendata.org/competitions',
+      feedUrl: 'https://www.drivendata.org/competitions',
+      category: 'all',
+      fetchLimit: 4,
+      enabled: true,
+    },
+    {
+      name: 'Hugging Face',
+      platformId: 'huggingface',
+      url: 'https://huggingface.co/spaces',
+      feedUrl: 'https://huggingface.co/spaces',
+      category: 'all',
+      fetchLimit: 4,
+      enabled: true,
+    },
+    {
+      name: 'Zindi',
+      platformId: 'zindi',
+      url: 'https://zindi.africa/competitions',
+      feedUrl: 'https://zindi.africa/competitions',
+      category: 'all',
+      fetchLimit: 4,
+      enabled: true,
+    },
+    {
+      name: 'AIcrowd',
+      platformId: 'aicrowd',
+      url: 'https://www.aicrowd.com/challenges',
+      feedUrl: 'https://www.aicrowd.com/challenges',
+      category: 'all',
+      fetchLimit: 4,
+      enabled: true,
+    },
+  ],
   displaySettings: {
     homepageNewsLimit: 6,
     homepagePodcastLimit: 3,
     enableLiveClientSync: true,
     autoSyncOnPageLoad: true,
+    enableCompetitionsSync: true,
+    autoSyncCompetitions: true,
+    maxCompetitionsDisplay: 24,
     feedTimeoutMs: 3800,
   },
 };
@@ -487,16 +560,33 @@ export async function getSourcesSettings(): Promise<SourcesSettings> {
         }))
       : DEFAULT_SOURCES_SETTINGS.podcastSources;
 
+    const rawCompetitions = (sources as any).competitionSources as any[];
+    const competitionSources: CompetitionSourceConfig[] = Array.isArray(rawCompetitions) && rawCompetitions.length > 0
+      ? rawCompetitions.map((c: any) => ({
+          name: c.name || 'Untitled Platform',
+          platformId: c.platformId || 'kaggle',
+          url: c.url || 'https://www.kaggle.com/competitions',
+          feedUrl: c.feedUrl || '',
+          category: c.category || 'all',
+          fetchLimit: Number(c.fetchLimit) || 4,
+          enabled: c.enabled !== false,
+        }))
+      : DEFAULT_SOURCES_SETTINGS.competitionSources;
+
     const ds = (sources as any).displaySettings;
 
     return {
       newsSources,
       podcastSources,
+      competitionSources,
       displaySettings: {
         homepageNewsLimit: Number(ds?.homepageNewsLimit) || DEFAULT_SOURCES_SETTINGS.displaySettings.homepageNewsLimit,
         homepagePodcastLimit: Number(ds?.homepagePodcastLimit) || DEFAULT_SOURCES_SETTINGS.displaySettings.homepagePodcastLimit,
         enableLiveClientSync: ds?.enableLiveClientSync ?? DEFAULT_SOURCES_SETTINGS.displaySettings.enableLiveClientSync,
         autoSyncOnPageLoad: ds?.autoSyncOnPageLoad ?? DEFAULT_SOURCES_SETTINGS.displaySettings.autoSyncOnPageLoad,
+        enableCompetitionsSync: ds?.enableCompetitionsSync ?? DEFAULT_SOURCES_SETTINGS.displaySettings.enableCompetitionsSync,
+        autoSyncCompetitions: ds?.autoSyncCompetitions ?? DEFAULT_SOURCES_SETTINGS.displaySettings.autoSyncCompetitions,
+        maxCompetitionsDisplay: Number(ds?.maxCompetitionsDisplay) || DEFAULT_SOURCES_SETTINGS.displaySettings.maxCompetitionsDisplay,
         feedTimeoutMs: Number(ds?.feedTimeoutMs) || DEFAULT_SOURCES_SETTINGS.displaySettings.feedTimeoutMs,
       },
     };

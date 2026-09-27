@@ -1,9 +1,6 @@
-/**
- * AI/ML Competitions Engine & Registry
- * Aggregates active challenges from Kaggle, HackerRank, DrivenData, Hugging Face, and Zindi.
- */
+import { getSourcesSettings } from './settings';
 
-export type PlatformId = 'kaggle' | 'hackerrank' | 'drivendata' | 'huggingface' | 'zindi' | 'aicrowd';
+export type PlatformId = 'kaggle' | 'hackerrank' | 'drivendata' | 'huggingface' | 'zindi' | 'aicrowd' | 'custom';
 
 export interface CompetitionPlatform {
   id: PlatformId;
@@ -94,6 +91,15 @@ export const PLATFORMS: Record<PlatformId, CompetitionPlatform> = {
     badgeBg: 'bg-purple-500/10 border-purple-500/20',
     badgeText: 'text-purple-600 dark:text-purple-400',
     icon: 'A',
+  },
+  custom: {
+    id: 'custom',
+    name: 'Partner Challenge',
+    url: '/competitions',
+    accentColor: '#E5E795',
+    badgeBg: 'bg-primary/10 border-primary/20',
+    badgeText: 'text-primary',
+    icon: '⭐',
   },
 };
 
@@ -421,4 +427,63 @@ export function getCompetitionsStats(competitions: Competition[] = ACTIVE_COMPET
     platformCounts,
     categoryCounts,
   };
+}
+
+/**
+ * Load competitions respecting Keystatic platform sources settings and custom curated items.
+ */
+export async function getAggregatedCompetitions(
+  keystaticCompetitions?: Competition[]
+): Promise<{ competitions: Competition[]; sourcesSettings: any }> {
+  try {
+    const sourcesConfig = await getSourcesSettings().catch(() => null);
+    const enabledPlatforms = new Map<string, number>();
+
+    if (sourcesConfig?.competitionSources && sourcesConfig.competitionSources.length > 0) {
+      for (const p of sourcesConfig.competitionSources) {
+        if (p.enabled) {
+          enabledPlatforms.set(p.platformId, p.fetchLimit || 6);
+        }
+      }
+    } else {
+      // Default all platforms enabled
+      for (const key of Object.keys(PLATFORMS)) {
+        enabledPlatforms.set(key, 6);
+      }
+    }
+
+    // Filter standard registry challenges by enabled platforms and platform limits
+    const platformCounts: Record<string, number> = {};
+    const filteredRegistry = ACTIVE_COMPETITIONS.filter((comp) => {
+      if (!enabledPlatforms.has(comp.platform)) return false;
+      const limit = enabledPlatforms.get(comp.platform) || 6;
+      platformCounts[comp.platform] = (platformCounts[comp.platform] || 0) + 1;
+      return platformCounts[comp.platform] <= limit;
+    });
+
+    // Merge Keystatic curated items if any
+    const allCombined = [...(keystaticCompetitions || []), ...filteredRegistry];
+
+    // Deduplicate by id
+    const seen = new Set<string>();
+    const deduplicated: Competition[] = [];
+    for (const c of allCombined) {
+      if (!seen.has(c.id)) {
+        seen.add(c.id);
+        deduplicated.push(c);
+      }
+    }
+
+    const maxDisplay = sourcesConfig?.displaySettings.maxCompetitionsDisplay || 24;
+    return {
+      competitions: deduplicated.slice(0, maxDisplay),
+      sourcesSettings: sourcesConfig,
+    };
+  } catch (err) {
+    console.warn('[Competitions] Failed to load aggregated competitions, using registry:', err);
+    return {
+      competitions: ACTIVE_COMPETITIONS,
+      sourcesSettings: null,
+    };
+  }
 }

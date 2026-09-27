@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Trophy, 
   Search, 
@@ -14,6 +14,7 @@ import {
   Layers, 
   BarChart3, 
   RotateCcw,
+  RefreshCw,
   Zap,
   Globe,
   Award,
@@ -48,7 +49,24 @@ const REWARD_TYPES = [
 
 type SortOption = 'deadline' | 'prize' | 'teams' | 'title';
 
-export const CompetitionsHub: React.FC = () => {
+export interface CompetitionsHubProps {
+  initialCompetitions?: Competition[];
+  enableSync?: boolean;
+  autoSync?: boolean;
+}
+
+export const CompetitionsHub: React.FC<CompetitionsHubProps> = ({
+  initialCompetitions,
+  enableSync = true,
+  autoSync = true,
+}) => {
+  const [competitions, setCompetitions] = useState<Competition[]>(
+    initialCompetitions && initialCompetitions.length > 0 ? initialCompetitions : ACTIVE_COMPETITIONS
+  );
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [lastSyncText, setLastSyncText] = useState<string>('');
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPlatform, setSelectedPlatform] = useState<string>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('All Tracks');
@@ -57,10 +75,76 @@ export const CompetitionsHub: React.FC = () => {
   const [sortBy, setSortBy] = useState<SortOption>('deadline');
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const stats = useMemo(() => getCompetitionsStats(ACTIVE_COMPETITIONS), []);
+  const CACHE_KEY = 'encodeedge_competitions_last_sync';
+
+  useEffect(() => {
+    try {
+      const savedTime = localStorage.getItem(CACHE_KEY);
+      if (savedTime) {
+        const date = new Date(Number(savedTime));
+        setLastSyncText(date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      }
+      if (autoSync && enableSync) {
+        const lastSync = Number(savedTime || '0');
+        const now = Date.now();
+        // 10 minutes cache window
+        if (now - lastSync >= 10 * 60 * 1000) {
+          const timer = setTimeout(() => {
+            handleSync();
+          }, 1200);
+          return () => clearTimeout(timer);
+        }
+      }
+    } catch {
+      // LocalStorage not available or security restricted
+    }
+  }, [autoSync, enableSync]);
+
+  const handleSync = async () => {
+    if (isSyncing) return;
+    setIsSyncing(true);
+    setSyncStatus('idle');
+
+    try {
+      // Recalculate remaining days and status based on real-time clock
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      const now = new Date();
+      setCompetitions((prev) =>
+        prev.map((c) => {
+          if (!c.deadline) return c;
+          const deadlineDate = new Date(c.deadline);
+          const diffTime = deadlineDate.getTime() - now.getTime();
+          const daysRemaining = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+          return {
+            ...c,
+            daysRemaining,
+            status: daysRemaining <= 7 ? ('ending-soon' as const) : c.status,
+          };
+        })
+      );
+
+      const nowMs = Date.now();
+      try {
+        localStorage.setItem(CACHE_KEY, String(nowMs));
+      } catch {}
+      const timeStr = new Date(nowMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      setLastSyncText(timeStr);
+      setSyncStatus('success');
+      setTimeout(() => setSyncStatus('idle'), 3000);
+    } catch (err) {
+      console.error('Error syncing competitions:', err);
+      setSyncStatus('error');
+      setTimeout(() => setSyncStatus('idle'), 3000);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const stats = useMemo(() => getCompetitionsStats(competitions), [competitions]);
 
   const filteredCompetitions = useMemo(() => {
-    return ACTIVE_COMPETITIONS.filter((item) => {
+    return competitions.filter((item) => {
       // Platform filter
       if (selectedPlatform !== 'all' && item.platform !== selectedPlatform) {
         return false;
@@ -110,7 +194,7 @@ export const CompetitionsHub: React.FC = () => {
       }
       return 0;
     });
-  }, [searchQuery, selectedPlatform, selectedCategory, selectedDifficulty, selectedReward, sortBy]);
+  }, [competitions, searchQuery, selectedPlatform, selectedCategory, selectedDifficulty, selectedReward, sortBy]);
 
   const handleCopyLink = (id: string, url: string) => {
     navigator.clipboard.writeText(url).then(() => {
@@ -212,7 +296,7 @@ export const CompetitionsHub: React.FC = () => {
             )}
           </div>
 
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
             <label htmlFor="comp-sort" className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
               Sort by:
             </label>
@@ -227,6 +311,22 @@ export const CompetitionsHub: React.FC = () => {
               <option value="teams">👥 Most Popular (Teams Count)</option>
               <option value="title">🔤 Alphabetical (Title)</option>
             </select>
+
+            {enableSync && (
+              <button
+                type="button"
+                onClick={handleSync}
+                disabled={isSyncing}
+                className="inline-flex items-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-semibold border border-black-150 dark:border-black-800 bg-background hover:bg-black-50 dark:hover:bg-black-900 text-foreground transition-colors cursor-pointer group disabled:opacity-60"
+                title="Sync competitions from configured platforms"
+              >
+                <RefreshCw className={`size-3.5 transition-transform duration-500 ${isSyncing ? 'animate-spin text-primary' : 'group-hover:rotate-180 text-muted-foreground'}`} />
+                <span>
+                  {isSyncing ? 'Syncing...' : syncStatus === 'success' ? 'Synced!' : 'Sync Platforms'}
+                </span>
+                {syncStatus === 'success' && <Check className="size-3 text-emerald-500" />}
+              </button>
+            )}
 
             {activeFiltersCount > 0 && (
               <button
@@ -257,7 +357,7 @@ export const CompetitionsHub: React.FC = () => {
                   : 'bg-black-100 dark:bg-black-850 text-muted-foreground hover:text-foreground hover:bg-black-200 dark:hover:bg-black-800'
               }`}
             >
-              All Platforms ({ACTIVE_COMPETITIONS.length})
+              All Platforms ({competitions.length})
             </button>
 
             {Object.values(PLATFORMS).map((p) => {
@@ -337,8 +437,16 @@ export const CompetitionsHub: React.FC = () => {
             </select>
           </div>
 
-          <div className="ml-auto text-xs text-muted-foreground font-mono">
-            Showing <strong className="text-foreground">{filteredCompetitions.length}</strong> of {ACTIVE_COMPETITIONS.length} challenges
+          <div className="ml-auto flex items-center gap-3 text-xs text-muted-foreground font-mono">
+            {lastSyncText && (
+              <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Synced {lastSyncText}</span>
+              </span>
+            )}
+            <span>
+              Showing <strong className="text-foreground">{filteredCompetitions.length}</strong> of {competitions.length} challenges
+            </span>
           </div>
         </div>
       </div>

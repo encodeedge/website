@@ -704,6 +704,63 @@ export default config({
           }
         ),
 
+        // ── AI/ML Competition Platforms & Sources ───────────────────────────
+        competitionSources: fields.array(
+          fields.object({
+            name: fields.text({
+              label: 'Platform Name',
+              description: 'e.g. Kaggle, HackerRank, DrivenData, Hugging Face, Zindi, AIcrowd',
+              validation: { isRequired: true },
+            }),
+            platformId: fields.select({
+              label: 'Platform Identifier',
+              options: [
+                { label: 'Kaggle', value: 'kaggle' },
+                { label: 'HackerRank', value: 'hackerrank' },
+                { label: 'DrivenData', value: 'drivendata' },
+                { label: 'Hugging Face', value: 'huggingface' },
+                { label: 'Zindi', value: 'zindi' },
+                { label: 'AIcrowd', value: 'aicrowd' },
+                { label: 'Custom / Partner Host', value: 'custom' },
+              ],
+              defaultValue: 'kaggle',
+            }),
+            url: fields.text({
+              label: 'Challenges Web URL',
+              description: 'Official competitions index URL (e.g. https://www.kaggle.com/competitions)',
+              validation: { isRequired: true },
+            }),
+            feedUrl: fields.text({
+              label: 'Syndication Feed or API URL (Optional)',
+              description: 'Public RSS feed or JSON API endpoint for automated sync',
+            }),
+            category: fields.select({
+              label: 'Primary Domain Focus',
+              options: [
+                { label: 'All AI/ML Domains', value: 'all' },
+                { label: 'NLP & Large Language Models', value: 'nlp' },
+                { label: 'Computer Vision & Imaging', value: 'vision' },
+                { label: 'Tabular & Predictive Analytics', value: 'tabular' },
+                { label: 'Reinforcement Learning & Games', value: 'rl' },
+              ],
+              defaultValue: 'all',
+            }),
+            fetchLimit: fields.number({
+              label: 'Max Challenges to Feature',
+              defaultValue: 6,
+            }),
+            enabled: fields.checkbox({
+              label: 'Platform Active / Enabled',
+              defaultValue: true,
+            }),
+          }),
+          {
+            label: 'AI/ML Competition Platforms & Sources',
+            description: 'Manage competition platforms (Kaggle, HackerRank, DrivenData, Hugging Face, Zindi, AIcrowd) feeding the Competitions Hub.',
+            itemLabel: (props) => `${props.fields.name.value || 'Untitled Platform'} (${props.fields.enabled.value ? 'Active' : 'Disabled'})`,
+          }
+        ),
+
         // ── Display & Sync Settings ─────────────────────────────────────────
         displaySettings: fields.object({
           homepageNewsLimit: fields.number({
@@ -725,6 +782,21 @@ export default config({
             label: 'Auto-Sync on Page Load',
             description: 'Automatically check and update to fresh feeds in the background when a user visits the homepage (cached for 10 minutes).',
             defaultValue: true,
+          }),
+          enableCompetitionsSync: fields.checkbox({
+            label: 'Enable Competitions Live Sync',
+            description: 'Show the "Sync Competitions" button on /competitions for visitors.',
+            defaultValue: true,
+          }),
+          autoSyncCompetitions: fields.checkbox({
+            label: 'Auto-Sync Competitions on Page Load',
+            description: 'Automatically check and sync fresh competitions in background on page visit (debounced 10 mins).',
+            defaultValue: true,
+          }),
+          maxCompetitionsDisplay: fields.number({
+            label: 'Max Competitions to Display',
+            description: 'Total number of active competitions to show on /competitions.',
+            defaultValue: 24,
           }),
           feedTimeoutMs: fields.number({
             label: 'Server Fetch Timeout (ms)',

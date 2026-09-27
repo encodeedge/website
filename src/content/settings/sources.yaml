@@ -26,9 +26,56 @@ podcastSources:
     isSpotlight: true
     enabled: true
 
+competitionSources:
+  - name: Kaggle
+    platformId: kaggle
+    url: https://www.kaggle.com/competitions
+    feedUrl: https://www.kaggle.com/competitions
+    category: all
+    fetchLimit: 6
+    enabled: true
+  - name: HackerRank
+    platformId: hackerrank
+    url: https://www.hackerrank.com/contests
+    feedUrl: https://www.hackerrank.com/contests
+    category: all
+    fetchLimit: 4
+    enabled: true
+  - name: DrivenData
+    platformId: drivendata
+    url: https://www.drivendata.org/competitions
+    feedUrl: https://www.drivendata.org/competitions
+    category: all
+    fetchLimit: 4
+    enabled: true
+  - name: Hugging Face
+    platformId: huggingface
+    url: https://huggingface.co/spaces
+    feedUrl: https://huggingface.co/spaces
+    category: all
+    fetchLimit: 4
+    enabled: true
+  - name: Zindi
+    platformId: zindi
+    url: https://zindi.africa/competitions
+    feedUrl: https://zindi.africa/competitions
+    category: all
+    fetchLimit: 4
+    enabled: true
+  - name: AIcrowd
+    platformId: aicrowd
+    url: https://www.aicrowd.com/challenges
+    feedUrl: https://www.aicrowd.com/challenges
+    category: all
+    fetchLimit: 4
+    enabled: true
+
 displaySettings:
   homepageNewsLimit: 6
   homepagePodcastLimit: 3
   enableLiveClientSync: true
   autoSyncOnPageLoad: true
+  enableCompetitionsSync: true
+  autoSyncCompetitions: true
+  maxCompetitionsDisplay: 24
   feedTimeoutMs: 3800

@@ -2,6 +2,58 @@
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { CompetitionsHub } from '@/components/interactive/CompetitionsHub';
 import { Trophy, Sparkles, Flame, ExternalLink, Rss } from 'lucide-react';
+import { getCollection } from 'astro:content';
+import { getAggregatedCompetitions, type Competition } from '@/lib/competitions';
+
+// Load Keystatic curated competitions
+const keystaticRaw = await getCollection('competitions').catch(() => []);
+const keystaticCompetitions: Competition[] = (keystaticRaw || []).map((entry: any) => {
+  const data = entry.data;
+  const deadlineDate = data.deadline ? new Date(data.deadline) : new Date(Date.now() + 30 * 86400000);
+  const now = new Date();
+  const diffTime = deadlineDate.getTime() - now.getTime();
+  const daysRemaining = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+
+  const platformNameMap: Record<string, string> = {
+    kaggle: 'Kaggle',
+    hackerrank: 'HackerRank',
+    drivendata: 'DrivenData',
+    huggingface: 'Hugging Face',
+    zindi: 'Zindi',
+    aicrowd: 'AIcrowd',
+    custom: 'Partner Challenge',
+  };
+
+  return {
+    id: entry.id,
+    title: data.title,
+    slug: entry.id,
+    platform: data.platform || 'custom',
+    platformName: platformNameMap[data.platform] || 'Partner Challenge',
+    url: data.url,
+    description: data.description || '',
+    problemStatement: data.problemStatement,
+    category: data.category || 'NLP & LLMs',
+    difficulty: data.difficulty || 'Intermediate',
+    prizePool: data.prizePool || '$10,000',
+    prizeAmountUSD: data.prizeAmountUSD || 0,
+    rewardType: data.rewardType || 'cash',
+    teamsCount: data.teamsCount || 0,
+    deadline: data.deadline || deadlineDate.toISOString().split('T')[0],
+    daysRemaining,
+    status: data.status || (daysRemaining < 7 ? 'ending-soon' : 'active'),
+    tags: data.tags || ['AI', 'Machine Learning'],
+    featured: data.featured ?? false,
+    evaluationMetric: data.evaluationMetric,
+    datasetSize: undefined,
+    hostName: data.hostName || 'EncodeEdge Community',
+  };
+});
+
+// Aggregate competitions respecting Keystatic Sources singleton settings & limits
+const { competitions, sourcesSettings } = await getAggregatedCompetitions(keystaticCompetitions);
+const enableSync = sourcesSettings?.displaySettings?.enableCompetitionsSync ?? true;
+const autoSync = sourcesSettings?.displaySettings?.autoSyncCompetitions ?? true;
 ---
 
 <DefaultLayout 
@@ -28,7 +80,12 @@ import { Trophy, Sparkles, Flame, ExternalLink, Rss } from 'lucide-react';
 
     {/* Interactive Competitions Hub Component */}
     <section>
-      <CompetitionsHub client:load />
+      <CompetitionsHub 
+        client:load 
+        initialCompetitions={competitions} 
+        enableSync={enableSync}
+        autoSync={autoSync}
+      />
     </section>
   </div>
 </DefaultLayout>

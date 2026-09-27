@@ -7,11 +7,17 @@ difficulty: Expert
 prizePool: $1,100,000 USD
 prizeAmountUSD: 1100000
 rewardType: cash
-deadline: '2026-11-10'
+deadline: '2024-11-12'
 teamsCount: 1420
 status: active
-description: The premier benchmark measuring broad machine intelligence on novel, out-of-distribution reasoning tasks that cannot be solved simply by memorizing internet data.
-problemStatement: Develop an algorithm or neural architecture capable of discovering abstract transformational rules from 3-5 few-shot demonstration grids and applying them to unseen test grids.
+description: >-
+  The premier benchmark measuring broad machine intelligence on novel,
+  out-of-distribution reasoning tasks that cannot be solved simply by memorizing
+  internet data.
+problemStatement: >-
+  Develop an algorithm or neural architecture capable of discovering abstract
+  transformational rules from 3-5 few-shot demonstration grids and applying them
+  to unseen test grids.
 evaluationMetric: Exact Grid Cell Match Accuracy (100% per test grid)
 tags:
   - AGI

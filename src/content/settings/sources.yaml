@@ -17,7 +17,6 @@ newsSources:
     badgeColor: amber
     fetchLimit: 3
     enabled: true
-
 podcastSources:
   - title: Practical AI
     feedUrl: https://changelog.com/practicalai/feed
@@ -25,7 +24,6 @@ podcastSources:
     badgeText: Practical AI
     isSpotlight: true
     enabled: true
-
 competitionSources:
   - name: Kaggle
     platformId: kaggle
@@ -69,13 +67,12 @@ competitionSources:
     category: all
     fetchLimit: 4
     enabled: true
-
 displaySettings:
-  homepageNewsLimit: 6
+  homepageNewsLimit: 10
   homepagePodcastLimit: 3
   enableLiveClientSync: true
   autoSyncOnPageLoad: true
   enableCompetitionsSync: true
   autoSyncCompetitions: true
-  maxCompetitionsDisplay: 24
+  maxCompetitionsDisplay: 40
   feedTimeoutMs: 3800

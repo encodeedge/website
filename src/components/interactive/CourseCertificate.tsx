@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Award, Download, Share2, Check, X, QrCode, ExternalLink, Sparkles, Shield, Copy } from 'lucide-react';
+import { persistentStorage } from '@/lib/storage';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface CertificateData {
@@ -148,7 +149,12 @@ export const CourseCertificate = ({
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => { 
+    setMounted(true); 
+    const storedName = persistentStorage.getSync<string>('lms_student_name', '') || 
+      (typeof window !== 'undefined' ? localStorage.getItem('lms_student_name') || '' : '');
+    if (storedName) setName(storedName);
+  }, []);
 
   // Check if this course was completed
   const isCompleted = (() => {
@@ -200,7 +206,7 @@ export const CourseCertificate = ({
   const TriggerButton = () => (
     <button
       onClick={() => setOpen(true)}
-      className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold text-sm shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200"
+      className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold text-sm shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
     >
       <Award className="w-4 h-4" />
       Generate Certificate
@@ -209,10 +215,16 @@ export const CourseCertificate = ({
   );
 
   const Modal = () => createPortal(
-    <div className="fixed inset-0 z-[10060] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto" onClick={e => { if (e.target === e.currentTarget) setOpen(false); }}>
-      <div className="w-full max-w-2xl bg-background border border-border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 my-4">
+    <div 
+      className="fixed inset-0 z-[10060] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 md:p-8 min-h-screen py-8 sm:py-12 overflow-y-auto animate-in fade-in duration-200" 
+      onClick={e => { if (e.target === e.currentTarget) setOpen(false); }}
+    >
+      <div 
+        className="relative w-full max-w-2xl bg-background border border-border/80 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 my-auto max-h-[calc(100vh-4rem)] sm:max-h-[calc(100vh-6rem)] flex flex-col"
+        onClick={e => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0 bg-muted/20">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-amber-500/15">
               <Award className="w-5 h-5 text-amber-500" />
@@ -222,12 +234,12 @@ export const CourseCertificate = ({
               <div className="text-xs text-muted-foreground">{courseTitle}</div>
             </div>
           </div>
-          <button onClick={() => setOpen(false)} className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground">
+          <button onClick={() => setOpen(false)} className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground cursor-pointer">
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 overflow-y-auto flex-1">
           {step === 'form' && (
             <div className="space-y-5">
               <p className="text-sm text-muted-foreground">Customize your certificate before generating it.</p>
@@ -239,7 +251,7 @@ export const CourseCertificate = ({
                   value={name}
                   onChange={e => setName(e.target.value)}
                   placeholder="e.g. Jane Smith"
-                  className="w-full px-4 py-3 border border-border rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                  className="w-full px-4 py-3 border border-border rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 shadow-xs"
                 />
               </div>
 
@@ -250,7 +262,7 @@ export const CourseCertificate = ({
                     <button
                       key={key}
                       onClick={() => setGrade(key as typeof grade)}
-                      className={`p-3 rounded-xl border text-sm font-semibold transition-all text-center ${
+                      className={`p-3 rounded-xl border text-sm font-semibold transition-all text-center cursor-pointer ${
                         grade === key ? 'border-primary bg-primary/10 text-primary' : 'border-border hover:border-primary/40 text-foreground'
                       }`}
                     >
@@ -262,9 +274,31 @@ export const CourseCertificate = ({
               </div>
 
               <button
-                onClick={() => setStep('preview')}
+                onClick={() => {
+                  const finalName = name.trim();
+                  if (!finalName) return;
+                  try {
+                    persistentStorage.set('lms_student_name', finalName);
+                    if (typeof window !== 'undefined') localStorage.setItem('lms_student_name', finalName);
+                    const certRecord = {
+                      id: verificationId,
+                      courseId,
+                      courseTitle,
+                      studentName: finalName,
+                      issueDate: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                      claimedAt: new Date().toISOString(),
+                      grade: GRADE_CONFIG[grade].label,
+                    };
+                    persistentStorage.set(`lms_cert_${courseId}`, certRecord);
+                    if (typeof window !== 'undefined') localStorage.setItem(`lms_cert_${courseId}`, JSON.stringify(certRecord));
+                    window.dispatchEvent(new Event('lms_progress_updated'));
+                  } catch (e) {
+                    console.warn(e);
+                  }
+                  setStep('preview');
+                }}
                 disabled={!name.trim()}
-                className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold disabled:opacity-50 hover:opacity-90 transition-opacity"
+                className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold disabled:opacity-50 hover:opacity-90 transition-opacity cursor-pointer shadow-md"
               >
                 Preview Certificate →
               </button>

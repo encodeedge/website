@@ -1,0 +1,11 @@
+name: "Scaled Dot-Product Attention"
+glyph: "Attention(Q, K, V) = softmax(QKᵀ / √dₖ) V"
+latex: "\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right) V"
+pronunciation: "Attention of Q, K, V equals softmax of Q K-transpose over square-root of d-sub-k times V"
+category: "deep-learning"
+meaning: "The core routing mechanism of modern Transformers. Computes alignment between query vectors Q and key vectors K, scales scores to stabilize gradients, and produces a weighted mixture of values V."
+example: "In GPT-4 or Llama, each attention head projects token embeddings into Q, K, V spaces to determine which preceding words contextually inform the current generation."
+ambiguity: "√d_k scaling is required to avoid vanishing gradients when dot products grow large in high dimensions. Without it, softmax pushes scores into saturated near-zero derivative regions."
+relatedLabId: "attention-visualizer"
+relatedLabTitle: "Transformer Self-Attention Visualizer"
+featured: true

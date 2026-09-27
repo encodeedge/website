@@ -1,0 +1,11 @@
+name: "L2 Euclidean Norm"
+glyph: "||x||₂ = √(∑ xᵢ²)"
+latex: "\\|x\\|_2 = \\sqrt{\\sum_{i} x_i^2}"
+pronunciation: "L-2 norm of x / Euclidean length of x"
+category: "linear-algebra"
+meaning: "Measures the straight-line geometric magnitude (length) of a vector in n-dimensional Euclidean space."
+example: "In vector databases, embeddings are normalized by dividing by ||x||₂ so that dot product becomes equivalent to cosine similarity."
+ambiguity: "L2 weight decay in SGD adds λ||θ||₂² to the loss function, which pulls weights toward zero to prevent overfitting."
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

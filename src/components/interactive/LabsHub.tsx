@@ -22,23 +22,30 @@ import { MemoryExplorer } from './MemoryExplorer';
 import { ModelRouterLab } from './ModelRouterLab';
 import { MathDecoder } from './MathDecoder';
 
-interface LabMeta {
+export interface LabMeta {
   id: string;
   title: string;
   shortTitle: string;
   category: string;
+  simulatorType?: string;
   description: string;
   badge: string;
   lessonPath?: string;
   lessonTitle?: string;
 }
 
-const LABS_LIST: LabMeta[] = [
+interface LabsHubProps {
+  labs?: LabMeta[];
+  glossaryItems?: any[];
+}
+
+const DEFAULT_LABS: LabMeta[] = [
   {
     id: 'attention-visualizer',
     title: 'Transformer Self-Attention & Heatmap Visualizer',
     shortTitle: 'Attention Visualizer',
     category: 'Deep Learning',
+    simulatorType: 'attention-visualizer',
     description: 'Tune softmax temperature, inspect query-key vector alignment, and visualize N×N self-attention weight heatmaps across multi-head projections.',
     badge: 'Transformers & LLMs',
     lessonPath: '/lessons/dl-transformers-attention',
@@ -49,6 +56,7 @@ const LABS_LIST: LabMeta[] = [
     title: '2D Convolution Kernel & Feature Map Explorer',
     shortTitle: '2D Convolution Lab',
     category: 'Computer Vision',
+    simulatorType: 'convolution-visualizer',
     description: 'Slide 3×3 Sobel, Gaussian, and Sharpen spatial filters across 2D receptive fields to trace live element-wise dot products and ReLU activation.',
     badge: 'Vision & CNNs',
     lessonPath: '/lessons/dl-cnn-architectures',
@@ -59,6 +67,7 @@ const LABS_LIST: LabMeta[] = [
     title: 'Model Router & Context-Cost Pareto Explorer',
     shortTitle: 'Model Router & Pareto',
     category: 'System Design',
+    simulatorType: 'model-router',
     description: 'Calculate production inference bills across DeepSeek, Claude, GPT, Gemini, and Llama to map the optimal cost-context Pareto frontier.',
     badge: 'Inference & Systems',
   },
@@ -67,6 +76,7 @@ const LABS_LIST: LabMeta[] = [
     title: 'Neural Network & Activation Playground',
     shortTitle: 'Neural Playground',
     category: 'Deep Learning',
+    simulatorType: 'neural-playground',
     description: 'Tune hidden layer depths, toggle Sigmoid vs ReLU vs Tanh activations, and watch non-linear 2D classification decision boundaries converge.',
     badge: 'MLP & Activations',
     lessonPath: '/lessons/dl-interactive-lab',
@@ -77,6 +87,7 @@ const LABS_LIST: LabMeta[] = [
     title: 'Loss Surface & Gradient Descent Optimizer Lab',
     shortTitle: 'Gradient Descent Lab',
     category: 'Optimization',
+    simulatorType: 'gradient-descent',
     description: 'Step along 3D loss contours, tune learning rates, compare SGD vs Momentum vs Adam dynamics, and observe convergence velocity.',
     badge: 'Calculus & Optimization',
     lessonPath: '/lessons/ml-interactive-lab',
@@ -87,6 +98,7 @@ const LABS_LIST: LabMeta[] = [
     title: 'CPython Memory & Stack/Heap Reference Explorer',
     shortTitle: 'Memory Explorer',
     category: 'Python Internals',
+    simulatorType: 'memory-explorer',
     description: 'Trace PyObject headers, reference counting (ob_refcnt), pointer addresses, integer caching, and cyclic garbage collection mechanisms.',
     badge: 'CPython Runtime',
     lessonPath: '/lessons/py-memory-management',
@@ -94,9 +106,10 @@ const LABS_LIST: LabMeta[] = [
   }
 ];
 
-export const LabsHub: React.FC = () => {
+export const LabsHub: React.FC<LabsHubProps> = ({ labs, glossaryItems }) => {
+  const labsCatalog = labs && labs.length > 0 ? labs : DEFAULT_LABS;
   const [activeMainTab, setActiveMainTab] = useState<'simulators' | 'decoder'>('simulators');
-  const [selectedLabId, setSelectedLabId] = useState<string>('attention-visualizer');
+  const [selectedLabId, setSelectedLabId] = useState<string>(labsCatalog[0]?.id || 'attention-visualizer');
 
   // Handle URL hash navigation on mount
   useEffect(() => {
@@ -104,12 +117,12 @@ export const LabsHub: React.FC = () => {
       const hash = window.location.hash.replace('#', '');
       if (hash === 'math-decoder' || hash === 'glossary') {
         setActiveMainTab('decoder');
-      } else if (LABS_LIST.some(l => l.id === hash)) {
+      } else if (labsCatalog.some(l => l.id === hash)) {
         setActiveMainTab('simulators');
         setSelectedLabId(hash);
       }
     }
-  }, []);
+  }, [labsCatalog]);
 
   const activeLabMeta = LABS_LIST.find(l => l.id === selectedLabId) || LABS_LIST[0];
 
@@ -153,7 +166,7 @@ export const LabsHub: React.FC = () => {
               }`}
             >
               <FlaskConical className="size-4 text-primary" />
-              <span>Interactive Simulators ({LABS_LIST.length})</span>
+              <span>Interactive Simulators ({labsCatalog.length})</span>
             </button>
 
             <button
@@ -179,7 +192,7 @@ export const LabsHub: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-              {LABS_LIST.map((lab) => {
+              {labsCatalog.map((lab) => {
                 const isSelected = lab.id === selectedLabId;
 
                 return (
@@ -239,33 +252,33 @@ export const LabsHub: React.FC = () => {
           </div>
 
           {/* Render Active Component */}
-          {selectedLabId === 'attention-visualizer' && (
+          {(activeLabMeta.simulatorType === 'attention-visualizer' || activeLabMeta.id === 'attention-visualizer') && (
             <AttentionVisualizer />
           )}
 
-          {selectedLabId === 'convolution-visualizer' && (
+          {(activeLabMeta.simulatorType === 'convolution-visualizer' || activeLabMeta.id === 'convolution-visualizer') && (
             <ConvolutionVisualizer />
           )}
 
-          {selectedLabId === 'model-router' && (
+          {(activeLabMeta.simulatorType === 'model-router' || activeLabMeta.id === 'model-router') && (
             <ModelRouterLab />
           )}
 
-          {selectedLabId === 'neural-playground' && (
+          {(activeLabMeta.simulatorType === 'neural-playground' || activeLabMeta.id === 'neural-playground') && (
             <NeuralPlayground />
           )}
 
-          {selectedLabId === 'gradient-descent' && (
+          {(activeLabMeta.simulatorType === 'gradient-descent' || activeLabMeta.id === 'gradient-descent') && (
             <GradientDescentLab />
           )}
 
-          {selectedLabId === 'memory-explorer' && (
+          {(activeLabMeta.simulatorType === 'memory-explorer' || activeLabMeta.id === 'memory-explorer') && (
             <MemoryExplorer />
           )}
         </div>
       ) : (
         /* Math Decoder View */
-        <MathDecoder onSelectLab={handleLaunchFromDecoder} />
+        <MathDecoder items={glossaryItems} onSelectLab={handleLaunchFromDecoder} />
       )}
     </div>
   );

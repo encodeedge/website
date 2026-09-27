@@ -1,0 +1,11 @@
+name: "Key-Value Activation Cache"
+glyph: "K_{1:t}, V_{1:t}"
+latex: "K_{1:t}, V_{1:t}"
+pronunciation: "K-V Cache"
+category: "inference"
+meaning: "Stores previously computed Key and Value projection tensors in GPU VRAM during autoregressive decoding to avoid redundant recomputation of past tokens."
+example: "Reduces generation per-token latency from O(t²) to O(t), converting an O(N³) prompt generation into O(N²)."
+ambiguity: "Massive VRAM footprint! For long context windows (e.g. 128k tokens), KV cache often exceeds model weight memory, requiring techniques like PagedAttention (vLLM) or GQA (Grouped Query Attention)."
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

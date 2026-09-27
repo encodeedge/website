@@ -1,0 +1,11 @@
+name: "Kullback-Leibler Divergence"
+glyph: "D_KL(P || Q) = ∑ P(x) log(P(x) / Q(x))"
+latex: "D_{\\text{KL}}(P \\parallel Q) = \\sum_{x} P(x) \\log\\left(\\frac{P(x)}{Q(x)}\\right)"
+pronunciation: "K-L divergence of P from Q"
+category: "probability"
+meaning: "Quantifies the information lost when distribution Q is used to approximate the reference distribution P. Always non-negative and zero only when P = Q."
+example: "Used in RLHF (Reinforcement Learning from Human Feedback) penalty terms to prevent the fine-tuned model policy π_θ from drifting too far from the base model policy π_ref."
+ambiguity: "Asymmetric! D_KL(P || Q) ≠ D_KL(Q || P). Forward KL is zero-avoiding (mode covering), while reverse KL is zero-forcing (mode seeking)."
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

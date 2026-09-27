@@ -1,0 +1,10 @@
+title: "Model Router & Context-Cost Pareto Explorer"
+shortTitle: "Model Router & Pareto"
+category: "System Design"
+simulatorType: "model-router"
+badge: "Inference & Systems"
+description: "Calculate production inference bills across DeepSeek, Claude, GPT, Gemini, and Llama to map the optimal cost-context Pareto frontier."
+lessonPath: ""
+lessonTitle: ""
+order: 3
+featured: true

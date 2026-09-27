@@ -1,0 +1,10 @@
+title: "Neural Network & Activation Playground"
+shortTitle: "Neural Playground"
+category: "Deep Learning"
+simulatorType: "neural-playground"
+badge: "MLP & Activations"
+description: "Tune hidden layer depths, toggle Sigmoid vs ReLU vs Tanh activations, and watch non-linear 2D classification decision boundaries converge."
+lessonPath: "/lessons/dl-interactive-lab"
+lessonTitle: "Deep Learning Interactive Lab"
+order: 4
+featured: true

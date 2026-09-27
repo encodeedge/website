@@ -1,0 +1,11 @@
+name: "Matrix Transpose Operator"
+glyph: "Aᵀ"
+latex: "A^T"
+pronunciation: "A transpose"
+category: "linear-algebra"
+meaning: "Flips a matrix over its diagonal, switching its row and column indices: (Aᵀ)ᵢⱼ = Aⱼᵢ."
+example: "In attention QKᵀ, transposing key matrix K (shape [B, S, D]) to Kᵀ (shape [B, D, S]) allows matrix multiplication with Q to produce sequence-by-sequence score matrix [B, S, S]."
+ambiguity: "In CPython/NumPy/PyTorch, transposing a tensor is an O(1) zero-copy operation that simply swaps stride and shape metadata rather than reallocating memory."
+relatedLabId: "memory-explorer"
+relatedLabTitle: "CPython Memory & Reference Counting Explorer"
+featured: true

@@ -1,0 +1,11 @@
+name: "2D Spatial Cross-Correlation / Convolution"
+glyph: "(X ⊛ K)ᵢⱼ = ∑ₘ ∑ₙ X_{i+m, j+n} K_{m,n}"
+latex: "(X \\ast K)_{i,j} = \\sum_{m} \\sum_{n} X_{i+m, j+n} K_{m,n}"
+pronunciation: "X convolved with K at index i, j equals sum over m and n of X times kernel K"
+category: "deep-learning"
+meaning: "Slides a small learnable parameter matrix (kernel) across a 2D spatial grid (e.g. image feature map) computing local dot products to extract translation-invariant spatial features."
+example: "A 3x3 Sobel kernel detects horizontal edges by computing positive differences across adjacent vertical pixel channels."
+ambiguity: "In deep learning frameworks (PyTorch/TensorFlow), Conv2d actually implements cross-correlation without flipping the kernel 180°, which is mathematically identical because weights are learned."
+relatedLabId: "convolution-visualizer"
+relatedLabTitle: "2D Convolution Kernel & Feature Map Explorer"
+featured: true

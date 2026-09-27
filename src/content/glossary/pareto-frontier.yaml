@@ -1,0 +1,11 @@
+name: "Cost-Context Pareto Frontier"
+glyph: "Pareto(Cost, Quality)"
+latex: "\\mathcal{P} = \\{m \\mid \\nexists m': \\text{Cost}(m') \\le \\text{Cost}(m) \\land \\text{Qual}(m') \\ge \\text{Qual}(m)\\}"
+pronunciation: "Pareto frontier / Pareto optimal boundary"
+category: "inference"
+meaning: "The set of models or configurations where you cannot improve quality without increasing cost, or reduce cost without sacrificing quality."
+example: "In model routing systems, requests are routed along the Pareto curve: cheap models (e.g. Flash/Haiku) handle simple queries, while expensive reasoning models (o1/R1) handle difficult tasks."
+ambiguity: "Models sitting below or inside the Pareto curve are strictly dominated and should rarely be selected in production architectures."
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

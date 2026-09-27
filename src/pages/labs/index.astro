@@ -1,6 +1,41 @@
 ---
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { LabsHub } from '@/components/interactive/LabsHub';
+import { getCollection } from 'astro:content';
+
+const labsEntries = await getCollection('labs');
+const glossaryEntries = await getCollection('glossary');
+
+// Map labs for LabsHub
+const labs = labsEntries.map(entry => ({
+  id: entry.id,
+  title: entry.data.title,
+  shortTitle: entry.data.shortTitle || entry.data.title,
+  category: entry.data.category,
+  simulatorType: entry.data.simulatorType,
+  badge: entry.data.badge || entry.data.category,
+  description: entry.data.description || '',
+  lessonPath: entry.data.lessonPath || '',
+  lessonTitle: entry.data.lessonTitle || '',
+  order: entry.data.order ?? 1,
+  featured: entry.data.featured ?? true,
+})).sort((a, b) => a.order - b.order);
+
+// Map glossary items for LabsHub
+const glossaryItems = glossaryEntries.map(entry => ({
+  id: entry.id,
+  name: entry.data.name,
+  glyph: entry.data.glyph,
+  latex: entry.data.latex || '',
+  pronunciation: entry.data.pronunciation || '',
+  category: entry.data.category,
+  meaning: entry.data.meaning,
+  example: entry.data.example || '',
+  ambiguity: entry.data.ambiguity || '',
+  relatedLabId: entry.data.relatedLabId || '',
+  relatedLabTitle: entry.data.relatedLabTitle || '',
+  featured: entry.data.featured ?? true,
+}));
 
 const pageTitle = "Interactive AI Labs & Math Decoder | EncodeEdge";
 const pageDescription = "Explore interactive simulators for Transformers self-attention, 2D convolution kernels, loss surfaces, neural activations, CPython memory, and a comprehensive AI mathematical notation glossary.";
@@ -11,6 +46,6 @@ const pageDescription = "Explore interactive simulators for Transformers self-at
   description={pageDescription}
 >
   <div class="py-8 md:py-16 container mx-auto px-4 max-w-6xl space-y-10">
-    <LabsHub client:load />
+    <LabsHub labs={labs} glossaryItems={glossaryItems} client:load />
   </div>
 </DefaultLayout>

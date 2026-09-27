@@ -1,0 +1,11 @@
+name: "Cross-Entropy Loss"
+glyph: "H(P, Q) = -∑ P(x) log Q(x)"
+latex: "H(P, Q) = -\\sum_{x} P(x) \\log Q(x)"
+pronunciation: "Cross entropy of P and Q equals negative sum of P of x times log Q of x"
+category: "probability"
+meaning: "Measures the dissimilarity between true probability distribution P (one-hot target) and predicted distribution Q (softmax outputs)."
+example: "Standard objective for training LLM next-token prediction: minimizing cross-entropy maximizes the log likelihood of the correct next token."
+ambiguity: "When base 2 logarithm is used, entropy is measured in bits (shannons); in deep learning frameworks like PyTorch, natural log (ln) is used, measuring entropy in nats."
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

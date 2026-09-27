@@ -17,13 +17,16 @@ import {
 import { MATH_GLOSSARY_ITEMS, type MathSymbolItem } from '@/lib/math-glossary-data';
 
 interface MathDecoderProps {
+  items?: MathSymbolItem[];
   onSelectLab?: (labId: string) => void;
 }
 
-export const MathDecoder: React.FC<MathDecoderProps> = ({ onSelectLab }) => {
+export const MathDecoder: React.FC<MathDecoderProps> = ({ items, onSelectLab }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const baseItems = items && items.length > 0 ? items : MATH_GLOSSARY_ITEMS;
 
   const categories = [
     { id: 'all', label: 'All Notations' },
@@ -35,7 +38,7 @@ export const MathDecoder: React.FC<MathDecoderProps> = ({ onSelectLab }) => {
   ];
 
   const filteredItems = useMemo(() => {
-    return MATH_GLOSSARY_ITEMS.filter((item) => {
+    return baseItems.filter((item) => {
       const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
       const q = searchQuery.toLowerCase().trim();
       if (!q) return matchesCategory;

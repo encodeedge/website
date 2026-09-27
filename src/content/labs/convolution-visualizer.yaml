@@ -1,0 +1,10 @@
+title: "2D Convolution Kernel & Feature Map Explorer"
+shortTitle: "2D Convolution Lab"
+category: "Computer Vision"
+simulatorType: "convolution-visualizer"
+badge: "Vision & CNNs"
+description: "Slide 3×3 Sobel, Gaussian, and Sharpen spatial filters across 2D receptive fields to trace live element-wise dot products and ReLU activation."
+lessonPath: "/lessons/dl-cnn-architectures"
+lessonTitle: "CNN Architectures & ResNets"
+order: 2
+featured: true

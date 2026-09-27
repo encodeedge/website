@@ -219,4 +219,46 @@ const competitions = defineCollection({
   }),
 });
 
-export const collections = { blog, faqs, roadmaps, instructors, lessons, courses, batches, quizzes, assignments, certificates, components, competitions };
+const labs = defineCollection({
+  loader: glob({ base: "./src/content/labs", pattern: "**/*.{yaml,yml,json,md}" }),
+  schema: z.object({
+    title: z.string(),
+    shortTitle: z.string().optional(),
+    category: z.string().default('Deep Learning'),
+    simulatorType: z.enum([
+      'attention-visualizer',
+      'convolution-visualizer',
+      'model-router',
+      'neural-playground',
+      'gradient-descent',
+      'memory-explorer',
+      'code-sandbox',
+      'custom-sandbox',
+    ]).default('attention-visualizer'),
+    badge: z.string().optional(),
+    description: z.string().optional(),
+    lessonPath: z.string().optional(),
+    lessonTitle: z.string().optional(),
+    order: z.number().default(1),
+    featured: z.boolean().default(true),
+  }),
+});
+
+const glossary = defineCollection({
+  loader: glob({ base: "./src/content/glossary", pattern: "**/*.{yaml,yml,json,md}" }),
+  schema: z.object({
+    name: z.string(),
+    glyph: z.string(),
+    latex: z.string().optional().default(''),
+    pronunciation: z.string().optional().default(''),
+    category: z.enum(['deep-learning', 'optimization', 'linear-algebra', 'probability', 'inference']).default('deep-learning'),
+    meaning: z.string(),
+    example: z.string().optional().default(''),
+    ambiguity: z.string().optional().default(''),
+    relatedLabId: z.string().optional().default(''),
+    relatedLabTitle: z.string().optional().default(''),
+    featured: z.boolean().default(true),
+  }),
+});
+
+export const collections = { blog, faqs, roadmaps, instructors, lessons, courses, batches, quizzes, assignments, certificates, components, competitions, labs, glossary };

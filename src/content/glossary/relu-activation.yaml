@@ -1,0 +1,11 @@
+name: "Rectified Linear Unit"
+glyph: "ReLU(z) = max(0, z)"
+latex: "\\text{ReLU}(z) = \\max(0, z)"
+pronunciation: "R-E-L-U of z equals max of zero and z"
+category: "deep-learning"
+meaning: "The ubiquitous non-saturating non-linear activation function in deep networks. Passes positive pre-activations unchanged while zeroing out negative values."
+example: "Enables deep neural networks (e.g., 50+ layer ResNets) to train without severe gradient vanishing because its derivative is 1 for any positive input."
+ambiguity: "Can cause the \"dying ReLU\" problem where neurons with persistently negative inputs produce zero gradients and never update. Mitigated by Leaky ReLU, GeLU, or SwiGLU."
+relatedLabId: "neural-playground"
+relatedLabTitle: "Neural Network & Activation Playground"
+featured: true

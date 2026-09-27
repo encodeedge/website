@@ -1,0 +1,11 @@
+name: "Time to First Token (Prefill Latency)"
+glyph: "TTFT (Time to First Token)"
+latex: "\\text{TTFT} = t_{\\text{first\\_token}} - t_{\\text{request}}"
+pronunciation: "T-T-F-T / Time to First Token"
+category: "inference"
+meaning: "The latency elapsed between a client sending an LLM prompt and receiving the very first token in the streaming response."
+example: "Prefill is compute-bound (processing the entire prompt matrix in parallel), whereas subsequent token decoding is memory-bandwidth bound."
+ambiguity: "A model with excellent tokens-per-second decoding speed can still feel sluggish to users if its TTFT is several seconds long due to large prompt processing overhead."
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

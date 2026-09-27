@@ -1,0 +1,11 @@
+name: "Cosine Similarity"
+glyph: "CosSim(u, v) = (u · v) / (||u||₂ ||v||₂)"
+latex: "\\text{CosineSim}(u, v) = \\frac{u \\cdot v}{\\|u\\|_2 \\|v\\|_2}"
+pronunciation: "Cosine similarity of u and v"
+category: "linear-algebra"
+meaning: "Measures the cosine of the angle between two multi-dimensional vectors, producing a score between -1 and +1 invariant to vector magnitude."
+example: "Standard semantic search metric in RAG pipelines to rank retrieved document chunks against the user query embedding."
+ambiguity: "Captures orientation but ignores magnitude. If token frequency or sentence length is critical, dot product without normalization may be preferable."
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

@@ -1,0 +1,11 @@
+name: "Mathematical Expectation"
+glyph: "𝔼_{x ~ P}[f(x)]"
+latex: "\\mathbb{E}_{x \\sim P}[f(x)]"
+pronunciation: "Expectation over x sampled from P of f of x"
+category: "probability"
+meaning: "The probability-weighted average value of a function f(x) when the random variable x is drawn from distribution P."
+example: "Empirical risk minimization optimizes the expected loss over the training data distribution: min_θ 𝔼_{(x,y)~D}[L(f_θ(x), y)]."
+ambiguity: "In practice, expectations over continuous high-dimensional distributions are intractable and approximated with Monte Carlo mini-batch averages: (1/B) ∑ f(xᵢ)."
+relatedLabId: "gradient-descent"
+relatedLabTitle: "Loss Surface & Gradient Descent Optimizer Lab"
+featured: true

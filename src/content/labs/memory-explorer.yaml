@@ -1,0 +1,10 @@
+title: "CPython Memory & Stack/Heap Reference Explorer"
+shortTitle: "Memory Explorer"
+category: "Python Internals"
+simulatorType: "memory-explorer"
+badge: "CPython Runtime"
+description: "Trace PyObject headers, reference counting (ob_refcnt), pointer addresses, integer caching, and cyclic garbage collection mechanisms."
+lessonPath: "/lessons/py-memory-management"
+lessonTitle: "Python Memory Management"
+order: 6
+featured: true

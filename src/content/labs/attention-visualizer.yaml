@@ -1,0 +1,10 @@
+title: "Transformer Self-Attention & Heatmap Visualizer"
+shortTitle: "Attention Visualizer"
+category: "Deep Learning"
+simulatorType: "attention-visualizer"
+badge: "Transformers & LLMs"
+description: "Tune softmax temperature, inspect query-key vector alignment, and visualize N×N self-attention weight heatmaps across multi-head projections."
+lessonPath: "/lessons/dl-transformers-attention"
+lessonTitle: "Scaled Dot-Product Attention"
+order: 1
+featured: true

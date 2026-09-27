@@ -1,0 +1,11 @@
+name: "Sigmoid Logistic Function"
+glyph: "σ(z) = 1 / (1 + e⁻ᶻ)"
+latex: "\\sigma(z) = \\frac{1}{1 + e^{-z}}"
+pronunciation: "Sigma of z equals one over one plus e to the negative z"
+category: "deep-learning"
+meaning: "Maps any real-valued scalar into the open interval (0, 1), making it ideal for modeling Bernoulli probabilities in binary classification or gate mechanisms (e.g. LSTM forget gates)."
+example: "In binary cross-entropy classification, the output logit z is passed through σ(z) to predict P(y=1 | x)."
+ambiguity: "Susceptible to vanishing gradients when |z| is large because σ'(z) = σ(z)(1 - σ(z)), which peaks at only 0.25 and approaches 0 in the tails."
+relatedLabId: "neural-playground"
+relatedLabTitle: "Neural Network & Activation Playground"
+featured: true

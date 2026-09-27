@@ -1,0 +1,11 @@
+name: "Learning Rate Hyperparameter"
+glyph: "η (Eta)"
+latex: "\\eta"
+pronunciation: "Eta / Learning rate"
+category: "optimization"
+meaning: "The step size scalar factor scaling parameter updates along the negative gradient during optimizer iterations."
+example: "θ_{t+1} = θ_t - η · m_t / (√v_t + ε) in the Adam optimizer update step."
+ambiguity: "Too high causes divergence / exploding loss; too low causes agonizingly slow convergence or trapping in suboptimal local minima."
+relatedLabId: "gradient-descent"
+relatedLabTitle: "Loss Surface & Gradient Descent Optimizer Lab"
+featured: true

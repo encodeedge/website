@@ -1,0 +1,11 @@
+name: "Nabla Gradient Operator"
+glyph: "∇_θ L(θ)"
+latex: "\\nabla_\\theta \\mathcal{L}(\\theta)"
+pronunciation: "Nabla sub theta of L of theta (or gradient of loss with respect to parameters theta)"
+category: "optimization"
+meaning: "A vector of first-order partial derivatives pointing in the direction of steepest ascent of the scalar loss function L with respect to neural network weights θ."
+example: "During backpropagation, PyTorch computes parameter.grad = ∇_θ L so optimizers like Adam or SGD can step in the opposite direction: θ ← θ - η ∇_θ L."
+ambiguity: "Often confused with the Laplacian (∇²). In neural network optimization, ∇ without an exponent is always the gradient vector, not the scalar divergence."
+relatedLabId: "gradient-descent"
+relatedLabTitle: "Loss Surface & Gradient Descent Optimizer Lab"
+featured: true

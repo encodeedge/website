@@ -1,0 +1,10 @@
+title: "Loss Surface & Gradient Descent Optimizer Lab"
+shortTitle: "Gradient Descent Lab"
+category: "Optimization"
+simulatorType: "gradient-descent"
+badge: "Calculus & Optimization"
+description: "Step along 3D loss contours, tune learning rates, compare SGD vs Momentum vs Adam dynamics, and observe convergence velocity."
+lessonPath: "/lessons/ml-interactive-lab"
+lessonTitle: "Machine Learning Interactive Lab"
+order: 5
+featured: true

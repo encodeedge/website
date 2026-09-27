@@ -1,0 +1,11 @@
+name: "Softmax with Temperature Scaling"
+glyph: "P(y_i) = exp(z_i / τ) / ∑ exp(z_j / τ)"
+latex: "P(y_i) = \\frac{e^{z_i / \\tau}}{\\sum_{j} e^{z_j / \\tau}}"
+pronunciation: "Probability of y-sub-i equals exponential of z-sub-i over tau, divided by sum of exponentials"
+category: "inference"
+meaning: "Adjusts the entropy and peakiness of categorical probability distributions output by generative language models."
+example: "Lower temperature (τ → 0.1) creates deterministic, greedy outputs; higher temperature (τ → 1.5) flattens probabilities for diverse, creative text."
+ambiguity: "τ = 1 is standard unscaled softmax. As τ approaches 0, softmax approaches argmax (hard one-hot distribution)."
+relatedLabId: "attention-visualizer"
+relatedLabTitle: "Transformer Self-Attention Visualizer"
+featured: true

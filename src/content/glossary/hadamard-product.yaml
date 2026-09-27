@@ -1,0 +1,11 @@
+name: "Hadamard / Element-wise Product"
+glyph: "A ⊙ B"
+latex: "A \\odot B"
+pronunciation: "A element-wise times B / A Hadamard B"
+category: "linear-algebra"
+meaning: "Multiplies corresponding elements of two matrices or tensors of identical shape: (A ⊙ B)ᵢⱼ = Aᵢⱼ · Bᵢⱼ."
+example: "Used in gated neural networks (e.g. SwiGLU activation: SwiGLU(x) = Swish(xW) ⊙ (xV))."
+ambiguity: "Distinct from matrix multiplication (AB) and outer/tensor product (A ⊗ B). In Python/NumPy, `A * B` is Hadamard, whereas `A @ B` is matrix multiplication."
+relatedLabId: "memory-explorer"
+relatedLabTitle: "CPython Memory & Reference Counting Explorer"
+featured: true

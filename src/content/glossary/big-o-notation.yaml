@@ -1,0 +1,11 @@
+name: "Big-O Asymptotic Complexity"
+glyph: "O(N²)"
+latex: "\\mathcal{O}(N^2)"
+pronunciation: "Order of N squared / Big-O of N squared"
+category: "inference"
+meaning: "Describes the upper bound on time or space resource scaling as the input sequence length N approaches infinity."
+example: "Standard full self-attention scales in O(N²) memory and compute with sequence length N, motivating FlashAttention and linear attention approximations."
+ambiguity: "Big-O describes asymptotic trends, not wall-clock hardware latency. An O(N²) algorithm with high GPU cache locality can run faster than an O(N) algorithm with uncoalesced memory access."
+relatedLabId: "attention-visualizer"
+relatedLabTitle: "Transformer Self-Attention Visualizer"
+featured: true

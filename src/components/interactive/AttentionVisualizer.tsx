@@ -381,8 +381,8 @@ export const AttentionVisualizer: React.FC<AttentionVisualizerProps> = ({
           <div className="space-y-1">
             <span className="font-bold text-foreground">Mathematical Attention Formulation:</span>
             <p className="leading-relaxed">
-              Each Query token $q_i$ projects a dot product onto all Key tokens $k_j$, divided by scaling factor $\sqrt{d_k} = 8.0$. 
-              Softmax normalizes the raw logits into positive probabilities that sum strictly to $1.0$ across every row, weighting which semantic context vectors are extracted into the output representation.
+              Each Query token qᵢ projects a dot product onto all Key tokens kⱼ, divided by scaling factor √dₖ = 8.0. 
+              Softmax normalizes the raw logits into positive probabilities that sum strictly to 1.0 across every row, weighting which semantic context vectors are extracted into the output representation.
             </p>
           </div>
         </div>

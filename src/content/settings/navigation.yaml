@@ -5,6 +5,9 @@ navLinks:
   - label: Courses
     href: /courses
     openInNewTab: false
+  - label: Labs
+    href: /labs
+    openInNewTab: false
   - label: Dashboard
     href: /dashboard
     openInNewTab: false

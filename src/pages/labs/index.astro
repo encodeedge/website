@@ -1,0 +1,16 @@
+---
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { LabsHub } from '@/components/interactive/LabsHub';
+
+const pageTitle = "Interactive AI Labs & Math Decoder | EncodeEdge";
+const pageDescription = "Explore interactive simulators for Transformers self-attention, 2D convolution kernels, loss surfaces, neural activations, CPython memory, and a comprehensive AI mathematical notation glossary.";
+---
+
+<DefaultLayout 
+  title={pageTitle}
+  description={pageDescription}
+>
+  <div class="py-8 md:py-16 container mx-auto px-4 max-w-6xl space-y-10">
+    <LabsHub client:load />
+  </div>
+</DefaultLayout>

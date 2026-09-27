@@ -2,9 +2,9 @@
 title: "Convolutional Neural Networks & ResNet Residual Skips"
 description: "Feature maps, kernels, padding, pooling, and resolving vanishing gradients with deep residual connections."
 lessonType: "article"
-interactiveLab: "code-sandbox"
-interactiveLabTitle: "2D Convolution Kernel & Feature Maps Lab"
-interactiveLabDescription: "Apply 3x3 Sobel spatial convolution kernels across 2D receptive fields to detect edge features and trace residual skip connections."
+interactiveLab: "convolution-visualizer"
+interactiveLabTitle: "2D Convolution Kernel & Feature Map Explorer"
+interactiveLabDescription: "Trace spatial receptive fields, compute kernel dot products, and visualize how CNNs extract edge features."
 videoUrl: ""
 duration: 25
 ---

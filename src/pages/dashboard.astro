@@ -1,0 +1,24 @@
+---
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { StudentDashboard } from '@/components/interactive/StudentDashboard';
+import { getCollection } from 'astro:content';
+
+const coursesRaw = await getCollection('courses');
+const courses = coursesRaw.map(c => ({
+  id: c.id,
+  title: c.data.title,
+  shortDescription: c.data.shortDescription,
+  coverImage: c.data.coverImage,
+  level: c.data.level,
+  chapters: c.data.chapters,
+}));
+---
+
+<DefaultLayout 
+  title="My Learning Dashboard | EncodeEdge LMS"
+  description="Track your course progress, resume active modules, manage study streaks, and inspect earned certificates."
+>
+  <div class="py-8 md:py-16 container mx-auto px-4 max-w-6xl space-y-10">
+    <StudentDashboard courses={courses} client:load />
+  </div>
+</DefaultLayout>

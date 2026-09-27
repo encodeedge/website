@@ -2,6 +2,15 @@ navLinks:
   - label: Home
     href: /
     openInNewTab: false
+  - label: Courses
+    href: /courses
+    openInNewTab: false
+  - label: Dashboard
+    href: /dashboard
+    openInNewTab: false
+  - label: Competitions
+    href: /competitions
+    openInNewTab: false
   - label: Roadmaps
     href: /roadmaps
     openInNewTab: false
@@ -10,9 +19,6 @@ navLinks:
     openInNewTab: false
   - label: Blogs
     href: /blog
-    openInNewTab: false
-  - label: Courses
-    href: courses
     openInNewTab: false
   - label: About
     href: /about

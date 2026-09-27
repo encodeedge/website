@@ -1199,6 +1199,8 @@ export default config({
           description: 'Optionally embed a specialized interactive simulation widget or live code runner into this lesson',
           options: [
             { label: 'None (No Lab)', value: 'none' },
+            { label: 'Transformer Self-Attention Visualizer', value: 'attention-visualizer' },
+            { label: '2D Convolution & Feature Map Explorer', value: 'convolution-visualizer' },
             { label: 'Lesson-Tailored Code Sandbox', value: 'code-sandbox' },
             { label: 'Neural Network & Activation Playground', value: 'neural-playground' },
             { label: 'Loss Surface & Gradient Descent Optimizer Lab', value: 'gradient-descent' },

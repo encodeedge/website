@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Award, Clock, BookOpen, CheckCircle, ArrowRight, RotateCcw, Users, Sparkles } from 'lucide-react';
+import { Award, Clock, BookOpen, CheckCircle, ArrowRight, RotateCcw, Users, Sparkles, ShieldCheck, ExternalLink } from 'lucide-react';
 import { CourseCertificateModal } from '../interactive/CourseCertificateModal';
 import { persistentStorage } from '@/lib/storage';
 
@@ -24,6 +24,7 @@ export const CourseProgressCard: React.FC<CourseProgressCardProps> = ({
   courseTitle,
 }) => {
   const [completedIds, setCompletedIds] = useState<string[]>([]);
+  const [claimedCert, setClaimedCert] = useState<any>(null);
   const [isClient, setIsClient] = useState(false);
   const [showCertModal, setShowCertModal] = useState(false);
 
@@ -34,6 +35,10 @@ export const CourseProgressCard: React.FC<CourseProgressCardProps> = ({
       if (Array.isArray(stored)) {
         setCompletedIds(stored);
       }
+
+      const cert = persistentStorage.getSync<any>(`lms_cert_${courseId}`, null) ||
+        (typeof window !== 'undefined' ? JSON.parse(localStorage.getItem(`lms_cert_${courseId}`) || 'null') : null);
+      setClaimedCert(cert);
     };
 
     updateProgress();
@@ -98,13 +103,28 @@ export const CourseProgressCard: React.FC<CourseProgressCardProps> = ({
         {/* Main Action Button */}
         <div className="space-y-2">
           {percent === 100 ? (
-            <button 
-              onClick={() => setShowCertModal(true)}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition-all shadow-md"
-            >
-              <Award className="w-4 h-4" />
-              <span>Claim Certificate 🏆</span>
-            </button>
+            <div className="space-y-2">
+              <button 
+                onClick={() => setShowCertModal(true)}
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm transition-all shadow-md cursor-pointer"
+              >
+                <Award className="w-4 h-4" />
+                <span>{claimedCert ? 'View Certificate 🏆' : 'Claim Certificate 🏆'}</span>
+              </button>
+
+              {claimedCert && (
+                <a 
+                  href={claimedCert.verifyUrl || `/verify/${claimedCert.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-muted/60 hover:bg-muted text-xs font-semibold text-primary transition-colors border border-border/60"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>Verify Online Credential</span>
+                  <ExternalLink className="w-3 h-3 ml-0.5" />
+                </a>
+              )}
+            </div>
           ) : nextItem ? (
             <a href={nextItem.url} className="block w-full">
               <button className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all shadow-sm">

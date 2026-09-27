@@ -6,6 +6,7 @@ import { CourseProgressCard } from '@/components/ui/course-progress-card';
 import { CoursePrerequisiteFlow } from '@/components/interactive/CoursePrerequisiteFlow';
 import { CourseFlashcardsDrawer } from '@/components/interactive/CourseFlashcardsDrawer';
 import { CourseCertificate } from '@/components/interactive/CourseCertificate';
+import { CourseCompletionBanner } from '@/components/ui/course-completion-banner';
 import { getFeatureFlags } from '@/lib/settings';
 import { 
   Clock, 
@@ -181,6 +182,14 @@ const totalDurationStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
       <!-- Left 2-Column: Course Syllabus & Overview -->
       <div class="lg:col-span-2 space-y-12">
         
+        <!-- Course Completion & Verified Certificate Banner (Only shown upon 100% completion) -->
+        <CourseCompletionBanner 
+          courseId={course.id} 
+          courseTitle={course.data.title} 
+          totalItems={flatItems.length} 
+          client:load 
+        />
+
         <!-- Course Artwork Banner -->
         {course.data.coverImage && (
           <div class="w-full aspect-video rounded-3xl overflow-hidden border border-border/80 bg-muted shadow-sm">

@@ -124,7 +124,7 @@ export const LabsHub: React.FC<LabsHubProps> = ({ labs, glossaryItems }) => {
     }
   }, [labsCatalog]);
 
-  const activeLabMeta = LABS_LIST.find(l => l.id === selectedLabId) || LABS_LIST[0];
+  const activeLabMeta = labsCatalog.find(l => l.id === selectedLabId) || labsCatalog[0];
 
   const handleLaunchFromDecoder = (labId: string) => {
     setActiveMainTab('simulators');

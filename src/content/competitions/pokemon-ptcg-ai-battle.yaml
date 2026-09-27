@@ -1,0 +1,22 @@
+title: 'PTCG Pocket: Reinforcement Learning Battle Policy Engine'
+platform: kaggle
+url: https://www.kaggle.com/competitions/ptcg-pocket-battle-engine
+hostName: Game AI Research & Kaggle
+category: Reinforcement Learning
+difficulty: Intermediate
+prizePool: $35,000 USD
+prizeAmountUSD: 35000
+rewardType: cash
+deadline: '2026-11-05'
+teamsCount: 1190
+status: active
+description: Develop an autonomous agent that learns competitive deck management, energy allocation, and turn-by-turn counterplay in imperfect-information matches.
+problemStatement: Train a model using reinforcement learning or Monte Carlo Tree Search (MCTS) to navigate hidden deck states and outmaneuver opponent strategies in simulation.
+evaluationMetric: TrueSkill Elo Rating in Round-Robin Head-to-Head Simulations
+tags:
+  - Game AI
+  - Reinforcement Learning
+  - MCTS
+  - Simulation
+  - Policy Gradient
+featured: false

@@ -1,0 +1,22 @@
+title: 'Bias Bounty: Algorithmic Fairness in African Geographic Mapping'
+platform: zindi
+url: https://zindi.africa/competitions/bias-bounty-african-mapping
+hostName: Responsible AI Africa & Zindi
+category: Tabular & Predictive
+difficulty: Intermediate
+prizePool: $10,000 USD
+prizeAmountUSD: 10000
+rewardType: cash
+deadline: '2026-10-22'
+teamsCount: 315
+status: ending-soon
+description: Detect and mitigate spatial demographic biases and under-representation in machine learning models trained on satellite remote sensing data.
+problemStatement: Demonstrate disparities in settlement classification and develop re-weighting or adversarial de-biasing techniques that equalize precision across disparate socioeconomic zones.
+evaluationMetric: Equalized Odds Ratio & Worst-Group Accuracy
+tags:
+  - Fairness in AI
+  - Satellite Imagery
+  - Bias Auditing
+  - Geospatial
+  - Ethics
+featured: false

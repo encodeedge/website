@@ -1,0 +1,22 @@
+title: 'Enveda & CASMI 2026: Small Molecule Mass-Spectrometry Identification'
+platform: kaggle
+url: https://www.kaggle.com/competitions/enveda-casmi-2026
+hostName: Enveda Biosciences
+category: Multimodal
+difficulty: Expert
+prizePool: $50,000 USD
+prizeAmountUSD: 50000
+rewardType: cash
+deadline: '2026-11-20'
+teamsCount: 430
+status: active
+description: Accelerate drug discovery from natural products by identifying unknown small-molecule chemical structures directly from tandem MS/MS spectra.
+problemStatement: Predict SMILES strings and IUPAC chemical structures from noisy mass spectra fragmentation patterns and collision-induced dissociation signatures.
+evaluationMetric: Tanimoto Chemical Similarity & Top-1 Identification Accuracy
+tags:
+  - Cheminformatics
+  - Drug Discovery
+  - Mass Spectrometry
+  - GNNs
+  - Molecules
+featured: false

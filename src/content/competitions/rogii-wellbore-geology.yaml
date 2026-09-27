@@ -1,0 +1,22 @@
+title: 'ROGII: Automated Wellbore Trajectory & Geological Stratigraphy'
+platform: kaggle
+url: https://www.kaggle.com/competitions/rogii-geosteering-challenge
+hostName: ROGII & Geosteering Labs
+category: Tabular & Predictive
+difficulty: Intermediate
+prizePool: $25,000 USD
+prizeAmountUSD: 25000
+rewardType: cash
+deadline: '2026-10-18'
+teamsCount: 520
+status: ending-soon
+description: Forecast subsurface stratigraphic formations and geological boundaries in real time using telemetry measurements from active drilling sensors.
+problemStatement: Predict geological layer transitions and adjust drill-bit inclination using gamma-ray logs, rate of penetration (ROP), and torque sensor streams.
+evaluationMetric: Stratigraphic Boundary Mean Absolute Error (MAE in meters)
+tags:
+  - Geosciences
+  - Time Series
+  - Sensor Telemetry
+  - Energy
+  - Predictive Analytics
+featured: false

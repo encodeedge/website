@@ -1,0 +1,22 @@
+title: 'Lost in Transcription: Paleographic Handwritten Text Recognition'
+platform: drivendata
+url: https://www.drivendata.org/competitions/250/lost-in-transcription
+hostName: Historical Archives Foundation & DrivenData
+category: Computer Vision
+difficulty: Intermediate
+prizePool: $20,000 USD
+prizeAmountUSD: 20000
+rewardType: cash
+deadline: '2026-10-25'
+teamsCount: 390
+status: active
+description: Preserve historical heritage by transcribing centuries of handwritten cursive manuscripts, parchment ledgers, and damaged clerical records into clean digital text.
+problemStatement: Extract structured multilingual text and tabular records from degraded high-resolution parchment images suffering from ink bleed-through and fading.
+evaluationMetric: Character Error Rate (CER) & Word Error Rate (WER)
+tags:
+  - OCR
+  - Paleography
+  - Handwriting Recognition
+  - Vision Transformers
+  - Cultural Heritage
+featured: false

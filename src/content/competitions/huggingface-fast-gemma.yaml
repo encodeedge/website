@@ -1,0 +1,22 @@
+title: 'Fast Gemma 4 Challenge: Sub-10ms Speculative Decoding & Edge Inference'
+platform: huggingface
+url: https://huggingface.co/competitions/fast-gemma-edge-inference
+hostName: Hugging Face & Google DeepMind
+category: NLP & LLMs
+difficulty: Advanced
+prizePool: $40,000 USD
+prizeAmountUSD: 40000
+rewardType: cash
+deadline: '2026-11-28'
+teamsCount: 750
+status: active
+description: Optimize Gemma models for high-throughput edge deployment using custom kernel fusion, 4-bit AWQ quantization, and speculative decoding techniques.
+problemStatement: Achieve the highest tokens-per-second generation speed with under 10ms time-to-first-token on standard consumer hardware without degrading MMLU accuracy by >1%.
+evaluationMetric: Tokens/sec Throughput × (1 - Accuracy Penalty)
+tags:
+  - Model Optimization
+  - Gemma
+  - Speculative Decoding
+  - Quantization
+  - vLLM
+featured: false

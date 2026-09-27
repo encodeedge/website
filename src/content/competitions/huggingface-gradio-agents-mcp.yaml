@@ -1,0 +1,22 @@
+title: Gradio Agents & Model Context Protocol (MCP) Hackathon
+platform: huggingface
+url: https://huggingface.co/competitions/gradio-mcp-hackathon
+hostName: Hugging Face & Anthropic
+category: NLP & LLMs
+difficulty: Intermediate
+prizePool: $30,000 USD
+prizeAmountUSD: 30000
+rewardType: cash
+deadline: '2026-11-08'
+teamsCount: 920
+status: active
+description: Build interactive agentic applications powered by the Model Context Protocol (MCP), open weights LLMs, and Gradio 5 user interfaces.
+problemStatement: Design production-ready MCP tool servers and intuitive interactive UI spaces where multi-agent teams solve developer workflows, database queries, and research synthesis.
+evaluationMetric: Community Upvotes, Technical Architecture Review, & Usability Score
+tags:
+  - Gradio
+  - MCP
+  - AI Agents
+  - Open Source LLMs
+  - Tool Use
+featured: true

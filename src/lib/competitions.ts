@@ -29,7 +29,7 @@ export interface Competition {
   teamsCount: number;
   deadline: string; // ISO date string
   daysRemaining: number;
-  status: 'active' | 'upcoming' | 'ending-soon';
+  status: 'active' | 'upcoming' | 'ending-soon' | 'completed';
   tags: string[];
   featured?: boolean;
   evaluationMetric?: string;
@@ -403,6 +403,7 @@ export function getCompetitionsStats(competitions: Competition[] = ACTIVE_COMPET
   const totalCount = competitions.length;
   const activeCount = competitions.filter((c) => c.status === 'active').length;
   const endingSoonCount = competitions.filter((c) => c.status === 'ending-soon').length;
+  const completedCount = competitions.filter((c) => c.status === 'completed').length;
   const totalTeams = competitions.reduce((acc, c) => acc + c.teamsCount, 0);
 
   // Compute total tracked prize pool in USD
@@ -422,6 +423,7 @@ export function getCompetitionsStats(competitions: Competition[] = ACTIVE_COMPET
     totalCount,
     activeCount,
     endingSoonCount,
+    completedCount,
     totalTeams,
     totalPrizeUSD,
     platformCounts,
@@ -464,13 +466,37 @@ export async function getAggregatedCompetitions(
     // Merge Keystatic curated items if any
     const allCombined = [...(keystaticCompetitions || []), ...filteredRegistry];
 
-    // Deduplicate by id
+    // Deduplicate by id and normalize real-time expiration
     const seen = new Set<string>();
     const deduplicated: Competition[] = [];
+    const now = new Date();
+
     for (const c of allCombined) {
       if (!seen.has(c.id)) {
         seen.add(c.id);
-        deduplicated.push(c);
+
+        let daysRemaining = c.daysRemaining;
+        let status = c.status;
+
+        if (c.deadline) {
+          const deadlineDate = new Date(c.deadline);
+          if (!isNaN(deadlineDate.getTime())) {
+            const diffTime = deadlineDate.getTime() - now.getTime();
+            const isPast = diffTime <= 0;
+            daysRemaining = isPast ? 0 : Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (isPast) {
+              status = 'completed';
+            } else if (daysRemaining <= 7) {
+              status = 'ending-soon';
+            }
+          }
+        }
+
+        deduplicated.push({
+          ...c,
+          daysRemaining,
+          status,
+        });
       }
     }
 

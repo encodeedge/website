@@ -1,0 +1,21 @@
+title: 'R.O.A.D. Barbados: Historic Land Registry Handwriting Recognition'
+platform: zindi
+url: https://zindi.africa/competitions/road-barbados-historic-land-records
+hostName: Barbados National Archives & Zindi
+category: Computer Vision
+difficulty: Intermediate
+prizePool: $25,000 USD
+prizeAmountUSD: 25000
+rewardType: cash
+deadline: '2026-11-12'
+teamsCount: 410
+status: active
+description: Digitize historical Caribbean land deed registers and property boundary maps spanning the 18th to 20th centuries to ensure transparent property rights.
+problemStatement: Train handwriting recognition models capable of reading ornate historical cursive, identifying legal boundary bearings, and outputting structured GeoJSON/tabular metadata.
+evaluationMetric: Character Error Rate (CER) & Normalized Levenshtein Distance
+tags:
+  - African & Caribbean AI
+  - Historical OCR
+  - Computer Vision
+  - Land Records
+featured: false

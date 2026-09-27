@@ -1,0 +1,22 @@
+title: 'Chan Zuckerberg Biohub: 3D Single-Cell Tracking Challenge'
+platform: kaggle
+url: https://www.kaggle.com/competitions/cz-biohub-cell-tracking
+hostName: Chan Zuckerberg Biohub Network
+category: Computer Vision
+difficulty: Advanced
+prizePool: $55,000 USD
+prizeAmountUSD: 55000
+rewardType: cash
+deadline: '2026-10-30'
+teamsCount: 612
+status: active
+description: Track thousands of densely packed living cells across high-resolution 3D volumetric fluorescence microscopy time-series.
+problemStatement: Segment cell boundaries and link individual cell lineages through multiple cell division cycles over hundreds of consecutive 3D volume timesteps.
+evaluationMetric: TRA (Tracking Accuracy Metric) & SEG Jaccard Index
+tags:
+  - Biomedical Imaging
+  - 3D Computer Vision
+  - Cell Tracking
+  - Segmentation
+  - Microscopy
+featured: false

@@ -1,0 +1,22 @@
+title: 'SNOMED CT: Clinical Concept Extraction & Entity Linking'
+platform: drivendata
+url: https://www.drivendata.org/competitions/245/snomed-ct-entity-linking
+hostName: SNOMED International & DrivenData
+category: NLP & LLMs
+difficulty: Advanced
+prizePool: $15,000 USD
+prizeAmountUSD: 15000
+rewardType: cash
+deadline: '2026-11-01'
+teamsCount: 650
+status: active
+description: Map unstructured doctor discharge summaries and clinical consultation notes to standardized SNOMED CT medical taxonomy concept identifiers.
+problemStatement: Detect medical condition spans, symptoms, and pharmacotherapy mentions and disambiguate them to exact SNOMED CT concept identifiers across 350,000+ medical terms.
+evaluationMetric: Micro-Averaged F1 Score across Entity Spans and Concept IDs
+tags:
+  - Clinical NLP
+  - SNOMED CT
+  - Entity Disambiguation
+  - Healthcare AI
+  - BioBERT
+featured: false

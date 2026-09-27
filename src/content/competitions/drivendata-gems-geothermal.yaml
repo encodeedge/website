@@ -1,0 +1,21 @@
+title: 'GEMS: Predicting Subsurface Fracture Permeability for Geothermal Energy'
+platform: drivendata
+url: https://www.drivendata.org/competitions/254/gems-geothermal-energy
+hostName: U.S. Department of Energy & DrivenData
+category: Tabular & Predictive
+difficulty: Expert
+prizePool: $300,000 USD
+prizeAmountUSD: 300000
+rewardType: cash
+deadline: '2026-12-08'
+teamsCount: 780
+status: active
+description: Unlock clean geothermal energy by building machine learning models that estimate fluid flow and fracture network permeability inside deep crystalline rock formations.
+problemStatement: Model hydraulic conductivity across complex fracture fault lines using seismic soundings, core sample petrophysics, and injection well pressure curves.
+evaluationMetric: Root Mean Squared Logarithmic Error (RMSLE) on In-Situ Flow Rates
+tags:
+  - Clean Energy
+  - Geothermal
+  - Physics-Informed ML
+  - Subsurface Modeling
+featured: true

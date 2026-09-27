@@ -1,0 +1,22 @@
+title: Global AI & Competitive Algorithms Sprint 2026
+platform: hackerrank
+url: https://www.hackerrank.com/contests/global-ai-sprint-2026
+hostName: HackerRank Community
+category: Tabular & Predictive
+difficulty: Intermediate
+prizePool: $15,000 USD
+prizeAmountUSD: 15000
+rewardType: cash
+deadline: '2026-10-15'
+teamsCount: 3850
+status: ending-soon
+description: Compete against engineers worldwide in timed competitive programming challenges focused on dynamic graph optimization, heuristic search, and mini-LLM pipelines.
+problemStatement: Solve 6 algorithmic and machine learning optimization problems within a 48-hour window under tight CPU time and memory consumption limits.
+evaluationMetric: Automated Test Case Pass Rate & Runtime Complexity Benchmark
+tags:
+  - Competitive Programming
+  - Algorithms
+  - Graph Theory
+  - Python
+  - Data Structures
+featured: false

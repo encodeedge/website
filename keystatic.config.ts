@@ -461,13 +461,27 @@ export default config({
         navLinks: fields.array(
           fields.object({
             label: fields.text({ label: 'Label' }),
-            href: fields.text({ label: 'URL' }),
+            href: fields.text({ label: 'URL (Leave blank or # if purely a dropdown group)' }),
+            badge: fields.text({ label: 'Badge (optional, e.g. "New", "LMS", "Live")' }),
             icon: fields.text({ label: 'Icon (optional)' }),
             openInNewTab: fields.checkbox({ label: 'Open in New Tab', defaultValue: false }),
+            children: fields.array(
+              fields.object({
+                label: fields.text({ label: 'Sub-link Label' }),
+                href: fields.text({ label: 'Sub-link URL' }),
+                description: fields.text({ label: 'Description (optional)' }),
+                badge: fields.text({ label: 'Badge (optional)' }),
+                openInNewTab: fields.checkbox({ label: 'Open in New Tab', defaultValue: false }),
+              }),
+              {
+                label: 'Dropdown Sub-links (optional)',
+                itemLabel: props => props.fields.label.value || 'Sub-link',
+              }
+            ),
           }),
           {
             label: 'Navigation Links',
-            itemLabel: props => props.fields.label.value,
+            itemLabel: props => props.fields.label.value + (props.fields.children.value?.length ? ` (${props.fields.children.value.length} sub-links)` : ''),
           }
         ),
         showSearch: fields.checkbox({ label: 'Show Search', defaultValue: true }),

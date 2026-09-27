@@ -7,13 +7,14 @@ import { NewsletterBanner } from '@/components/ui/newsletter-banner';
 import { AnnouncementBanner } from '@/components/ui/announcement-banner';
 import { PeerStudyRooms } from '@/components/interactive/PeerStudyRooms';
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics.astro';
-import { getFeatureFlags, getAnnouncementBanner, getSiteSettings } from '@/lib/settings';
+import { getFeatureFlags, getAnnouncementBanner, getSiteSettings, getNavigationSettings } from '@/lib/settings';
 
 const { title, description } = Astro.props;
 
 const flags = await getFeatureFlags();
 const announcement = await getAnnouncementBanner();
 const site = await getSiteSettings();
+const navSettings = await getNavigationSettings();
 ---
 
 <html lang="en">
@@ -54,8 +55,12 @@ const site = await getSiteSettings();
         )}
         <Navbar
           client:load
-          enableSearch={flags.globalSearch.enabled}
+          navLinks={navSettings.navLinks}
+          enableSearch={navSettings.showSearch && flags.globalSearch.enabled}
           enableLive={flags.liveClasses.showInNav}
+          showSubscribeButton={navSettings.showSubscribeButton}
+          subscribeButtonText={navSettings.subscribeButtonText}
+          subscribeButtonUrl={navSettings.subscribeButtonUrl}
         />
         <script is:inline>
           (function() {

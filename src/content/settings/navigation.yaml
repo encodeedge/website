@@ -2,36 +2,82 @@ navLinks:
   - label: Home
     href: /
     openInNewTab: false
-  - label: Courses
+  - label: Learn
     href: /courses
+    badge: ''
     openInNewTab: false
+    children:
+      - label: Courses
+        href: /courses
+        description: Full-stack AI, ML, and Python curriculum with code walkthroughs
+        badge: Popular
+        openInNewTab: false
+      - label: Live Classes
+        href: /live-classes
+        description: Interactive cohorts, hands-on workshops, and webinars
+        badge: Live
+        openInNewTab: false
+      - label: Roadmaps
+        href: /roadmaps
+        description: Visual career roadmaps and guided competency paths
+        badge: ''
+        openInNewTab: false
+      - label: Topics
+        href: /topics
+        description: Browse all lessons, algorithms, and deep-dive concepts
+        badge: ''
+        openInNewTab: false
   - label: Labs
     href: /labs
+    badge: Interactive
     openInNewTab: false
+    children:
+      - label: Interactive Simulators
+        href: /labs
+        description: Visual playgrounds for Attention, Convolutions, and Memory
+        badge: New
+        openInNewTab: false
+      - label: Math & AI Decoder
+        href: /labs#math-decoder
+        description: Glossary of neural network symbols, notation, and LaTeX
+        badge: ''
+        openInNewTab: false
+      - label: Competitions
+        href: /competitions
+        description: Live Kaggle, HackerRank, and hackathon challenges tracker
+        badge: Live
+        openInNewTab: false
   - label: Dashboard
     href: /dashboard
+    badge: LMS
     openInNewTab: false
-  - label: Competitions
-    href: /competitions
-    openInNewTab: false
-  - label: Roadmaps
-    href: /roadmaps
-    openInNewTab: false
-  - label: Topics
-    href: /topics
-    openInNewTab: false
-  - label: Blogs
+  - label: Blog
     href: /blog
     openInNewTab: false
-  - label: About
+  - label: More
     href: /about
     openInNewTab: false
-  - label: FAQ
-    href: /faq
-    openInNewTab: false
-  - label: Contact
-    href: /contact
-    openInNewTab: false
+    children:
+      - label: About Us
+        href: /about
+        description: Our mission, team, and modern AI engineering education
+        badge: ''
+        openInNewTab: false
+      - label: FAQs
+        href: /faq
+        description: Answers to commonly asked questions
+        badge: ''
+        openInNewTab: false
+      - label: Contact
+        href: /contact
+        description: Get in touch with instructors and the community
+        badge: ''
+        openInNewTab: false
+      - label: Verify Certificate
+        href: /verify/demo
+        description: Cryptographically verify student certificates and credentials
+        badge: ''
+        openInNewTab: false
 showSearch: true
 showSubscribeButton: true
 subscribeButtonText: Subscribe

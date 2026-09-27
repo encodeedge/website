@@ -273,6 +273,192 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   }
 }
 
+export interface NavChildItem {
+  label: string;
+  href: string;
+  description?: string;
+  badge?: string;
+  icon?: string;
+  openInNewTab?: boolean;
+}
+
+export interface NavItem {
+  label: string;
+  href?: string;
+  badge?: string;
+  icon?: string;
+  openInNewTab?: boolean;
+  children?: NavChildItem[];
+}
+
+export interface NavigationSettings {
+  navLinks: NavItem[];
+  showSearch: boolean;
+  showSubscribeButton: boolean;
+  subscribeButtonText: string;
+  subscribeButtonUrl: string;
+}
+
+export const DEFAULT_NAVIGATION_SETTINGS: NavigationSettings = {
+  navLinks: [
+    {
+      label: 'Home',
+      href: '/',
+      openInNewTab: false,
+    },
+    {
+      label: 'Learn',
+      href: '/courses',
+      openInNewTab: false,
+      children: [
+        {
+          label: 'Courses',
+          href: '/courses',
+          description: 'Full-stack AI, ML, and Python curriculum with code walkthroughs',
+          badge: 'Popular',
+          openInNewTab: false,
+        },
+        {
+          label: 'Live Classes',
+          href: '/live-classes',
+          description: 'Interactive cohorts, hands-on workshops, and webinars',
+          badge: 'Live',
+          openInNewTab: false,
+        },
+        {
+          label: 'Roadmaps',
+          href: '/roadmaps',
+          description: 'Visual career roadmaps and guided competency paths',
+          openInNewTab: false,
+        },
+        {
+          label: 'Topics',
+          href: '/topics',
+          description: 'Browse all lessons, algorithms, and deep-dive concepts',
+          openInNewTab: false,
+        },
+      ],
+    },
+    {
+      label: 'Labs',
+      href: '/labs',
+      badge: 'Interactive',
+      openInNewTab: false,
+      children: [
+        {
+          label: 'Interactive Simulators',
+          href: '/labs',
+          description: 'Visual playgrounds for Attention, Convolutions, and Memory',
+          badge: 'New',
+          openInNewTab: false,
+        },
+        {
+          label: 'Math & AI Decoder',
+          href: '/labs#math-decoder',
+          description: 'Glossary of neural network symbols, notation, and LaTeX',
+          openInNewTab: false,
+        },
+        {
+          label: 'Competitions',
+          href: '/competitions',
+          description: 'Live Kaggle, HackerRank, and hackathon challenges tracker',
+          badge: 'Live',
+          openInNewTab: false,
+        },
+      ],
+    },
+    {
+      label: 'Dashboard',
+      href: '/dashboard',
+      badge: 'LMS',
+      openInNewTab: false,
+    },
+    {
+      label: 'Blog',
+      href: '/blog',
+      openInNewTab: false,
+    },
+    {
+      label: 'More',
+      href: '/about',
+      openInNewTab: false,
+      children: [
+        {
+          label: 'About Us',
+          href: '/about',
+          description: 'Our mission, team, and modern AI engineering education',
+          openInNewTab: false,
+        },
+        {
+          label: 'FAQs',
+          href: '/faq',
+          description: 'Answers to commonly asked questions',
+          openInNewTab: false,
+        },
+        {
+          label: 'Contact',
+          href: '/contact',
+          description: 'Get in touch with instructors and the community',
+          openInNewTab: false,
+        },
+        {
+          label: 'Verify Certificate',
+          href: '/verify/demo',
+          description: 'Cryptographically verify student certificates and credentials',
+          openInNewTab: false,
+        },
+      ],
+    },
+  ],
+  showSearch: true,
+  showSubscribeButton: true,
+  subscribeButtonText: 'Subscribe',
+  subscribeButtonUrl: '/subscribe',
+};
+
+/**
+ * Read navigation settings from Keystatic with comprehensive fallbacks.
+ */
+export async function getNavigationSettings(): Promise<NavigationSettings> {
+  try {
+    const reader = getReader();
+    const nav = await reader.singletons.navigationSettings.read();
+    if (!nav) return DEFAULT_NAVIGATION_SETTINGS;
+
+    const rawLinks = nav.navLinks as any[];
+    const navLinks: NavItem[] = Array.isArray(rawLinks) && rawLinks.length > 0
+      ? rawLinks.map((item: any) => ({
+          label: item.label || '',
+          href: item.href || '',
+          badge: item.badge || undefined,
+          icon: item.icon || undefined,
+          openInNewTab: !!item.openInNewTab,
+          children: Array.isArray(item.children) && item.children.length > 0
+            ? item.children.map((c: any) => ({
+                label: c.label || '',
+                href: c.href || '',
+                description: c.description || undefined,
+                badge: c.badge || undefined,
+                icon: c.icon || undefined,
+                openInNewTab: !!c.openInNewTab,
+              }))
+            : undefined,
+        }))
+      : DEFAULT_NAVIGATION_SETTINGS.navLinks;
+
+    return {
+      navLinks,
+      showSearch: nav.showSearch ?? DEFAULT_NAVIGATION_SETTINGS.showSearch,
+      showSubscribeButton: nav.showSubscribeButton ?? DEFAULT_NAVIGATION_SETTINGS.showSubscribeButton,
+      subscribeButtonText: nav.subscribeButtonText || DEFAULT_NAVIGATION_SETTINGS.subscribeButtonText,
+      subscribeButtonUrl: nav.subscribeButtonUrl || DEFAULT_NAVIGATION_SETTINGS.subscribeButtonUrl,
+    };
+  } catch (error) {
+    console.warn('[Keystatic Settings] Failed to load navigationSettings, using defaults:', error);
+    return DEFAULT_NAVIGATION_SETTINGS;
+  }
+}
+
 export interface IntegrationsSettings {
   googleAnalytics: {
     enabled: boolean;

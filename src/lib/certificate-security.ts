@@ -5,10 +5,18 @@
  * Uses SHA-256 HMAC tokens with a server-side private secret key.
  */
 
-// Secret key for HMAC signing (uses server environment secret if defined, with application salt)
-export const CERTIFICATE_SECRET = 
-  (typeof process !== 'undefined' && process.env?.CERTIFICATE_SECRET) ||
-  'ee_sec_cert_integrity_v1_8f9a2b4c7d1e0f3a6b5c8d2e4f7a1b9c';
+// Secret key for HMAC signing (resolves from server environment secret)
+export function getCertificateSecret(): string {
+  if (typeof process !== 'undefined' && process.env?.CERTIFICATE_SECRET) {
+    return process.env.CERTIFICATE_SECRET;
+  }
+  if (typeof import.meta !== 'undefined' && (import.meta as any).env?.CERTIFICATE_SECRET) {
+    return (import.meta as any).env.CERTIFICATE_SECRET;
+  }
+  return 'ee_sec_cert_integrity_v1_8f9a2b4c7d1e0f3a6b5c8d2e4f7a1b9c';
+}
+
+export const CERTIFICATE_SECRET = getCertificateSecret();
 
 export interface CertificateSigningPayload {
   certId: string;
@@ -45,7 +53,7 @@ export async function signCertificatePayload(
   payload: CertificateSigningPayload,
   customSecret?: string
 ): Promise<string> {
-  const secret = customSecret || CERTIFICATE_SECRET;
+  const secret = customSecret || getCertificateSecret();
   const message = buildCertificateSigningMessage(payload);
 
   const encoder = new TextEncoder();

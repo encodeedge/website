@@ -2,9 +2,9 @@ navLinks:
   - label: Home
     href: /
     openInNewTab: false
+    children: []
   - label: Learn
     href: /courses
-    badge: ''
     openInNewTab: false
     children:
       - label: Courses
@@ -20,12 +20,10 @@ navLinks:
       - label: Roadmaps
         href: /roadmaps
         description: Visual career roadmaps and guided competency paths
-        badge: ''
         openInNewTab: false
       - label: Topics
         href: /topics
         description: Browse all lessons, algorithms, and deep-dive concepts
-        badge: ''
         openInNewTab: false
   - label: Labs
     href: /labs
@@ -37,10 +35,9 @@ navLinks:
         description: Visual playgrounds for Attention, Convolutions, and Memory
         badge: New
         openInNewTab: false
-      - label: Math & AI Decoder
+      - label: AI ML Terms and Glossary
         href: /labs#math-decoder
         description: Glossary of neural network symbols, notation, and LaTeX
-        badge: ''
         openInNewTab: false
       - label: Competitions
         href: /competitions
@@ -51,9 +48,11 @@ navLinks:
     href: /dashboard
     badge: LMS
     openInNewTab: false
+    children: []
   - label: Blog
     href: /blog
     openInNewTab: false
+    children: []
   - label: More
     href: /about
     openInNewTab: false
@@ -61,22 +60,18 @@ navLinks:
       - label: About Us
         href: /about
         description: Our mission, team, and modern AI engineering education
-        badge: ''
         openInNewTab: false
       - label: FAQs
         href: /faq
         description: Answers to commonly asked questions
-        badge: ''
         openInNewTab: false
       - label: Contact
         href: /contact
         description: Get in touch with instructors and the community
-        badge: ''
         openInNewTab: false
       - label: Verify Certificate
         href: /verify/demo
         description: Cryptographically verify student certificates and credentials
-        badge: ''
         openInNewTab: false
 showSearch: true
 showSubscribeButton: true

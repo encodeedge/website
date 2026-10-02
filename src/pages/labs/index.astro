@@ -2,10 +2,6 @@
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { LabsHub } from '@/components/interactive/LabsHub';
 import { getCollection } from 'astro:content';
-import { getLabsPageSettings } from '@/lib/settings';
-
-const pageSettings = await getLabsPageSettings();
-const hero = pageSettings.hero;
 
 const labsEntries = await getCollection('labs');
 const glossaryEntries = await getCollection('glossary');
@@ -40,11 +36,14 @@ const glossaryItems = glossaryEntries.map(entry => ({
   relatedLabTitle: entry.data.relatedLabTitle || '',
   featured: entry.data.featured ?? true,
 }));
+
+const pageTitle = "Interactive AI Labs & Math Decoder | EncodeEdge";
+const pageDescription = "Explore interactive simulators for Transformers self-attention, 2D convolution kernels, loss surfaces, neural activations, CPython memory, and a comprehensive AI mathematical notation glossary.";
 ---
 
 <DefaultLayout 
-  title={pageSettings.seoTitle || `${hero.heading || 'Interactive AI Labs'} | EncodeEdge`}
-  description={pageSettings.seoDescription || hero.subheading || "Explore interactive simulators for Transformers self-attention, 2D convolution kernels, loss surfaces, neural activations, CPython memory, and a comprehensive AI mathematical notation glossary."}
+  title={pageTitle}
+  description={pageDescription}
 >
   <div class="py-8 md:py-16 container mx-auto px-4 max-w-6xl space-y-10">
     <LabsHub labs={labs} glossaryItems={glossaryItems} client:load />

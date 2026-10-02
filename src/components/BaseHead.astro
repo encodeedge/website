@@ -3,20 +3,116 @@
 // all pages through the use of the <BaseHead /> component.
 import '../styles/global.css';
 import { SITE_TITLE, SITE_METADATA } from '../consts';
+import { getSeoSettings } from '@/lib/settings';
 
-interface Props {
+export interface Props {
 	title: string;
 	description: string;
 	image?: string;
+	type?: 'website' | 'article';
+	publishedTime?: string | Date;
+	modifiedTime?: string | Date;
+	author?: string;
+	tags?: string[];
+	canonicalUrl?: string;
+	noIndex?: boolean;
 }
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const {
+	title,
+	description,
+	image,
+	type = 'website',
+	publishedTime,
+	modifiedTime,
+	author,
+	tags = [],
+	canonicalUrl: explicitCanonicalUrl,
+	noIndex: explicitNoIndex,
+} = Astro.props;
 
-const { title, description, image } = Astro.props;
+const seoSettings = await getSeoSettings();
+
+const canonicalURL = explicitCanonicalUrl
+	? new URL(explicitCanonicalUrl, Astro.site)
+	: new URL(Astro.url.pathname, Astro.site);
+
 const finalTitle = title || SITE_METADATA.title.default;
 const finalDescription = description || SITE_METADATA.description;
-const finalImage = image || SITE_METADATA.openGraph.images[0].url;
+const finalImage = image || seoSettings.defaultOgImage || SITE_METADATA.openGraph.images[0].url;
 const imageURL = new URL(finalImage, Astro.url);
+
+const twitterCreator = seoSettings.twitterHandle || SITE_METADATA.twitter.creator;
+const articleAuthor = author || SITE_METADATA.authors[0].name;
+
+const isNoIndex = explicitNoIndex !== undefined ? explicitNoIndex : seoSettings.robotsNoIndex;
+const robotsDirective = isNoIndex ? 'noindex, nofollow' : 'index, follow';
+
+const combinedKeywords = Array.from(
+	new Set([
+		...tags,
+		...(seoSettings.defaultKeywords && seoSettings.defaultKeywords.length > 0
+			? seoSettings.defaultKeywords
+			: SITE_METADATA.keywords),
+	])
+).join(', ');
+
+// Prepare Structured Data (JSON-LD)
+const pubDateIso = publishedTime ? new Date(publishedTime).toISOString() : undefined;
+const modDateIso = modifiedTime ? new Date(modifiedTime).toISOString() : pubDateIso;
+
+const schemaGraph: any[] = [];
+
+if (type === 'article') {
+	schemaGraph.push({
+		'@type': 'TechArticle',
+		'@id': `${canonicalURL.href}#article`,
+		isPartOf: {
+			'@type': 'WebSite',
+			'@id': `${Astro.site || Astro.url.origin}/#website`,
+			name: SITE_METADATA.openGraph.siteName,
+			url: Astro.site || Astro.url.origin,
+		},
+		headline: finalTitle,
+		description: finalDescription,
+		url: canonicalURL.href,
+		image: [imageURL.href],
+		datePublished: pubDateIso,
+		dateModified: modDateIso,
+		author: {
+			'@type': 'Person',
+			name: articleAuthor,
+		},
+		publisher: {
+			'@type': seoSettings.schemaOrgType || 'EducationalOrganization',
+			name: SITE_METADATA.publisher,
+			url: Astro.site || Astro.url.origin,
+			logo: {
+				'@type': 'ImageObject',
+				url: new URL('/favicon/favicon.svg', Astro.url).href,
+			},
+		},
+		keywords: tags.length > 0 ? tags.join(', ') : undefined,
+		mainEntityOfPage: {
+			'@type': 'WebPage',
+			'@id': canonicalURL.href,
+		},
+	});
+} else {
+	schemaGraph.push({
+		'@type': seoSettings.schemaOrgType || 'EducationalOrganization',
+		'@id': `${Astro.site || Astro.url.origin}/#organization`,
+		name: SITE_METADATA.openGraph.siteName,
+		url: Astro.site || Astro.url.origin,
+		description: SITE_METADATA.description,
+		logo: new URL('/favicon/favicon.svg', Astro.url).href,
+	});
+}
+
+const jsonLd = JSON.stringify({
+	'@context': 'https://schema.org',
+	'@graph': schemaGraph,
+});
 ---
 
 <!-- Global Metadata -->
@@ -46,11 +142,14 @@ const imageURL = new URL(finalImage, Astro.url);
 />
 
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<meta name="robots" content={`${SITE_METADATA.robots.index ? 'index' : 'noindex'}, ${SITE_METADATA.robots.follow ? 'follow' : 'nofollow'}`} />
-<meta name="keywords" content={SITE_METADATA.keywords.join(', ')} />
-<meta name="author" content={SITE_METADATA.authors[0].name} />
+<meta name="robots" content={robotsDirective} />
+{combinedKeywords && <meta name="keywords" content={combinedKeywords} />}
+<meta name="author" content={articleAuthor} />
 <meta name="creator" content={SITE_METADATA.creator} />
 <meta name="publisher" content={SITE_METADATA.publisher} />
+{seoSettings.googleSiteVerification && (
+  <meta name="google-site-verification" content={seoSettings.googleSiteVerification} />
+)}
 
 <!-- Theme Script -->
 <script is:inline>
@@ -104,20 +203,36 @@ const imageURL = new URL(finalImage, Astro.url);
 <meta name="description" content={finalDescription} />
 
 <!-- Open Graph / Facebook -->
-<meta property="og:type" content="website" />
-<meta property="og:url" content={Astro.url} />
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonicalURL} />
 <meta property="og:site_name" content={SITE_METADATA.openGraph.siteName} />
 <meta property="og:title" content={finalTitle} />
 <meta property="og:description" content={finalDescription} />
 <meta property="og:image" content={imageURL} />
 <meta property="og:image:width" content={SITE_METADATA.openGraph.images[0].width.toString()} />
 <meta property="og:image:height" content={SITE_METADATA.openGraph.images[0].height.toString()} />
-<meta property="og:image:alt" content={SITE_METADATA.openGraph.images[0].alt} />
+<meta property="og:image:alt" content={finalTitle} />
+
+<!-- Article-specific Open Graph tags -->
+{type === 'article' && (
+  <>
+    {pubDateIso && <meta property="article:published_time" content={pubDateIso} />}
+    {modDateIso && <meta property="article:modified_time" content={modDateIso} />}
+    <meta property="article:author" content={articleAuthor} />
+    {tags.map((tag) => (
+      <meta property="article:tag" content={tag} />
+    ))}
+  </>
+)}
 
 <!-- Twitter -->
-<meta property="twitter:card" content={SITE_METADATA.twitter.card} />
-<meta property="twitter:url" content={Astro.url} />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={canonicalURL} />
 <meta property="twitter:title" content={finalTitle} />
 <meta property="twitter:description" content={finalDescription} />
 <meta property="twitter:image" content={imageURL} />
-<meta property="twitter:creator" content={SITE_METADATA.twitter.creator} />
+<meta property="twitter:creator" content={twitterCreator} />
+<meta property="twitter:site" content={twitterCreator} />
+
+<!-- JSON-LD Structured Data Schema -->
+<script type="application/ld+json" set:html={jsonLd} />

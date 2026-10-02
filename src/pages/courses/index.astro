@@ -103,14 +103,20 @@ const coursesWithMeta = publishedCourses.map(course => {
     </div>
 
     <!-- Learner Gamification & Flashcards Bar -->
-    <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-      <div class="flex-1">
-        <LearnerGamificationBar client:load />
+    {(pageSettings.showGamificationBar || pageSettings.showFlashcardsDrawer) && (
+      <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+        {pageSettings.showGamificationBar && (
+          <div class="flex-1">
+            <LearnerGamificationBar client:load />
+          </div>
+        )}
+        {pageSettings.showFlashcardsDrawer && (
+          <div class="shrink-0 flex items-center justify-end">
+            <CourseFlashcardsDrawer client:load />
+          </div>
+        )}
       </div>
-      <div class="shrink-0 flex items-center justify-end">
-        <CourseFlashcardsDrawer client:load />
-      </div>
-    </div>
+    )}
 
     <!-- Filter Buttons Bar (Accessible client filtering via vanilla JS data attributes) -->
     <div class="flex flex-wrap items-center justify-between gap-4 border-b border-border/60 pb-5">
@@ -245,22 +251,24 @@ const coursesWithMeta = publishedCourses.map(course => {
     </div>
 
     <!-- Interactive Academy Code Sandbox -->
-    <div class="space-y-6 max-w-5xl mx-auto">
-      <div class="text-center space-y-2">
-        <div class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary">
-          <Sparkles class="w-3.5 h-3.5" />
-          <span>Hands-On Engineering</span>
+    {pageSettings.showInteractiveLab && (
+      <div class="space-y-6 max-w-5xl mx-auto">
+        <div class="text-center space-y-2">
+          <div class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary">
+            <Sparkles class="w-3.5 h-3.5" />
+            <span>{pageSettings.interactiveLabEyebrow || 'Hands-On Engineering'}</span>
+          </div>
+          <h3 class="text-2xl sm:text-3xl font-bold font-display text-foreground">
+            {pageSettings.interactiveLabHeading || 'Try Live Algorithms in the Browser'}
+          </h3>
+          <p class="text-xs sm:text-sm text-muted-foreground font-body max-w-xl mx-auto">
+            {pageSettings.interactiveLabSubheading || 'Test real PyTorch autograd computations, gradient descent steps, and semantic RAG cosine similarity with zero local environment setup.'}
+          </p>
         </div>
-        <h3 class="text-2xl sm:text-3xl font-bold font-display text-foreground">
-          Try Live Algorithms in the Browser
-        </h3>
-        <p class="text-xs sm:text-sm text-muted-foreground font-body max-w-xl mx-auto">
-          Test real PyTorch autograd computations, gradient descent steps, and semantic RAG cosine similarity with zero local environment setup.
-        </p>
-      </div>
 
-      <CodeSandboxRunner client:load />
-    </div>
+        <CodeSandboxRunner client:load />
+      </div>
+    )}
 
     <!-- Academy Value Proposition Strip -->
     <section class="rounded-3xl border border-border/80 bg-muted/20 p-8 md:p-12 space-y-8">

@@ -31,8 +31,13 @@ const blog = defineCollection({
     topics: z.array(TOPIC_SLUGS), 
     tags: z.array(z.string()).optional(), 
     featured: z.boolean().optional(),
+    seoTitle: z.string().optional(),
+    seoDescription: z.string().optional(),
+    canonicalUrl: z.string().optional(),
+    noIndex: z.boolean().optional(),
   }),
 });
+
 
 const faqs = defineCollection({
   loader: glob({ base: "./src/content/faqs", pattern: "**/*.{md,mdx}" }),

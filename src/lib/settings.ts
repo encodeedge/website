@@ -462,6 +462,60 @@ export async function getNavigationSettings(): Promise<NavigationSettings> {
   }
 }
 
+// ─── SEO Settings ───────────────────────────────────────────────────────────
+
+export interface SeoSettings {
+  defaultOgImage?: string;
+  twitterHandle: string;
+  defaultKeywords: string[];
+  googleSiteVerification?: string;
+  robotsNoIndex: boolean;
+  schemaOrgType: 'EducationalOrganization' | 'Organization' | 'WebSite';
+}
+
+export const DEFAULT_SEO_SETTINGS: SeoSettings = {
+  defaultOgImage: '/assets/og-image.jpg',
+  twitterHandle: '@encodeedge',
+  defaultKeywords: [
+    'Machine Learning',
+    'Deep Learning',
+    'Python',
+    'Artificial Intelligence',
+    'Data Science',
+    'Neural Networks',
+    'Algorithms',
+    'EncodeEdge',
+  ],
+  googleSiteVerification: '',
+  robotsNoIndex: false,
+  schemaOrgType: 'EducationalOrganization',
+};
+
+export async function getSeoSettings(): Promise<SeoSettings> {
+  try {
+    const reader = getReader();
+    const seo = await reader.singletons.seoSettings.read();
+    if (!seo) return DEFAULT_SEO_SETTINGS;
+
+    const rawKeywords = seo.defaultKeywords || '';
+    const defaultKeywords = rawKeywords
+      ? rawKeywords.split(',').map((k: string) => k.trim()).filter(Boolean)
+      : DEFAULT_SEO_SETTINGS.defaultKeywords;
+
+    return {
+      defaultOgImage: seo.defaultOgImage || DEFAULT_SEO_SETTINGS.defaultOgImage,
+      twitterHandle: seo.twitterHandle || DEFAULT_SEO_SETTINGS.twitterHandle,
+      defaultKeywords,
+      googleSiteVerification: seo.googleSiteVerification || DEFAULT_SEO_SETTINGS.googleSiteVerification,
+      robotsNoIndex: !!seo.robotsNoIndex,
+      schemaOrgType: (seo.schemaOrgType as any) || DEFAULT_SEO_SETTINGS.schemaOrgType,
+    };
+  } catch (error) {
+    console.warn('[Keystatic Settings] Failed to load seoSettings, using defaults:', error);
+    return DEFAULT_SEO_SETTINGS;
+  }
+}
+
 export interface IntegrationsSettings {
   googleAnalytics: {
     enabled: boolean;
@@ -807,6 +861,12 @@ export interface PageCoursesSettings {
   showBatchesSection: boolean;
   showInstructorsSection: boolean;
   maxCoursesShown: number;
+  showInteractiveLab: boolean;
+  interactiveLabHeading: string;
+  interactiveLabSubheading: string;
+  interactiveLabEyebrow: string;
+  showGamificationBar: boolean;
+  showFlashcardsDrawer: boolean;
   seoTitle?: string;
   seoDescription?: string;
 }
@@ -868,6 +928,12 @@ export const DEFAULT_COURSES_PAGE: PageCoursesSettings = {
   hero: { eyebrow: 'EncodeEdge Academy', heading: 'Build Real AI Skills', subheading: 'Master modern Artificial Intelligence, Machine Learning, Deep Learning, and Python through hands-on, production-grade courses.', ctaLabel: 'Browse All Courses', ctaUrl: '#courses', secondaryCtaLabel: 'View Roadmaps', secondaryCtaUrl: '/roadmaps' },
   stats: [{ value: '12+', label: 'Courses' }, { value: '100+', label: 'Lessons' }, { value: '50+', label: 'Quizzes' }],
   showFeaturedSection: true, showBatchesSection: true, showInstructorsSection: true, maxCoursesShown: 0,
+  showInteractiveLab: true,
+  interactiveLabHeading: 'Try Live Algorithms in the Browser',
+  interactiveLabSubheading: 'Test real PyTorch autograd computations, gradient descent steps, and semantic RAG cosine similarity with zero local environment setup.',
+  interactiveLabEyebrow: 'Hands-On Engineering',
+  showGamificationBar: true,
+  showFlashcardsDrawer: true,
 };
 export const DEFAULT_BLOG_PAGE: PageBlogSettings = {
   hero: { eyebrow: 'EncodeEdge Blog', heading: 'Blueprints for Modern AI Engineers', subheading: 'Clear, code-backed deep dives into Machine Learning, Deep Learning, Python internals, and AI systems.' },
@@ -913,3 +979,40 @@ export const getRoadmapsPageSettings = () => getPageSetting<PageRoadmapsSettings
 export const getTopicsPageSettings = () => getPageSetting<PageTopicsSettings>('pageTopicsSettings', DEFAULT_TOPICS_PAGE);
 export const getLiveClassesPageSettings = () => getPageSetting<PageLiveClassesSettings>('pageLiveClassesSettings', DEFAULT_LIVE_CLASSES_PAGE);
 export const getDashboardPageSettings = () => getPageSetting<PageDashboardSettings>('pageDashboardSettings', DEFAULT_DASHBOARD_PAGE);
+
+// ─── AI Article Synthesizer Settings ────────────────────────────────────────
+
+export interface AiBlogGeneratorSettings {
+  sourceUrls: string[];
+  targetTopic: string;
+  writingTone: 'engineer' | 'tutorial' | 'architecture';
+  modelPreference: string;
+  additionalDirectives?: string;
+  autoCreatePullRequest: boolean;
+  lastGeneratedSlug?: string;
+}
+
+export const DEFAULT_AI_GENERATOR_SETTINGS: AiBlogGeneratorSettings = {
+  sourceUrls: [],
+  targetTopic: 'machine-learning',
+  writingTone: 'engineer',
+  modelPreference: '@cf/meta/llama-3.3-70b-instruct',
+  additionalDirectives: '',
+  autoCreatePullRequest: false,
+  lastGeneratedSlug: '',
+};
+
+export async function getAiBlogGeneratorSettings(): Promise<AiBlogGeneratorSettings> {
+  try {
+    const reader = getReader();
+    const data = await (reader.singletons as any).aiBlogGenerator?.read();
+    if (!data) return DEFAULT_AI_GENERATOR_SETTINGS;
+    return {
+      ...DEFAULT_AI_GENERATOR_SETTINGS,
+      ...data,
+      sourceUrls: Array.isArray(data.sourceUrls) ? data.sourceUrls.filter(Boolean) : [],
+    };
+  } catch {
+    return DEFAULT_AI_GENERATOR_SETTINGS;
+  }
+}

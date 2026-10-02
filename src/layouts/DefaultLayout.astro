@@ -9,7 +9,31 @@ import { PeerStudyRooms } from '@/components/interactive/PeerStudyRooms';
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics.astro';
 import { getFeatureFlags, getAnnouncementBanner, getSiteSettings, getNavigationSettings } from '@/lib/settings';
 
-const { title, description } = Astro.props;
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+	type?: 'website' | 'article';
+	publishedTime?: string | Date;
+	modifiedTime?: string | Date;
+	author?: string;
+	tags?: string[];
+	canonicalUrl?: string;
+	noIndex?: boolean;
+}
+
+const {
+	title = '',
+	description = '',
+	image,
+	type = 'website',
+	publishedTime,
+	modifiedTime,
+	author,
+	tags,
+	canonicalUrl,
+	noIndex,
+} = Astro.props as Props;
 
 const flags = await getFeatureFlags();
 const announcement = await getAnnouncementBanner();
@@ -19,7 +43,19 @@ const navSettings = await getNavigationSettings();
 
 <html lang="en">
     <head>		
-        <BaseHead title={title} description={description}  />
+        <BaseHead
+            title={title}
+            description={description}
+            image={image}
+            type={type}
+            publishedTime={publishedTime}
+            modifiedTime={modifiedTime}
+            author={author}
+            tags={tags}
+            canonicalUrl={canonicalUrl}
+            noIndex={noIndex}
+        />
+
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.css" />
         <!-- Google Analytics 4 (Keystatic-controlled & consent-aware) -->
         <GoogleAnalytics />

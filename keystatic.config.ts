@@ -182,8 +182,10 @@ export default config({
       'LMS Core': ['courses', 'batches', 'instructors', 'liveClasses'],
       'LMS Material': ['lessons', 'quizzes', 'assignments'],
       'LMS Administration': ['certificates'],
+      'AI Assistant': ['aiBlogGenerator'],
       'Page Settings': ['pageCoursesSettings', 'pageBlogSettings', 'pageLabsSettings', 'pageRoadmapsSettings', 'pageTopicsSettings', 'pageLiveClassesSettings', 'pageDashboardSettings'],
     }
+
 
   },
 
@@ -859,6 +861,36 @@ export default config({
         showBatchesSection: fields.checkbox({ label: 'Show Upcoming Batches Section', defaultValue: true }),
         showInstructorsSection: fields.checkbox({ label: 'Show Instructors Section', defaultValue: true }),
         maxCoursesShown: fields.number({ label: 'Max Courses in Grid (0 = all)', defaultValue: 0 }),
+        // ── Interactive Lab Section ─────────────────────────────────────────
+        showInteractiveLab: fields.checkbox({
+          label: 'Show Interactive Lab / Code Sandbox Section',
+          description: 'Displays the live in-browser code runner section on the courses page.',
+          defaultValue: true,
+        }),
+        interactiveLabHeading: fields.text({
+          label: 'Lab Section Heading',
+          defaultValue: 'Try Live Algorithms in the Browser',
+        }),
+        interactiveLabSubheading: fields.text({
+          label: 'Lab Section Subheading',
+          multiline: true,
+          defaultValue: 'Test real PyTorch autograd computations, gradient descent steps, and semantic RAG cosine similarity with zero local environment setup.',
+        }),
+        interactiveLabEyebrow: fields.text({
+          label: 'Lab Section Eyebrow Label',
+          defaultValue: 'Hands-On Engineering',
+        }),
+        // ── Floating Interactive Widgets ───────────────────────────────────
+        showGamificationBar: fields.checkbox({
+          label: 'Show Learner Gamification Bar (XP / Achievements)',
+          description: 'Floating XP bar shown at the top of the courses page.',
+          defaultValue: true,
+        }),
+        showFlashcardsDrawer: fields.checkbox({
+          label: 'Show Course Flashcards Drawer',
+          description: 'Floating flashcard study drawer button on the courses page.',
+          defaultValue: true,
+        }),
         seoTitle: fields.text({ label: 'SEO Title Override' }),
         seoDescription: fields.text({ label: 'SEO Description Override', multiline: true }),
       },
@@ -985,7 +1017,74 @@ export default config({
       },
     }),
 
+    // ─── AI Article Synthesizer & Generator ─────────────────────────────────
+    aiBlogGenerator: singleton({
+      label: 'AI Article Synthesizer',
+      path: 'src/content/settings/ai-generator',
+      schema: {
+        sourceUrls: fields.array(
+          fields.text({
+            label: 'Source Reference URL',
+            description: 'Public article, paper, or documentation URL to analyze.',
+            validation: { isRequired: true },
+          }),
+          {
+            label: 'Source Reference URLs (Web / Research)',
+            description: 'Add one or more URLs. The AI synthesizer will read, extract key insights, and draft a manual-grade original tutorial.',
+            itemLabel: (props) => props.value || 'URL',
+          }
+        ),
+        targetTopic: fields.select({
+          label: 'Primary Topic Category',
+          options: [
+            { label: 'Machine Learning', value: 'machine-learning' },
+            { label: 'Deep Learning', value: 'deep-learning' },
+            { label: 'Python Systems & Engineering', value: 'python' },
+            { label: 'Natural Language Processing & LLMs', value: 'nlp' },
+            { label: 'Computer Vision', value: 'computer-vision' },
+            { label: 'Data Science & Analytics', value: 'data-science' },
+            { label: 'Web Development', value: 'web-dev' },
+          ],
+          defaultValue: 'machine-learning',
+        }),
+        writingTone: fields.select({
+          label: 'Writing Tone & Style',
+          options: [
+            { label: 'Senior Staff Engineer (Deep Dive, Rigorous, Code-First)', value: 'engineer' },
+            { label: 'Hands-On Tutorial (Beginner-Friendly, Intuitive, Step-by-Step)', value: 'tutorial' },
+            { label: 'Architecture Breakdown (System Design, Tradeoffs, Benchmarks)', value: 'architecture' },
+          ],
+          defaultValue: 'engineer',
+        }),
+        modelPreference: fields.select({
+          label: 'AI Model (Workers AI / Gemini)',
+          description: 'Workers AI offers 10,000 free daily neurons on Cloudflare Pages. Gemini can be used as fallback.',
+          options: [
+            { label: 'Cloudflare Workers AI (Llama 3.3 70B Instruct - Free)', value: '@cf/meta/llama-3.3-70b-instruct' },
+            { label: 'Cloudflare Workers AI (DeepSeek R1 Distill Qwen 32B - Free)', value: '@cf/deepseek-ai/deepseek-r1-distill-qwen-32b' },
+            { label: 'Google Gemini 2.5 Flash (Generous Free Tier)', value: 'gemini-2.5-flash' },
+          ],
+          defaultValue: '@cf/meta/llama-3.3-70b-instruct',
+        }),
+        additionalDirectives: fields.text({
+          label: 'Custom Author Directives / Focus Points (Optional)',
+          description: 'e.g., "Emphasize memory footprints, include a PyTorch comparison, focus on edge cases"',
+          multiline: true,
+        }),
+        autoCreatePullRequest: fields.checkbox({
+          label: 'Directly Commit Draft to Git Repository',
+          description: 'When triggered via the webhook / synthesis endpoint, automatically commits the generated MDX article into src/content/blog.',
+          defaultValue: false,
+        }),
+        lastGeneratedSlug: fields.text({
+          label: 'Last Generated Article Slug / Status',
+          description: 'Filled automatically or for reference after running generator.',
+        }),
+      },
+    }),
+
   },
+
 
   collections: {
     blogs: collection({
@@ -1075,6 +1174,25 @@ export default config({
             itemLabel: props => props.fields.title.value ,
           }
         ),
+        // ── SEO Customization ──────────────────────────────────────────────
+        seoTitle: fields.text({
+          label: 'SEO Title Override (Optional)',
+          description: 'Custom browser tab & search engine title. Defaults to "[Title] | EncodeEdge" if empty.',
+        }),
+        seoDescription: fields.text({
+          label: 'SEO Meta Description Override (Optional)',
+          description: 'Custom search snippet description. Defaults to article description if empty.',
+          multiline: true,
+        }),
+        canonicalUrl: fields.text({
+          label: 'Canonical URL Override (Optional)',
+          description: 'Specify a custom canonical URL if this article was syndicated from another publication (e.g. Medium, Substack).',
+        }),
+        noIndex: fields.checkbox({
+          label: 'Exclude from Search Engines (noindex)',
+          description: 'Check this to tell search engines not to index this specific article.',
+          defaultValue: false,
+        }),
         content: fields.mdx({
           label: 'Content',
           extension: 'mdx',

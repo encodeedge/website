@@ -134,8 +134,25 @@ async function commitDraftToGitHubBranch(options: {
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const body: SynthesisRequest = await request.json().catch(() => ({}));
-    const settings = await getAiBlogGeneratorSettings();
+    // 0. Verify GitHub Authentication (Keystatic cookie or Bearer token)
+    const cookieHeader = request.headers.get('cookie') || '';
+    const cookies = Object.fromEntries(
+      cookieHeader.split(';').map((c) => {
+        const [k, ...v] = c.trim().split('=');
+        return [k, v.join('=')];
+      })
+    );
+    const userGhToken = cookies['keystatic-gh-access-token'] || request.headers.get('authorization')?.replace('Bearer ', '');
+    const isDev = process.env.NODE_ENV === 'development' || !process.env.DEPLOY_TARGET;
+
+    if (!isDev && !userGhToken && !process.env.GITHUB_TOKEN) {
+      return new Response(JSON.stringify({
+        error: 'Unauthorized: GitHub authentication required. Please log into Keystatic with GitHub to use the AI Generator.',
+      }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     const targetUrls = (body.urls && body.urls.length > 0)
       ? body.urls
@@ -367,7 +384,7 @@ Respond ONLY with the raw JSON object.`;
 
     // 6. Save article (to private GitHub branch or local disk)
     if (shouldAutoSave) {
-      const githubToken = process.env.GITHUB_TOKEN || process.env.KEYSTATIC_GITHUB_TOKEN;
+      const githubToken = process.env.GITHUB_TOKEN || process.env.KEYSTATIC_GITHUB_TOKEN || userGhToken;
       const githubRepo = process.env.GITHUB_REPO || 'encodeedge/website';
 
       if (githubToken && targetBranch) {

@@ -175,8 +175,12 @@ export default config({
   ui: {
     brand: {
       name: 'EncodeEdge',
-      mark: () =>
-        React.createElement(
+      mark: () => {
+        if (typeof window !== 'undefined' && sessionStorage.getItem('return_to_ai_generator') === 'true') {
+          sessionStorage.removeItem('return_to_ai_generator');
+          window.location.href = '/admin/ai-generator';
+        }
+        return React.createElement(
           'a',
           {
             href: '/admin/ai-generator',
@@ -199,7 +203,8 @@ export default config({
             },
           },
           '⚡ AI Drafts'
-        ),
+        );
+      },
     },
     navigation: {
       'Site Settings': ['siteSettings', 'featureFlags', 'announcementBanner'],

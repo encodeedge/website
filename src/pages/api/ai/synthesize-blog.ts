@@ -138,6 +138,7 @@ interface ExtractedArticle {
   readTime?: number;
   topics?: string[];
   tags?: string[];
+  authorName?: string;
   seoTitle?: string;
   seoDescription?: string;
   canonicalUrl?: string;
@@ -154,6 +155,7 @@ function sanitizeParsedArticle(data: any, defaultTopic: string): ExtractedArticl
     readTime: Number(data.readTime) || 12,
     topics: Array.isArray(data.topics) && data.topics.length ? data.topics.map(String) : [defaultTopic],
     tags: Array.isArray(data.tags) && data.tags.length ? data.tags.map(String) : ['machine-learning', 'guide'],
+    authorName: data.authorName ? String(data.authorName).trim() : 'Atul Jha',
     seoTitle: data.seoTitle ? String(data.seoTitle).trim() : undefined,
     seoDescription: data.seoDescription ? String(data.seoDescription).trim() : undefined,
     canonicalUrl: data.canonicalUrl ? String(data.canonicalUrl).trim() : undefined,
@@ -637,6 +639,7 @@ Respond ONLY with the raw JSON object.`;
       ...(articleData.tags || ['machine-learning', 'guide']).map((t: string) => `  - ${t}`),
       `topics:`,
       `  - ${topic}`,
+      `authorName: "${articleData.authorName || 'Atul Jha'}"`,
       `seoTitle: "${String(articleData.seoTitle || articleData.title).replace(/"/g, '\\"')}"`,
       `seoDescription: "${String(articleData.seoDescription || articleData.description).replace(/"/g, '\\"')}"`,
       articleData.canonicalUrl ? `canonicalUrl: "${articleData.canonicalUrl}"` : null,

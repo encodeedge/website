@@ -570,7 +570,11 @@ export default function AiBlogGeneratorModal({ isStandalone = false }: AiBlogGen
                       {/* Action Buttons */}
                       <div className="flex flex-wrap items-center gap-3 pt-2">
                         <a
-                          href={`/keystatic/collection/blogs/item/${result.slug}`}
+                          href={
+                            result.targetBranch
+                              ? `/keystatic/branch/${encodeURIComponent(result.targetBranch)}/collection/blogs/item/${result.slug}`
+                              : `/keystatic/collection/blogs/item/${result.slug}`
+                          }
                           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors shadow"
                           target={isStandalone ? '_self' : '_blank'}
                           rel="noreferrer"
@@ -578,6 +582,18 @@ export default function AiBlogGeneratorModal({ isStandalone = false }: AiBlogGen
                           <span>Open in Keystatic Editor</span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </a>
+
+                        {result.savedLocation && (
+                          <a
+                            href={result.savedLocation}
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs transition-colors border border-zinc-700"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5 text-indigo-400" />
+                            <span>View on GitHub Branch</span>
+                          </a>
+                        )}
 
                         <button
                           onClick={() => handleCopy(result.formattedMdx)}
@@ -587,6 +603,16 @@ export default function AiBlogGeneratorModal({ isStandalone = false }: AiBlogGen
                           <span>{copied ? 'Copied MDX' : 'Copy MDX'}</span>
                         </button>
                       </div>
+
+                      {result.targetBranch && (
+                        <div className="p-3 bg-zinc-900/80 rounded-xl border border-zinc-800 text-[11px] text-zinc-400 space-y-1">
+                          <div className="text-amber-400 font-medium">💡 Keystatic Branch Notice:</div>
+                          <div>
+                            This draft is committed to private branch <code className="text-indigo-300 font-mono font-semibold">{result.targetBranch}</code>.
+                            If Keystatic shows &quot;Not Found&quot;, switch the branch dropdown in the top-left of Keystatic from <code className="text-zinc-300 font-mono">master</code> to <code className="text-indigo-300 font-mono">{result.targetBranch}</code>.
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </>

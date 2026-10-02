@@ -1,9 +1,7 @@
 export const prerender = false;
 import type { APIRoute } from 'astro';
-import { getAiBlogGeneratorSettings } from '@/lib/settings';
 
-// Cloudflare Workers AI supports 10,000 free neurons daily on all Cloudflare accounts.
-// Endpoint: https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/{model}
+// Cloudflare Workers AI free tier default model (10,000 free daily neurons)
 const DEFAULT_CF_MODEL = '@cf/meta/llama-3.3-70b-instruct';
 
 interface SynthesisRequest {
@@ -134,15 +132,22 @@ async function commitDraftToGitHubBranch(options: {
 }
 
 export const POST: APIRoute = async (context) => {
+  console.log('[AI Synthesizer] Incoming synthesis request received');
   try {
     const { request, locals } = context;
     const cfEnv = (locals as any)?.runtime?.env || {};
 
     // 1. Parse JSON body
     const body: SynthesisRequest = await request.json().catch(() => ({}));
-    const settings = await getAiBlogGeneratorSettings();
+    console.log('[AI Synthesizer] Request body parsed:', {
+      urlsCount: body.urls?.length,
+      topic: body.topic,
+      tone: body.tone,
+      model: body.model,
+      branch: body.targetBranch,
+    });
 
-    // 2. Verify GitHub Authentication (Keystatic cookie, Bearer token, or server token)
+    // 2. Verify GitHub Authentication (Keystatic cookie or server token)
     const cookieHeader = request.headers.get('cookie') || '';
     const cookies = Object.fromEntries(
       cookieHeader.split(';').map((c) => {
@@ -154,6 +159,7 @@ export const POST: APIRoute = async (context) => {
     const isDev = process.env.NODE_ENV === 'development' || !process.env.DEPLOY_TARGET;
 
     if (!isDev && !userGhToken && !process.env.GITHUB_TOKEN && !cfEnv.GITHUB_TOKEN) {
+      console.warn('[AI Synthesizer] Authentication check failed - no keystatic-gh-access-token cookie found');
       return new Response(JSON.stringify({
         error: 'Unauthorized: GitHub authentication required. Please sign into Keystatic via GitHub to use the AI Generator.',
       }), {
@@ -162,11 +168,9 @@ export const POST: APIRoute = async (context) => {
       });
     }
 
-    const targetUrls = (body.urls && body.urls.length > 0)
-      ? body.urls
-      : settings.sourceUrls;
+    const targetUrls = (body.urls && body.urls.length > 0) ? body.urls : [];
 
-    if (!targetUrls || targetUrls.length === 0) {
+    if (targetUrls.length === 0) {
       return new Response(JSON.stringify({
         error: 'No source URLs provided. Please enter at least one URL to analyze.',
       }), {
@@ -175,30 +179,34 @@ export const POST: APIRoute = async (context) => {
       });
     }
 
-    const topic = body.topic || settings.targetTopic || 'machine-learning';
-    const tone = body.tone || settings.writingTone || 'engineer';
-    const chosenModel = body.model || settings.modelPreference || DEFAULT_CF_MODEL;
-    const directives = body.customInstructions || settings.additionalDirectives || '';
-    const targetBranch = body.targetBranch || settings.targetBranch || 'drafts/ai-articles';
+    const topic = body.topic || 'machine-learning';
+    const tone = body.tone || 'engineer';
+    const chosenModel = body.model || DEFAULT_CF_MODEL;
+    const directives = body.customInstructions || '';
+    const targetBranch = body.targetBranch || 'drafts/ai-articles';
     const shouldAutoSave = body.autoSave !== undefined ? body.autoSave : true;
 
-    // 3. Fetch content from URLs with realistic browser headers
+    // 3. Fetch content from URLs with universal AbortController
     const fetchedSources: { url: string; excerpt: string; error?: string }[] = [];
 
     await Promise.all(
       targetUrls.map(async (rawUrl) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
         try {
           const validUrl = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`;
+          console.log(`[AI Synthesizer] Fetching source: ${validUrl}`);
           const res = await fetch(validUrl, {
             headers: {
               'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
               'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8,*/*;q=0.5',
               'Accept-Language': 'en-US,en;q=0.9',
             },
-            signal: AbortSignal.timeout(12000),
+            signal: controller.signal,
           });
 
           if (!res.ok) {
+            console.warn(`[AI Synthesizer] Source ${validUrl} returned HTTP ${res.status}`);
             fetchedSources.push({ url: validUrl, excerpt: '', error: `HTTP ${res.status}` });
             return;
           }
@@ -207,7 +215,10 @@ export const POST: APIRoute = async (context) => {
           const cleanText = extractReadableContent(html);
           fetchedSources.push({ url: validUrl, excerpt: cleanText });
         } catch (err: any) {
+          console.warn(`[AI Synthesizer] Source fetch failed: ${err.message}`);
           fetchedSources.push({ url: rawUrl, excerpt: '', error: err.message || 'Fetch failed' });
+        } finally {
+          clearTimeout(timeoutId);
         }
       })
     );
@@ -215,8 +226,9 @@ export const POST: APIRoute = async (context) => {
     let validExcerpts = fetchedSources.filter((s) => s.excerpt && !s.error);
 
     // Fallback: If target website blocks automated crawlers (e.g. Cloudflare Turnstile 403),
-    // derive topic cues from URL slugs so generation continues seamlessly without failing!
+    // derive topic cues from URL slugs so generation continues seamlessly without failing
     if (validExcerpts.length === 0) {
+      console.log('[AI Synthesizer] All URLs guarded by anti-bot; activating topic cues fallback');
       const fallbackTopics = targetUrls.map((u) => {
         try {
           const parsed = new URL(u.startsWith('http') ? u : `https://${u}`);
@@ -229,7 +241,7 @@ export const POST: APIRoute = async (context) => {
 
       validExcerpts = targetUrls.map((u, idx) => ({
         url: u,
-        excerpt: `[Source URL: ${u} - Topic: "${fallbackTopics[idx] || topic}"] Note: Direct page scrape was guarded by anti-bot headers. Use this topic specification along with your deep engineering knowledge to craft an exhaustive, original, practical guide.`
+        excerpt: `[Source Reference: ${u} - Topic: "${fallbackTopics[idx] || topic}"] Anti-bot protection guarded direct HTML. Focus directly on this exact topic and core production engineering best practices.`
       }));
     }
 
@@ -291,9 +303,18 @@ Respond ONLY with the raw JSON object.`;
     const cfApiToken = cfEnv.CLOUDFLARE_API_TOKEN || process.env.CLOUDFLARE_API_TOKEN;
     const geminiApiKey = cfEnv.GEMINI_API_KEY || process.env.GEMINI_API_KEY || cfEnv.PUBLIC_GEMINI_API_KEY || process.env.PUBLIC_GEMINI_API_KEY;
 
+    console.log('[AI Synthesizer] AI credentials available:', {
+      hasCfBinding: !!(cfEnv.AI && typeof cfEnv.AI.run === 'function'),
+      hasCfAccountId: !!cfAccountId,
+      hasCfToken: !!cfApiToken,
+      hasGeminiKey: !!geminiApiKey,
+      model: chosenModel
+    });
+
     // A. Check for Cloudflare Pages native Workers AI binding (env.AI)
     if (cfEnv.AI && typeof cfEnv.AI.run === 'function') {
       try {
+        console.log('[AI Synthesizer] Dispatching via native Cloudflare env.AI binding');
         const cfResult = await cfEnv.AI.run(chosenModel, {
           messages: [
             { role: 'system', content: systemPrompt },
@@ -303,12 +324,13 @@ Respond ONLY with the raw JSON object.`;
         });
         aiResponseText = cfResult?.response || cfResult?.text || '';
       } catch (bindingErr: any) {
-        // Fall back to REST API if binding fails
+        console.warn(`[AI Synthesizer] env.AI binding error: ${bindingErr.message}`);
       }
     }
 
     // B. Check for Cloudflare Workers AI REST API
     if (!aiResponseText && chosenModel.startsWith('@cf/') && cfAccountId && cfApiToken) {
+      console.log('[AI Synthesizer] Dispatching via Cloudflare REST API');
       const cfUrl = `https://api.cloudflare.com/client/v4/accounts/${cfAccountId}/ai/run/${chosenModel}`;
       const cfRes = await fetch(cfUrl, {
         method: 'POST',
@@ -328,6 +350,7 @@ Respond ONLY with the raw JSON object.`;
 
       if (!cfRes.ok) {
         const errorText = await cfRes.text();
+        console.error(`[AI Synthesizer] Workers AI HTTP ${cfRes.status}:`, errorText);
         return new Response(JSON.stringify({
           error: `Cloudflare Workers AI returned HTTP ${cfRes.status}: ${errorText}`,
         }), {
@@ -342,6 +365,7 @@ Respond ONLY with the raw JSON object.`;
 
     // C. Check for Google Gemini API fallback
     if (!aiResponseText && geminiApiKey) {
+      console.log('[AI Synthesizer] Dispatching via Google Gemini API');
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`;
       const geminiRes = await fetch(geminiUrl, {
         method: 'POST',
@@ -357,6 +381,7 @@ Respond ONLY with the raw JSON object.`;
 
       if (!geminiRes.ok) {
         const errorText = await geminiRes.text();
+        console.error(`[AI Synthesizer] Gemini HTTP ${geminiRes.status}:`, errorText);
         return new Response(JSON.stringify({
           error: `Gemini API returned HTTP ${geminiRes.status}: ${errorText}`,
         }), {
@@ -369,8 +394,9 @@ Respond ONLY with the raw JSON object.`;
       aiResponseText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
     }
 
-    // D. If no AI response could be generated
+    // D. If no AI credentials found
     if (!aiResponseText) {
+      console.warn('[AI Synthesizer] No AI credentials configured in Cloudflare Pages');
       return new Response(JSON.stringify({
         error: 'No AI credentials found. To use Cloudflare Workers AI for free, set CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN in your Cloudflare Pages dashboard (Settings -> Environment Variables). Alternatively, set GEMINI_API_KEY.',
         hint: 'In Cloudflare Pages -> Settings -> Environment Variables, add CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN.',
@@ -381,6 +407,7 @@ Respond ONLY with the raw JSON object.`;
     }
 
     // 6. Parse JSON Response
+    console.log('[AI Synthesizer] Parsing AI model JSON response');
     let articleData: any = null;
     try {
       const cleanedJsonStr = aiResponseText
@@ -390,6 +417,7 @@ Respond ONLY with the raw JSON object.`;
         .trim();
       articleData = JSON.parse(cleanedJsonStr);
     } catch {
+      console.error('[AI Synthesizer] AI response JSON parsing failed. Raw response:', aiResponseText.slice(0, 300));
       return new Response(JSON.stringify({
         error: 'AI generated invalid JSON structure.',
         raw: aiResponseText,
@@ -436,16 +464,16 @@ Respond ONLY with the raw JSON object.`;
       articleData.mdxContent || '',
     ].filter((line) => line !== null).join('\n');
 
-    let saveStatus = 'unsaved';
+    let saveStatus = 'generated draft in memory';
     let savedLocation = '';
 
-    // 8. Save article (to private GitHub branch or local disk)
+    // 8. Save article (to private GitHub branch or in-memory)
     if (shouldAutoSave) {
       const githubToken = process.env.GITHUB_TOKEN || cfEnv.GITHUB_TOKEN || process.env.KEYSTATIC_GITHUB_TOKEN || cfEnv.KEYSTATIC_GITHUB_TOKEN || userGhToken;
       const githubRepo = process.env.GITHUB_REPO || cfEnv.GITHUB_REPO || 'encodeedge/website';
 
       if (githubToken && targetBranch) {
-        // Commit directly to a private/draft branch in GitHub without touching main
+        console.log(`[AI Synthesizer] Committing draft to GitHub branch "${targetBranch}"`);
         const commitRes = await commitDraftToGitHubBranch({
           repo: githubRepo,
           token: githubToken,
@@ -458,33 +486,15 @@ Respond ONLY with the raw JSON object.`;
         if (commitRes.success) {
           saveStatus = `committed to private branch "${targetBranch}"`;
           savedLocation = `https://github.com/${githubRepo}/blob/${targetBranch}/src/content/blog/${slug}.mdx`;
+          console.log(`[AI Synthesizer] Successfully committed to ${savedLocation}`);
         } else {
           saveStatus = `github commit failed (${commitRes.error}), saved in memory`;
-        }
-      } else {
-        // Local environment or fallback: Write file to disk with draft: true
-        try {
-          if (typeof process !== 'undefined' && typeof process.cwd === 'function') {
-            const path = await import('node:path');
-            const fs = await import('node:fs');
-            const blogDir = path.join(process.cwd(), 'src/content/blog');
-            if (fs.existsSync(blogDir)) {
-              const targetFilePath = path.join(blogDir, `${slug}.mdx`);
-              fs.writeFileSync(targetFilePath, yamlFrontmatter, 'utf-8');
-              saveStatus = 'saved to local disk as draft';
-              savedLocation = `src/content/blog/${slug}.mdx`;
-            } else {
-              saveStatus = 'generated draft in memory';
-            }
-          } else {
-            saveStatus = 'generated draft in memory (Cloudflare Pages)';
-          }
-        } catch (fsErr: any) {
-          saveStatus = `disk save skipped (${fsErr.message})`;
+          console.warn(`[AI Synthesizer] GitHub commit failed: ${commitRes.error}`);
         }
       }
     }
 
+    console.log('[AI Synthesizer] Completed successfully! Returning 200 with slug:', slug);
     return new Response(JSON.stringify({
       success: true,
       slug,
@@ -501,6 +511,7 @@ Respond ONLY with the raw JSON object.`;
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error: any) {
+    console.error('[AI Synthesizer Fatal Handler Exception]:', error);
     return new Response(JSON.stringify({
       error: error.message || 'Internal server error during article synthesis',
     }), {

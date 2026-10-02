@@ -1,29 +1,3 @@
-newsSources:
-  - name: TechCrunch AI
-    url: https://techcrunch.com/category/artificial-intelligence/feed/
-    category: Frontier AI
-    badgeColor: rose
-    fetchLimit: 3
-    enabled: true
-  - name: Google AI News
-    url: https://blog.google/technology/ai/rss/
-    category: Research
-    badgeColor: blue
-    fetchLimit: 3
-    enabled: true
-  - name: Hugging Face Blog
-    url: https://huggingface.co/blog/feed.xml
-    category: Open Source
-    badgeColor: amber
-    fetchLimit: 3
-    enabled: true
-podcastSources:
-  - title: Practical AI
-    feedUrl: https://changelog.com/practicalai/feed
-    siteUrl: https://changelog.com/practicalai
-    badgeText: Practical AI
-    isSpotlight: true
-    enabled: true
 competitionSources:
   - name: Kaggle
     platformId: kaggle
@@ -68,10 +42,6 @@ competitionSources:
     fetchLimit: 4
     enabled: true
 displaySettings:
-  homepageNewsLimit: 10
-  homepagePodcastLimit: 3
-  enableLiveClientSync: true
-  autoSyncOnPageLoad: true
   enableCompetitionsSync: true
   autoSyncCompetitions: true
   hideCompletedCompetitions: true

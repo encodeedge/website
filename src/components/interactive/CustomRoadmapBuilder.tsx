@@ -85,6 +85,7 @@ export interface RoadmapTopic {
   width?: number; // For groups or notes
   height?: number; // For groups or notes
   zIndex?: number; // Layer ordering (higher numbers are in front)
+  containerId?: string; // ID of the parent container group if assigned
   x?: number;
   y?: number;
 }
@@ -420,6 +421,9 @@ export const CustomRoadmapBuilder: React.FC = () => {
   const [currentWireStyle, setCurrentWireStyle] = useState<WireStyle>('solid');
   const [showDesignToolbox, setShowDesignToolbox] = useState<boolean>(false);
 
+  // Viewing Topic Detail Modal (Read-Only Mode overlay)
+  const [viewingTopic, setViewingTopic] = useState<{ phaseId: string; topicId: string } | null>(null);
+
   // Load from localStorage on client
   useEffect(() => {
     try {
@@ -512,6 +516,15 @@ export const CustomRoadmapBuilder: React.FC = () => {
   const activeRoadmap = useMemo(() => {
     return roadmaps.find(r => r.id === activeRoadmapId) || roadmaps[0] || defaultRoadmap;
   }, [roadmaps, activeRoadmapId, defaultRoadmap]);
+
+  // Dynamic activeViewingTopic to automatically stay fresh on status or detail updates
+  const activeViewingTopic = useMemo(() => {
+    if (!viewingTopic || !activeRoadmap) return null;
+    const phase = activeRoadmap.phases.find(p => p.id === viewingTopic.phaseId);
+    const topic = phase?.topics.find(t => t.id === viewingTopic.topicId);
+    if (!phase || !topic) return null;
+    return { phase, topic };
+  }, [viewingTopic, activeRoadmap]);
 
   // Stats computation
   const stats = useMemo(() => {
@@ -996,6 +1009,73 @@ export const CustomRoadmapBuilder: React.FC = () => {
     return { x, y };
   }, []);
 
+  // Helper to determine whether a topic belongs inside a container (explicitly or spatially)
+  const getContainerIdForTopic = useCallback((topic: RoadmapTopic, phase: RoadmapPhase, pIdx: number, tIdx: number): string | null => {
+    if (topic.kind === 'group') return null;
+    if (topic.containerId) return topic.containerId;
+
+    const tCoords = getTopicCoordinates(topic, pIdx, tIdx);
+    const tw = topic.width || (topic.kind === 'note' ? 190 : 180);
+    const th = topic.height || (topic.kind === 'note' ? 160 : 60);
+    const centerX = tCoords.x + tw / 2;
+    const centerY = tCoords.y + th / 2;
+
+    let matchedId: string | null = null;
+    let smallestArea = Infinity;
+
+    phase.topics.forEach((c, cIdx) => {
+      if (c.kind !== 'group' || c.id === topic.id) return;
+      const cCoords = getTopicCoordinates(c, pIdx, cIdx);
+      const cw = c.width || 380;
+      const ch = c.height || 240;
+
+      if (
+        centerX >= cCoords.x &&
+        centerX <= cCoords.x + cw &&
+        centerY >= cCoords.y &&
+        centerY <= cCoords.y + ch
+      ) {
+        const area = cw * ch;
+        if (area < smallestArea) {
+          smallestArea = area;
+          matchedId = c.id;
+        }
+      }
+    });
+
+    return matchedId;
+  }, [getTopicCoordinates]);
+
+  // Handler to add a new sub-topic directly inside a container group
+  const handleAddTopicToContainer = useCallback((phaseId: string, container: RoadmapTopic) => {
+    const pIdx = activeRoadmap.phases.findIndex(p => p.id === phaseId);
+    const phase = activeRoadmap.phases[pIdx];
+    const cIdx = phase?.topics.findIndex(t => t.id === container.id) || 0;
+    const cCoords = getTopicCoordinates(container, pIdx, cIdx);
+
+    const existingCount = phase?.topics.filter((t, idx) => getContainerIdForTopic(t, phase, pIdx, idx) === container.id).length || 0;
+
+    const newTopic: RoadmapTopic = {
+      id: `node-${Date.now()}`,
+      kind: 'topic',
+      name: 'New Sub-Topic',
+      description: '',
+      difficulty: 'beginner',
+      status: 'not-started',
+      duration: '1 week',
+      containerId: container.id,
+      x: cCoords.x + 30,
+      y: cCoords.y + 60 + (existingCount * 70),
+      resources: []
+    };
+
+    setEditingTopic({
+      phaseId,
+      isNew: true,
+      topic: newTopic
+    });
+  }, [activeRoadmap, getTopicCoordinates, getContainerIdForTopic]);
+
   // Flat list of topics for canvas lookups
   const canvasTopicsList = useMemo(() => {
     const list: { phase: RoadmapPhase; topic: RoadmapTopic; pIdx: number; tIdx: number; x: number; y: number }[] = [];
@@ -1295,6 +1375,30 @@ export const CustomRoadmapBuilder: React.FC = () => {
   };
 
   const handleCanvasMouseUp = () => {
+    if (draggedNode) {
+      const phase = activeRoadmap.phases.find(p => p.id === draggedNode.phaseId);
+      const draggedTopic = phase?.topics.find(t => t.id === draggedNode.topicId);
+      if (phase && draggedTopic && draggedTopic.kind !== 'group') {
+        const pIdx = activeRoadmap.phases.findIndex(p => p.id === phase.id);
+        const tIdx = phase.topics.findIndex(t => t.id === draggedTopic.id);
+        const matchedContainerId = getContainerIdForTopic(draggedTopic, phase, pIdx, tIdx);
+        if (draggedTopic.containerId !== (matchedContainerId || undefined)) {
+          updateActiveRoadmap(cur => ({
+            ...cur,
+            phases: cur.phases.map(p => {
+              if (p.id !== phase.id) return p;
+              return {
+                ...p,
+                topics: p.topics.map(t => {
+                  if (t.id !== draggedTopic.id) return t;
+                  return { ...t, containerId: matchedContainerId || undefined };
+                })
+              };
+            })
+          }));
+        }
+      }
+    }
     setDraggedNode(null);
     setIsPanning(false);
     setResizingNode(null);
@@ -1333,7 +1437,8 @@ export const CustomRoadmapBuilder: React.FC = () => {
     activeRoadmap,
     renderedConnections,
     editingTopic,
-    viewMode
+    viewMode,
+    viewingTopic
   });
   stateRef.current = {
     selectedTopicId,
@@ -1342,7 +1447,8 @@ export const CustomRoadmapBuilder: React.FC = () => {
     activeRoadmap,
     renderedConnections,
     editingTopic,
-    viewMode
+    viewMode,
+    viewingTopic
   };
 
   useEffect(() => {
@@ -1363,11 +1469,16 @@ export const CustomRoadmapBuilder: React.FC = () => {
         connectingSourceId: connSrcId,
         activeRoadmap: curRoadmap,
         editingTopic: curEditTopic,
-        viewMode: curMode
+        viewMode: curMode,
+        viewingTopic: curViewTopic
       } = stateRef.current;
 
       // 1. ESCAPE: deselect or cancel
       if (e.key === 'Escape') {
+        if (curViewTopic) {
+          setViewingTopic(null);
+          return;
+        }
         if (connSrcId) {
           setConnectingSourceId(null);
           setCopyFeedback('Wire connection cancelled');
@@ -2080,94 +2191,252 @@ export const CustomRoadmapBuilder: React.FC = () => {
                       <div className="block md:hidden absolute left-5 top-0 bottom-0 w-0.5 border-l-2 border-dashed border-border pointer-events-none"></div>
 
                       <div className="space-y-6 md:space-y-8">
-                        {phase.topics.map((topic, tIdx) => {
-                          const isEven = tIdx % 2 === 0;
-                          const isCompleted = topic.status === 'completed';
-                          const isInProgress = topic.status === 'in-progress';
-                          const kind = topic.kind || 'topic';
+                        {(() => {
+                          const renderedSimpleItems: {
+                            item: RoadmapTopic;
+                            isContainer: boolean;
+                            memberTopics?: RoadmapTopic[];
+                          }[] = [];
 
-                          return (
-                            <div
-                              key={topic.id}
-                              className={`topic-node-wrapper relative flex ${
-                                isEven 
-                                  ? 'md:w-[calc(50%-2.25rem)] md:mr-auto md:ml-0 md:justify-end ml-12' 
-                                  : 'md:w-[calc(50%-2.25rem)] md:ml-auto md:mr-0 md:justify-start ml-12'
-                              }`}
-                            >
-                              {/* Desktop Waypoints */}
-                              {isEven ? (
-                                <>
-                                  <div className="hidden md:block absolute -right-9 top-1/2 -translate-y-1/2 w-9 h-0.5 border-t-2 border-dashed border-border pointer-events-none"></div>
-                                  <div className="hidden md:flex absolute -right-11 top-1/2 -translate-y-1/2 size-4 rounded-full border-2 border-border bg-background items-center justify-center pointer-events-none z-10">
-                                    <span className={`size-1.5 rounded-full ${isCompleted ? 'bg-emerald-500' : isInProgress ? 'bg-amber-500' : 'bg-muted-foreground'}`}></span>
+                          phase.topics.forEach((topic, tIdx) => {
+                            if (topic.kind === 'group') {
+                              const memberTopics = phase.topics.filter((t, idx) => getContainerIdForTopic(t, phase, pIdx, idx) === topic.id);
+                              renderedSimpleItems.push({ item: topic, isContainer: true, memberTopics });
+                            } else {
+                              const parentContainerId = getContainerIdForTopic(topic, phase, pIdx, tIdx);
+                              if (!parentContainerId) {
+                                renderedSimpleItems.push({ item: topic, isContainer: false });
+                              }
+                            }
+                          });
+
+                          return renderedSimpleItems.map((entry, rIdx) => {
+                            if (entry.isContainer) {
+                              const container = entry.item;
+                              const memberTopics = entry.memberTopics || [];
+                              const completedCount = memberTopics.filter(t => t.status === 'completed').length;
+
+                              return (
+                                <div key={container.id} className="relative z-10 max-w-2xl mx-auto my-4 w-full">
+                                  <div className="rounded-3xl border-2 border-dashed border-border bg-card/90 dark:bg-card/50 backdrop-blur-xs p-5 shadow-xs hover:border-[#E5E795]/60 transition-all space-y-4">
+                                    {/* Container Header */}
+                                    <div className="flex items-center justify-between border-b border-border/80 pb-3 flex-wrap gap-2">
+                                      <div className="flex items-center gap-2.5 min-w-0">
+                                        <div className="size-8 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-[#E5E795] shrink-0">
+                                          <Box className="w-4 h-4" />
+                                        </div>
+                                        <div className="min-w-0">
+                                          <div className="flex items-center gap-2 flex-wrap">
+                                            <h4 className="font-serif font-bold text-base text-foreground truncate">{container.name}</h4>
+                                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-secondary text-muted-foreground uppercase font-bold shrink-0">
+                                              Container Group
+                                            </span>
+                                          </div>
+                                          {container.description && (
+                                            <p className="text-xs text-muted-foreground font-body mt-0.5">{container.description}</p>
+                                          )}
+                                        </div>
+                                      </div>
+
+                                      <div className="flex items-center gap-2 shrink-0">
+                                        <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-secondary text-secondary-foreground font-medium">
+                                          {completedCount}/{memberTopics.length} completed
+                                        </span>
+                                        <button
+                                          type="button"
+                                          onClick={() => setEditingTopic({ phaseId: phase.id, topic: container, isNew: false })}
+                                          className="size-7 rounded-lg bg-secondary hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center cursor-pointer transition-colors border border-border"
+                                          title="Edit Container Details"
+                                        >
+                                          <Edit3 className="w-3.5 h-3.5" />
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => handleDeleteTopic(phase.id, container.id)}
+                                          className="size-7 rounded-lg bg-secondary hover:bg-rose-500/20 text-muted-foreground hover:text-rose-500 flex items-center justify-center cursor-pointer transition-colors border border-border"
+                                          title="Delete Container"
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                      </div>
+                                    </div>
+
+                                    {/* Topics Inside Container */}
+                                    {memberTopics.length === 0 ? (
+                                      <div className="p-4 rounded-2xl border border-dashed border-border/70 text-center text-xs text-muted-foreground bg-secondary/20">
+                                        No topics inside this container yet. Click "+ Add Topic to Container" below or drag topics inside in Design Mode.
+                                      </div>
+                                    ) : (
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                        {memberTopics.map(mTopic => {
+                                          const isCompleted = mTopic.status === 'completed';
+                                          const isInProgress = mTopic.status === 'in-progress';
+                                          const mKind = mTopic.kind || 'topic';
+
+                                          return (
+                                            <div
+                                              key={mTopic.id}
+                                              onClick={() => setEditingTopic({ phaseId: phase.id, topic: mTopic, isNew: false })}
+                                              className={`group p-3 rounded-2xl border-2 transition-all cursor-pointer shadow-2xs hover:shadow-md hover:scale-[1.01] active:scale-95 flex items-center justify-between gap-2.5 ${
+                                                mKind === 'project'
+                                                  ? 'bg-indigo-50/90 dark:bg-indigo-950/40 border-indigo-400 dark:border-indigo-500/70 text-indigo-950 dark:text-indigo-200'
+                                                  : mKind === 'exam'
+                                                  ? 'bg-amber-50/90 dark:bg-amber-950/40 border-amber-400 dark:border-amber-500/70 text-amber-950 dark:text-amber-200'
+                                                  : mKind === 'decision'
+                                                  ? 'bg-purple-50/90 dark:bg-purple-950/40 border-purple-400 dark:border-purple-500/70 text-purple-950 dark:text-purple-200'
+                                                  : mKind === 'note'
+                                                  ? 'bg-[#E5E795]/20 border-[#E5E795]/60 text-zinc-900 dark:text-[#E5E795]'
+                                                  : isCompleted
+                                                  ? 'bg-emerald-50/90 dark:bg-emerald-950/45 border-emerald-400 dark:border-emerald-500/80 text-emerald-950 dark:text-emerald-100 font-semibold'
+                                                  : isInProgress
+                                                  ? 'bg-amber-50/90 dark:bg-amber-950/45 border-amber-400 dark:border-amber-500/80 text-amber-950 dark:text-amber-100 font-semibold'
+                                                  : 'bg-card hover:bg-secondary/70 border-border text-foreground font-medium'
+                                              }`}
+                                            >
+                                              <div className="flex items-center gap-2 min-w-0">
+                                                <button
+                                                  type="button"
+                                                  onClick={(e) => handleToggleTopicStatus(phase.id, mTopic.id, e)}
+                                                  title={`Status: ${isCompleted ? 'Completed' : isInProgress ? 'In Progress' : 'To Learn'} (click to cycle)`}
+                                                  className="shrink-0 p-0.5 rounded-full hover:scale-125 transition-transform cursor-pointer"
+                                                >
+                                                  {isCompleted ? (
+                                                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                                  ) : isInProgress ? (
+                                                    <span className="size-3 rounded-full bg-amber-500 block animate-pulse" />
+                                                  ) : (
+                                                    <Circle className="w-3.5 h-3.5 text-muted-foreground/60 hover:text-foreground" />
+                                                  )}
+                                                </button>
+                                                <div className="min-w-0">
+                                                  <span className="truncate text-xs font-semibold block">{mTopic.name}</span>
+                                                  {mTopic.duration && (
+                                                    <span className="text-[10px] text-muted-foreground font-mono flex items-center gap-0.5">
+                                                      <Clock className="w-2.5 h-2.5" />
+                                                      {mTopic.duration}
+                                                    </span>
+                                                  )}
+                                                </div>
+                                              </div>
+
+                                              <div className="flex items-center gap-1 shrink-0">
+                                                <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-secondary/80 text-muted-foreground">
+                                                  {mKind}
+                                                </span>
+                                                <Edit3 className="w-3 h-3 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity ml-1" />
+                                              </div>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    )}
+
+                                    {/* Quick add sub-topic inside container */}
+                                    <div className="flex justify-end pt-1">
+                                      <button
+                                        type="button"
+                                        onClick={() => handleAddTopicToContainer(phase.id, container)}
+                                        className="text-xs font-semibold px-3 py-1.5 rounded-xl border border-dashed border-border hover:border-[#E5E795] bg-secondary/40 hover:bg-secondary text-foreground transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                                      >
+                                        <Plus className="w-3.5 h-3.5 text-indigo-600 dark:text-[#E5E795]" />
+                                        <span>+ Add Topic to Container</span>
+                                      </button>
+                                    </div>
                                   </div>
-                                </>
-                              ) : (
-                                <>
-                                  <div className="hidden md:block absolute -left-9 top-1/2 -translate-y-1/2 w-9 h-0.5 border-t-2 border-dashed border-border pointer-events-none"></div>
-                                  <div className="hidden md:flex absolute -left-11 top-1/2 -translate-y-1/2 size-4 rounded-full border-2 border-border bg-background items-center justify-center pointer-events-none z-10">
-                                    <span className={`size-1.5 rounded-full ${isCompleted ? 'bg-emerald-500' : isInProgress ? 'bg-amber-500' : 'bg-muted-foreground'}`}></span>
-                                  </div>
-                                </>
-                              )}
+                                </div>
+                              );
+                            }
 
-                              {/* Mobile Waypoint */}
-                              <div className="block md:hidden absolute -left-7 top-1/2 -translate-y-1/2 w-7 h-0.5 border-t-2 border-dashed border-border pointer-events-none"></div>
-                              <div className="flex md:hidden absolute -left-9 top-1/2 -translate-y-1/2 size-4 rounded-full border-2 border-border bg-background items-center justify-center pointer-events-none z-10">
-                                <span className={`size-1.5 rounded-full ${isCompleted ? 'bg-emerald-500' : isInProgress ? 'bg-amber-500' : 'bg-muted-foreground'}`}></span>
-                              </div>
+                            // Standalone topic zigzag row
+                            const topic = entry.item;
+                            const isEven = rIdx % 2 === 0;
+                            const isCompleted = topic.status === 'completed';
+                            const isInProgress = topic.status === 'in-progress';
+                            const kind = topic.kind || 'topic';
 
-                              {/* Topic Card Render by Kind */}
+                            return (
                               <div
-                                onClick={() => setEditingTopic({ phaseId: phase.id, topic, isNew: false })}
-                                className={`topic-node group relative rounded-xl border-2 px-4 py-2.5 text-center font-medium text-xs sm:text-sm transition-all duration-150 cursor-pointer shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 select-none w-full sm:w-auto sm:min-w-[200px] sm:max-w-sm ${
-                                  kind === 'project'
-                                    ? 'bg-indigo-50/90 dark:bg-indigo-950/40 border-indigo-400 dark:border-indigo-500/70 text-indigo-950 dark:text-indigo-200'
-                                    : kind === 'exam'
-                                    ? 'bg-amber-50/90 dark:bg-amber-950/40 border-amber-400 dark:border-amber-500/70 text-amber-950 dark:text-amber-200'
-                                    : kind === 'decision'
-                                    ? 'bg-purple-50/90 dark:bg-purple-950/40 border-purple-400 dark:border-purple-500/70 text-purple-950 dark:text-purple-200 rounded-2xl'
-                                    : kind === 'note'
-                                    ? 'bg-[#E5E795]/20 border-[#E5E795]/60 text-zinc-900 dark:text-[#E5E795]'
-                                    : isCompleted
-                                    ? 'bg-emerald-50/90 dark:bg-emerald-950/45 border-emerald-400 dark:border-emerald-500/80 text-emerald-950 dark:text-emerald-100 font-semibold'
-                                    : isInProgress
-                                    ? 'bg-amber-50/90 dark:bg-amber-950/45 border-amber-400 dark:border-amber-500/80 text-amber-950 dark:text-amber-100 font-semibold'
-                                    : 'bg-card hover:bg-secondary/70 border-border text-foreground font-medium'
+                                key={topic.id}
+                                className={`topic-node-wrapper relative flex ${
+                                  isEven 
+                                    ? 'md:w-[calc(50%-2.25rem)] md:mr-auto md:ml-0 md:justify-end ml-12' 
+                                    : 'md:w-[calc(50%-2.25rem)] md:ml-auto md:mr-0 md:justify-start ml-12'
                                 }`}
                               >
-                                {kind === 'project' ? (
-                                  <Code className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
-                                ) : kind === 'exam' ? (
-                                  <Trophy className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
-                                ) : kind === 'decision' ? (
-                                  <Split className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
-                                ) : kind === 'note' ? (
-                                  <StickyNote className="w-3.5 h-3.5 text-indigo-600 dark:text-[#E5E795] shrink-0" />
+                                {/* Desktop Waypoints */}
+                                {isEven ? (
+                                  <>
+                                    <div className="hidden md:block absolute -right-9 top-1/2 -translate-y-1/2 w-9 h-0.5 border-t-2 border-dashed border-border pointer-events-none"></div>
+                                    <div className="hidden md:flex absolute -right-11 top-1/2 -translate-y-1/2 size-4 rounded-full border-2 border-border bg-background items-center justify-center pointer-events-none z-10">
+                                      <span className={`size-1.5 rounded-full ${isCompleted ? 'bg-emerald-500' : isInProgress ? 'bg-amber-500' : 'bg-muted-foreground'}`}></span>
+                                    </div>
+                                  </>
                                 ) : (
-                                  <button
-                                    type="button"
-                                    onClick={(e) => handleToggleTopicStatus(phase.id, topic.id, e)}
-                                    title={`Status: ${isCompleted ? 'Completed' : isInProgress ? 'In Progress' : 'To Learn'} (click to cycle)`}
-                                    className="shrink-0 p-0.5 rounded-full hover:scale-125 transition-transform cursor-pointer"
-                                  >
-                                    {isCompleted ? (
-                                      <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                                    ) : isInProgress ? (
-                                      <span className="size-3 rounded-full bg-amber-500 block animate-pulse" />
-                                    ) : (
-                                      <Circle className="w-3.5 h-3.5 text-muted-foreground/60 hover:text-foreground" />
-                                    )}
-                                  </button>
+                                  <>
+                                    <div className="hidden md:block absolute -left-9 top-1/2 -translate-y-1/2 w-9 h-0.5 border-t-2 border-dashed border-border pointer-events-none"></div>
+                                    <div className="hidden md:flex absolute -left-11 top-1/2 -translate-y-1/2 size-4 rounded-full border-2 border-border bg-background items-center justify-center pointer-events-none z-10">
+                                      <span className={`size-1.5 rounded-full ${isCompleted ? 'bg-emerald-500' : isInProgress ? 'bg-amber-500' : 'bg-muted-foreground'}`}></span>
+                                    </div>
+                                  </>
                                 )}
 
-                                <span className="truncate max-w-[200px]">{topic.name}</span>
-                                <Edit3 className="w-3 h-3 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-0.5" />
+                                {/* Mobile Waypoint */}
+                                <div className="block md:hidden absolute -left-7 top-1/2 -translate-y-1/2 w-7 h-0.5 border-t-2 border-dashed border-border pointer-events-none"></div>
+                                <div className="flex md:hidden absolute -left-9 top-1/2 -translate-y-1/2 size-4 rounded-full border-2 border-border bg-background items-center justify-center pointer-events-none z-10">
+                                  <span className={`size-1.5 rounded-full ${isCompleted ? 'bg-emerald-500' : isInProgress ? 'bg-amber-500' : 'bg-muted-foreground'}`}></span>
+                                </div>
+
+                                {/* Topic Card Render by Kind */}
+                                <div
+                                  onClick={() => setEditingTopic({ phaseId: phase.id, topic, isNew: false })}
+                                  className={`topic-node group relative rounded-xl border-2 px-4 py-2.5 text-center font-medium text-xs sm:text-sm transition-all duration-150 cursor-pointer shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 select-none w-full sm:w-auto sm:min-w-[200px] sm:max-w-sm ${
+                                    kind === 'project'
+                                      ? 'bg-indigo-50/90 dark:bg-indigo-950/40 border-indigo-400 dark:border-indigo-500/70 text-indigo-950 dark:text-indigo-200'
+                                      : kind === 'exam'
+                                      ? 'bg-amber-50/90 dark:bg-amber-950/40 border-amber-400 dark:border-amber-500/70 text-amber-950 dark:text-amber-200'
+                                      : kind === 'decision'
+                                      ? 'bg-purple-50/90 dark:bg-purple-950/40 border-purple-400 dark:border-purple-500/70 text-purple-950 dark:text-purple-200 rounded-2xl'
+                                      : kind === 'note'
+                                      ? 'bg-[#E5E795]/20 border-[#E5E795]/60 text-zinc-900 dark:text-[#E5E795]'
+                                      : isCompleted
+                                      ? 'bg-emerald-50/90 dark:bg-emerald-950/45 border-emerald-400 dark:border-emerald-500/80 text-emerald-950 dark:text-emerald-100 font-semibold'
+                                      : isInProgress
+                                      ? 'bg-amber-50/90 dark:bg-amber-950/45 border-amber-400 dark:border-amber-500/80 text-amber-950 dark:text-amber-100 font-semibold'
+                                      : 'bg-card hover:bg-secondary/70 border-border text-foreground font-medium'
+                                  }`}
+                                >
+                                  {kind === 'project' ? (
+                                    <Code className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                                  ) : kind === 'exam' ? (
+                                    <Trophy className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                                  ) : kind === 'decision' ? (
+                                    <Split className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
+                                  ) : kind === 'note' ? (
+                                    <StickyNote className="w-3.5 h-3.5 text-indigo-600 dark:text-[#E5E795] shrink-0" />
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => handleToggleTopicStatus(phase.id, topic.id, e)}
+                                      title={`Status: ${isCompleted ? 'Completed' : isInProgress ? 'In Progress' : 'To Learn'} (click to cycle)`}
+                                      className="shrink-0 p-0.5 rounded-full hover:scale-125 transition-transform cursor-pointer"
+                                    >
+                                      {isCompleted ? (
+                                        <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                      ) : isInProgress ? (
+                                        <span className="size-3 rounded-full bg-amber-500 block animate-pulse" />
+                                      ) : (
+                                        <Circle className="w-3.5 h-3.5 text-muted-foreground/60 hover:text-foreground" />
+                                      )}
+                                    </button>
+                                  )}
+
+                                  <span className="truncate max-w-[200px]">{topic.name}</span>
+                                  <Edit3 className="w-3 h-3 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-0.5" />
+                                </div>
                               </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          });
+                        })()}
 
                         <div className="flex justify-center pt-2">
                           <button
@@ -3378,83 +3647,251 @@ export const CustomRoadmapBuilder: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="space-y-3 pt-1">
-                      {phase.topics.map(topic => {
-                        const isCompleted = topic.status === 'completed';
-                        const isInProgress = topic.status === 'in-progress';
-                        const kind = topic.kind || 'topic';
+                    <div className="space-y-4 pt-1">
+                      {(() => {
+                        const renderedReadItems: {
+                          item: RoadmapTopic;
+                          isContainer: boolean;
+                          memberTopics?: RoadmapTopic[];
+                        }[] = [];
 
-                        return (
-                          <div
-                            key={topic.id}
-                            className="p-3.5 rounded-xl border border-border/80 bg-background/50 hover:bg-secondary/40 transition-colors space-y-2"
-                          >
-                            <div className="flex items-center justify-between gap-3">
-                              <div className="flex items-center gap-2.5 min-w-0">
-                                <button
-                                  type="button"
-                                  onClick={(e) => handleToggleTopicStatus(phase.id, topic.id, e)}
-                                  className="shrink-0 p-0.5 rounded-full no-print cursor-pointer"
-                                  title="Toggle status"
+                        phase.topics.forEach((topic, tIdx) => {
+                          if (topic.kind === 'group') {
+                            const memberTopics = phase.topics.filter((t, idx) => getContainerIdForTopic(t, phase, pIdx, idx) === topic.id);
+                            renderedReadItems.push({ item: topic, isContainer: true, memberTopics });
+                          } else {
+                            const parentContainerId = getContainerIdForTopic(topic, phase, pIdx, tIdx);
+                            if (!parentContainerId) {
+                              renderedReadItems.push({ item: topic, isContainer: false });
+                            }
+                          }
+                        });
+
+                        return renderedReadItems.map((entry) => {
+                          if (entry.isContainer) {
+                            const container = entry.item;
+                            const memberTopics = entry.memberTopics || [];
+                            const completedCount = memberTopics.filter(t => t.status === 'completed').length;
+
+                            return (
+                              <div
+                                key={container.id}
+                                className="p-5 rounded-2xl border-2 border-dashed border-border/80 bg-secondary/15 dark:bg-card/40 space-y-3.5 shadow-2xs"
+                              >
+                                {/* Container Header Card */}
+                                <div
+                                  onClick={() => setViewingTopic({ phaseId: phase.id, topicId: container.id })}
+                                  className="flex items-center justify-between border-b border-border/70 pb-3 cursor-pointer group hover:opacity-90 transition-opacity"
                                 >
-                                  {isCompleted ? (
-                                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                                  ) : isInProgress ? (
-                                    <span className="size-3 rounded-full bg-amber-500 block" />
+                                  <div className="flex items-center gap-2.5 min-w-0">
+                                    <div className="size-8 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-[#E5E795] shrink-0">
+                                      <Box className="w-4 h-4" />
+                                    </div>
+                                    <div className="min-w-0">
+                                      <div className="flex items-center gap-2 flex-wrap">
+                                        <h3 className="font-serif font-bold text-base text-foreground group-hover:text-indigo-600 dark:group-hover:text-[#E5E795] transition-colors">
+                                          {container.name}
+                                        </h3>
+                                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-secondary uppercase font-bold text-muted-foreground">
+                                          Container Group
+                                        </span>
+                                      </div>
+                                      {container.description && (
+                                        <p className="text-xs text-muted-foreground font-body mt-0.5">{container.description}</p>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  <div className="flex items-center gap-2 shrink-0">
+                                    <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-secondary text-secondary-foreground font-medium">
+                                      {completedCount}/{memberTopics.length} mastered
+                                    </span>
+                                    <span className="text-xs text-indigo-600 dark:text-[#E5E795] font-semibold flex items-center gap-0.5">
+                                      <span>Details</span>
+                                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* Container Topics List */}
+                                <div className="space-y-2.5 pt-1">
+                                  {memberTopics.length === 0 ? (
+                                    <div className="text-xs text-muted-foreground italic px-3 py-2">
+                                      No topics inside this container.
+                                    </div>
                                   ) : (
-                                    <Circle className="w-3.5 h-3.5 text-muted-foreground/60" />
+                                    memberTopics.map(mTopic => {
+                                      const isCompleted = mTopic.status === 'completed';
+                                      const isInProgress = mTopic.status === 'in-progress';
+                                      const mKind = mTopic.kind || 'topic';
+
+                                      return (
+                                        <div
+                                          key={mTopic.id}
+                                          onClick={() => setViewingTopic({ phaseId: phase.id, topicId: mTopic.id })}
+                                          className="p-3.5 rounded-xl border border-border/80 bg-card hover:bg-secondary/60 hover:border-indigo-500/40 transition-all cursor-pointer space-y-2 shadow-2xs group"
+                                        >
+                                          <div className="flex items-center justify-between gap-3">
+                                            <div className="flex items-center gap-2.5 min-w-0">
+                                              <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  handleToggleTopicStatus(phase.id, mTopic.id, e);
+                                                }}
+                                                className="shrink-0 p-0.5 rounded-full no-print cursor-pointer hover:scale-125 transition-transform"
+                                                title="Toggle status"
+                                              >
+                                                {isCompleted ? (
+                                                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                                ) : isInProgress ? (
+                                                  <span className="size-3 rounded-full bg-amber-500 block animate-pulse" />
+                                                ) : (
+                                                  <Circle className="w-3.5 h-3.5 text-muted-foreground/60 hover:text-foreground" />
+                                                )}
+                                              </button>
+                                              <span className={`font-semibold text-sm ${isCompleted ? 'text-emerald-700 dark:text-emerald-300' : 'text-foreground'} group-hover:text-indigo-600 dark:group-hover:text-[#E5E795] transition-colors`}>
+                                                {mTopic.name}
+                                              </span>
+                                            </div>
+
+                                            <div className="flex items-center gap-2 shrink-0 text-muted-foreground font-mono text-[11px]">
+                                              {mTopic.duration && (
+                                                <span className="flex items-center gap-1">
+                                                  <Clock className="w-3 h-3" />
+                                                  <span>{mTopic.duration}</span>
+                                                </span>
+                                              )}
+                                              <span className="px-2 py-0.5 rounded bg-secondary uppercase text-[10px] font-semibold text-foreground">
+                                                {mKind}
+                                              </span>
+                                              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-foreground group-hover:translate-x-0.5 transition-transform" />
+                                            </div>
+                                          </div>
+
+                                          {mTopic.description && (
+                                            <p className="text-xs text-muted-foreground font-body leading-relaxed ml-6">
+                                              {mTopic.description}
+                                            </p>
+                                          )}
+
+                                          {mTopic.resources && mTopic.resources.length > 0 && (
+                                            <div className="ml-6 flex items-center gap-3 flex-wrap pt-1 text-[11px] font-mono">
+                                              <span className="text-muted-foreground">Resources:</span>
+                                              {mTopic.resources.map((res, rIdx) => (
+                                                <a
+                                                  key={rIdx}
+                                                  href={res.url}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  onClick={(e) => e.stopPropagation()}
+                                                  className="text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1"
+                                                >
+                                                  <span>{res.title}</span>
+                                                  <ExternalLink className="w-3 h-3" />
+                                                </a>
+                                              ))}
+                                            </div>
+                                          )}
+
+                                          {mTopic.notes && (
+                                            <div className="ml-6 p-2 rounded-lg bg-secondary/60 text-xs font-mono text-muted-foreground border border-border/50">
+                                              <strong>Notes:</strong> {mTopic.notes}
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    })
                                   )}
-                                </button>
-                                <span className={`font-semibold text-sm ${isCompleted ? 'text-emerald-700 dark:text-emerald-300' : 'text-foreground'}`}>
-                                  {topic.name}
-                                </span>
+                                </div>
                               </div>
+                            );
+                          }
 
-                              <div className="flex items-center gap-2 shrink-0 text-muted-foreground font-mono text-[11px]">
-                                {topic.duration && (
-                                  <span className="flex items-center gap-1">
-                                    <Clock className="w-3 h-3" />
-                                    <span>{topic.duration}</span>
-                                  </span>
-                                )}
-                                <span className="px-2 py-0.5 rounded bg-secondary uppercase text-[10px] font-semibold text-foreground">
-                                  {kind}
-                                </span>
-                              </div>
-                            </div>
+                          // Standalone Read Mode Topic Row
+                          const topic = entry.item;
+                          const isCompleted = topic.status === 'completed';
+                          const isInProgress = topic.status === 'in-progress';
+                          const kind = topic.kind || 'topic';
 
-                            {topic.description && (
-                              <p className="text-xs text-muted-foreground font-body leading-relaxed ml-6">
-                                {topic.description}
-                              </p>
-                            )}
-
-                            {topic.resources && topic.resources.length > 0 && (
-                              <div className="ml-6 flex items-center gap-3 flex-wrap pt-1 text-[11px] font-mono">
-                                <span className="text-muted-foreground">Resources:</span>
-                                {topic.resources.map((res, rIdx) => (
-                                  <a
-                                    key={rIdx}
-                                    href={res.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1"
+                          return (
+                            <div
+                              key={topic.id}
+                              onClick={() => setViewingTopic({ phaseId: phase.id, topicId: topic.id })}
+                              className="p-3.5 rounded-xl border border-border/80 bg-background/50 hover:bg-secondary/40 hover:border-indigo-500/40 transition-all cursor-pointer space-y-2 group shadow-2xs"
+                            >
+                              <div className="flex items-center justify-between gap-3">
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleToggleTopicStatus(phase.id, topic.id, e);
+                                    }}
+                                    className="shrink-0 p-0.5 rounded-full no-print cursor-pointer hover:scale-125 transition-transform"
+                                    title="Toggle status"
                                   >
-                                    <span>{res.title}</span>
-                                    <ExternalLink className="w-3 h-3" />
-                                  </a>
-                                ))}
-                              </div>
-                            )}
+                                    {isCompleted ? (
+                                      <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                    ) : isInProgress ? (
+                                      <span className="size-3 rounded-full bg-amber-500 block animate-pulse" />
+                                    ) : (
+                                      <Circle className="w-3.5 h-3.5 text-muted-foreground/60 hover:text-foreground" />
+                                    )}
+                                  </button>
+                                  <span className={`font-semibold text-sm ${isCompleted ? 'text-emerald-700 dark:text-emerald-300' : 'text-foreground'} group-hover:text-indigo-600 dark:group-hover:text-[#E5E795] transition-colors`}>
+                                    {topic.name}
+                                  </span>
+                                </div>
 
-                            {topic.notes && (
-                              <div className="ml-6 p-2 rounded-lg bg-secondary/60 text-xs font-mono text-muted-foreground border border-border/50">
-                                <strong>Notes:</strong> {topic.notes}
+                                <div className="flex items-center gap-2 shrink-0 text-muted-foreground font-mono text-[11px]">
+                                  {topic.duration && (
+                                    <span className="flex items-center gap-1">
+                                      <Clock className="w-3 h-3" />
+                                      <span>{topic.duration}</span>
+                                    </span>
+                                  )}
+                                  <span className="px-2 py-0.5 rounded bg-secondary uppercase text-[10px] font-semibold text-foreground">
+                                    {kind}
+                                  </span>
+                                  <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-foreground group-hover:translate-x-0.5 transition-transform" />
+                                </div>
                               </div>
-                            )}
-                          </div>
-                        );
-                      })}
+
+                              {topic.description && (
+                                <p className="text-xs text-muted-foreground font-body leading-relaxed ml-6">
+                                  {topic.description}
+                                </p>
+                              )}
+
+                              {topic.resources && topic.resources.length > 0 && (
+                                <div className="ml-6 flex items-center gap-3 flex-wrap pt-1 text-[11px] font-mono">
+                                  <span className="text-muted-foreground">Resources:</span>
+                                  {topic.resources.map((res, rIdx) => (
+                                    <a
+                                      key={rIdx}
+                                      href={res.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1"
+                                    >
+                                      <span>{res.title}</span>
+                                      <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                  ))}
+                                </div>
+                              )}
+
+                              {topic.notes && (
+                                <div className="ml-6 p-2 rounded-lg bg-secondary/60 text-xs font-mono text-muted-foreground border border-border/50">
+                                  <strong>Notes:</strong> {topic.notes}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        });
+                      })()}
                     </div>
                   </div>
                 );
@@ -3693,6 +4130,37 @@ export const CustomRoadmapBuilder: React.FC = () => {
                 )}
               </div>
 
+              {/* Parent Container Assignment */}
+              {editingTopic.topic.kind !== 'group' && (
+                <div>
+                  <label className="block text-muted-foreground mb-1 font-medium flex items-center justify-between">
+                    <span>Inside Container / Group</span>
+                    <span className="text-[10px] text-muted-foreground font-mono">
+                      {editingTopic.topic.containerId ? 'Grouped' : 'Standalone'}
+                    </span>
+                  </label>
+                  <select
+                    value={editingTopic.topic.containerId || ''}
+                    onChange={(e) => setEditingTopic({
+                      ...editingTopic,
+                      topic: {
+                        ...editingTopic.topic,
+                        containerId: e.target.value ? e.target.value : undefined
+                      }
+                    })}
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-secondary/80 border border-border text-foreground focus:outline-hidden"
+                  >
+                    <option value="">None (Standalone Item)</option>
+                    {activeRoadmap.phases
+                      .flatMap(p => p.topics)
+                      .filter(t => t.kind === 'group' && t.id !== editingTopic.topic.id)
+                      .map(c => (
+                        <option key={c.id} value={c.id}>📦 {c.name}</option>
+                      ))}
+                  </select>
+                </div>
+              )}
+
               <div>
                 <label className="block text-muted-foreground mb-1 font-medium">Personal Study Notes / Links</label>
                 <textarea
@@ -3739,6 +4207,188 @@ export const CustomRoadmapBuilder: React.FC = () => {
                   Save Item
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL: VIEW TOPIC DETAILS OVERLAY (READ-ONLY MODE) ───────────────── */}
+      {activeViewingTopic && (
+        <div
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150"
+          onClick={() => setViewingTopic(null)}
+        >
+          <div
+            className="bg-card border border-border rounded-3xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150 text-foreground"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header: Phase Breadcrumb + Close Button */}
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground flex-wrap">
+                <span className="px-2.5 py-0.5 rounded-md bg-secondary text-foreground font-semibold">
+                  {activeViewingTopic.phase.title}
+                </span>
+                <span className="uppercase font-bold text-indigo-600 dark:text-[#E5E795]">
+                  • {activeViewingTopic.topic.kind || 'topic'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewingTopic(null)}
+                className="size-8 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary flex items-center justify-center cursor-pointer transition-colors"
+                title="Close (Esc)"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Title & Status */}
+            <div className="space-y-2">
+              <div className="flex items-start justify-between gap-3">
+                <h2 className="text-xl sm:text-2xl font-serif font-bold text-foreground">
+                  {activeViewingTopic.topic.name}
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => handleToggleTopicStatus(activeViewingTopic.phase.id, activeViewingTopic.topic.id)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 border shadow-2xs ${
+                    activeViewingTopic.topic.status === 'completed'
+                      ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
+                      : activeViewingTopic.topic.status === 'in-progress'
+                      ? 'bg-amber-500/15 border-amber-500/40 text-amber-600 dark:text-amber-400'
+                      : 'bg-secondary border-border text-muted-foreground hover:text-foreground'
+                  }`}
+                  title="Click to toggle status"
+                >
+                  {activeViewingTopic.topic.status === 'completed' ? (
+                    <>
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Completed</span>
+                    </>
+                  ) : activeViewingTopic.topic.status === 'in-progress' ? (
+                    <>
+                      <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
+                      <span>In Progress</span>
+                    </>
+                  ) : (
+                    <>
+                      <Circle className="w-3.5 h-3.5" />
+                      <span>To Learn</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Metadata Badges */}
+              <div className="flex items-center gap-2 flex-wrap text-xs font-mono pt-1">
+                {activeViewingTopic.topic.difficulty && (
+                  <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-foreground">
+                    Level: {activeViewingTopic.topic.difficulty.toUpperCase()}
+                  </span>
+                )}
+                {activeViewingTopic.topic.duration && (
+                  <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-foreground flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-muted-foreground" />
+                    <span>{activeViewingTopic.topic.duration}</span>
+                  </span>
+                )}
+                {activeViewingTopic.topic.containerId && (
+                  <span className="px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-700 dark:text-[#E5E795] flex items-center gap-1">
+                    <Box className="w-3 h-3" />
+                    <span>
+                      Container: {activeRoadmap.phases.flatMap(p => p.topics).find(t => t.id === activeViewingTopic.topic.containerId)?.name || 'Parent Group'}
+                    </span>
+                  </span>
+                )}
+                {activeViewingTopic.topic.zIndex !== undefined && (
+                  <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-muted-foreground">
+                    Layer: {activeViewingTopic.topic.zIndex}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Description */}
+            {activeViewingTopic.topic.description ? (
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground block">
+                  Overview &amp; Learning Objectives
+                </label>
+                <div className="p-4 rounded-2xl bg-secondary/40 border border-border text-sm leading-relaxed font-body text-foreground">
+                  {activeViewingTopic.topic.description}
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground italic">No description provided for this item.</p>
+            )}
+
+            {/* Personal Study Notes */}
+            {activeViewingTopic.topic.notes && (
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground block">
+                  Personal Study Notes &amp; Key Takeaways
+                </label>
+                <div className="p-3.5 rounded-2xl bg-[#E5E795]/10 border border-[#E5E795]/30 text-xs font-sans text-foreground whitespace-pre-wrap leading-relaxed">
+                  {activeViewingTopic.topic.notes}
+                </div>
+              </div>
+            )}
+
+            {/* Resources Links */}
+            {activeViewingTopic.topic.resources && activeViewingTopic.topic.resources.length > 0 && (
+              <div className="space-y-2">
+                <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground block">
+                  Curated Resources &amp; Documentation ({activeViewingTopic.topic.resources.length})
+                </label>
+                <div className="space-y-1.5">
+                  {activeViewingTopic.topic.resources.map((res, idx) => (
+                    <a
+                      key={idx}
+                      href={res.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-3 rounded-xl bg-secondary/50 hover:bg-secondary border border-border text-xs flex items-center justify-between group transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <BookOpen className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                        <span className="font-semibold text-foreground truncate group-hover:text-indigo-600 dark:group-hover:text-[#E5E795]">
+                          {res.title}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-mono shrink-0">
+                        <span className="hidden sm:inline">Open</span>
+                        <ExternalLink className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Footer Actions */}
+            <div className="flex items-center justify-between pt-3 border-t border-border">
+              <button
+                type="button"
+                onClick={() => {
+                  const topic = activeViewingTopic.topic;
+                  const phaseId = activeViewingTopic.phase.id;
+                  setViewingTopic(null);
+                  setViewMode('simple');
+                  setEditingTopic({ phaseId, topic, isNew: false });
+                }}
+                className="px-3.5 py-2 rounded-xl bg-secondary hover:bg-muted text-foreground text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
+              >
+                <Edit3 className="w-3.5 h-3.5" />
+                <span>Edit in Builder</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setViewingTopic(null)}
+                className="px-5 py-2 rounded-xl bg-[#E5E795] text-black font-bold text-xs hover:brightness-105 transition-all shadow-md cursor-pointer"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

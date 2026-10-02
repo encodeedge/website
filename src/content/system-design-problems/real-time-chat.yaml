@@ -1,0 +1,87 @@
+title: "Real-Time Chat & Messaging (WhatsApp / Slack)"
+difficulty: "Medium"
+category: "Social"
+targetQps: 150000
+readRatioPercent: 80
+maxLatencyMs: 35
+summary: "Design a high-scale real-time messaging system supporting 1-on-1 and group chats. Support persistent bi-directional WebSocket connections, message ordering, offline storage, and push notifications."
+functionalRequirements:
+  - "Low-latency message delivery to online users (< 35ms)"
+  - "Bi-directional WebSocket duplex connections"
+  - "Persistent chat history and offline push notifications"
+nonFunctionalRequirements:
+  - "Support 150,000 active concurrent messages/sec"
+  - "Zero message loss during network disconnects"
+  - "Decouple heavy push notifications via Kafka event stream"
+hints:
+  - "Use a dedicated WebSocket Gateway tier to hold millions of idle TCP connections."
+  - "Route new messages through Kafka / Message Queue to fan out to notification workers and database."
+referenceNodes:
+  - id: "client-chat"
+    componentType: "client"
+    label: "Mobile / Web Clients"
+    x: 60
+    y: 220
+    instances: 1
+  - id: "lb-chat"
+    componentType: "load-balancer"
+    label: "Network Load Balancer (NLB)"
+    x: 230
+    y: 220
+    instances: 2
+  - id: "ws-chat"
+    componentType: "websocket-server"
+    label: "WebSocket Connection Nodes"
+    x: 420
+    y: 140
+    instances: 4
+  - id: "app-chat"
+    componentType: "app-server"
+    label: "Chat Logic & Auth Service"
+    x: 420
+    y: 300
+    instances: 3
+  - id: "kafka-chat"
+    componentType: "message-queue"
+    label: "Kafka Message Bus"
+    x: 630
+    y: 140
+    instances: 3
+  - id: "worker-chat"
+    componentType: "worker-server"
+    label: "Push Notification Workers"
+    x: 820
+    y: 100
+    instances: 3
+  - id: "db-chat"
+    componentType: "nosql-db"
+    label: "DynamoDB Message Store"
+    x: 820
+    y: 240
+    instances: 3
+referenceEdges:
+  - from: "client-chat"
+    to: "lb-chat"
+    isAsync: false
+    label: "TCP / WSS Handshake"
+  - from: "lb-chat"
+    to: "ws-chat"
+    isAsync: false
+    label: "Long-Lived WSS"
+  - from: "lb-chat"
+    to: "app-chat"
+    isAsync: false
+    label: "REST Auth / Uploads"
+  - from: "ws-chat"
+    to: "kafka-chat"
+    isAsync: false
+    label: "Publish Event"
+  - from: "kafka-chat"
+    to: "worker-chat"
+    isAsync: true
+    label: "Consume Push Fanout"
+  - from: "kafka-chat"
+    to: "db-chat"
+    isAsync: true
+    label: "Async Commit"
+order: 3

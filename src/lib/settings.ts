@@ -657,14 +657,14 @@ export interface CompetitionSourceConfig {
 }
 
 export interface SourcesSettings {
-  newsSources: NewsSourceConfig[];
-  podcastSources: PodcastSourceConfig[];
+  newsSources?: NewsSourceConfig[];
+  podcastSources?: PodcastSourceConfig[];
   competitionSources: CompetitionSourceConfig[];
   displaySettings: {
-    homepageNewsLimit: number;
-    homepagePodcastLimit: number;
-    enableLiveClientSync: boolean;
-    autoSyncOnPageLoad: boolean;
+    homepageNewsLimit?: number;
+    homepagePodcastLimit?: number;
+    enableLiveClientSync?: boolean;
+    autoSyncOnPageLoad?: boolean;
     enableCompetitionsSync: boolean;
     autoSyncCompetitions: boolean;
     hideCompletedCompetitions: boolean;
@@ -674,42 +674,8 @@ export interface SourcesSettings {
 }
 
 export const DEFAULT_SOURCES_SETTINGS: SourcesSettings = {
-  newsSources: [
-    {
-      name: 'TechCrunch AI',
-      url: 'https://techcrunch.com/category/artificial-intelligence/feed/',
-      category: 'Frontier AI',
-      badgeColor: 'rose',
-      fetchLimit: 3,
-      enabled: true,
-    },
-    {
-      name: 'Google AI News',
-      url: 'https://blog.google/technology/ai/rss/',
-      category: 'Research',
-      badgeColor: 'blue',
-      fetchLimit: 3,
-      enabled: true,
-    },
-    {
-      name: 'Hugging Face Blog',
-      url: 'https://huggingface.co/blog/feed.xml',
-      category: 'Open Source',
-      badgeColor: 'amber',
-      fetchLimit: 3,
-      enabled: true,
-    },
-  ],
-  podcastSources: [
-    {
-      title: 'Practical AI',
-      feedUrl: 'https://changelog.com/practicalai/feed',
-      siteUrl: 'https://changelog.com/practicalai',
-      badgeText: 'Practical AI',
-      isSpotlight: true,
-      enabled: true,
-    },
-  ],
+  newsSources: [],
+  podcastSources: [],
   competitionSources: [
     {
       name: 'Kaggle',
@@ -767,10 +733,6 @@ export const DEFAULT_SOURCES_SETTINGS: SourcesSettings = {
     },
   ],
   displaySettings: {
-    homepageNewsLimit: 6,
-    homepagePodcastLimit: 3,
-    enableLiveClientSync: true,
-    autoSyncOnPageLoad: true,
     enableCompetitionsSync: true,
     autoSyncCompetitions: true,
     hideCompletedCompetitions: true,
@@ -788,7 +750,7 @@ export async function getSourcesSettings(): Promise<SourcesSettings> {
     const sources = await reader.singletons.sources.read();
     if (!sources) return DEFAULT_SOURCES_SETTINGS;
 
-    const rawNews = sources.newsSources as any[];
+    const rawNews = (sources as any).newsSources as any[];
     const newsSources: NewsSourceConfig[] = Array.isArray(rawNews) && rawNews.length > 0
       ? rawNews.map((s: any) => ({
           name: s.name || 'Untitled Feed',
@@ -798,9 +760,9 @@ export async function getSourcesSettings(): Promise<SourcesSettings> {
           fetchLimit: Number(s.fetchLimit) || 3,
           enabled: s.enabled !== false,
         }))
-      : DEFAULT_SOURCES_SETTINGS.newsSources;
+      : [];
 
-    const rawPodcasts = sources.podcastSources as any[];
+    const rawPodcasts = (sources as any).podcastSources as any[];
     const podcastSources: PodcastSourceConfig[] = Array.isArray(rawPodcasts) && rawPodcasts.length > 0
       ? rawPodcasts.map((p: any) => ({
           title: p.title || 'Untitled Podcast',
@@ -810,7 +772,7 @@ export async function getSourcesSettings(): Promise<SourcesSettings> {
           isSpotlight: p.isSpotlight !== false,
           enabled: p.enabled !== false,
         }))
-      : DEFAULT_SOURCES_SETTINGS.podcastSources;
+      : [];
 
     const rawCompetitions = (sources as any).competitionSources as any[];
     const competitionSources: CompetitionSourceConfig[] = Array.isArray(rawCompetitions) && rawCompetitions.length > 0
@@ -832,10 +794,10 @@ export async function getSourcesSettings(): Promise<SourcesSettings> {
       podcastSources,
       competitionSources,
       displaySettings: {
-        homepageNewsLimit: Number(ds?.homepageNewsLimit) || DEFAULT_SOURCES_SETTINGS.displaySettings.homepageNewsLimit,
-        homepagePodcastLimit: Number(ds?.homepagePodcastLimit) || DEFAULT_SOURCES_SETTINGS.displaySettings.homepagePodcastLimit,
-        enableLiveClientSync: ds?.enableLiveClientSync ?? DEFAULT_SOURCES_SETTINGS.displaySettings.enableLiveClientSync,
-        autoSyncOnPageLoad: ds?.autoSyncOnPageLoad ?? DEFAULT_SOURCES_SETTINGS.displaySettings.autoSyncOnPageLoad,
+        homepageNewsLimit: Number(ds?.homepageNewsLimit) || undefined,
+        homepagePodcastLimit: Number(ds?.homepagePodcastLimit) || undefined,
+        enableLiveClientSync: ds?.enableLiveClientSync ?? false,
+        autoSyncOnPageLoad: ds?.autoSyncOnPageLoad ?? false,
         enableCompetitionsSync: ds?.enableCompetitionsSync ?? DEFAULT_SOURCES_SETTINGS.displaySettings.enableCompetitionsSync,
         autoSyncCompetitions: ds?.autoSyncCompetitions ?? DEFAULT_SOURCES_SETTINGS.displaySettings.autoSyncCompetitions,
         hideCompletedCompetitions: ds?.hideCompletedCompetitions ?? DEFAULT_SOURCES_SETTINGS.displaySettings.hideCompletedCompetitions,

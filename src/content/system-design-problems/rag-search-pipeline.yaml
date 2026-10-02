@@ -1,0 +1,87 @@
+title: "Enterprise Generative RAG & Semantic Search"
+difficulty: "Hard"
+category: "AI/ML"
+targetQps: 25000
+readRatioPercent: 95
+maxLatencyMs: 65
+summary: "Design an enterprise-grade Retrieval Augmented Generation (RAG) platform. Ingest millions of documentation embeddings, query a distributed vector database, rerank top-K candidates with a cross-encoder, and stream generated responses from vLLM."
+functionalRequirements:
+  - "Sub-70ms end-to-end question answering and source citation"
+  - "Hybrid search combining dense vector embeddings with BM25 keyword indices"
+  - "Cross-encoder neural reranking to boost top-5 retrieval precision"
+nonFunctionalRequirements:
+  - "Sustain 25,000 queries/second under peak enterprise usage"
+  - "Decouple document chunking and vector embedding ingestion asynchronously"
+  - "GPU memory utilization optimization for streaming LLM inference"
+hints:
+  - "Dense embeddings and vector similarity alone have precision gaps. Route retrieval through Vector DB and BM25 Search Index, then fuse through a Cross-Encoder Reranker before LLM generation."
+  - "Cache frequent query responses in Redis to save costly GPU LLM inference cycles."
+referenceNodes:
+  - id: "client-rag"
+    componentType: "client"
+    label: "Enterprise Query Ingress"
+    x: 60
+    y: 200
+    instances: 1
+  - id: "lb-rag"
+    componentType: "load-balancer"
+    label: "API Gateway & Router"
+    x: 220
+    y: 200
+    instances: 2
+  - id: "app-rag"
+    componentType: "app-server"
+    label: "RAG Orchestrator"
+    x: 390
+    y: 200
+    instances: 4
+  - id: "embed-rag"
+    componentType: "embedding-service"
+    label: "Embedding Generator"
+    x: 560
+    y: 100
+    instances: 3
+  - id: "vdb-rag"
+    componentType: "vector-db"
+    label: "Vector DB (Qdrant/Milvus)"
+    x: 730
+    y: 100
+    instances: 3
+  - id: "rerank-rag"
+    componentType: "neural-reranker"
+    label: "Cross-Encoder Reranker"
+    x: 730
+    y: 240
+    instances: 3
+  - id: "llm-rag"
+    componentType: "llm-inference"
+    label: "Frontier LLM (vLLM Cluster)"
+    x: 910
+    y: 200
+    instances: 4
+referenceEdges:
+  - from: "client-rag"
+    to: "lb-rag"
+    isAsync: false
+    label: "HTTPS Query"
+  - from: "lb-rag"
+    to: "app-rag"
+    isAsync: false
+    label: "Session Routing"
+  - from: "app-rag"
+    to: "embed-rag"
+    isAsync: false
+    label: "Query to Dense Vector"
+  - from: "embed-rag"
+    to: "vdb-rag"
+    isAsync: false
+    label: "ANN Top-50 Vector Search"
+  - from: "vdb-rag"
+    to: "rerank-rag"
+    isAsync: false
+    label: "Candidates to Rerank"
+  - from: "rerank-rag"
+    to: "llm-rag"
+    isAsync: false
+    label: "Top-5 Context to Prompt"
+order: 5

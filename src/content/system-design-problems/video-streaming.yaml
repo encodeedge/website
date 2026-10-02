@@ -1,0 +1,91 @@
+title: "Video Streaming Platform (Netflix / YouTube)"
+difficulty: "Hard"
+category: "Media"
+targetQps: 200000
+readRatioPercent: 99
+maxLatencyMs: 40
+summary: "Design a planetary-scale video streaming architecture supporting smooth playback, multi-bitrate HLS/DASH transcoding, metadata search, and multi-region CDN caching for millions of concurrent viewers."
+functionalRequirements:
+  - "Upload raw video chunks and trigger multi-resolution encoding (4K, 1080p, 720p)"
+  - "Adaptive bitrate streaming with sub-second manifest switching"
+  - "Video catalog search and personalized recommendation lookup"
+nonFunctionalRequirements:
+  - "Serve 98%+ of video chunks from Edge CDN without touching origin"
+  - "Zero buffering during peak prime-time loads (200K QPS)"
+  - "Durable multi-terabyte raw video storage"
+hints:
+  - "Serve video segments directly through CDN Edge to keep origin app servers lean."
+  - "Decouple heavy video encoding tasks using Kafka and asynchronous background worker nodes."
+referenceNodes:
+  - id: "client-vid"
+    componentType: "client"
+    label: "Video Players & Smart TVs"
+    x: 60
+    y: 200
+    instances: 1
+  - id: "cdn-vid"
+    componentType: "cdn"
+    label: "CloudFront CDN Edge"
+    x: 220
+    y: 120
+    instances: 4
+  - id: "lb-vid"
+    componentType: "load-balancer"
+    label: "Origin Gateway ALB"
+    x: 220
+    y: 280
+    instances: 2
+  - id: "app-vid"
+    componentType: "app-server"
+    label: "Streaming API Service"
+    x: 420
+    y: 280
+    instances: 4
+  - id: "s3-vid"
+    componentType: "object-storage"
+    label: "S3 Video Blob Storage"
+    x: 420
+    y: 120
+    instances: 3
+  - id: "kafka-vid"
+    componentType: "message-queue"
+    label: "Transcoding Queue (Kafka)"
+    x: 620
+    y: 280
+    instances: 2
+  - id: "worker-vid"
+    componentType: "worker-server"
+    label: "FFmpeg Transcoder Fleet"
+    x: 820
+    y: 280
+    instances: 4
+referenceEdges:
+  - from: "client-vid"
+    to: "cdn-vid"
+    isAsync: false
+    label: "98% Video Chunks (Cached)"
+  - from: "client-vid"
+    to: "lb-vid"
+    isAsync: false
+    label: "Metadata / Playback Token"
+  - from: "cdn-vid"
+    to: "s3-vid"
+    isAsync: false
+    label: "Origin Chunk Fetch"
+  - from: "lb-vid"
+    to: "app-vid"
+    isAsync: false
+    label: "API Routing"
+  - from: "app-vid"
+    to: "kafka-vid"
+    isAsync: true
+    label: "New Video Upload Event"
+  - from: "kafka-vid"
+    to: "worker-vid"
+    isAsync: true
+    label: "Encode HLS Chunks"
+  - from: "worker-vid"
+    to: "s3-vid"
+    isAsync: false
+    label: "Write Transcoded Chunks"
+order: 4

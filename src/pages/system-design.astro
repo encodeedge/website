@@ -1,33 +1,46 @@
 ---
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
-import { PipelinePuzzleLab } from '@/components/interactive/PipelinePuzzleLab';
+import { SystemDesignStudio } from '@/components/interactive/SystemDesignStudio';
 import { getCollection } from 'astro:content';
 import { getSystemDesignPageSettings } from '@/lib/settings';
 import { 
   Network, 
-  Layers, 
   Cpu, 
-  Database, 
   Zap, 
-  ShieldCheck, 
-  Server, 
-  Radio, 
-  Brain, 
   Sparkles, 
+  Boxes, 
   ArrowRight, 
-  CheckCircle2, 
-  Flame, 
-  Boxes,
-  FileCode,
-  ExternalLink,
+  ShieldCheck, 
+  Layers, 
   BookOpen
 } from 'lucide-react';
 
 const pageSettings = await getSystemDesignPageSettings();
 
 // Load dynamic collections from Keystatic
+const problemEntries = await getCollection('systemDesignProblems');
 const archEntries = await getCollection('systemDesignArchitectures');
 const scenarioEntries = await getCollection('systemDesignScenarios');
+
+// Map problems for interactive flight simulator
+const problems = problemEntries.length > 0
+  ? problemEntries.map(e => ({
+      id: e.id,
+      title: e.data.title,
+      difficulty: e.data.difficulty,
+      category: e.data.category,
+      targetQps: e.data.targetQps,
+      readRatioPercent: e.data.readRatioPercent,
+      maxLatencyMs: e.data.maxLatencyMs,
+      summary: e.data.summary,
+      functionalRequirements: e.data.functionalRequirements,
+      nonFunctionalRequirements: e.data.nonFunctionalRequirements,
+      hints: e.data.hints,
+      referenceNodes: e.data.referenceNodes,
+      referenceEdges: e.data.referenceEdges,
+      order: e.data.order ?? 1,
+    })).sort((a, b) => a.order - b.order)
+  : undefined;
 
 // Map architectures (ordered)
 const architectures = archEntries.length > 0 
@@ -68,245 +81,77 @@ const goldenPrinciples = pageSettings.goldenPrinciples?.length > 0
   ? pageSettings.goldenPrinciples 
   : [];
 
-const title = pageSettings.seoTitle || 'AI & ML System Design: Reference Architectures & Blueprint Lab | EncodeEdge';
-const description = pageSettings.seoDescription || 'Master enterprise Machine Learning system design. Explore production reference architectures for RAG, real-time recommendations, distributed LLM serving, and continuous MLOps with interactive AWS-style dataflow labs.';
+const title = pageSettings.seoTitle || 'System Design Studio: Interactive Problem Simulator & Blueprints | EncodeEdge';
+const description = pageSettings.seoDescription || 'Master enterprise distributed and AI/ML system design. Practice interactive problem challenges, simulate live production traffic (1k–250k QPS), find bottlenecks, solve AWS pipeline puzzles, and inspect production reference blueprints.';
 ---
 
 <DefaultLayout title={title} description={description}>
-  <div class="relative overflow-hidden pt-8 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-16">
-    {/* Background blueprint glows */}
-    <div class="absolute top-10 left-1/2 -translate-x-1/2 -z-10 w-full max-w-4xl h-72 bg-gradient-to-tr from-amber-500/10 via-blue-500/10 to-emerald-500/10 blur-3xl rounded-full pointer-events-none" />
+  <div class="relative overflow-hidden pt-6 pb-20 px-2 sm:px-4 lg:px-6 max-w-[1800px] w-full mx-auto space-y-8">
+    {/* Ambient Glow matching EncodeEdge brand theme */}
+    <div class="absolute top-10 left-1/2 -translate-x-1/2 -z-10 w-full max-w-6xl h-72 bg-gradient-to-tr from-[#E5E795]/15 via-indigo-500/10 to-cyan-500/10 blur-3xl rounded-full pointer-events-none" />
 
     {/* Hero Section */}
-    <header class="text-center max-w-3xl mx-auto space-y-4">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-mono font-bold uppercase tracking-wider">
-        <Network class="w-3.5 h-3.5" />
-        <span>{pageSettings.hero?.eyebrow || 'AWS Well-Architected Framework for AI/ML'}</span>
+    <header class="text-center max-w-3xl mx-auto space-y-3">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E5E795]/20 border border-[#E5E795]/40 text-[#2a2c07] dark:text-[#E5E795] text-xs font-mono font-bold uppercase tracking-wider">
+        <Cpu class="w-3.5 h-3.5 text-indigo-600 dark:text-[#E5E795]" />
+        <span>{pageSettings.hero?.eyebrow || 'System Design Flight Simulator & Blueprint Studio'}</span>
       </div>
       
       <h1 class="text-3xl sm:text-5xl font-display font-extrabold text-foreground tracking-tight leading-tight">
-        {pageSettings.hero?.heading || 'AI & ML System Design Architecture Center'}
+        {pageSettings.hero?.heading || 'Interactive System Design Studio'}
       </h1>
       
-      <p class="text-sm sm:text-base text-muted-foreground leading-relaxed font-body">
-        {pageSettings.hero?.subheading || 'Real-world production engineering reference architectures. Design distributed RAG systems, sub-45ms recommendation funnels, and continuous MLOps pipelines with interactive roadmap.sh-style roadmaps and AWS architectural blueprints.'}
+      <p class="text-xs sm:text-sm text-muted-foreground leading-relaxed font-body">
+        {pageSettings.hero?.subheading || 'Practice real-world distributed architectures. Drag & drop infrastructure blocks, wire synchronous and asynchronous dataflows, push live production traffic (1k–250k QPS), find bottlenecks, and get scored across 5 interview dimensions.'}
       </p>
 
       {/* Quick Nav Anchors */}
-      <div class="pt-2 flex flex-wrap items-center justify-center gap-2.5 text-xs font-medium">
+      <div class="pt-1 flex flex-wrap items-center justify-center gap-2 text-xs font-medium">
         <a 
-          href="/simulator"
-          class="px-3.5 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25 transition-colors flex items-center gap-1.5 shadow-2xs font-semibold"
+          href="/system-design"
+          class="px-3.5 py-1.5 rounded-xl bg-[#E5E795]/20 border border-[#E5E795]/40 text-indigo-600 dark:text-[#E5E795] hover:bg-[#E5E795]/30 transition-colors flex items-center gap-1.5 shadow-2xs font-semibold"
         >
-          <Cpu class="w-3.5 h-3.5 text-amber-500" />
-          <span>Launch Traffic Simulator</span>
+          <Cpu class="w-3.5 h-3.5 text-indigo-600 dark:text-[#E5E795]" />
+          <span>Problem Simulator (Game Play)</span>
         </a>
         <a 
-          href="#blueprint-lab"
-          class="px-3.5 py-1.5 rounded-xl bg-card border border-border text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 shadow-2xs"
+          href="/system-design?mode=puzzle#blueprint-lab"
+          class="px-3.5 py-1.5 rounded-xl bg-card border border-border text-foreground hover:bg-secondary transition-colors flex items-center gap-1.5 shadow-2xs"
         >
           <Boxes class="w-3.5 h-3.5 text-cyan-500" />
-          <span>Interactive Blueprint Lab</span>
+          <span>AWS Blueprint Lab</span>
         </a>
         <a 
-          href="#reference-architectures"
-          class="px-3.5 py-1.5 rounded-xl bg-card border border-border text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 shadow-2xs"
+          href="/system-design?mode=reference#reference-architectures"
+          class="px-3.5 py-1.5 rounded-xl bg-card border border-border text-foreground hover:bg-secondary transition-colors flex items-center gap-1.5 shadow-2xs"
         >
           <BookOpen class="w-3.5 h-3.5 text-emerald-500" />
           <span>Reference Blueprints</span>
         </a>
         <a 
-          href="#golden-principles"
-          class="px-3.5 py-1.5 rounded-xl bg-card border border-border text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 shadow-2xs"
+          href="/system-design?mode=principles#golden-principles"
+          class="px-3.5 py-1.5 rounded-xl bg-card border border-border text-foreground hover:bg-secondary transition-colors flex items-center gap-1.5 shadow-2xs"
         >
-          <ShieldCheck class="w-3.5 h-3.5 text-amber-500" />
+          <ShieldCheck class="w-3.5 h-3.5 text-indigo-500" />
           <span>Golden Principles</span>
         </a>
       </div>
     </header>
 
-    {/* Section 1: Hands-on Interactive Architecture Canvas */}
-    <section id="blueprint-lab" class="space-y-4 pt-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
-        <div class="flex items-center gap-2.5">
-          <div class="size-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500">
-            <Boxes class="w-4 h-4" />
-          </div>
-          <div>
-            <h2 class="text-lg font-bold text-foreground font-display">
-              Interactive System Design Blueprint Lab
-            </h2>
-            <p class="text-xs text-muted-foreground font-mono">
-              Assemble AWS architectural nodes in valid execution sequence to earn XP
-            </p>
-          </div>
-        </div>
+    {/* The Unified Interactive Studio Component (Multi-mode Island) */}
+    <main class="relative z-10">
+      <SystemDesignStudio
+        initialProblems={problems}
+        scenarios={scenarios}
+        architectures={architectures}
+        goldenPrinciples={goldenPrinciples}
+        pageSettings={pageSettings}
+        client:load
+      />
+    </main>
 
-        <span class="text-xs font-mono text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full self-start sm:self-auto font-semibold">
-          ● Hands-on Simulator
-        </span>
-      </div>
-
-      {/* The React Island Component powered dynamically by Keystatic scenarios */}
-      <PipelinePuzzleLab scenarios={scenarios} client:load />
-    </section>
-
-    {/* Section 3: Production Reference Architecture Blueprints (AWS Docs Style) */}
-    {architectures.length > 0 && (
-      <section id="reference-architectures" class="space-y-8 pt-4">
-        <div class="space-y-1.5 border-b border-border pb-4">
-          <div class="text-xs font-mono text-amber-500 uppercase tracking-wider font-semibold">
-            Architectural Blueprints
-          </div>
-          <h2 class="text-2xl sm:text-3xl font-display font-extrabold text-foreground tracking-tight">
-            Production Reference Architectures
-          </h2>
-          <p class="text-sm text-muted-foreground max-w-2xl font-body">
-            Battle-tested system blueprints designed to meet extreme enterprise latency budgets, high availability requirements, and data governance standards.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {architectures.map((arch) => (
-            <div 
-              key={arch.id}
-              class="p-6 rounded-3xl bg-card border border-border hover:border-border/80 transition-all flex flex-col justify-between space-y-6 shadow-md relative overflow-hidden group"
-            >
-              {/* Top decorative accent */}
-              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-blue-500 to-emerald-500 opacity-70" />
-
-              <div class="space-y-4">
-                <div class="flex items-start justify-between gap-3">
-                  <span class="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-muted border border-border text-amber-600 dark:text-amber-400 font-semibold">
-                    {arch.category}
-                  </span>
-                  <span class="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">
-                    {arch.sla}
-                  </span>
-                </div>
-
-                <div>
-                  <h3 class="text-xl font-bold font-display text-foreground group-hover:text-primary transition-colors">
-                    {arch.title}
-                  </h3>
-                  <p class="text-xs text-muted-foreground leading-relaxed mt-1.5 font-body">
-                    {arch.summary}
-                  </p>
-                </div>
-
-                {/* Visual Pipeline Dataflow: roadmap.sh Small Boxes with Just Title */}
-                {arch.latencyBudget && arch.latencyBudget.length > 0 && (
-                  <div class="space-y-2.5 pt-2">
-                    <div class="text-[11px] font-mono text-muted-foreground uppercase tracking-wider font-semibold flex items-center justify-between">
-                      <span class="flex items-center gap-1.5">
-                        <Network class="w-3 h-3 text-amber-500" />
-                        <span>Execution Pipeline Dataflow</span>
-                      </span>
-                      <span class="text-amber-600 dark:text-amber-400 font-bold">Total SLA: {arch.sla}</span>
-                    </div>
-
-                    <div class="flex flex-wrap items-center gap-2 p-3.5 rounded-2xl bg-muted/20 border border-border/80">
-                      {arch.latencyBudget.map((stage, idx) => (
-                        <div key={idx} class="flex items-center gap-1.5">
-                          {/* roadmap.sh small box with just title */}
-                          <div 
-                            class="group/node relative rounded-xl border-2 px-3 py-1.5 text-xs font-semibold shadow-2xs hover:shadow-sm hover:scale-105 active:scale-95 transition-all cursor-pointer bg-amber-100/90 hover:bg-amber-200/90 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 border-amber-400 dark:border-amber-500/80 text-slate-900 dark:text-amber-100 flex items-center gap-1.5"
-                            title={`${stage.step} (Latency: ${stage.latency})`}
-                          >
-                            <span class="size-1.5 rounded-full bg-amber-500 shrink-0"></span>
-                            <span class="leading-tight">{stage.step}</span>
-                            <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-800 dark:text-amber-300 ml-0.5 shrink-0">
-                              {stage.latency}
-                            </span>
-                          </div>
-
-                          {/* Arrow connector to next node */}
-                          {idx < arch.latencyBudget.length - 1 && (
-                            <svg class="w-3.5 h-3.5 text-amber-500/60 shrink-0 hidden sm:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                              <path d="M5 12h14" />
-                              <path d="M12 5l7 7-7 7" />
-                            </svg>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Architectural Trade-off Note */}
-                {arch.coreTradeoff && (
-                  <div class="p-3.5 rounded-xl bg-muted/40 border border-border text-xs text-foreground space-y-1">
-                    <span class="font-bold text-amber-600 dark:text-amber-400 block font-mono text-[10px] uppercase tracking-wider">
-                      Key System Trade-off:
-                    </span>
-                    <p class="text-[11px] text-muted-foreground leading-relaxed font-body">
-                      {arch.coreTradeoff}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* AWS Components Stack Tags (Roadmap-style Compact Boxes) */}
-              {arch.componentsUsed && arch.componentsUsed.length > 0 && (
-                <div class="pt-3 border-t border-border space-y-1.5">
-                  <span class="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold block">
-                    AWS Infrastructure Stack
-                  </span>
-                  <div class="flex flex-wrap items-center gap-1.5">
-                    {arch.componentsUsed.map((comp, idx) => (
-                      <span 
-                        key={idx} 
-                        class="rounded-lg border px-2.5 py-1 text-[11px] font-medium font-mono bg-card border-border text-foreground hover:border-amber-500/50 transition-colors shadow-2xs"
-                      >
-                        {comp}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-    )}
-
-    {/* Section 4: The 4 Golden Principles of ML System Design */}
-    {goldenPrinciples.length > 0 && (
-      <section id="golden-principles" class="p-8 rounded-3xl bg-card border border-border shadow-md space-y-8">
-        <div class="max-w-2xl space-y-1.5">
-          <span class="text-xs font-mono text-amber-500 uppercase tracking-wider font-semibold">
-            Design Rules of Thumb
-          </span>
-          <h2 class="text-2xl font-display font-extrabold text-foreground tracking-tight">
-            The 4 Golden Principles of Production ML
-          </h2>
-          <p class="text-xs sm:text-sm text-muted-foreground font-body">
-            Core engineering patterns applied across high-scale ML infrastructures at Google, Meta, and Netflix.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {goldenPrinciples.map((principle) => (
-            <div key={principle.number} class="flex items-start gap-4 p-5 rounded-2xl bg-muted/30 border border-border">
-              <span class="font-mono text-2xl font-extrabold text-amber-500/80 shrink-0">
-                {principle.number}
-              </span>
-              <div class="space-y-1">
-                <h3 class="text-sm font-bold text-foreground font-display">
-                  {principle.title}
-                </h3>
-                <p class="text-xs text-muted-foreground leading-relaxed font-body">
-                  {principle.description}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    )}
-
-    {/* Section 5: Bottom Navigation CTA */}
-    <div class="p-8 rounded-3xl bg-gradient-to-r from-amber-500/10 via-card to-indigo-500/10 border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-sm">
+    {/* Bottom Navigation CTA */}
+    <div class="p-8 rounded-3xl bg-gradient-to-r from-[#E5E795]/10 via-card to-indigo-500/10 border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-sm">
       <div class="space-y-1">
         <h3 class="text-xl font-bold font-display text-foreground">
           {pageSettings.bottomCta?.heading || 'Continue Learning AI Engineering'}
@@ -319,7 +164,7 @@ const description = pageSettings.seoDescription || 'Master enterprise Machine Le
       <div class="flex items-center gap-3 shrink-0">
         <a 
           href={pageSettings.bottomCta?.secondaryButtonUrl || '/labs'} 
-          class="px-5 py-2.5 rounded-xl bg-card hover:bg-muted border border-border text-foreground font-medium text-xs sm:text-sm flex items-center gap-2 transition-colors"
+          class="px-5 py-2.5 rounded-xl bg-card hover:bg-secondary border border-border text-foreground font-medium text-xs sm:text-sm flex items-center gap-2 transition-colors"
         >
           <span>{pageSettings.bottomCta?.secondaryButtonText || 'All Interactive Labs'}</span>
           <ArrowRight class="w-4 h-4" />

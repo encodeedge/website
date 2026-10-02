@@ -60,10 +60,10 @@ const FALLBACK_NAV_ITEMS: NavItem[] = [
         badge: "Popular"
       },
       {
-        label: "AIML System Design",
+        label: "System Design",
         href: "/system-design",
-        description: "Production ML reference architectures, latency SLAs, and AWS blueprints",
-        badge: "New"
+        description: "Interactive flight simulator, production reference architectures, and AWS blueprints",
+        badge: "Interactive"
       },
       {
         label: "Live Classes",

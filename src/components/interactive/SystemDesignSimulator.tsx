@@ -425,11 +425,15 @@ interface ScoreReport {
 export interface SystemDesignSimulatorProps {
   initialProblems?: SimulatorProblem[];
   defaultProblemId?: string;
+  selectedProblemId?: string;
+  onSelectProblem?: (id: string) => void;
 }
 
 export const SystemDesignSimulator: React.FC<SystemDesignSimulatorProps> = ({
   initialProblems = [],
-  defaultProblemId
+  defaultProblemId,
+  selectedProblemId: externalSelectedProblemId,
+  onSelectProblem
 }) => {
   // 1. Problems state
   const problems = useMemo(() => {
@@ -470,12 +474,28 @@ export const SystemDesignSimulator: React.FC<SystemDesignSimulatorProps> = ({
     ] as SimulatorProblem[];
   }, [initialProblems]);
 
-  const [selectedProblemId, setSelectedProblemId] = useState<string>(() => {
+  const [internalProblemId, setInternalProblemId] = useState<string>(() => {
+    if (externalSelectedProblemId && problems.some(p => p.id === externalSelectedProblemId)) {
+      return externalSelectedProblemId;
+    }
     if (defaultProblemId && problems.some(p => p.id === defaultProblemId)) {
       return defaultProblemId;
     }
     return problems[0]?.id || 'url-shortener';
   });
+
+  useEffect(() => {
+    if (externalSelectedProblemId && problems.some(p => p.id === externalSelectedProblemId)) {
+      setInternalProblemId(externalSelectedProblemId);
+    }
+  }, [externalSelectedProblemId, problems]);
+
+  const selectedProblemId = externalSelectedProblemId || internalProblemId;
+
+  const handleSelectProblem = useCallback((id: string) => {
+    setInternalProblemId(id);
+    onSelectProblem?.(id);
+  }, [onSelectProblem]);
 
   const activeProblem = useMemo(() => {
     return problems.find(p => p.id === selectedProblemId) || problems[0];
@@ -1013,7 +1033,7 @@ export const SystemDesignSimulator: React.FC<SystemDesignSimulatorProps> = ({
             </span>
             <select
               value={selectedProblemId}
-              onChange={(e) => setSelectedProblemId(e.target.value)}
+              onChange={(e) => handleSelectProblem(e.target.value)}
               className="px-3 py-1.5 rounded-xl bg-secondary/80 border border-border text-foreground font-medium focus:ring-1 focus:ring-[#E5E795] focus:outline-hidden cursor-pointer"
             >
               {problems.map(p => (
@@ -1076,7 +1096,7 @@ export const SystemDesignSimulator: React.FC<SystemDesignSimulatorProps> = ({
               setSelectedNodeId(null);
               setSelectedEdgeId(null);
             }}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-amber-500 hover:bg-secondary transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-rose-500 hover:bg-secondary transition-colors cursor-pointer"
             title="Clear canvas"
           >
             <RotateCcw className="w-4 h-4" />
@@ -1094,9 +1114,9 @@ export const SystemDesignSimulator: React.FC<SystemDesignSimulatorProps> = ({
             }}
             className={`px-3 py-1 rounded-xl border backdrop-blur-md text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
               systemSummary.healthStatus === 'critical'
-                ? 'bg-amber-100/90 dark:bg-amber-950/40 border-amber-400 dark:border-amber-500/80 text-amber-950 dark:text-amber-200'
+                ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-400 dark:border-rose-500/80 text-rose-700 dark:text-rose-200'
                 : systemSummary.healthStatus === 'warning'
-                ? 'bg-amber-50 dark:bg-amber-900/30 border-amber-300 dark:border-amber-500/80 text-amber-900 dark:text-amber-300'
+                ? 'bg-amber-50 dark:bg-amber-900/30 border-amber-300 dark:border-amber-500/80 text-amber-800 dark:text-amber-200'
                 : 'bg-secondary/70 border-border text-foreground hover:bg-secondary'
             }`}
           >
@@ -1334,7 +1354,7 @@ export const SystemDesignSimulator: React.FC<SystemDesignSimulatorProps> = ({
                           <button
                             type="button"
                             onClick={() => handleDeleteNode(node.id)}
-                            className="p-1.5 rounded-lg text-muted-foreground hover:text-amber-500 hover:bg-secondary transition-colors"
+                            className="p-1.5 rounded-lg text-muted-foreground hover:text-rose-500 hover:bg-secondary transition-colors"
                             title="Delete Node"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1381,7 +1401,7 @@ export const SystemDesignSimulator: React.FC<SystemDesignSimulatorProps> = ({
                           </div>
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Status:</span>
-                            <span className={m?.isOverloaded ? 'text-amber-500 font-bold' : m?.isWarning ? 'text-amber-400 font-semibold' : 'text-emerald-500 font-bold'}>
+                            <span className={m?.isOverloaded ? 'text-rose-600 dark:text-rose-400 font-bold' : m?.isWarning ? 'text-amber-500 font-semibold' : 'text-emerald-500 font-bold'}>
                               {m?.isOverloaded ? 'Bottleneck / Overloaded' : m?.isWarning ? 'Warning (Near Cap)' : 'Healthy'}
                             </span>
                           </div>
@@ -1405,7 +1425,7 @@ export const SystemDesignSimulator: React.FC<SystemDesignSimulatorProps> = ({
                           <button
                             type="button"
                             onClick={() => handleDeleteEdge(edge.id)}
-                            className="p-1 rounded text-muted-foreground hover:text-amber-500"
+                            className="p-1 rounded text-muted-foreground hover:text-rose-500"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -1444,7 +1464,7 @@ export const SystemDesignSimulator: React.FC<SystemDesignSimulatorProps> = ({
                     <div className="p-2.5 rounded-xl bg-secondary/50 border border-border">
                       <span className="block text-muted-foreground text-[10px]">End-to-End Latency</span>
                       <span className={`text-base font-bold ${
-                        systemSummary.endToEndLatencyMs <= activeProblem.maxLatencyMs ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'
+                        systemSummary.endToEndLatencyMs <= activeProblem.maxLatencyMs ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
                       }`}>
                         {systemSummary.endToEndLatencyMs} ms
                       </span>
@@ -1519,8 +1539,8 @@ export const SystemDesignSimulator: React.FC<SystemDesignSimulatorProps> = ({
                     Actionable Recommendations
                   </span>
                   {scoreReport.improvementChecklist.map((item, idx) => (
-                    <div key={idx} className="flex items-start gap-2 text-amber-800 dark:text-amber-300 bg-amber-500/10 p-2 rounded-lg border border-amber-500/20">
-                      <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-500" />
+                    <div key={idx} className="flex items-start gap-2 text-rose-800 dark:text-rose-300 bg-rose-500/10 p-2 rounded-lg border border-rose-500/20">
+                      <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-rose-500" />
                       <span>{item}</span>
                     </div>
                   ))}
@@ -1559,8 +1579,8 @@ export const SystemDesignSimulator: React.FC<SystemDesignSimulatorProps> = ({
                 )}
 
                 {activeProblem.hints && activeProblem.hints.length > 0 && (
-                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-200 text-xs space-y-1 font-mono">
-                    <span className="font-bold block text-amber-600 dark:text-amber-400">Architect Advisory Note:</span>
+                  <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-900 dark:text-indigo-200 text-xs space-y-1 font-mono">
+                    <span className="font-bold block text-indigo-600 dark:text-indigo-400">Architect Advisory Note:</span>
                     <p>{activeProblem.hints[0]}</p>
                   </div>
                 )}
@@ -1611,7 +1631,7 @@ export const SystemDesignSimulator: React.FC<SystemDesignSimulatorProps> = ({
                 markerHeight="6"
                 orient="auto-start-reverse"
               >
-                <path d="M 0 1 L 10 5 L 0 9 z" fill="#f59e0b" />
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#f43f5e" />
               </marker>
             </defs>
 
@@ -1633,7 +1653,7 @@ export const SystemDesignSimulator: React.FC<SystemDesignSimulatorProps> = ({
               const isOverloaded = srcMetrics?.isOverloaded;
 
               const strokeColor = isOverloaded 
-                ? '#f59e0b' 
+                ? '#f43f5e' 
                 : edge.isAsync 
                 ? '#c084fc' 
                 : '#38bdf8';
@@ -1712,7 +1732,7 @@ export const SystemDesignSimulator: React.FC<SystemDesignSimulatorProps> = ({
                 }}
                 className={`w-[130px] rounded-xl border-2 p-2 transition-shadow cursor-move select-none pointer-events-auto shadow-md ${
                   metrics.isOverloaded
-                    ? 'bg-amber-50 dark:bg-amber-950/50 border-amber-500 dark:border-amber-400 shadow-md shadow-amber-500/20 text-foreground ring-2 ring-amber-500/40'
+                    ? 'bg-rose-50 dark:bg-rose-950/50 border-rose-500 dark:border-rose-400 shadow-md shadow-rose-500/20 text-foreground ring-2 ring-rose-500/40'
                     : metrics.isWarning
                     ? 'bg-amber-50/70 dark:bg-amber-900/30 border-amber-400 dark:border-amber-500/70 text-foreground'
                     : isSelected
@@ -1758,7 +1778,7 @@ export const SystemDesignSimulator: React.FC<SystemDesignSimulatorProps> = ({
                 <div className="space-y-1 pt-1 border-t border-border text-[9px] font-mono">
                   <div className="flex items-center justify-between text-muted-foreground">
                     <span>{metrics.latencyMs}ms</span>
-                    <span className={metrics.isOverloaded ? 'text-amber-500 font-bold' : metrics.isWarning ? 'text-amber-400 font-semibold' : 'text-foreground'}>
+                    <span className={metrics.isOverloaded ? 'text-rose-600 dark:text-rose-400 font-bold' : metrics.isWarning ? 'text-amber-500 font-semibold' : 'text-foreground'}>
                       {(metrics.incomingQps / 1000).toFixed(1)}k QPS
                     </span>
                   </div>
@@ -1767,7 +1787,7 @@ export const SystemDesignSimulator: React.FC<SystemDesignSimulatorProps> = ({
                     <div
                       className={`h-full transition-all duration-300 rounded-full ${
                         metrics.isOverloaded 
-                          ? 'bg-amber-500' 
+                          ? 'bg-rose-500' 
                           : metrics.isWarning 
                           ? 'bg-amber-400' 
                           : 'bg-[#E5E795]'

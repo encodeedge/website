@@ -12,15 +12,10 @@ navLinks:
         description: Full-stack AI, ML, and Python curriculum with code walkthroughs
         badge: Popular
         openInNewTab: false
-      - label: AIML System Design
+      - label: System Design
         href: /system-design
-        description: Production ML reference architectures, latency SLAs, and AWS blueprints
-        badge: New
-        openInNewTab: false
-      - label: System Design Simulator
-        href: /simulator
-        description: Interactive flight simulator for HLD interviews with live traffic simulation
-        badge: New
+        description: Interactive flight simulator, production reference architectures, and AWS blueprints
+        badge: Interactive
         openInNewTab: false
       - label: Live Classes
         href: /live-classes

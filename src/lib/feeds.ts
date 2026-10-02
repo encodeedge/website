@@ -259,7 +259,7 @@ export async function getAiNewsDispatches(limit?: number, customFeeds?: Syndicat
   const feedsToQuery: SyndicatedFeedSource[] =
     customFeeds && customFeeds.length > 0
       ? customFeeds
-      : sourcesConfig && sourcesConfig.newsSources.length > 0
+      : sourcesConfig?.newsSources && sourcesConfig.newsSources.length > 0
       ? sourcesConfig.newsSources
           .filter((s) => s.enabled)
           .map((s) => ({
@@ -400,7 +400,7 @@ export async function getAiNewsDispatches(limit?: number, customFeeds?: Syndicat
 export async function getPodcastEpisodes(feedUrl?: string, limit?: number): Promise<PodcastEpisode[]> {
   try {
     const sourcesConfig = await getSourcesSettings().catch(() => null);
-    const activePodcast = sourcesConfig?.podcastSources.find((p) => p.enabled);
+    const activePodcast = sourcesConfig?.podcastSources?.find((p) => p.enabled);
     const targetFeedUrl = feedUrl || activePodcast?.feedUrl || DEFAULT_PODCAST_FEED_URL;
     const actualLimit = limit ?? sourcesConfig?.displaySettings.homepagePodcastLimit ?? 3;
     const timeoutMs = sourcesConfig?.displaySettings.feedTimeoutMs ?? 3800;

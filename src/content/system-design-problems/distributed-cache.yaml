@@ -1,0 +1,81 @@
+title: "Distributed Cache Cluster (Redis / Memcached)"
+difficulty: "Medium"
+category: "General"
+targetQps: 200000
+readRatioPercent: 98
+maxLatencyMs: 8
+summary: "Architect a horizontally scalable, in-memory distributed caching tier capable of sustaining 200,000 read QPS with sub-8ms P99 latency. Protect backend persistent databases from cache stampede and hotspot overload."
+functionalRequirements:
+  - "Sub-millisecond GET / SET key-value in-memory retrieval"
+  - "Consistent hashing ring distribution across cache nodes"
+  - "TTL expiration and LRU cache eviction policies"
+nonFunctionalRequirements:
+  - "P99 read latency strictly under 8ms"
+  - "High read throughput supporting 200K QPS spike loads"
+  - "Zero SPOF with high availability replication"
+hints:
+  - "Direct database hits at 200K QPS will cause immediate cascading failure. Place an ALB in front of App Servers and distribute reads across a clustered Redis Cache."
+  - "Use Read Replicas on the database for write synchronization."
+referenceNodes:
+  - id: "client-c1"
+    componentType: "client"
+    label: "Client Ingress"
+    x: 60
+    y: 200
+    instances: 1
+  - id: "lb-c1"
+    componentType: "load-balancer"
+    label: "High-Throughput ALB"
+    x: 230
+    y: 200
+    instances: 2
+  - id: "app-c1"
+    componentType: "app-server"
+    label: "Cache Gateway Service"
+    x: 420
+    y: 200
+    instances: 5
+  - id: "redis-c1"
+    componentType: "redis-cache"
+    label: "Redis Primary Node 1"
+    x: 630
+    y: 120
+    instances: 3
+  - id: "redis-c2"
+    componentType: "redis-cache"
+    label: "Redis Shard Node 2"
+    x: 630
+    y: 240
+    instances: 3
+  - id: "db-c1"
+    componentType: "sql-db"
+    label: "PostgreSQL DB Source"
+    x: 840
+    y: 200
+    instances: 2
+referenceEdges:
+  - from: "client-c1"
+    to: "lb-c1"
+    isAsync: false
+    label: "HTTP/2 Traffic"
+  - from: "lb-c1"
+    to: "app-c1"
+    isAsync: false
+    label: "Round Robin"
+  - from: "app-c1"
+    to: "redis-c1"
+    isAsync: false
+    label: "Key Hash Slot 1"
+  - from: "app-c1"
+    to: "redis-c2"
+    isAsync: false
+    label: "Key Hash Slot 2"
+  - from: "app-c1"
+    to: "db-c1"
+    isAsync: false
+    label: "Cache Miss Direct"
+  - from: "redis-c1"
+    to: "db-c1"
+    isAsync: true
+    label: "Async Write-Back"
+order: 2

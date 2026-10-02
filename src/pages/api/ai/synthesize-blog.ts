@@ -327,6 +327,35 @@ function parseOrRecoverArticle(rawText: string, defaultTopic: string): Extracted
   };
 }
 
+/**
+ * Sanitizes markdown content so that LaTeX math and bare curly braces
+ * do not break MDX / Acorn expression parsing in Keystatic editor.
+ */
+function sanitizeMdxContentForKeystatic(mdx: string): string {
+  const lines = mdx.split('\n');
+  let inCodeBlock = false;
+  const sanitizedLines = lines.map((line) => {
+    if (line.trim().startsWith('```')) {
+      inCodeBlock = !inCodeBlock;
+      return line;
+    }
+    if (inCodeBlock) return line;
+
+    let cleaned = line;
+    // Replace LaTeX \text{...} with plain text
+    cleaned = cleaned.replace(/\\text\{([^}]+)\}/g, '$1');
+    // Replace \frac{a}{b} with (a / b)
+    cleaned = cleaned.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1 / $2)');
+    // If line has bare curly braces and is not an MDX JSX component tag, convert to parentheses
+    if (!cleaned.trim().startsWith('<') && (cleaned.includes('{') || cleaned.includes('}'))) {
+      cleaned = cleaned.replace(/(?<!`)\{([^}`]+)\}(?!`)/g, '($1)');
+    }
+    return cleaned;
+  });
+
+  return sanitizedLines.join('\n');
+}
+
 export const POST: APIRoute = async (context) => {
   console.log('[AI Synthesizer] Incoming synthesis request received');
   try {
@@ -669,7 +698,7 @@ Respond ONLY with the raw JSON object.`;
       ]).filter(Boolean),
       '---',
       '',
-      articleData.mdxContent || '',
+      sanitizeMdxContentForKeystatic(articleData.mdxContent || ''),
     ].filter((line) => line !== null).join('\n');
 
     let saveStatus = 'generated draft in memory';

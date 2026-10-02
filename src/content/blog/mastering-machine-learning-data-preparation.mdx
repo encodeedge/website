@@ -122,8 +122,9 @@ cat_imputer = SimpleImputer(strategy='most_frequent')
 ### Robust Outlier Detection
 Outliers can severely distort linear boundaries and distance metrics. The Interquartile Range (IQR) technique filters extreme values without assuming a Gaussian distribution:
 
-$$\text{IQR} = Q_3 - Q_1$$
-$$\text{Lower Bound} = Q_1 - 1.5 \times \text{IQR}, \quad \text{Upper Bound} = Q_3 + 1.5 \times \text{IQR}$$
+- **IQR Calculation**: `IQR = Q3 - Q1`
+- **Lower Outlier Fence**: `Q1 - 1.5 * IQR`
+- **Upper Outlier Fence**: `Q3 + 1.5 * IQR`
 
 ```python
 def cap_outliers_iqr(series: pd.Series, factor: float = 1.5) -> pd.Series:
@@ -145,18 +146,19 @@ Feature transformations adjust scale, variance, and representation so that model
 ### 1. Scaling Numerical Features
 Neural networks, Support Vector Machines, Logistic Regression, and distance-based clustering algorithms require uniform scales. Decision trees and Random Forests are scale-invariant, but scaling remains good practice for pipeline interoperability.
 
-- **`StandardScaler`**: Scales to $\mu = 0, \sigma = 1$. Ideal for Gaussian-distributed features.
+- **`StandardScaler`**: Scales to mean 0, variance 1. Ideal for Gaussian-distributed features.
 - **`RobustScaler`**: Centers using the median and scales using IQR. Ideal when unpruned anomalies exist.
-- **`MinMaxScaler`**: Scales bounds strictly to $[0, 1]$. Mandatory for neural activation bounds or bounded image pixels.
+- **`MinMaxScaler`**: Scales bounds strictly to [0, 1]. Mandatory for bounded image pixels or bounded neural activations.
 
 ### 2. Categorical Encodings
-- **One-Hot Encoding**: Best for nominal categories with low cardinality ($< 15$ unique levels).
-- **Target / Frequency Encoding**: Best for high-cardinality features (e.g. zip codes, device IDs). Ensure smoothing ($m$-estimate) is applied to prevent target leakage.
+- **One-Hot Encoding**: Best for nominal categories with low cardinality (< 15 unique levels).
+- **Target / Frequency Encoding**: Best for high-cardinality features (e.g. zip codes, device IDs). Ensure smoothing (m-estimate) is applied to prevent target leakage.
 
 ### 3. Trigonometric Cyclical Encodings
-For features like hour of day ($0$ to $23$) or month ($1$ to $12$), linear values fail because $23:00$ and $00:00$ are adjacent, yet separated by $23$ units. We project them onto a 2D unit circle:
+For features like hour of day (0 to 23) or month (1 to 12), linear values fail because 23:00 and 00:00 are adjacent, yet separated by 23 units. We project them onto a 2D unit circle:
 
-$$x_{\sin} = \sin\left(\frac{2\pi \cdot t}{T}\right), \quad x_{\cos} = \cos\left(\frac{2\pi \cdot t}{T}\right)$$
+- **Sine coordinate**: `x_sin = sin(2 * pi * t / T)`
+- **Cosine coordinate**: `x_cos = cos(2 * pi * t / T)`
 
 ```python
 def encode_cyclical_feature(df: pd.DataFrame, col: str, period: int):
@@ -264,7 +266,7 @@ CORRECT (ISOLATED):
 ```
 
 ### Critical Leakage Safeguards
-1. **Never fit a scaler on test data**: Summary statistics ($\mu, \sigma, \text{min}, \text{max}$) must be derived exclusively from the training partition.
+1. **Never fit a scaler on test data**: Summary statistics (mean, variance, min, max) must be derived exclusively from the training partition.
 2. **Encapsulate in Pipelines**: Never perform preprocessing manually in standalone Jupyter notebook cells. Always wrap transforms in a `Pipeline` or `ColumnTransformer`.
 3. **Target Leakage**: Ensure features do not contain future state data (e.g. including `refund_timestamp` when predicting `is_fraudulent_purchase`).
 

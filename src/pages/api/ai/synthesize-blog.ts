@@ -131,6 +131,200 @@ async function commitDraftToGitHubBranch(options: {
   }
 }
 
+interface ExtractedArticle {
+  title: string;
+  slug?: string;
+  description: string;
+  readTime?: number;
+  topics?: string[];
+  tags?: string[];
+  seoTitle?: string;
+  seoDescription?: string;
+  canonicalUrl?: string;
+  faqs?: Array<{ question: string; answer: string; category?: string }>;
+  references?: Array<{ title: string; url: string; type?: string }>;
+  mdxContent: string;
+}
+
+function sanitizeParsedArticle(data: any, defaultTopic: string): ExtractedArticle {
+  return {
+    title: String(data.title || 'Comprehensive Guide to ' + defaultTopic).trim(),
+    slug: data.slug ? String(data.slug).trim() : undefined,
+    description: String(data.description || '').trim(),
+    readTime: Number(data.readTime) || 12,
+    topics: Array.isArray(data.topics) && data.topics.length ? data.topics.map(String) : [defaultTopic],
+    tags: Array.isArray(data.tags) && data.tags.length ? data.tags.map(String) : ['machine-learning', 'guide'],
+    seoTitle: data.seoTitle ? String(data.seoTitle).trim() : undefined,
+    seoDescription: data.seoDescription ? String(data.seoDescription).trim() : undefined,
+    canonicalUrl: data.canonicalUrl ? String(data.canonicalUrl).trim() : undefined,
+    faqs: Array.isArray(data.faqs)
+      ? data.faqs.map((f: any) => ({
+          question: String(f.question || '').trim(),
+          answer: String(f.answer || '').trim(),
+          category: f.category ? String(f.category).trim() : undefined,
+        })).filter((f: any) => f.question && f.answer)
+      : [],
+    references: Array.isArray(data.references)
+      ? data.references.map((r: any) => ({
+          title: String(r.title || '').trim(),
+          url: String(r.url || '').trim(),
+          type: r.type ? String(r.type).trim() : undefined,
+        })).filter((r: any) => r.title && r.url)
+      : [],
+    mdxContent: String(data.mdxContent || '').trim(),
+  };
+}
+
+function parseOrRecoverArticle(rawText: string, defaultTopic: string): ExtractedArticle {
+  let candidate = rawText.trim();
+
+  // 1. Check if enclosed in markdown code fences ```json ... ``` or ``` ... ```
+  const codeBlockMatch = candidate.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  if (codeBlockMatch && codeBlockMatch[1].includes('{')) {
+    candidate = codeBlockMatch[1].trim();
+  } else {
+    const firstBrace = candidate.indexOf('{');
+    const lastBrace = candidate.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+      candidate = candidate.substring(firstBrace, lastBrace + 1).trim();
+    }
+  }
+
+  // 2. Direct JSON.parse
+  try {
+    const parsed = JSON.parse(candidate);
+    if (parsed && typeof parsed === 'object') {
+      return sanitizeParsedArticle(parsed, defaultTopic);
+    }
+  } catch {
+    // Continue
+  }
+
+  // 3. Sanitized JSON.parse (fix unescaped LaTeX backslashes & control characters)
+  try {
+    let sanitized = candidate
+      .replace(/\\([^"\\\/bfnrtu])/g, '\\\\$1')
+      .replace(/[\x00-\x09\x0B\x0C\x0E-\x1F]/g, ' ');
+
+    if (!sanitized.endsWith('}')) {
+      const openQuotes = (sanitized.match(/"/g) || []).length % 2 !== 0;
+      if (openQuotes) sanitized += '"';
+      if (!sanitized.endsWith('}')) sanitized += '\n}';
+    }
+
+    const parsed = JSON.parse(sanitized);
+    if (parsed && typeof parsed === 'object') {
+      return sanitizeParsedArticle(parsed, defaultTopic);
+    }
+  } catch {
+    // Continue to regex field extractor
+  }
+
+  // 4. Regex-based field extraction (impervious to JSON syntax breaks inside markdown or code)
+  console.log('[AI Synthesizer] Standard JSON parse failed; running regex-based field extraction');
+
+  const extractString = (key: string): string => {
+    const regex = new RegExp(`"${key}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`, 'i');
+    const match = candidate.match(regex);
+    if (match && match[1]) {
+      return match[1]
+        .replace(/\\"/g, '"')
+        .replace(/\\n/g, '\n')
+        .replace(/\\r/g, '')
+        .replace(/\\t/g, '\t')
+        .replace(/\\\\/g, '\\');
+    }
+    return '';
+  };
+
+  const title =
+    extractString('title') ||
+    candidate.match(/^#\s+(.+)$/m)?.[1]?.trim() ||
+    `Production Guide to ${defaultTopic.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}`;
+
+  const slug =
+    extractString('slug') ||
+    title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+  const description =
+    extractString('description') ||
+    `An in-depth, production-ready engineering guide exploring ${title}.`;
+
+  const seoTitle = extractString('seoTitle') || `${title} | EncodeEdge`;
+  const seoDescription = extractString('seoDescription') || description.slice(0, 155);
+
+  let readTime = 14;
+  const readTimeMatch = candidate.match(/"readTime"\s*:\s*(\d+)/);
+  if (readTimeMatch) readTime = parseInt(readTimeMatch[1], 10);
+
+  // Extract tags array
+  let tags: string[] = ['machine-learning', 'guide'];
+  const tagsMatch = candidate.match(/"tags"\s*:\s*\[([\s\S]*?)\]/);
+  if (tagsMatch) {
+    try {
+      tags = JSON.parse(`[${tagsMatch[1]}]`);
+    } catch {
+      tags = tagsMatch[1]
+        .split(',')
+        .map((t) => t.replace(/["'\s]/g, ''))
+        .filter(Boolean);
+    }
+  }
+
+  // Extract FAQs
+  let faqs: Array<{ question: string; answer: string; category?: string }> = [];
+  const faqsMatch = candidate.match(/"faqs"\s*:\s*(\[\s*\{[\s\S]*?\}\s*\])/);
+  if (faqsMatch) {
+    try {
+      faqs = JSON.parse(faqsMatch[1]);
+    } catch {}
+  }
+
+  // Extract References
+  let references: Array<{ title: string; url: string; type?: string }> = [];
+  const refMatch = candidate.match(/"references"\s*:\s*(\[\s*\{[\s\S]*?\}\s*\])/);
+  if (refMatch) {
+    try {
+      references = JSON.parse(refMatch[1]);
+    } catch {}
+  }
+
+  // Extract mdxContent
+  let mdxContent = '';
+  const mdxMatch = candidate.match(/"mdxContent"\s*:\s*"([\s\S]*)/);
+  if (mdxMatch && mdxMatch[1]) {
+    const rawMdx = mdxMatch[1].replace(/"\s*\}?\s*$/g, '');
+    mdxContent = rawMdx
+      .replace(/\\"/g, '"')
+      .replace(/\\n/g, '\n')
+      .replace(/\\r/g, '')
+      .replace(/\\t/g, '\t')
+      .replace(/\\\\/g, '\\');
+  }
+
+  // If mdxContent is still empty, the model likely output direct Markdown
+  if (!mdxContent || mdxContent.trim().length < 50) {
+    const strippedCandidate = rawText
+      .replace(/```(?:json)?[\s\S]*?```/i, '')
+      .trim();
+    mdxContent = strippedCandidate.length > 50 ? strippedCandidate : rawText;
+  }
+
+  return {
+    title,
+    slug,
+    description,
+    readTime,
+    topics: [defaultTopic],
+    tags: tags.length ? tags : ['machine-learning', 'guide'],
+    seoTitle,
+    seoDescription,
+    faqs,
+    references,
+    mdxContent,
+  };
+}
+
 export const POST: APIRoute = async (context) => {
   console.log('[AI Synthesizer] Incoming synthesis request received');
   try {
@@ -287,7 +481,11 @@ CRITICAL INSTRUCTIONS:
     ${validExcerpts.map(s => `{"title": "Reference Guide", "url": "${s.url}", "type": "article"}`).join(', ')}
   ],
   "mdxContent": "The complete, manual-quality markdown article with deep headings (##, ###), LaTeX formulas ($...$ or $$...$$), and executable code snippets."
-}`;
+}
+
+CRITICAL RULES:
+- Output MUST be strictly a parseable JSON object. No conversational preamble, no closing remarks.
+- Escape all internal double quotes as \\" and do not use unescaped control characters.`;
 
     const userMessage = `Please review and synthesize these reference sources into a comprehensive, original tutorial for the "${topic}" track.
 Additional Author Directives: ${directives || 'None'}
@@ -418,26 +616,9 @@ Respond ONLY with the raw JSON object.`;
       });
     }
 
-    // 6. Parse JSON Response
-    console.log('[AI Synthesizer] Parsing AI model JSON response');
-    let articleData: any = null;
-    try {
-      const cleanedJsonStr = aiResponseText
-        .replace(/^```json\s*/i, '')
-        .replace(/^```\s*/i, '')
-        .replace(/\s*```$/i, '')
-        .trim();
-      articleData = JSON.parse(cleanedJsonStr);
-    } catch {
-      console.error('[AI Synthesizer] AI response JSON parsing failed. Raw response:', aiResponseText.slice(0, 300));
-      return new Response(JSON.stringify({
-        error: 'AI generated invalid JSON structure.',
-        raw: aiResponseText,
-      }), {
-        status: 422,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
+    // 6. Parse / Recover Article from AI Model Response
+    console.log('[AI Synthesizer] Parsing & recovering article from model response');
+    const articleData = parseOrRecoverArticle(aiResponseText, topic);
 
     // 7. Generate formatted MDX document with draft: true
     const today = new Date().toISOString().split('T')[0];
@@ -445,29 +626,29 @@ Respond ONLY with the raw JSON object.`;
 
     const yamlFrontmatter = [
       '---',
-      `title: "${articleData.title.replace(/"/g, '\\"')}"`,
-      `description: "${articleData.description.replace(/"/g, '\\"')}"`,
+      `title: "${String(articleData.title).replace(/"/g, '\\"')}"`,
+      `description: "${String(articleData.description).replace(/"/g, '\\"')}"`,
       `pubDate: ${today}`,
       `updatedDate: ${today}`,
       `readTime: ${articleData.readTime || 12}`,
       `draft: true`,
       `featured: false`,
       `tags:`,
-      ...(articleData.tags || ['ai', 'tutorial']).map((t: string) => `  - ${t}`),
+      ...(articleData.tags || ['machine-learning', 'guide']).map((t: string) => `  - ${t}`),
       `topics:`,
       `  - ${topic}`,
-      `seoTitle: "${(articleData.seoTitle || articleData.title).replace(/"/g, '\\"')}"`,
-      `seoDescription: "${(articleData.seoDescription || articleData.description).replace(/"/g, '\\"')}"`,
+      `seoTitle: "${String(articleData.seoTitle || articleData.title).replace(/"/g, '\\"')}"`,
+      `seoDescription: "${String(articleData.seoDescription || articleData.description).replace(/"/g, '\\"')}"`,
       articleData.canonicalUrl ? `canonicalUrl: "${articleData.canonicalUrl}"` : null,
       articleData.faqs && articleData.faqs.length > 0 ? 'faqs:' : null,
       ...(articleData.faqs || []).flatMap((faq: any) => [
-        `  - question: "${faq.question.replace(/"/g, '\\"')}"`,
-        `    answer: "${faq.answer.replace(/"/g, '\\"')}"`,
-        faq.category ? `    category: "${faq.category}"` : null,
+        `  - question: "${String(faq.question).replace(/"/g, '\\"')}"`,
+        `    answer: "${String(faq.answer).replace(/"/g, '\\"')}"`,
+        faq.category ? `    category: "${String(faq.category).replace(/"/g, '\\"')}"` : null,
       ]).filter(Boolean),
       articleData.references && articleData.references.length > 0 ? 'references:' : null,
       ...(articleData.references || []).flatMap((ref: any) => [
-        `  - title: "${ref.title.replace(/"/g, '\\"')}"`,
+        `  - title: "${String(ref.title).replace(/"/g, '\\"')}"`,
         `    url: "${ref.url}"`,
         ref.type ? `    type: "${ref.type}"` : null,
       ]).filter(Boolean),

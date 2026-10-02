@@ -458,13 +458,23 @@ CRITICAL INSTRUCTIONS:
         ? 'Pragmatic Engineering Tutorial (clear step-by-step progression with visual mental models, pitfalls, and concrete code).'
         : 'System Architecture Deep Dive (system design, throughput tradeoffs, data pipelines, scaling limits).'
     }
-3. Structure:
-   - High-impact hook highlighting the engineering bottleneck or architectural problem.
-   - Core mental model with an ASCII or Mermaid diagram explaining how the subsystem behaves.
-   - Production-grade code examples with typing, error handling, and benchmarks (no toy examples).
-   - Practical trade-offs table (e.g., Performance vs Memory, Latency vs Consistency).
-   - "When to use / When NOT to use" decision matrix.
-4. Output format: Return STRICTLY a valid JSON object matching this schema:
+3. Length & Depth Requirement:
+   - The "mdxContent" MUST be an exhaustive, long-form technical article (minimum 1,500 to 2,500 words).
+   - NEVER provide a brief summary, outline, or truncate after a single introductory section.
+   - Flesh out EVERY concept with concrete engineering rationale, mathematical intuitions, and real-world edge cases.
+
+4. Mandatory Article Structure:
+   - ## 1. Problem Formulation & Production Bottlenecks (Data leakage, concept drift, distribution shift).
+   - ## 2. Core Mental Model & Data Architecture (Clear ASCII or Mermaid diagram of data transformations).
+   - ## 3. Phase 1: Strategic Data Selection & Sampling (Stratified splits, temporal boundaries, class imbalance).
+   - ## 4. Phase 2: Systematic Preprocessing & Imputation (Iterative/KNN imputation, robust outlier pruning).
+   - ## 5. Phase 3: Feature Transformation & Scaling (StandardScaler vs RobustScaler vs Quantile, cyclical encodings).
+   - ## 6. Production-Ready Python Pipeline (Full runnable Scikit-Learn ColumnTransformer / Pipeline script with error handling and typing).
+   - ## 7. Memory & Performance Benchmarks (Reducing DataFrame memory footprints, Polars vs Pandas).
+   - ## 8. Architectural Tradeoffs & Decision Matrix (Markdown comparison table).
+   - ## 9. Production Readiness Checklist.
+
+5. Output format: Return STRICTLY a valid JSON object matching this schema:
 {
   "title": "Clear, compelling, high-CTR technical title",
   "slug": "kebab-case-slug",
@@ -482,14 +492,16 @@ CRITICAL INSTRUCTIONS:
   "references": [
     ${validExcerpts.map(s => `{"title": "Reference Guide", "url": "${s.url}", "type": "article"}`).join(', ')}
   ],
-  "mdxContent": "The complete, manual-quality markdown article with deep headings (##, ###), LaTeX formulas ($...$ or $$...$$), and executable code snippets."
+  "mdxContent": "The exhaustive, complete multi-section markdown article with deep headings (##, ###), LaTeX formulas ($...$ or $$...$$), and executable code snippets."
 }
 
 CRITICAL RULES:
 - Output MUST be strictly a parseable JSON object. No conversational preamble, no closing remarks.
+- Write the complete, unabridged article inside "mdxContent" from introduction through conclusion.
 - Escape all internal double quotes as \\" and do not use unescaped control characters.`;
 
-    const userMessage = `Please review and synthesize these reference sources into a comprehensive, original tutorial for the "${topic}" track.
+    const userMessage = `Please synthesize these reference sources into an exhaustive, comprehensive 2,000+ word engineering tutorial for the "${topic}" track.
+Ensure ALL 9 sections are fully developed with complete explanations and runnable code examples. Do NOT truncate or output outlines.
 Additional Author Directives: ${directives || 'None'}
 
 REFERENCE MATERIAL:

@@ -1,0 +1,34 @@
+---
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import AiBlogGeneratorModal from '@/components/admin/AiBlogGeneratorModal';
+
+export const prerender = false;
+---
+
+<DefaultLayout
+  title="AI Blog Draft Generator | EncodeEdge Admin"
+  description="Synthesize human-grade technical blog drafts from reference URLs with full SEO automation and private branch protection."
+  noIndex={true}
+>
+  <div class="min-h-screen bg-zinc-950 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto space-y-8">
+      {/* Breadcrumb & Navigation */}
+      <div class="flex items-center justify-between">
+        <nav class="flex items-center gap-2 text-xs text-zinc-400">
+          <a href="/keystatic" class="hover:text-indigo-400 transition-colors">Keystatic Admin</a>
+          <span>/</span>
+          <span class="text-zinc-200">AI Synthesizer</span>
+        </nav>
+        <a
+          href="/keystatic"
+          class="text-xs px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
+        >
+          ← Return to Keystatic Portal
+        </a>
+      </div>
+
+      {/* Main Container */}
+      <AiBlogGeneratorModal client:only="react" isStandalone={true} />
+    </div>
+  </div>
+</DefaultLayout>

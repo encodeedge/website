@@ -1,34 +1,48 @@
 ---
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import BaseHead from '@/components/BaseHead.astro';
 import AiBlogGeneratorModal from '@/components/admin/AiBlogGeneratorModal';
 
-export const prerender = false;
+export const prerender = true;
 ---
 
-<DefaultLayout
-  title="AI Blog Draft Generator | EncodeEdge Admin"
-  description="Synthesize human-grade technical blog drafts from reference URLs with full SEO automation and private branch protection."
-  noIndex={true}
->
-  <div class="min-h-screen bg-zinc-950 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl mx-auto space-y-8">
-      {/* Breadcrumb & Navigation */}
-      <div class="flex items-center justify-between">
-        <nav class="flex items-center gap-2 text-xs text-zinc-400">
-          <a href="/keystatic" class="hover:text-indigo-400 transition-colors">Keystatic Admin</a>
-          <span>/</span>
-          <span class="text-zinc-200">AI Synthesizer</span>
-        </nav>
-        <a
-          href="/keystatic"
-          class="text-xs px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
-        >
-          ← Return to Keystatic Portal
-        </a>
-      </div>
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead
+      title="AI Blog Draft Generator | EncodeEdge Admin"
+      description="Synthesize human-grade technical blog drafts from reference URLs with full SEO automation and private branch protection."
+      noIndex={true}
+    />
+  </head>
+  <body class="bg-zinc-950 text-zinc-100 min-h-screen antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div class="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto space-y-6">
+        {/* Admin Header */}
+        <header class="flex items-center justify-between border-b border-zinc-800 pb-4">
+          <div class="flex items-center gap-3">
+            <a href="/" class="text-xl font-bold tracking-tight bg-gradient-to-r from-indigo-400 via-purple-300 to-indigo-200 bg-clip-text text-transparent hover:opacity-90 transition-opacity">
+              EncodeEdge
+            </a>
+            <span class="text-[11px] px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700/80 font-medium">
+              Admin Studio
+            </span>
+          </div>
 
-      {/* Main Container */}
-      <AiBlogGeneratorModal client:only="react" isStandalone={true} />
+          <div class="flex items-center gap-3">
+            <a
+              href="/keystatic"
+              class="text-xs px-3.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors flex items-center gap-1.5"
+            >
+              <span>← Return to Keystatic CMS</span>
+            </a>
+          </div>
+        </header>
+
+        {/* AI Generator Interactive Form */}
+        <main>
+          <AiBlogGeneratorModal client:only="react" isStandalone={true} />
+        </main>
+      </div>
     </div>
-  </div>
-</DefaultLayout>
+  </body>
+</html>

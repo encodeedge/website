@@ -5,7 +5,14 @@ let readerInstance: ReturnType<typeof createReader> | null = null;
 
 function getReader() {
   if (!readerInstance) {
-    readerInstance = createReader(process.cwd(), keystaticConfig);
+    if (typeof process === 'undefined' || typeof process.cwd !== 'function') {
+      throw new Error('Keystatic reader requires a Node.js filesystem environment.');
+    }
+    const cwd = process.cwd();
+    if (!cwd) {
+      throw new Error('Invalid working directory for Keystatic reader.');
+    }
+    readerInstance = createReader(cwd, keystaticConfig);
   }
   return readerInstance;
 }

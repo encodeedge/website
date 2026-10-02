@@ -390,12 +390,18 @@ Respond ONLY with the raw JSON object.`;
       } else {
         // Local environment or fallback: Write file to disk with draft: true
         try {
-          const blogDir = path.join(process.cwd(), 'src/content/blog');
-          if (fs.existsSync(blogDir)) {
-            const targetFilePath = path.join(blogDir, `${slug}.mdx`);
-            fs.writeFileSync(targetFilePath, yamlFrontmatter, 'utf-8');
-            saveStatus = 'saved to local disk as draft';
-            savedLocation = `src/content/blog/${slug}.mdx`;
+          if (typeof process !== 'undefined' && typeof process.cwd === 'function') {
+            const blogDir = path.join(process.cwd(), 'src/content/blog');
+            if (fs.existsSync(blogDir)) {
+              const targetFilePath = path.join(blogDir, `${slug}.mdx`);
+              fs.writeFileSync(targetFilePath, yamlFrontmatter, 'utf-8');
+              saveStatus = 'saved to local disk as draft';
+              savedLocation = `src/content/blog/${slug}.mdx`;
+            } else {
+              saveStatus = 'generated draft in memory';
+            }
+          } else {
+            saveStatus = 'generated draft in memory (Cloudflare Pages)';
           }
         } catch (fsErr: any) {
           saveStatus = `disk save skipped (${fsErr.message})`;

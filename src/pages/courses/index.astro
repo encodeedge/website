@@ -5,6 +5,10 @@ import { BookOpen, Award, CheckCircle, Clock, Users, Sparkles, ArrowRight, Shiel
 import { LearnerGamificationBar } from '@/components/interactive/LearnerGamificationBar';
 import { CourseFlashcardsDrawer } from '@/components/interactive/CourseFlashcardsDrawer';
 import { CodeSandboxRunner } from '@/components/interactive/CodeSandboxRunner';
+import { getCoursesPageSettings } from '@/lib/settings';
+
+const pageSettings = await getCoursesPageSettings();
+const hero = pageSettings.hero;
 
 const allCourses = await getCollection('courses');
 const publishedCourses = allCourses.filter(course => course.data.status === 'published');
@@ -52,8 +56,8 @@ const coursesWithMeta = publishedCourses.map(course => {
 ---
 
 <DefaultLayout 
-  title="Courses & Academy | EncodeEdge" 
-  description="Master modern Artificial Intelligence, Machine Learning, Deep Learning, and Python through hands-on, production-grade courses."
+  title={pageSettings.seoTitle || "Courses & Academy | EncodeEdge"} 
+  description={pageSettings.seoDescription || "Master modern Artificial Intelligence, Machine Learning, Deep Learning, and Python through hands-on, production-grade courses."}
 >
   <div class="py-12 md:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
     
@@ -61,14 +65,20 @@ const coursesWithMeta = publishedCourses.map(course => {
     <header class="text-center max-w-3xl mx-auto space-y-4">
       <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 px-3.5 py-1.5 rounded-full">
         <Sparkles class="w-3.5 h-3.5" />
-        <span>Production-Grade Learning Academy</span>
+        <span>{hero.eyebrow || 'Production-Grade Learning Academy'}</span>
       </div>
       <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight text-foreground leading-[1.15]">
-        Master Applied AI &amp; Software Engineering
+        {hero.heading || 'Master Applied AI & Software Engineering'}
       </h1>
       <p class="text-base sm:text-lg md:text-xl text-muted-foreground font-body leading-relaxed max-w-2xl mx-auto">
-        Go beyond high-level buzzwords. Build neural networks, language agents, and high-performance streaming pipelines from scratch with code-first curricula.
+        {hero.subheading || 'Go beyond high-level buzzwords. Build neural networks, language agents, and high-performance streaming pipelines from scratch with code-first curricula.'}
       </p>
+      {(hero.ctaLabel || hero.secondaryCtaLabel) && (
+        <div class="flex items-center justify-center gap-3 pt-2">
+          {hero.ctaLabel && <a href={hero.ctaUrl || '#courses'} class="woords_btn text-sm font-semibold">{hero.ctaLabel}</a>}
+          {hero.secondaryCtaLabel && <a href={hero.secondaryCtaUrl || '/roadmaps'} class="text-sm font-semibold text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors">{hero.secondaryCtaLabel}</a>}
+        </div>
+      )}
     </header>
 
     <!-- Stats Banner -->
@@ -77,6 +87,7 @@ const coursesWithMeta = publishedCourses.map(course => {
         <div class="text-2xl sm:text-3xl font-bold font-display text-foreground">{publishedCourses.length}</div>
         <div class="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Flagship Courses</div>
       </div>
+
       <div class="p-4 rounded-2xl border border-border/80 bg-card text-center space-y-1 shadow-sm">
         <div class="text-2xl sm:text-3xl font-bold font-display text-foreground">{allLessons.length}+</div>
         <div class="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Interactive Lessons</div>

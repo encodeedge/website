@@ -1,30 +1,35 @@
 ---
 import { getCollection } from 'astro:content';
 
-import { Background } from '@/components/background';
 import { Roadmaps } from '@/components/blocks/roadmaps';
-import { SITE_TITLE, SITE_DESCRIPTION } from '@/consts';
+import { SITE_TITLE } from '@/consts';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { getRoadmapsPageSettings } from '@/lib/settings';
+
+const pageSettings = await getRoadmapsPageSettings();
+const hero = pageSettings.hero;
 
 const roadmaps = (await getCollection('roadmaps')).sort(
-	(a, b) => a.data.title.localeCompare(b.data.title),
+	pageSettings.sortOrder === 'featured'
+	  ? (a, b) => (b.data.featured ? 1 : 0) - (a.data.featured ? 1 : 0)
+	  : (a, b) => a.data.title.localeCompare(b.data.title),
 ).map((roadmap) => {
   const { render, ...rest } = roadmap as any;
   return { ...rest, slug: roadmap.id };
 });
 ---
 
-<DefaultLayout title={`Roadmaps - ${SITE_TITLE}`} description="Learn and master various topics with our curated roadmaps." >
+<DefaultLayout title={pageSettings.seoTitle || `Roadmaps - ${SITE_TITLE}`} description={pageSettings.seoDescription || "Learn and master various topics with our curated roadmaps."}>
 	<div class="py-12 md:py-16 max-w-6xl mx-auto px-4 sm:px-6">
 		<div class="text-center max-w-2xl mx-auto mb-12">
 			<span class="inline-block text-xs font-semibold uppercase tracking-wider bg-black-100 dark:bg-black-800 text-muted-foreground px-3 py-1 rounded-full mb-3">
-				Learning Paths
+				{hero.eyebrow || 'Learning Paths'}
 			</span>
 			<h1 class="text-4xl sm:text-5xl font-bold font-display tracking-tight text-foreground mb-4">
-				Step-by-Step Roadmaps
+				{hero.heading || 'Step-by-Step Roadmaps'}
 			</h1>
 			<p class="text-base sm:text-lg text-muted-foreground font-body">
-				Master complex engineering domains with our structured visual roadmaps from novice to production expert.
+				{hero.subheading || 'Master complex engineering domains with our structured visual roadmaps from novice to production expert.'}
 			</p>
 		</div>
 		<Roadmaps roadmaps={roadmaps} client:load />

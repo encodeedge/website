@@ -738,7 +738,7 @@ const TOPIC_CARDS = [
   </section>
 
   {/* Client-side script for inline interactive podcast playback & live feed synchronization */}
-  <script is:inline>
+  <script define:vars={{ autoSyncOnPageLoad }}>
     document.addEventListener('DOMContentLoaded', () => {
       // 1. Audio Player Logic
       const audio = document.getElementById('podcast-audio');
@@ -929,7 +929,7 @@ const TOPIC_CARDS = [
       }
 
       // 4. Background Auto-Sync on Page Load (debounced with localStorage to prevent API spam)
-      const AUTO_SYNC_ENABLED = {JSON.stringify(autoSyncOnPageLoad)};
+      const AUTO_SYNC_ENABLED = autoSyncOnPageLoad;
       const AUTO_SYNC_CACHE_KEY = 'encodeedge_feeds_last_sync';
       const AUTO_SYNC_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes cache window
 

@@ -176,13 +176,15 @@ export default config({
       'Feeds & Sources': ['sources'],
       'Design & Navigation': ['navigationSettings', 'footerSettings'],
       'Marketing': ['seoSettings', 'integrationsSettings'],
-      'Content': ['blogs', 'faqs', 'roadmaps'],
-      'Competitions': ['competitions'],
+      'Content': ['blogs', 'faqs', 'roadmaps', 'glossary'],
+      'Labs & Competitions': ['labs', 'competitions'],
       'Components': ['components'],
       'LMS Core': ['courses', 'batches', 'instructors', 'liveClasses'],
       'LMS Material': ['lessons', 'quizzes', 'assignments'],
       'LMS Administration': ['certificates'],
+      'Page Settings': ['pageCoursesSettings', 'pageBlogSettings', 'pageLabsSettings', 'pageRoadmapsSettings', 'pageTopicsSettings', 'pageLiveClassesSettings', 'pageDashboardSettings'],
     }
+
   },
 
   singletons: {
@@ -830,6 +832,159 @@ export default config({
         }, { label: 'Display & Sync Configuration' }),
       },
     }),
+
+    // ─── Page-Level Settings ─────────────────────────────────────────────────
+
+    pageCoursesSettings: singleton({
+      label: 'Courses Page',
+      path: 'src/content/settings/pages/courses',
+      schema: {
+        hero: fields.object({
+          eyebrow: fields.text({ label: 'Eyebrow Label', defaultValue: 'EncodeEdge Academy' }),
+          heading: fields.text({ label: 'Heading', defaultValue: 'Build Real AI Skills' }),
+          subheading: fields.text({ label: 'Subheading', multiline: true, defaultValue: 'Master modern Artificial Intelligence, Machine Learning, Deep Learning, and Python through hands-on, production-grade courses.' }),
+          ctaLabel: fields.text({ label: 'Primary CTA Label', defaultValue: 'Browse All Courses' }),
+          ctaUrl: fields.text({ label: 'Primary CTA URL', defaultValue: '#courses' }),
+          secondaryCtaLabel: fields.text({ label: 'Secondary CTA Label', defaultValue: 'View Roadmaps' }),
+          secondaryCtaUrl: fields.text({ label: 'Secondary CTA URL', defaultValue: '/roadmaps' }),
+        }, { label: 'Hero Section' }),
+        stats: fields.array(
+          fields.object({
+            value: fields.text({ label: 'Stat Value (e.g. "12+")' }),
+            label: fields.text({ label: 'Stat Label (e.g. "Courses")' }),
+          }),
+          { label: 'Hero Stats', itemLabel: props => props.fields.label.value }
+        ),
+        showFeaturedSection: fields.checkbox({ label: 'Show Featured Courses Row', defaultValue: true }),
+        showBatchesSection: fields.checkbox({ label: 'Show Upcoming Batches Section', defaultValue: true }),
+        showInstructorsSection: fields.checkbox({ label: 'Show Instructors Section', defaultValue: true }),
+        maxCoursesShown: fields.number({ label: 'Max Courses in Grid (0 = all)', defaultValue: 0 }),
+        seoTitle: fields.text({ label: 'SEO Title Override' }),
+        seoDescription: fields.text({ label: 'SEO Description Override', multiline: true }),
+      },
+    }),
+
+    pageBlogSettings: singleton({
+      label: 'Blog Page',
+      path: 'src/content/settings/pages/blog',
+      schema: {
+        hero: fields.object({
+          eyebrow: fields.text({ label: 'Eyebrow Label', defaultValue: 'EncodeEdge Blog' }),
+          heading: fields.text({ label: 'Heading', defaultValue: 'Blueprints for Modern AI Engineers' }),
+          subheading: fields.text({ label: 'Subheading', multiline: true, defaultValue: 'Clear, code-backed deep dives into Machine Learning, Deep Learning, Python internals, and AI systems.' }),
+        }, { label: 'Hero Section' }),
+        postsPerPage: fields.number({ label: 'Posts Per Page', defaultValue: 12 }),
+        showNotebooks: fields.checkbox({ label: 'Show Notebooks alongside Blog Posts', defaultValue: true }),
+        showFeaturedPosts: fields.checkbox({ label: 'Show Featured Posts Row', defaultValue: true }),
+        defaultSortOrder: fields.select({
+          label: 'Default Sort Order',
+          options: [
+            { label: 'Newest First', value: 'newest' },
+            { label: 'Oldest First', value: 'oldest' },
+            { label: 'Most Popular (Read Time)', value: 'popular' },
+          ],
+          defaultValue: 'newest',
+        }),
+        seoTitle: fields.text({ label: 'SEO Title Override' }),
+        seoDescription: fields.text({ label: 'SEO Description Override', multiline: true }),
+      },
+    }),
+
+    pageLabsSettings: singleton({
+      label: 'Labs Page',
+      path: 'src/content/settings/pages/labs',
+      schema: {
+        hero: fields.object({
+          eyebrow: fields.text({ label: 'Eyebrow Label', defaultValue: 'Interactive AI Labs' }),
+          heading: fields.text({ label: 'Heading', defaultValue: 'Learn by Doing' }),
+          subheading: fields.text({ label: 'Subheading', multiline: true, defaultValue: 'Explore interactive simulators for Transformers, Convolutions, Gradient Descent, and a comprehensive AI math notation glossary.' }),
+        }, { label: 'Hero Section' }),
+        showGlossaryTab: fields.checkbox({ label: 'Show Math Decoder / Glossary Tab', defaultValue: true }),
+        defaultTab: fields.select({
+          label: 'Default Active Tab',
+          options: [
+            { label: 'All Labs', value: 'all' },
+            { label: 'Math Decoder', value: 'math-decoder' },
+          ],
+          defaultValue: 'all',
+        }),
+        seoTitle: fields.text({ label: 'SEO Title Override' }),
+        seoDescription: fields.text({ label: 'SEO Description Override', multiline: true }),
+      },
+    }),
+
+    pageRoadmapsSettings: singleton({
+      label: 'Roadmaps Page',
+      path: 'src/content/settings/pages/roadmaps',
+      schema: {
+        hero: fields.object({
+          eyebrow: fields.text({ label: 'Eyebrow Label', defaultValue: 'Learning Paths' }),
+          heading: fields.text({ label: 'Heading', defaultValue: 'Step-by-Step Roadmaps' }),
+          subheading: fields.text({ label: 'Subheading', multiline: true, defaultValue: 'Master complex engineering domains with structured visual roadmaps from novice to production expert.' }),
+        }, { label: 'Hero Section' }),
+        sortOrder: fields.select({
+          label: 'Sort Order',
+          options: [
+            { label: 'Alphabetical (A-Z)', value: 'alpha' },
+            { label: 'Featured First', value: 'featured' },
+          ],
+          defaultValue: 'alpha',
+        }),
+        seoTitle: fields.text({ label: 'SEO Title Override' }),
+        seoDescription: fields.text({ label: 'SEO Description Override', multiline: true }),
+      },
+    }),
+
+    pageTopicsSettings: singleton({
+      label: 'Topics Page',
+      path: 'src/content/settings/pages/topics',
+      schema: {
+        hero: fields.object({
+          eyebrow: fields.text({ label: 'Eyebrow Label', defaultValue: 'Knowledge Hubs' }),
+          heading: fields.text({ label: 'Heading', defaultValue: 'All Engineering Topics' }),
+          subheading: fields.text({ label: 'Subheading', multiline: true, defaultValue: 'Browse curated engineering tracks from foundational Python to deep learning architectures and production LLMs.' }),
+        }, { label: 'Hero Section' }),
+        showTopicStats: fields.checkbox({ label: 'Show Article Count & Read Time per Topic', defaultValue: true }),
+        showRoadmapBadge: fields.checkbox({ label: 'Show "Has Roadmap" Badge', defaultValue: true }),
+        showRecentArticlesPreview: fields.checkbox({ label: 'Show Recent Articles Preview per Topic Card', defaultValue: true }),
+        seoTitle: fields.text({ label: 'SEO Title Override' }),
+        seoDescription: fields.text({ label: 'SEO Description Override', multiline: true }),
+      },
+    }),
+
+    pageLiveClassesSettings: singleton({
+      label: 'Live Classes Page',
+      path: 'src/content/settings/pages/live-classes',
+      schema: {
+        hero: fields.object({
+          eyebrow: fields.text({ label: 'Eyebrow Label', defaultValue: '1 Live Session In Progress' }),
+          heading: fields.text({ label: 'Heading', defaultValue: 'Live Classes & Community' }),
+          subheading: fields.text({ label: 'Subheading', multiline: true, defaultValue: "Attend live coding sessions, ask questions in real time, and watch recordings when you can't make it live." }),
+        }, { label: 'Hero Section' }),
+        showLeaderboard: fields.checkbox({ label: 'Show Leaderboard Section', defaultValue: true }),
+        showCountdownTimer: fields.checkbox({ label: 'Show Countdown to Next Live Session', defaultValue: true }),
+        seoTitle: fields.text({ label: 'SEO Title Override' }),
+        seoDescription: fields.text({ label: 'SEO Description Override', multiline: true }),
+      },
+    }),
+
+    pageDashboardSettings: singleton({
+      label: 'Dashboard Page',
+      path: 'src/content/settings/pages/dashboard',
+      schema: {
+        hero: fields.object({
+          heading: fields.text({ label: 'Heading', defaultValue: 'My Learning Dashboard' }),
+          subheading: fields.text({ label: 'Subheading', defaultValue: 'Track your progress, resume active modules, and manage earned certificates.' }),
+        }, { label: 'Hero Section' }),
+        showStreakWidget: fields.checkbox({ label: 'Show Day Streak Widget', defaultValue: true }),
+        showXpWidget: fields.checkbox({ label: 'Show XP / Points Widget', defaultValue: true }),
+        showCertificatesSection: fields.checkbox({ label: 'Show Earned Certificates Section', defaultValue: true }),
+        showLeaderboardWidget: fields.checkbox({ label: 'Show Mini-Leaderboard Widget', defaultValue: true }),
+        showRecommendedCourses: fields.checkbox({ label: 'Show Recommended Courses Panel', defaultValue: true }),
+        seoTitle: fields.text({ label: 'SEO Title Override' }),
+      },
+    }),
+
   },
 
   collections: {
@@ -1111,6 +1266,27 @@ export default config({
           { label: 'Prerequisites', itemLabel: props => props.value }
         ),
         about: fields.mdx({ label: 'About this Course', extension: 'md' }),
+        // ── Discoverability ────────────────────────────────────────────────
+        featured: fields.checkbox({ label: 'Featured Course', description: 'Highlight on the courses landing page', defaultValue: false }),
+        tags: fields.array(
+          fields.text({ label: 'Tag' }),
+          { label: 'Tags', itemLabel: props => props.value }
+        ),
+        topics: fields.multiselect({
+          label: 'Topics',
+          options: [
+            { label: 'Machine Learning', value: 'machine-learning' },
+            { label: 'Deep Learning', value: 'deep-learning' },
+            { label: 'Python', value: 'python' },
+            { label: 'Natural Language Processing', value: 'nlp' },
+            { label: 'Computer Vision', value: 'computer-vision' },
+            { label: 'Data Science', value: 'data-science' },
+            { label: 'LLMs & RAG', value: 'llms-rag' },
+            { label: 'Reinforcement Learning', value: 'reinforcement-learning' },
+          ],
+        }),
+        estimatedDuration: fields.text({ label: 'Estimated Duration (e.g. "8 hours", "6 weeks")', defaultValue: '' }),
+        seoDescription: fields.text({ label: 'SEO Meta Description (Optional override)', multiline: true }),
       }
     }),
     batches: collection({
@@ -1146,14 +1322,31 @@ export default config({
       format: { contentField: 'bio' },
       schema: {
         name: fields.slug({ name: { label: 'Name' } }),
+        title: fields.text({ label: 'Title / Role', defaultValue: 'AI & ML Instructor' }),
         avatar: fields.image({
           label: 'Avatar',
           publicPath: '/assets/instructors/',
           directory: 'public/assets/instructors',
         }),
+        featured: fields.checkbox({ label: 'Featured Instructor', defaultValue: false }),
+        specialties: fields.array(
+          fields.text({ label: 'Specialty' }),
+          { label: 'Specialties / Skills', itemLabel: props => props.value }
+        ),
+        email: fields.text({ label: 'Contact Email (Optional)' }),
         socialLinks: fields.array(
           fields.object({
-            platform: fields.text({ label: 'Platform' }),
+            platform: fields.select({
+              label: 'Platform',
+              options: [
+                { label: 'GitHub', value: 'github' },
+                { label: 'Twitter / X', value: 'twitter' },
+                { label: 'LinkedIn', value: 'linkedin' },
+                { label: 'YouTube', value: 'youtube' },
+                { label: 'Website', value: 'website' },
+              ],
+              defaultValue: 'github',
+            }),
             url: fields.text({ label: 'URL' }),
           }),
           { label: 'Social Links', itemLabel: props => props.fields.platform.value }
@@ -1161,6 +1354,7 @@ export default config({
         bio: fields.mdx({ label: 'Bio', extension: 'md' }),
       }
     }),
+
 
     liveClasses: collection({
       label: 'Live Classes',
@@ -1247,6 +1441,12 @@ export default config({
         }),
         videoUrl: fields.text({ label: 'Video URL', description: 'YouTube or Vimeo embed URL' }),
         duration: fields.number({ label: 'Duration (in minutes)' }),
+        order: fields.number({ label: 'Sort Order', description: 'Order within its chapter (lower = first)', defaultValue: 0 }),
+        isFree: fields.checkbox({ label: 'Free Preview Lesson', description: 'Allow non-enrolled users to preview this lesson', defaultValue: false }),
+        tags: fields.array(
+          fields.text({ label: 'Tag' }),
+          { label: 'Tags', itemLabel: props => props.value }
+        ),
         content: fields.mdx({ label: 'Content', extension: 'md', components: mdxComponents }),
       }
     }),
@@ -1455,6 +1655,102 @@ export default config({
           itemLabel: (props) => props.value,
         }),
         featured: fields.checkbox({ label: 'Featured Challenge', defaultValue: false }),
+      },
+    }),
+
+    // --- Glossary (Math & AI Symbol Decoder) ---
+    glossary: collection({
+      label: 'Glossary',
+      slugField: 'name',
+      path: 'src/content/glossary/*',
+      format: { data: 'yaml' },
+      schema: {
+        name: fields.slug({ name: { label: 'Term / Symbol Name' } }),
+        glyph: fields.text({
+          label: 'Symbol / Glyph',
+          description: 'The display symbol or notation',
+          validation: { isRequired: true },
+        }),
+        latex: fields.text({
+          label: 'LaTeX Notation',
+          description: 'Full LaTeX source (rendered with KaTeX)',
+          multiline: true,
+        }),
+        pronunciation: fields.text({ label: 'Pronunciation / How to Read Aloud' }),
+        category: fields.select({
+          label: 'Category',
+          options: [
+            { label: 'Deep Learning', value: 'deep-learning' },
+            { label: 'Machine Learning', value: 'machine-learning' },
+            { label: 'Mathematics', value: 'mathematics' },
+            { label: 'Statistics', value: 'statistics' },
+            { label: 'Python', value: 'python' },
+            { label: 'Computer Science', value: 'computer-science' },
+            { label: 'NLP & LLMs', value: 'nlp' },
+            { label: 'Reinforcement Learning', value: 'reinforcement-learning' },
+          ],
+          defaultValue: 'deep-learning',
+        }),
+        meaning: fields.text({
+          label: 'Meaning / Definition',
+          multiline: true,
+          validation: { isRequired: true },
+        }),
+        example: fields.text({ label: 'Real-World Example / Usage', multiline: true }),
+        ambiguity: fields.text({ label: 'Common Ambiguities / Gotchas', multiline: true }),
+        relatedLabId: fields.text({
+          label: 'Related Interactive Lab ID (Optional)',
+          description: 'Slug of an interactive lab that demonstrates this (e.g. "attention-visualizer")',
+        }),
+        relatedLabTitle: fields.text({ label: 'Related Lab Display Title (Optional)' }),
+        featured: fields.checkbox({ label: 'Featured in Decoder', defaultValue: false }),
+      },
+    }),
+
+    // --- Interactive Labs ---
+    labs: collection({
+      label: 'Interactive Labs',
+      slugField: 'title',
+      path: 'src/content/labs/*',
+      format: { data: 'yaml' },
+      schema: {
+        title: fields.slug({ name: { label: 'Lab Title' } }),
+        shortTitle: fields.text({ label: 'Short Title (for cards / tabs)', validation: { isRequired: true } }),
+        category: fields.select({
+          label: 'Category',
+          options: [
+            { label: 'Deep Learning', value: 'Deep Learning' },
+            { label: 'Machine Learning', value: 'Machine Learning' },
+            { label: 'Python & CS', value: 'Python & CS' },
+            { label: 'Mathematics', value: 'Mathematics' },
+            { label: 'NLP & LLMs', value: 'NLP & LLMs' },
+          ],
+          defaultValue: 'Deep Learning',
+        }),
+        simulatorType: fields.select({
+          label: 'Simulator Component',
+          description: 'Which interactive React component powers this lab',
+          options: [
+            { label: 'Transformer Self-Attention Visualizer', value: 'attention-visualizer' },
+            { label: '2D Convolution & Feature Maps Lab', value: 'convolution-visualizer' },
+            { label: 'Loss Surface & Gradient Descent Lab', value: 'gradient-descent' },
+            { label: 'CPython Stack & Heap Memory Explorer', value: 'memory-explorer' },
+            { label: 'AI Model Router & Latency Simulator', value: 'model-router' },
+            { label: 'Neural Network Playground', value: 'neural-playground' },
+            { label: 'Math Decoder (Symbols & LaTeX)', value: 'math-decoder' },
+          ],
+          defaultValue: 'attention-visualizer',
+        }),
+        badge: fields.text({ label: 'Badge Text (e.g. "Transformers & LLMs")', defaultValue: '' }),
+        description: fields.text({
+          label: 'Description',
+          multiline: true,
+          validation: { isRequired: true },
+        }),
+        lessonPath: fields.text({ label: 'Related Lesson URL (Optional)', description: 'e.g. /lessons/dl-transformers-attention' }),
+        lessonTitle: fields.text({ label: 'Related Lesson Title (Optional)' }),
+        order: fields.number({ label: 'Display Order (lower = first)', defaultValue: 99 }),
+        featured: fields.checkbox({ label: 'Featured Lab', defaultValue: false }),
       },
     }),
   },

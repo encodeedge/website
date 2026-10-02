@@ -788,3 +788,128 @@ export async function getSourcesSettings(): Promise<SourcesSettings> {
   }
 }
 
+// ─── Page-Level Settings ──────────────────────────────────────────────────────
+
+export interface PageHero {
+  eyebrow?: string;
+  heading: string;
+  subheading?: string;
+  ctaLabel?: string;
+  ctaUrl?: string;
+  secondaryCtaLabel?: string;
+  secondaryCtaUrl?: string;
+}
+
+export interface PageCoursesSettings {
+  hero: PageHero;
+  stats: { value: string; label: string }[];
+  showFeaturedSection: boolean;
+  showBatchesSection: boolean;
+  showInstructorsSection: boolean;
+  maxCoursesShown: number;
+  seoTitle?: string;
+  seoDescription?: string;
+}
+
+export interface PageBlogSettings {
+  hero: PageHero;
+  postsPerPage: number;
+  showNotebooks: boolean;
+  showFeaturedPosts: boolean;
+  defaultSortOrder: 'newest' | 'oldest' | 'popular';
+  seoTitle?: string;
+  seoDescription?: string;
+}
+
+export interface PageLabsSettings {
+  hero: PageHero;
+  showGlossaryTab: boolean;
+  defaultTab: string;
+  seoTitle?: string;
+  seoDescription?: string;
+}
+
+export interface PageRoadmapsSettings {
+  hero: PageHero;
+  sortOrder: 'alpha' | 'featured';
+  seoTitle?: string;
+  seoDescription?: string;
+}
+
+export interface PageTopicsSettings {
+  hero: PageHero;
+  showTopicStats: boolean;
+  showRoadmapBadge: boolean;
+  showRecentArticlesPreview: boolean;
+  seoTitle?: string;
+  seoDescription?: string;
+}
+
+export interface PageLiveClassesSettings {
+  hero: PageHero;
+  showLeaderboard: boolean;
+  showCountdownTimer: boolean;
+  seoTitle?: string;
+  seoDescription?: string;
+}
+
+export interface PageDashboardSettings {
+  hero: PageHero;
+  showStreakWidget: boolean;
+  showXpWidget: boolean;
+  showCertificatesSection: boolean;
+  showLeaderboardWidget: boolean;
+  showRecommendedCourses: boolean;
+  seoTitle?: string;
+}
+
+// Defaults
+export const DEFAULT_COURSES_PAGE: PageCoursesSettings = {
+  hero: { eyebrow: 'EncodeEdge Academy', heading: 'Build Real AI Skills', subheading: 'Master modern Artificial Intelligence, Machine Learning, Deep Learning, and Python through hands-on, production-grade courses.', ctaLabel: 'Browse All Courses', ctaUrl: '#courses', secondaryCtaLabel: 'View Roadmaps', secondaryCtaUrl: '/roadmaps' },
+  stats: [{ value: '12+', label: 'Courses' }, { value: '100+', label: 'Lessons' }, { value: '50+', label: 'Quizzes' }],
+  showFeaturedSection: true, showBatchesSection: true, showInstructorsSection: true, maxCoursesShown: 0,
+};
+export const DEFAULT_BLOG_PAGE: PageBlogSettings = {
+  hero: { eyebrow: 'EncodeEdge Blog', heading: 'Blueprints for Modern AI Engineers', subheading: 'Clear, code-backed deep dives into Machine Learning, Deep Learning, Python internals, and AI systems.' },
+  postsPerPage: 12, showNotebooks: true, showFeaturedPosts: true, defaultSortOrder: 'newest',
+};
+export const DEFAULT_LABS_PAGE: PageLabsSettings = {
+  hero: { eyebrow: 'Interactive AI Labs', heading: 'Learn by Doing', subheading: 'Explore interactive simulators for Transformers, Convolutions, Gradient Descent, and a comprehensive AI math notation glossary.' },
+  showGlossaryTab: true, defaultTab: 'all',
+};
+export const DEFAULT_ROADMAPS_PAGE: PageRoadmapsSettings = {
+  hero: { eyebrow: 'Learning Paths', heading: 'Step-by-Step Roadmaps', subheading: 'Master complex engineering domains with structured visual roadmaps from novice to production expert.' },
+  sortOrder: 'alpha',
+};
+export const DEFAULT_TOPICS_PAGE: PageTopicsSettings = {
+  hero: { eyebrow: 'Knowledge Hubs', heading: 'All Engineering Topics', subheading: 'Browse curated engineering tracks from foundational Python to deep learning architectures and production LLMs.' },
+  showTopicStats: true, showRoadmapBadge: true, showRecentArticlesPreview: true,
+};
+export const DEFAULT_LIVE_CLASSES_PAGE: PageLiveClassesSettings = {
+  hero: { eyebrow: '1 Live Session In Progress', heading: 'Live Classes & Community', subheading: 'Attend live coding sessions, ask questions in real time, and watch recordings when you can\'t make it live.' },
+  showLeaderboard: true, showCountdownTimer: true,
+};
+export const DEFAULT_DASHBOARD_PAGE: PageDashboardSettings = {
+  hero: { heading: 'My Learning Dashboard', subheading: 'Track your progress, resume active modules, and manage earned certificates.' },
+  showStreakWidget: true, showXpWidget: true, showCertificatesSection: true, showLeaderboardWidget: true, showRecommendedCourses: true,
+};
+
+// Generic page settings getter
+async function getPageSetting<T>(singletonKey: string, defaults: T): Promise<T> {
+  try {
+    const reader = getReader();
+    const data = await (reader.singletons as any)[singletonKey]?.read();
+    if (!data) return defaults;
+    return { ...defaults, ...data, hero: { ...(defaults as any).hero, ...(data.hero || {}) } } as T;
+  } catch {
+    return defaults;
+  }
+}
+
+export const getCoursesPageSettings = () => getPageSetting<PageCoursesSettings>('pageCoursesSettings', DEFAULT_COURSES_PAGE);
+export const getBlogPageSettings = () => getPageSetting<PageBlogSettings>('pageBlogSettings', DEFAULT_BLOG_PAGE);
+export const getLabsPageSettings = () => getPageSetting<PageLabsSettings>('pageLabsSettings', DEFAULT_LABS_PAGE);
+export const getRoadmapsPageSettings = () => getPageSetting<PageRoadmapsSettings>('pageRoadmapsSettings', DEFAULT_ROADMAPS_PAGE);
+export const getTopicsPageSettings = () => getPageSetting<PageTopicsSettings>('pageTopicsSettings', DEFAULT_TOPICS_PAGE);
+export const getLiveClassesPageSettings = () => getPageSetting<PageLiveClassesSettings>('pageLiveClassesSettings', DEFAULT_LIVE_CLASSES_PAGE);
+export const getDashboardPageSettings = () => getPageSetting<PageDashboardSettings>('pageDashboardSettings', DEFAULT_DASHBOARD_PAGE);

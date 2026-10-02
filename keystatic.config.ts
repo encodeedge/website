@@ -1,4 +1,5 @@
 // keystatic.config.ts
+import React from 'react';
 import { config, fields, collection, singleton } from '@keystatic/core';
 import { block, wrapper } from '@keystatic/core/content-components';
 
@@ -167,10 +168,39 @@ export default config({
     ? { kind: 'local' }
     : {
         kind: 'github',
-        repo: 'encodeedge/website',
+        repo: (process.env.KEYSTATIC_GITHUB_REPO || 'encodeedge/website') as `${string}/${string}`,
+        branchPrefix: process.env.KEYSTATIC_BRANCH_PREFIX || 'keystatic/',
       },
+
   ui: {
-    brand: { name: 'EncodeEdge' },
+    brand: {
+      name: 'EncodeEdge',
+      mark: () =>
+        React.createElement(
+          'a',
+          {
+            href: '/admin/ai-generator',
+            target: '_blank',
+            rel: 'noreferrer',
+            title: 'Generate AI Blog Post Draft from URLs',
+            style: {
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '3px 8px',
+              background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+              color: '#ffffff',
+              borderRadius: '6px',
+              fontSize: '11px',
+              fontWeight: 600,
+              textDecoration: 'none',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(79, 70, 229, 0.35)',
+            },
+          },
+          '⚡ AI Drafts'
+        ),
+    },
     navigation: {
       'Site Settings': ['siteSettings', 'featureFlags', 'announcementBanner'],
       'Feeds & Sources': ['sources'],
@@ -1020,6 +1050,7 @@ export default config({
     // ─── AI Article Synthesizer & Generator ─────────────────────────────────
     aiBlogGenerator: singleton({
       label: 'AI Article Synthesizer',
+      previewUrl: '/admin/ai-generator',
       path: 'src/content/settings/ai-generator',
       schema: {
         sourceUrls: fields.array(
@@ -1071,9 +1102,14 @@ export default config({
           description: 'e.g., "Emphasize memory footprints, include a PyTorch comparison, focus on edge cases"',
           multiline: true,
         }),
+        targetBranch: fields.text({
+          label: 'Target Git Branch (Optional / Private Branch)',
+          description: 'Leave blank to save to your local branch / working tree or enter a private branch name (e.g. "drafts/ai-articles" or "feature/new-post").',
+          defaultValue: 'drafts/ai-articles',
+        }),
         autoCreatePullRequest: fields.checkbox({
-          label: 'Directly Commit Draft to Git Repository',
-          description: 'When triggered via the webhook / synthesis endpoint, automatically commits the generated MDX article into src/content/blog.',
+          label: 'Commit to GitHub Branch',
+          description: 'When enabled, writes directly to the specified Git branch using GITHUB_TOKEN instead of local disk.',
           defaultValue: false,
         }),
         lastGeneratedSlug: fields.text({
@@ -1082,6 +1118,7 @@ export default config({
         }),
       },
     }),
+
 
   },
 
@@ -1099,8 +1136,14 @@ export default config({
         pubDate: fields.date({ label: 'Publication Date', validation: { isRequired: true } }),
         updatedDate: fields.date({ label: 'Updated Date', validation: { isRequired: true } }),
         readTime: fields.number({ label: 'Estimated Read Time (minutes)' }),
+        draft: fields.checkbox({
+          label: 'Draft Status',
+          description: 'Keep this article in draft state. It will not appear in the public blog listing.',
+          defaultValue: false,
+        }),
         featured: fields.checkbox({ label: 'Featured Post', description: 'Mark this post as featured to highlight it on the homepage.' }),
         tags: fields.array(
+
           fields.text({ label: 'Tag' }),
           {
             label: 'Tags',

@@ -988,6 +988,7 @@ export interface AiBlogGeneratorSettings {
   writingTone: 'engineer' | 'tutorial' | 'architecture';
   modelPreference: string;
   additionalDirectives?: string;
+  targetBranch?: string;
   autoCreatePullRequest: boolean;
   lastGeneratedSlug?: string;
 }
@@ -998,9 +999,11 @@ export const DEFAULT_AI_GENERATOR_SETTINGS: AiBlogGeneratorSettings = {
   writingTone: 'engineer',
   modelPreference: '@cf/meta/llama-3.3-70b-instruct',
   additionalDirectives: '',
+  targetBranch: 'drafts/ai-articles',
   autoCreatePullRequest: false,
   lastGeneratedSlug: '',
 };
+
 
 export async function getAiBlogGeneratorSettings(): Promise<AiBlogGeneratorSettings> {
   try {

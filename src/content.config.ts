@@ -31,12 +31,14 @@ const blog = defineCollection({
     topics: z.array(TOPIC_SLUGS), 
     tags: z.array(z.string()).optional(), 
     featured: z.boolean().optional(),
+    draft: z.boolean().optional().default(false),
     seoTitle: z.string().optional(),
     seoDescription: z.string().optional(),
     canonicalUrl: z.string().optional(),
     noIndex: z.boolean().optional(),
   }),
 });
+
 
 
 const faqs = defineCollection({

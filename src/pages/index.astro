@@ -27,10 +27,12 @@ import {
 } from 'lucide-react';
 import EditorialPostCover from '@/components/ui/EditorialPostCover.astro';
 
-const allPosts = await getCollection('blog');
+const rawPosts = await getCollection('blog');
+const allPosts = rawPosts.filter((p) => import.meta.env.DEV || !p.data.draft);
 const sortedPosts = allPosts.sort(
   (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
 );
+
 
 // Quick reads for top strip
 const quickReads = sortedPosts.slice(0, 4);

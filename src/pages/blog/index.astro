@@ -5,7 +5,8 @@ import { BlogPosts } from '@/components/blocks/blog-posts';
 import { SITE_TITLE, SITE_DESCRIPTION } from '@/consts';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 
-const blogPosts = await getCollection('blog');
+const rawBlogPosts = await getCollection('blog');
+const blogPosts = rawBlogPosts.filter((p) => import.meta.env.DEV || !p.data.draft);
 
 const notebooks = await Astro.glob<any>('/src/pages/notebooks/*.astro');
 const notebookPosts = notebooks

@@ -12,16 +12,6 @@ navLinks:
         description: Full-stack AI, ML, and Python curriculum with code walkthroughs
         badge: Popular
         openInNewTab: false
-      - label: System Design
-        href: /system-design
-        description: Interactive flight simulator, production reference architectures, and AWS blueprints
-        badge: Interactive
-        openInNewTab: false
-      - label: Live Classes
-        href: /live-classes
-        description: Interactive cohorts, hands-on workshops, and webinars
-        badge: Live
-        openInNewTab: false
       - label: Roadmaps
         href: /roadmaps
         description: Visual career roadmaps and guided competency paths
@@ -35,19 +25,15 @@ navLinks:
     badge: Interactive
     openInNewTab: false
     children:
-      - label: Interactive Simulators
-        href: /labs
-        description: Visual playgrounds for Attention, Convolutions, and Memory
-        badge: New
-        openInNewTab: false
-      - label: AIML System Design Lab
+      - label: System Design
         href: /system-design
         description: AWS-style drag-and-drop ML pipeline builder and game
-        badge: Game
+        badge: Interactive
         openInNewTab: false
-      - label: AI ML Terms and Glossary
+      - label: Glossary
         href: /labs#math-decoder
         description: Glossary of neural network symbols, notation, and LaTeX
+        badge: New
         openInNewTab: false
       - label: Competitions
         href: /competitions

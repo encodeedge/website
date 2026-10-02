@@ -78,60 +78,60 @@ const DOMAIN_CONFIG: Record<ServiceDomain, {
   gateway: {
     color: '#06b6d4',
     glow: 'rgba(6, 182, 212, 0.4)',
-    border: 'border-cyan-500/50 hover:border-cyan-400',
-    bg: 'bg-cyan-950/40',
-    badgeBg: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/30',
-    iconBg: 'bg-cyan-500/20 text-cyan-300',
+    border: 'border-cyan-500/60 hover:border-cyan-500',
+    bg: 'bg-cyan-500/10',
+    badgeBg: 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border-cyan-500/30',
+    iconBg: 'bg-cyan-500/20 text-cyan-700 dark:text-cyan-300',
     icon: Server,
     domainName: 'Networking & API Gateway'
   },
   compute: {
     color: '#f59e0b',
     glow: 'rgba(245, 158, 11, 0.4)',
-    border: 'border-amber-500/50 hover:border-amber-400',
-    bg: 'bg-amber-950/40',
-    badgeBg: 'bg-amber-500/10 text-amber-300 border-amber-500/30',
-    iconBg: 'bg-amber-500/20 text-amber-300',
+    border: 'border-amber-500/60 hover:border-amber-500',
+    bg: 'bg-amber-500/10',
+    badgeBg: 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30',
+    iconBg: 'bg-amber-500/20 text-amber-700 dark:text-amber-300',
     icon: Cpu,
     domainName: 'Compute / Containers'
   },
   storage: {
     color: '#3b82f6',
     glow: 'rgba(59, 130, 246, 0.4)',
-    border: 'border-blue-500/50 hover:border-blue-400',
-    bg: 'bg-blue-950/40',
-    badgeBg: 'bg-blue-500/10 text-blue-300 border-blue-500/30',
-    iconBg: 'bg-blue-500/20 text-blue-300',
+    border: 'border-blue-500/60 hover:border-blue-500',
+    bg: 'bg-blue-500/10',
+    badgeBg: 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30',
+    iconBg: 'bg-blue-500/20 text-blue-700 dark:text-blue-300',
     icon: Database,
     domainName: 'Storage & Vector Databases'
   },
   ml: {
     color: '#10b981',
     glow: 'rgba(16, 185, 129, 0.4)',
-    border: 'border-emerald-500/50 hover:border-emerald-400',
-    bg: 'bg-emerald-950/40',
-    badgeBg: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30',
-    iconBg: 'bg-emerald-500/20 text-emerald-300',
+    border: 'border-emerald-500/60 hover:border-emerald-500',
+    bg: 'bg-emerald-500/10',
+    badgeBg: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30',
+    iconBg: 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300',
     icon: Brain,
     domainName: 'Machine Learning & Models'
   },
   streaming: {
     color: '#a855f7',
     glow: 'rgba(168, 85, 247, 0.4)',
-    border: 'border-purple-500/50 hover:border-purple-400',
-    bg: 'bg-purple-950/40',
-    badgeBg: 'bg-purple-500/10 text-purple-300 border-purple-500/30',
-    iconBg: 'bg-purple-500/20 text-purple-300',
+    border: 'border-purple-500/60 hover:border-purple-500',
+    bg: 'bg-purple-500/10',
+    badgeBg: 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30',
+    iconBg: 'bg-purple-500/20 text-purple-700 dark:text-purple-300',
     icon: Radio,
     domainName: 'Streaming & Event Bus'
   },
   security: {
     color: '#f43f5e',
     glow: 'rgba(244, 63, 94, 0.4)',
-    border: 'border-rose-500/50 hover:border-rose-400',
-    bg: 'bg-rose-950/40',
-    badgeBg: 'bg-rose-500/10 text-rose-300 border-rose-500/30',
-    iconBg: 'bg-rose-500/20 text-rose-300',
+    border: 'border-rose-500/60 hover:border-rose-500',
+    bg: 'bg-rose-500/10',
+    badgeBg: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30',
+    iconBg: 'bg-rose-500/20 text-rose-700 dark:text-rose-300',
     icon: Lock,
     domainName: 'Security & Quality Gate'
   }
@@ -595,6 +595,11 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
 
   const rank = getRank(totalXp);
 
+  // Theme-aware SVG connector colors
+  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+  const emptyStroke = isDark ? '#334155' : '#cbd5e1';
+  const activeStroke = '#06b6d4';
+
   return (
     <div className="w-full max-w-6xl mx-auto space-y-6 select-none font-sans">
       {/* Top Architecture Console Bar */}
@@ -807,11 +812,11 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
                   width={sub.width}
                   height={sub.height}
                   rx="16"
-                  fill="rgba(15, 23, 42, 0.45)"
+                  fill="transparent"
                   stroke={sub.stroke}
                   strokeWidth="1.2"
                   strokeDasharray="6,4"
-                  className="opacity-70"
+                  className="opacity-60"
                 />
                 <text
                   x={sub.x + 16}
@@ -835,14 +840,13 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
                 width="85"
                 height="60"
                 rx="12"
-                fill="#0f172a"
-                stroke="#334155"
+                className="fill-card stroke-border"
                 strokeWidth="1.5"
               />
-              <text x="42" y="24" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="bold" fontFamily="monospace">
+              <text x="42" y="24" textAnchor="middle" className="fill-muted-foreground" fontSize="10" fontWeight="bold" fontFamily="monospace">
                 CLIENT
               </text>
-              <text x="42" y="42" textAnchor="middle" fill="#38bdf8" fontSize="11" fontWeight="bold">
+              <text x="42" y="42" textAnchor="middle" fill="#06b6d4" fontSize="11" fontWeight="bold">
                 Traffic In
               </text>
             </g>
@@ -850,7 +854,7 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
             {/* Path: Client Ingress -> Node 1 */}
             <path
               d="M 95 125 L 140 125"
-              stroke={placedSlots[0] ? '#38bdf8' : '#334155'}
+              stroke={placedSlots[0] ? activeStroke : emptyStroke}
               strokeWidth="2.5"
               strokeDasharray={placedSlots[0] ? '4,3' : '2,2'}
               markerEnd={placedSlots[0] ? 'url(#arrow-active)' : 'url(#arrow-default)'}
@@ -859,7 +863,7 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
             {/* Path: Node 1 -> Node 2 */}
             <path
               d="M 240 125 L 440 125"
-              stroke={isVerifiedSuccess ? '#10b981' : placedSlots[0] && placedSlots[1] ? '#38bdf8' : '#334155'}
+              stroke={isVerifiedSuccess ? '#10b981' : placedSlots[0] && placedSlots[1] ? activeStroke : emptyStroke}
               strokeWidth={isVerifiedSuccess ? '3' : '2.5'}
               strokeDasharray={placedSlots[0] && placedSlots[1] ? '5,3' : '2,2'}
               markerEnd={isVerifiedSuccess ? 'url(#arrow-success)' : placedSlots[0] && placedSlots[1] ? 'url(#arrow-active)' : 'url(#arrow-default)'}
@@ -868,7 +872,7 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
             {/* Path: Node 2 -> Node 3 */}
             <path
               d="M 540 125 L 740 125"
-              stroke={isVerifiedSuccess ? '#10b981' : placedSlots[1] && placedSlots[2] ? '#38bdf8' : '#334155'}
+              stroke={isVerifiedSuccess ? '#10b981' : placedSlots[1] && placedSlots[2] ? activeStroke : emptyStroke}
               strokeWidth={isVerifiedSuccess ? '3' : '2.5'}
               strokeDasharray={placedSlots[1] && placedSlots[2] ? '5,3' : '2,2'}
               markerEnd={isVerifiedSuccess ? 'url(#arrow-success)' : placedSlots[1] && placedSlots[2] ? 'url(#arrow-active)' : 'url(#arrow-default)'}
@@ -878,7 +882,7 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
             <path
               d="M 840 125 C 930 125, 930 315, 840 315"
               fill="none"
-              stroke={isVerifiedSuccess ? '#10b981' : placedSlots[2] && placedSlots[3] ? 'url(#curveGradient)' : '#334155'}
+              stroke={isVerifiedSuccess ? '#10b981' : placedSlots[2] && placedSlots[3] ? 'url(#curveGradient)' : emptyStroke}
               strokeWidth={isVerifiedSuccess ? '3.5' : '2.5'}
               strokeDasharray={placedSlots[2] && placedSlots[3] ? '6,4' : '3,3'}
               markerEnd={isVerifiedSuccess ? 'url(#arrow-success)' : placedSlots[2] && placedSlots[3] ? 'url(#arrow-active)' : 'url(#arrow-default)'}
@@ -887,7 +891,7 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
             {/* Path: Node 4 -> Node 5 (Bottom Tier, Right to Left) */}
             <path
               d="M 740 315 L 540 315"
-              stroke={isVerifiedSuccess ? '#10b981' : placedSlots[3] && placedSlots[4] ? '#38bdf8' : '#334155'}
+              stroke={isVerifiedSuccess ? '#10b981' : placedSlots[3] && placedSlots[4] ? activeStroke : emptyStroke}
               strokeWidth={isVerifiedSuccess ? '3' : '2.5'}
               strokeDasharray={placedSlots[3] && placedSlots[4] ? '5,3' : '2,2'}
               markerEnd={isVerifiedSuccess ? 'url(#arrow-success)' : placedSlots[3] && placedSlots[4] ? 'url(#arrow-active)' : 'url(#arrow-default)'}
@@ -896,7 +900,7 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
             {/* Path: Node 5 -> Node 6 */}
             <path
               d="M 440 315 L 240 315"
-              stroke={isVerifiedSuccess ? '#10b981' : placedSlots[4] && placedSlots[5] ? '#38bdf8' : '#334155'}
+              stroke={isVerifiedSuccess ? '#10b981' : placedSlots[4] && placedSlots[5] ? activeStroke : emptyStroke}
               strokeWidth={isVerifiedSuccess ? '3' : '2.5'}
               strokeDasharray={placedSlots[4] && placedSlots[5] ? '5,3' : '2,2'}
               markerEnd={isVerifiedSuccess ? 'url(#arrow-success)' : placedSlots[4] && placedSlots[5] ? 'url(#arrow-active)' : 'url(#arrow-default)'}
@@ -905,7 +909,7 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
             {/* Path: Node 6 -> Output Client Response */}
             <path
               d="M 140 315 L 95 315"
-              stroke={isVerifiedSuccess ? '#10b981' : placedSlots[5] ? '#38bdf8' : '#334155'}
+              stroke={isVerifiedSuccess ? '#10b981' : placedSlots[5] ? activeStroke : emptyStroke}
               strokeWidth="2.5"
               strokeDasharray={placedSlots[5] ? '4,3' : '2,2'}
               markerEnd={isVerifiedSuccess ? 'url(#arrow-success)' : placedSlots[5] ? 'url(#arrow-active)' : 'url(#arrow-default)'}
@@ -919,14 +923,14 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
                 width="85"
                 height="60"
                 rx="12"
-                fill="#0f172a"
-                stroke={isVerifiedSuccess ? '#10b981' : '#334155'}
+                className={`fill-card ${isVerifiedSuccess ? '' : 'stroke-border'}`}
+                stroke={isVerifiedSuccess ? '#10b981' : undefined}
                 strokeWidth="1.5"
               />
-              <text x="42" y="24" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="bold" fontFamily="monospace">
+              <text x="42" y="24" textAnchor="middle" className="fill-muted-foreground" fontSize="10" fontWeight="bold" fontFamily="monospace">
                 RESPONSE
               </text>
-              <text x="42" y="42" textAnchor="middle" fill={isVerifiedSuccess ? '#34d399' : '#38bdf8'} fontSize="11" fontWeight="bold">
+              <text x="42" y="42" textAnchor="middle" fill={isVerifiedSuccess ? '#34d399' : '#06b6d4'} fontSize="11" fontWeight="bold">
                 200 OK / SSE
               </text>
             </g>

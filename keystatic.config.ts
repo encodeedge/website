@@ -538,7 +538,7 @@ export default config({
           }),
           {
             label: 'Navigation Links',
-            itemLabel: props => props.fields.label.value + (props.fields.children.value?.length ? ` (${props.fields.children.value.length} sub-links)` : ''),
+            itemLabel: props => (props.fields.label.value || 'Link') + ((props.fields as any)?.children?.elements?.length ? ` (${(props.fields as any).children.elements.length} sub-links)` : ''),
           }
         ),
         showSearch: fields.checkbox({ label: 'Show Search', defaultValue: true }),
@@ -1792,6 +1792,9 @@ export default config({
             { label: 'Machine Learning', value: 'machine-learning' },
             { label: 'Mathematics', value: 'mathematics' },
             { label: 'Statistics', value: 'statistics' },
+            { label: 'Linear Algebra', value: 'linear-algebra' },
+            { label: 'Optimization & Calculus', value: 'optimization' },
+            { label: 'Probability', value: 'probability' },
             { label: 'Python', value: 'python' },
             { label: 'Computer Science', value: 'computer-science' },
             { label: 'NLP & LLMs', value: 'nlp' },

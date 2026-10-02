@@ -64,7 +64,7 @@ export async function GET() {
       id: course.id,
       type: 'course',
       title: course.data.title ?? '',
-      description: course.data.description ?? '',
+      description: course.data.shortDescription ?? (course.data as any).description ?? '',
       tags: [],
       topics: [],
       url: `/courses/${course.id}/`,

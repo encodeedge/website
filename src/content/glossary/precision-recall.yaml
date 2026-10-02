@@ -1,0 +1,11 @@
+name: "Precision & Recall"
+glyph: "P = TP/(TP+FP), R = TP/(TP+FN)"
+latex: "\\text{Precision} = \\frac{\\text{TP}}{\\text{TP} + \\text{FP}}, \\quad \\text{Recall} = \\frac{\\text{TP}}{\\text{TP} + \\text{FN}}"
+pronunciation: "Precision and recall evaluation metrics"
+category: "machine-learning"
+meaning: "Precision measures exactness (how many selected items were relevant); Recall measures completeness (how many relevant items were selected)."
+example: "In spam filtering, high precision prevents legitimate emails from being lost; in fraud detection, high recall catches all fraud."
+ambiguity: ""
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

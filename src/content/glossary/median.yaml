@@ -1,0 +1,11 @@
+name: "Median (Middle Value)"
+glyph: "Median = Middle(X_sorted)"
+latex: "\\text{Median}(X) = X_{\\left(\\frac{n+1}{2}\\right)}"
+pronunciation: "Median of ordered dataset X"
+category: "statistics"
+meaning: "The central value separating the higher half from the lower half of an ordered dataset."
+example: "Robust against extreme outliers. In [1, 2, 3, 94], the median is 2.5, capturing the true center."
+ambiguity: ""
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

@@ -1,0 +1,11 @@
+name: "Mean (Arithmetic Average)"
+glyph: "x̄ = (1/n) ∑ xᵢ"
+latex: "\\bar{x} = \\frac{1}{n} \\sum_{i=1}^n x_i"
+pronunciation: "x-bar equals one over n sum of x sub i"
+category: "statistics"
+meaning: "The sum of all numerical values in a dataset divided by the total number of observations."
+example: "Sensitive to extreme outliers. In [1, 2, 3, 94], the mean is 25, which misrepresents the typical value."
+ambiguity: ""
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

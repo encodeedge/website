@@ -1,11 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { CourseLearningStudio } from '@/components/interactive/CourseLearningStudio';
 import { InteractiveQuiz } from '@/components/ui/interactive-quiz';
-import { CourseNavigation } from '@/components/ui/course-navigation';
-import { LessonCurriculumDrawer } from '@/components/ui/lesson-curriculum-drawer';
 import { getCoursesMap } from '@/utils/course-map';
-import { HelpCircle, Clock, Award } from 'lucide-react';
 import { getFeatureFlags } from '@/lib/settings';
 
 export async function getStaticPaths() {
@@ -19,78 +17,109 @@ export async function getStaticPaths() {
 const { quiz } = Astro.props;
 const coursesMap = await getCoursesMap();
 const flags = await getFeatureFlags();
-const matchingCourseId = Object.keys(coursesMap).find(cId => 
-  coursesMap[cId]?.flatItems?.some((i: any) => i.id === quiz.id)
-);
+
+// Load all collections to build full curriculum context
+const allCourses = await getCollection('courses');
+const allLessons = await getCollection('lessons');
+const allQuizzes = await getCollection('quizzes');
+const allAssignments = await getCollection('assignments');
+
+const requestedCourseId = Astro.url.searchParams.get('course');
+let activeCourse = requestedCourseId 
+  ? allCourses.find(c => c.id === requestedCourseId) 
+  : allCourses.find(c => c.data.chapters?.some(ch => ch.items?.some(it => it.discriminant === 'quiz' && it.value?.quizRef === quiz.id))) || allCourses[0];
+
+// Format chapters into structured format matching CourseLearningStudio
+const structuredChapters = (activeCourse?.data.chapters || []).map((chapter, chIdx) => {
+  const chapterItems = (chapter.items || []).map((item, itemIdx) => {
+    let type: 'lesson' | 'quiz' | 'assignment' = 'lesson';
+    let id = '';
+    let title = '';
+    let lessonType = 'article';
+    let duration = 20;
+
+    if (item.discriminant === 'lesson' && item.value.lessonRef) {
+      type = 'lesson';
+      id = item.value.lessonRef;
+      const l = allLessons.find(x => x.id === id);
+      title = l?.data.title || id.replace(/-/g, ' ');
+      lessonType = l?.data.lessonType || 'article';
+      duration = l?.data.duration || 20;
+    } else if (item.discriminant === 'quiz' && item.value.quizRef) {
+      type = 'quiz';
+      id = item.value.quizRef;
+      const q = allQuizzes.find(x => x.id === id);
+      title = q?.data.title || 'Interactive Quiz';
+      lessonType = 'quiz';
+      duration = 15;
+    } else if (item.discriminant === 'assignment' && item.value.assignmentRef) {
+      type = 'assignment';
+      id = item.value.assignmentRef;
+      const a = allAssignments.find(x => x.id === id);
+      title = a?.data.title || 'Hands-on Project';
+      lessonType = 'assignment';
+      duration = 90;
+    }
+
+    const url = `/${type === 'lesson' ? 'lessons' : type === 'quiz' ? 'quizzes' : 'assignments'}/${id}?course=${activeCourse?.id || ''}`;
+
+    return {
+      id,
+      type,
+      title,
+      lessonType,
+      duration,
+      url,
+      isFree: chIdx === 0 && itemIdx < 2
+    };
+  });
+
+  return {
+    title: chapter.title,
+    description: chapter.description,
+    items: chapterItems
+  };
+});
 ---
 
-<DefaultLayout title={`${quiz.data.title} | Checkpoint Quiz`} description={quiz.data.description || quiz.data.title}>
-  <div class="max-w-4xl mx-auto px-4 py-8 md:py-16 space-y-8">
-    
-    <!-- Top Navigation Bar -->
-    <div class="space-y-4">
-      <CourseNavigation coursesMap={coursesMap} currentItemId={quiz.id} itemType="quiz" mode="top" client:load />
-
-      <div class="flex items-center justify-between border-b border-border/60 pb-4 flex-wrap gap-3">
-        <LessonCurriculumDrawer 
-          coursesMap={coursesMap} 
-          currentItemId={quiz.id} 
-          itemType="quiz" 
-          client:load 
-        />
-        
-        <div class="flex items-center gap-2 text-xs text-muted-foreground font-semibold">
-          <Clock class="w-3.5 h-3.5" />
-          <span>Approx. 15 min</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Quiz Header -->
-    <div class="space-y-4 pt-2">
-      <div class="flex items-center gap-3">
-        <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-          Knowledge Checkpoint
-        </span>
-        {quiz.data.questions && (
-          <span class="text-xs font-semibold text-muted-foreground">
-            {quiz.data.questions.length} questions
-          </span>
+<DefaultLayout 
+  title={`${quiz.data.title} | ${activeCourse?.data.title || 'Course'} Checkpoint Quiz`} 
+  description={quiz.data.description || quiz.data.title}
+>
+  <div class="w-full">
+    <CourseLearningStudio
+      client:load
+      courseId={activeCourse?.id || 'system-design'}
+      courseTitle={activeCourse?.data.title || 'Course'}
+      currentLesson={{
+        id: quiz.id,
+        title: quiz.data.title,
+        description: quiz.data.description,
+        lessonType: 'quiz',
+        duration: 15
+      }}
+      chapters={structuredChapters}
+    >
+      <div class="space-y-6 pt-2">
+        {quiz.data.questions && quiz.data.questions.length > 0 ? (
+          <InteractiveQuiz 
+            questions={quiz.data.questions} 
+            quizId={quiz.id} 
+            courseId={activeCourse?.id}
+            coursesMap={coursesMap}
+            passingScorePercentage={quiz.data.passingScorePercentage ?? flags.gamification?.quizMinimumPassPercentage ?? 0}
+            markCompletedOnAttempt={quiz.data.markCompletedOnAttempt ?? true}
+            spacedRepetitionEnabled={flags.spacedRepetition.enabled}
+            gamificationEnabled={flags.gamification.enabled}
+            client:load 
+          />
+        ) : (
+          <div class="p-8 text-center bg-card rounded-2xl border border-border space-y-2">
+            <p class="text-sm font-semibold text-foreground">No questions configured for this quiz yet.</p>
+            <p class="text-xs text-muted-foreground">You can manage and add questions to this checkpoint via Keystatic CMS.</p>
+          </div>
         )}
       </div>
-
-      <h1 class="font-display font-bold text-3xl sm:text-4xl md:text-5xl tracking-tight text-foreground leading-[1.2]">
-        {quiz.data.title}
-      </h1>
-
-      {quiz.data.description && (
-        <p class="text-base sm:text-lg text-muted-foreground font-body leading-relaxed max-w-3xl">
-          {quiz.data.description}
-        </p>
-      )}
-    </div>
-
-    <!-- Interactive Quiz Component -->
-    {quiz.data.questions && (
-      <div class="my-6">
-        <InteractiveQuiz 
-          questions={quiz.data.questions} 
-          quizId={quiz.id} 
-          courseId={matchingCourseId}
-          coursesMap={coursesMap}
-          passingScorePercentage={quiz.data.passingScorePercentage ?? flags.gamification?.quizMinimumPassPercentage ?? 0}
-          markCompletedOnAttempt={quiz.data.markCompletedOnAttempt ?? true}
-          spacedRepetitionEnabled={flags.spacedRepetition.enabled}
-          gamificationEnabled={flags.gamification.enabled}
-          client:load 
-        />
-      </div>
-    )}
-
-    <!-- Bottom Navigation -->
-    <div class="pt-8 border-t border-border/60">
-      <CourseNavigation coursesMap={coursesMap} currentItemId={quiz.id} itemType="quiz" mode="bottom" client:load />
-    </div>
-
+    </CourseLearningStudio>
   </div>
 </DefaultLayout>

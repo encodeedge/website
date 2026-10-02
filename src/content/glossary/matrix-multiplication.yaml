@@ -1,0 +1,11 @@
+name: "Matrix Multiplication (GEMM)"
+glyph: "C_{i,j} = ∑_k A_{i,k} B_{k,j}"
+latex: "C_{i,j} = \\sum_{k=1}^m A_{i,k} B_{k,j}"
+pronunciation: "Matrix A times Matrix B"
+category: "linear-algebra"
+meaning: "Linear algebraic operation composing two transformations by computing inner products of rows of A with columns of B."
+example: "Forms >90% of the floating-point arithmetic workload in deep learning, hardware-accelerated by GPU Tensor Cores."
+ambiguity: ""
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

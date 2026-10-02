@@ -1,8 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
-import { CourseNavigation } from '@/components/ui/course-navigation';
-import { LessonCurriculumDrawer } from '@/components/ui/lesson-curriculum-drawer';
+import { CourseLearningStudio } from '@/components/interactive/CourseLearningStudio';
 import { AssignmentSubmissionCard } from '@/components/ui/assignment-submission-card';
 import { getCoursesMap } from '@/utils/course-map';
 import { Briefcase, CheckCircle2, Download, ExternalLink, Code } from 'lucide-react';
@@ -21,132 +20,164 @@ const coursesMap = await getCoursesMap();
 
 const rubric = assignment.data.rubric || [];
 const totalPoints = rubric.reduce((sum, item) => sum + item.maxPoints, 0);
+
+// Load all collections to build full curriculum context
+const allCourses = await getCollection('courses');
+const allLessons = await getCollection('lessons');
+const allQuizzes = await getCollection('quizzes');
+const allAssignments = await getCollection('assignments');
+
+const requestedCourseId = Astro.url.searchParams.get('course');
+let activeCourse = requestedCourseId 
+  ? allCourses.find(c => c.id === requestedCourseId) 
+  : allCourses.find(c => c.data.chapters?.some(ch => ch.items?.some(it => it.discriminant === 'assignment' && it.value?.assignmentRef === assignment.id))) || allCourses[0];
+
+// Format chapters into structured format matching CourseLearningStudio
+const structuredChapters = (activeCourse?.data.chapters || []).map((chapter, chIdx) => {
+  const chapterItems = (chapter.items || []).map((item, itemIdx) => {
+    let type: 'lesson' | 'quiz' | 'assignment' = 'lesson';
+    let id = '';
+    let title = '';
+    let lessonType = 'article';
+    let duration = 20;
+
+    if (item.discriminant === 'lesson' && item.value.lessonRef) {
+      type = 'lesson';
+      id = item.value.lessonRef;
+      const l = allLessons.find(x => x.id === id);
+      title = l?.data.title || id.replace(/-/g, ' ');
+      lessonType = l?.data.lessonType || 'article';
+      duration = l?.data.duration || 20;
+    } else if (item.discriminant === 'quiz' && item.value.quizRef) {
+      type = 'quiz';
+      id = item.value.quizRef;
+      const q = allQuizzes.find(x => x.id === id);
+      title = q?.data.title || 'Interactive Quiz';
+      lessonType = 'quiz';
+      duration = 15;
+    } else if (item.discriminant === 'assignment' && item.value.assignmentRef) {
+      type = 'assignment';
+      id = item.value.assignmentRef;
+      const a = allAssignments.find(x => x.id === id);
+      title = a?.data.title || 'Hands-on Project';
+      lessonType = 'assignment';
+      duration = 90;
+    }
+
+    const url = `/${type === 'lesson' ? 'lessons' : type === 'quiz' ? 'quizzes' : 'assignments'}/${id}?course=${activeCourse?.id || ''}`;
+
+    return {
+      id,
+      type,
+      title,
+      lessonType,
+      duration,
+      url,
+      isFree: chIdx === 0 && itemIdx < 2
+    };
+  });
+
+  return {
+    title: chapter.title,
+    description: chapter.description,
+    items: chapterItems
+  };
+});
 ---
 
 <DefaultLayout 
-  title={`${assignment.data.title} | Capstone Project`} 
+  title={`${assignment.data.title} | ${activeCourse?.data.title || 'Course'} Project`} 
   description={assignment.data.description || assignment.data.title}
 >
-  <div class="max-w-6xl mx-auto px-4 py-8 md:py-16 space-y-8">
-    
-    <!-- Top Bar Navigation -->
-    <div class="space-y-4">
-      <CourseNavigation coursesMap={coursesMap} currentItemId={assignment.id} itemType="assignment" mode="top" client:load />
-
-      <div class="flex items-center justify-between border-b border-border/60 pb-4 flex-wrap gap-3">
-        <LessonCurriculumDrawer 
-          coursesMap={coursesMap} 
-          currentItemId={assignment.id} 
-          itemType="assignment" 
-          client:load 
-        />
-
-        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
-          Capstone Project ({totalPoints} Pts)
-        </span>
-      </div>
-    </div>
-
-    <!-- Assignment Header -->
-    <div class="space-y-4 pt-2">
-      <div class="flex items-center gap-3">
-        <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
-          Hands-on Project
-        </span>
-        <span class="text-xs font-semibold text-muted-foreground">
-          Self-paced verification
-        </span>
-      </div>
-
-      <h1 class="font-display font-bold text-3xl sm:text-4xl md:text-5xl tracking-tight text-foreground leading-[1.2]">
-        {assignment.data.title}
-      </h1>
-
-      {assignment.data.description && (
-        <p class="text-base sm:text-lg text-muted-foreground font-body leading-relaxed max-w-3xl">
-          {assignment.data.description}
-        </p>
-      )}
-    </div>
-
-    <!-- Two-Column Layout: Instructions vs Submission & Rubric -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-      
-      <!-- Instructions Column (2/3) -->
-      <div class="lg:col-span-2 space-y-6">
-        <div class="rounded-3xl border border-border/80 bg-card p-6 md:p-8 shadow-sm space-y-6">
-          <h2 class="font-display font-bold text-xl text-foreground pb-3 border-b border-border/60 flex items-center gap-2">
-            <Code class="w-5 h-5 text-primary" />
-            <span>Project Specifications &amp; Requirements</span>
-          </h2>
+  <div class="w-full">
+    <CourseLearningStudio
+      client:load
+      courseId={activeCourse?.id || 'system-design'}
+      courseTitle={activeCourse?.data.title || 'Course'}
+      currentLesson={{
+        id: assignment.id,
+        title: assignment.data.title,
+        description: assignment.data.description,
+        lessonType: 'assignment',
+        duration: 90
+      }}
+      chapters={structuredChapters}
+    >
+      <div class="space-y-8 pt-2">
+        <!-- Two-Column Layout: Instructions vs Submission & Rubric -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           
-          <div class="prose prose-lg dark:prose-invert max-w-none font-body leading-relaxed">
-            <Content />
+          <!-- Instructions Column (2/3) -->
+          <div class="lg:col-span-2 space-y-6">
+            <div class="rounded-3xl border border-border/80 bg-card p-6 md:p-8 shadow-sm space-y-6">
+              <h2 class="font-display font-bold text-xl text-foreground pb-3 border-b border-border/60 flex items-center gap-2">
+                <Code class="w-5 h-5 text-primary" />
+                <span>Project Specifications &amp; Requirements</span>
+              </h2>
+              
+              <div class="prose prose-lg dark:prose-invert max-w-none font-body leading-relaxed">
+                <Content />
+              </div>
+            </div>
           </div>
+
+          <!-- Right Column (1/3): Submission Simulator & Rubric -->
+          <div class="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
+            
+            <!-- Interactive Submission Simulator Card -->
+            <AssignmentSubmissionCard 
+              assignmentId={assignment.id} 
+              totalPoints={totalPoints} 
+              client:load 
+            />
+
+            <!-- Grading Rubric Card -->
+            {rubric.length > 0 && (
+              <div class="rounded-2xl border border-border/80 bg-card p-6 shadow-sm space-y-4">
+                <h3 class="font-display font-bold text-base text-foreground pb-2 border-b border-border/60">
+                  Evaluation Rubric
+                </h3>
+                <ul class="space-y-3">
+                  {rubric.map((item) => (
+                    <li class="flex justify-between items-start pb-2.5 border-b border-border/40 last:border-0 last:pb-0 text-xs">
+                      <span class="text-muted-foreground leading-relaxed pr-2">{item.criteria}</span>
+                      <span class="font-bold text-foreground shrink-0 ml-auto bg-muted px-2 py-0.5 rounded">
+                        {item.maxPoints} pts
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <!-- Resources & Starter Code -->
+            {assignment.data.resources && assignment.data.resources.length > 0 && (
+              <div class="rounded-2xl border border-border/80 bg-card p-6 shadow-sm space-y-3">
+                <h3 class="font-display font-bold text-base text-foreground pb-2 border-b border-border/60">
+                  Starter Materials &amp; Links
+                </h3>
+                <ul class="space-y-2.5 text-xs">
+                  {assignment.data.resources.map((resource) => (
+                    <li>
+                      <a 
+                        href={resource.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        class="flex items-center text-primary hover:underline font-medium gap-2 group"
+                      >
+                        <ExternalLink class="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />
+                        <span class="truncate">{resource.title}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+          </div>
+
         </div>
       </div>
-
-      <!-- Right Column (1/3): Submission Simulator & Rubric -->
-      <div class="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
-        
-        <!-- Interactive Submission Simulator Card -->
-        <AssignmentSubmissionCard 
-          assignmentId={assignment.id} 
-          totalPoints={totalPoints} 
-          client:load 
-        />
-
-        <!-- Grading Rubric Card -->
-        {rubric.length > 0 && (
-          <div class="rounded-2xl border border-border/80 bg-card p-6 shadow-sm space-y-4">
-            <h3 class="font-display font-bold text-base text-foreground pb-2 border-b border-border/60">
-              Evaluation Rubric
-            </h3>
-            <ul class="space-y-3">
-              {rubric.map((item) => (
-                <li class="flex justify-between items-start pb-2.5 border-b border-border/40 last:border-0 last:pb-0 text-xs">
-                  <span class="text-muted-foreground leading-relaxed pr-2">{item.criteria}</span>
-                  <span class="font-bold text-foreground shrink-0 ml-auto bg-muted px-2 py-0.5 rounded">
-                    {item.maxPoints} pts
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        <!-- Resources & Starter Code -->
-        {assignment.data.resources && assignment.data.resources.length > 0 && (
-          <div class="rounded-2xl border border-border/80 bg-card p-6 shadow-sm space-y-3">
-            <h3 class="font-display font-bold text-base text-foreground pb-2 border-b border-border/60">
-              Starter Materials &amp; Links
-            </h3>
-            <ul class="space-y-2.5 text-xs">
-              {assignment.data.resources.map((resource) => (
-                <li>
-                  <a 
-                    href={resource.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    class="flex items-center text-primary hover:underline font-medium gap-2 group"
-                  >
-                    <ExternalLink class="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />
-                    <span class="truncate">{resource.title}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-      </div>
-
-    </div>
-
-    <!-- Bottom Navigation -->
-    <div class="pt-8 border-t border-border/60">
-      <CourseNavigation coursesMap={coursesMap} currentItemId={assignment.id} itemType="assignment" mode="bottom" client:load />
-    </div>
-
+    </CourseLearningStudio>
   </div>
 </DefaultLayout>

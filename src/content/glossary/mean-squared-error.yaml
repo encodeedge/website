@@ -1,0 +1,11 @@
+name: "Mean Squared Error (MSE Loss)"
+glyph: "MSE = (1/N) ∑ (yᵢ - ŷᵢ)²"
+latex: "\\text{MSE} = \\frac{1}{N} \\sum_{i=1}^N (y_i - \\hat{y}_i)^2"
+pronunciation: "M-S-E equals one over N sum of y minus y-hat squared"
+category: "machine-learning"
+meaning: "Calculates the average squared difference between true continuous target values y and model predictions ŷ."
+example: "Standard objective function for linear regression and continuous numerical forecasting."
+ambiguity: ""
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

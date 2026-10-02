@@ -1,0 +1,11 @@
+name: "Learning Rate (η / Alpha)"
+glyph: "η (Step Size)"
+latex: "\\eta \\in (0, 1)"
+pronunciation: "eta (or alpha) learning rate step size"
+category: "optimization"
+meaning: "Crucial hyperparameter that scales the magnitude of parameter updates along the gradient vector each iteration."
+example: "Too large causes divergence and training explosion; too small leads to plateaus and slow convergence."
+ambiguity: ""
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

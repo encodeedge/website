@@ -317,7 +317,7 @@ export const ConvolutionVisualizer: React.FC<ConvolutionVisualizerProps> = ({
               <Calculator className="size-3.5 text-primary" /> Step-by-Step Receptive Field Multiplication:
             </span>
             <span className="font-mono text-primary text-xs font-bold">
-              $\sum (X_{ij} \cdot K_{ij}) = {currentCalc.rawTotal}$
+              {"\\sum (X_{ij} \\cdot K_{ij}) = "} {currentCalc.rawTotal}
               {applyRelu && ` → ReLU(${currentCalc.rawTotal}) = ${currentCalc.finalVal}`}
             </span>
           </div>

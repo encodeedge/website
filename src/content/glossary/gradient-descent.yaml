@@ -1,0 +1,11 @@
+name: "Gradient Descent Optimization"
+glyph: "θ ← θ - η ∇_θ L(θ)"
+latex: "\\theta \\leftarrow \\theta - \\eta \\nabla_\\theta \\mathcal{L}(\\theta)"
+pronunciation: "theta updated as theta minus eta times gradient of loss"
+category: "optimization"
+meaning: "Iterative optimization algorithm that steps model parameters in the direction of steepest descent to minimize loss."
+example: "The foundational training engine behind SGD, Adam, and modern deep neural network parameter updates."
+ambiguity: ""
+relatedLabId: "gradient-descent"
+relatedLabTitle: "Gradient Descent Optimizer Lab"
+featured: true

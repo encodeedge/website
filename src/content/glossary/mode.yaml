@@ -1,0 +1,11 @@
+name: "Mode (Most Frequent Value)"
+glyph: "Mode = argmax Frequency(x)"
+latex: "\\text{Mode} = \\arg\\max_{x} f(x)"
+pronunciation: "Mode equals argmax of frequency distribution"
+category: "statistics"
+meaning: "The observation or value that occurs with the highest frequency in a collection of data."
+example: "A dataset can have one mode (unimodal), two modes (bimodal), or multiple modes; ideal for categorical data."
+ambiguity: ""
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

@@ -1,18 +1,12 @@
 ---
 import { getCollection, render } from 'astro:content';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
-import { CourseNavigation } from '@/components/ui/course-navigation';
-import { LessonCurriculumDrawer } from '@/components/ui/lesson-curriculum-drawer';
-import { LessonCompletionToggle } from '@/components/ui/lesson-completion-toggle';
-import { LearnerNotesDrawer } from '@/components/interactive/LearnerNotesDrawer';
-import { CourseFlashcardsDrawer } from '@/components/interactive/CourseFlashcardsDrawer';
+import { CourseLearningStudio } from '@/components/interactive/CourseLearningStudio';
 import { CodeSandboxRunner } from '@/components/interactive/CodeSandboxRunner';
 import { NeuralPlayground } from '@/components/interactive/NeuralPlayground';
 import { GradientDescentLab } from '@/components/interactive/GradientDescentLab';
 import { MemoryExplorer } from '@/components/interactive/MemoryExplorer';
-import { getCoursesMap } from '@/utils/course-map';
 import { Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox, MathFormula } from '@/components/mdx';
-import { Clock, PlayCircle, FileText, CheckCircle2, FlaskConical } from 'lucide-react';
 
 export async function getStaticPaths() {
   const lessons = await getCollection('lessons');
@@ -25,148 +19,129 @@ export async function getStaticPaths() {
 const { lesson } = Astro.props;
 const { Content } = await render(lesson);
 
-const coursesMap = await getCoursesMap();
+// Load all collections to build full curriculum context
+const allCourses = await getCollection('courses');
+const allLessons = await getCollection('lessons');
+const allQuizzes = await getCollection('quizzes');
+const allAssignments = await getCollection('assignments');
+
+const requestedCourseId = Astro.url.searchParams.get('course');
+let activeCourse = requestedCourseId 
+  ? allCourses.find(c => c.id === requestedCourseId) 
+  : allCourses.find(c => c.data.chapters?.some(ch => ch.items?.some(it => it.discriminant === 'lesson' && it.value?.lessonRef === lesson.id))) || allCourses[0];
+
+// Format chapters into structured format
+const structuredChapters = (activeCourse?.data.chapters || []).map((chapter, chIdx) => {
+  const chapterItems = (chapter.items || []).map((item, itemIdx) => {
+    let type: 'lesson' | 'quiz' | 'assignment' = 'lesson';
+    let id = '';
+    let title = '';
+    let lessonType = 'article';
+    let duration = 20;
+
+    if (item.discriminant === 'lesson' && item.value.lessonRef) {
+      type = 'lesson';
+      id = item.value.lessonRef;
+      const l = allLessons.find(x => x.id === id);
+      title = l?.data.title || id.replace(/-/g, ' ');
+      lessonType = l?.data.lessonType || 'article';
+      duration = l?.data.duration || 20;
+    } else if (item.discriminant === 'quiz' && item.value.quizRef) {
+      type = 'quiz';
+      id = item.value.quizRef;
+      const q = allQuizzes.find(x => x.id === id);
+      title = q?.data.title || 'Interactive Quiz';
+      duration = 15;
+    } else if (item.discriminant === 'assignment' && item.value.assignmentRef) {
+      type = 'assignment';
+      id = item.value.assignmentRef;
+      const a = allAssignments.find(x => x.id === id);
+      title = a?.data.title || 'Hands-on Project';
+      duration = 90;
+    }
+
+    const url = `/${type === 'lesson' ? 'lessons' : type === 'quiz' ? 'quizzes' : 'assignments'}/${id}?course=${activeCourse?.id || ''}`;
+
+    return {
+      id,
+      type,
+      title,
+      lessonType,
+      duration,
+      url,
+      isFree: chIdx === 0 && itemIdx < 2
+    };
+  });
+
+  return {
+    title: chapter.title,
+    description: chapter.description,
+    items: chapterItems
+  };
+});
 ---
 
-<DefaultLayout title={`${lesson.data.title} | EncodeEdge Lesson`} description={lesson.data.description || lesson.data.title}>
-  <div class="py-8 md:py-16 container mx-auto px-4 max-w-4xl space-y-8">
-    
-    <!-- Top Bar with Course Navigation & Curriculum Drawer & Notes & Completion Toggle -->
-    <div class="space-y-4">
-      <CourseNavigation coursesMap={coursesMap} currentItemId={lesson.id} itemType="lesson" mode="top" client:load />
+<DefaultLayout 
+  title={`${lesson.data.title} | ${activeCourse?.data.title || 'Course'} - EncodeEdge`}
+  description={lesson.data.description || lesson.data.title}
+>
+  <div class="w-full">
+    <CourseLearningStudio
+      client:load
+      courseId={activeCourse?.id || 'system-design'}
+      courseTitle={activeCourse?.data.title || 'System Design Mastery'}
+      currentLesson={{
+        id: lesson.id,
+        title: lesson.data.title,
+        description: lesson.data.description,
+        lessonType: lesson.data.lessonType,
+        duration: lesson.data.duration,
+        videoUrl: lesson.data.videoUrl,
+        interactiveLab: lesson.data.interactiveLab
+      }}
+      chapters={structuredChapters}
+    >
+      <!-- Interactive Lab Embed: Managed per-lesson via Keystatic -->
+      {lesson.data.interactiveLab === 'neural-playground' && (
+        <div class="my-6">
+          <NeuralPlayground client:load />
+        </div>
+      )}
 
-      <div class="flex items-center justify-between border-b border-border/60 pb-4 flex-wrap gap-3">
-        <div class="flex items-center gap-2">
-          <LessonCurriculumDrawer 
-            coursesMap={coursesMap} 
-            currentItemId={lesson.id} 
-            itemType="lesson" 
+      {lesson.data.interactiveLab === 'gradient-descent' && (
+        <div class="my-6">
+          <GradientDescentLab client:load />
+        </div>
+      )}
+
+      {lesson.data.interactiveLab === 'memory-explorer' && (
+        <div class="my-6">
+          <MemoryExplorer client:load />
+        </div>
+      )}
+
+      {(lesson.data.interactiveLab === 'code-sandbox' || lesson.data.interactiveLab === 'custom-sandbox' || (lesson.data.lessonType === 'lab' && (!lesson.data.interactiveLab || lesson.data.interactiveLab === 'none'))) && (
+        <div class="my-6">
+          <CodeSandboxRunner 
+            contentId={lesson.id} 
+            titleOverride={lesson.data.interactiveLabTitle}
+            descriptionOverride={lesson.data.interactiveLabDescription}
+            customSnippet={lesson.data.customLabCode ? {
+              id: `custom-${lesson.id}`,
+              title: lesson.data.interactiveLabTitle || `${lesson.data.title}: Interactive Lab`,
+              shortTitle: lesson.data.interactiveLabTitle || 'Custom Lab',
+              category: 'Python',
+              code: lesson.data.customLabCode,
+              expectedOutput: lesson.data.customLabOutput ? lesson.data.customLabOutput.split('\n') : ['[Execution verified]'],
+              description: lesson.data.interactiveLabDescription || 'Interactive Python simulation tailored to this lesson.',
+            } : undefined}
             client:load 
           />
-          <LearnerNotesDrawer
-            lessonId={lesson.id}
-            lessonTitle={lesson.data.title}
-            client:load
-          />
-          <CourseFlashcardsDrawer client:load />
         </div>
-        
-        <LessonCompletionToggle 
-          itemId={lesson.id} 
-          client:load 
-        />
-      </div>
-    </div>
-
-    <!-- Lesson Header -->
-    <div class="space-y-4 pt-2">
-      <div class="flex items-center gap-3">
-        <span class={`text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full ${
-          lesson.data.lessonType === 'video' 
-            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20' 
-            : lesson.data.lessonType === 'lab'
-            ? 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20'
-            : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-        }`}>
-          {lesson.data.lessonType === 'lab' ? 'Interactive Lab' : `${lesson.data.lessonType} Lesson`}
-        </span>
-
-        {lesson.data.duration && (
-          <span class="flex items-center gap-1 text-xs text-muted-foreground font-semibold">
-            <Clock class="w-3.5 h-3.5" />
-            {lesson.data.duration} min
-          </span>
-        )}
-      </div>
-
-      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold font-display tracking-tight text-foreground leading-[1.2]">
-        {lesson.data.title}
-      </h1>
-
-      {lesson.data.description && (
-        <p class="text-base sm:text-lg text-muted-foreground font-body leading-relaxed max-w-3xl">
-          {lesson.data.description}
-        </p>
       )}
-    </div>
 
-    <!-- Video Embed (if video lesson) -->
-    {lesson.data.lessonType === 'video' && lesson.data.videoUrl && (
-      <div class="aspect-video w-full rounded-2xl overflow-hidden border border-border/80 bg-black shadow-lg">
-        <iframe 
-          src={lesson.data.videoUrl} 
-          class="w-full h-full" 
-          frameborder="0" 
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-          allowfullscreen
-        ></iframe>
-      </div>
-    )}
-
-    <!-- Interactive Lab Embed: Managed per-lesson via Keystatic -->
-    {lesson.data.interactiveLab === 'neural-playground' && (
-      <div class="my-8">
-        <NeuralPlayground client:load />
-      </div>
-    )}
-
-    {lesson.data.interactiveLab === 'gradient-descent' && (
-      <div class="my-8">
-        <GradientDescentLab client:load />
-      </div>
-    )}
-
-    {lesson.data.interactiveLab === 'memory-explorer' && (
-      <div class="my-8">
-        <MemoryExplorer client:load />
-      </div>
-    )}
-
-    {(lesson.data.interactiveLab === 'code-sandbox' || lesson.data.interactiveLab === 'custom-sandbox' || (lesson.data.lessonType === 'lab' && (!lesson.data.interactiveLab || lesson.data.interactiveLab === 'none'))) && (
-      <div class="my-8">
-        <CodeSandboxRunner 
-          contentId={lesson.id} 
-          titleOverride={lesson.data.interactiveLabTitle}
-          descriptionOverride={lesson.data.interactiveLabDescription}
-          customSnippet={lesson.data.customLabCode ? {
-            id: `custom-${lesson.id}`,
-            title: lesson.data.interactiveLabTitle || `${lesson.data.title}: Interactive Lab`,
-            shortTitle: lesson.data.interactiveLabTitle || 'Custom Lab',
-            category: 'Python',
-            code: lesson.data.customLabCode,
-            expectedOutput: lesson.data.customLabOutput ? lesson.data.customLabOutput.split('\n') : ['[Execution verified]'],
-            description: lesson.data.interactiveLabDescription || 'Interactive Python simulation tailored to this lesson.',
-          } : undefined}
-          client:load 
-        />
-      </div>
-    )}
-
-    <!-- Lesson Markdown Prose Content -->
-    <div class="prose prose-lg dark:prose-invert max-w-none font-body leading-relaxed pt-4">
+      <!-- Lesson Markdown Prose Content -->
       <Content components={{ Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox, MathFormula }} />
-    </div>
-
-    <!-- Bottom Actions: Completion Toggle + Bottom Navigation -->
-    <div class="pt-8 border-t border-border/60 space-y-6">
-      <div class="p-6 rounded-2xl bg-card border border-border/80 flex items-center justify-between flex-wrap gap-4 shadow-sm">
-        <div>
-          <h4 class="font-bold font-display text-base text-foreground">
-            Finished this lesson?
-          </h4>
-          <p class="text-xs text-muted-foreground">
-            Mark it as complete to record your progress and unlock the next module.
-          </p>
-        </div>
-
-        <LessonCompletionToggle 
-          itemId={lesson.id} 
-          client:load 
-        />
-      </div>
-
-      <CourseNavigation coursesMap={coursesMap} currentItemId={lesson.id} itemType="lesson" mode="bottom" client:load />
-    </div>
-    
+    </CourseLearningStudio>
   </div>
 </DefaultLayout>

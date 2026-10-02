@@ -1,154 +1,110 @@
 export interface MathSymbolItem {
   id: string;
   glyph: string;
-  latex: string;
+  latex?: string;
   name: string;
-  pronunciation: string;
-  category: 'deep-learning' | 'optimization' | 'linear-algebra' | 'probability' | 'inference';
+  pronunciation?: string;
+  category: string;
   meaning: string;
-  example: string;
-  ambiguity: string;
+  example?: string;
+  ambiguity?: string;
   relatedLabId?: string;
   relatedLabTitle?: string;
 }
 
 export const MATH_GLOSSARY_ITEMS: MathSymbolItem[] = [
+  // ── Statistics & Mathematics ──────────────────────────────────────────────
   {
-    id: 'attention-equation',
-    glyph: 'Attention(Q, K, V) = softmax(QKᵀ / √dₖ) V',
-    latex: '\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right) V',
-    name: 'Scaled Dot-Product Attention',
-    pronunciation: 'Attention of Q, K, V equals softmax of Q K-transpose over square-root of d-sub-k times V',
-    category: 'deep-learning',
-    meaning: 'The core routing mechanism of modern Transformers. Computes alignment between query vectors Q and key vectors K, scales scores to stabilize gradients, and produces a weighted mixture of values V.',
-    example: 'In GPT-4 or Llama, each attention head projects token embeddings into Q, K, V spaces to determine which preceding words contextually inform the current generation.',
-    ambiguity: '√d_k scaling is required to avoid vanishing gradients when dot products grow large in high dimensions. Without it, softmax pushes scores into saturated near-zero derivative regions.',
-    relatedLabId: 'attention-visualizer',
-    relatedLabTitle: 'Transformer Self-Attention Visualizer'
+    id: 'mean',
+    glyph: 'x̄ = (1/n) ∑ xᵢ',
+    latex: '\\bar{x} = \\frac{1}{n} \\sum_{i=1}^n x_i',
+    name: 'Mean (Arithmetic Average)',
+    pronunciation: 'x-bar equals one over n sum of x sub i',
+    category: 'statistics',
+    meaning: 'The sum of all numerical values in a dataset divided by the total number of observations.',
+    example: 'Sensitive to extreme outliers. In [1, 2, 3, 94], the mean is 25, which misrepresents the typical value.'
   },
   {
-    id: 'nabla-gradient',
-    glyph: '∇_θ L(θ)',
-    latex: '\\nabla_\\theta \\mathcal{L}(\\theta)',
-    name: 'Nabla Gradient Operator',
-    pronunciation: 'Nabla sub theta of L of theta (or gradient of loss with respect to parameters theta)',
-    category: 'optimization',
-    meaning: 'A vector of first-order partial derivatives pointing in the direction of steepest ascent of the scalar loss function L with respect to neural network weights θ.',
-    example: 'During backpropagation, PyTorch computes parameter.grad = ∇_θ L so optimizers like Adam or SGD can step in the opposite direction: θ ← θ - η ∇_θ L.',
-    ambiguity: 'Often confused with the Laplacian (∇²). In neural network optimization, ∇ without an exponent is always the gradient vector, not the scalar divergence.',
-    relatedLabId: 'gradient-descent',
-    relatedLabTitle: 'Loss Surface & Gradient Descent Optimizer Lab'
+    id: 'median',
+    glyph: 'Median = Middle(X_sorted)',
+    latex: '\\text{Median}(X) = X_{\\left(\\frac{n+1}{2}\\right)}',
+    name: 'Median (Middle Value)',
+    pronunciation: 'Median of ordered dataset X',
+    category: 'statistics',
+    meaning: 'The central value separating the higher half from the lower half of an ordered dataset.',
+    example: 'Robust against extreme outliers. In [1, 2, 3, 94], the median is 2.5, capturing the true center.'
   },
   {
-    id: 'discrete-convolution',
-    glyph: '(X ⊛ K)ᵢⱼ = ∑ₘ ∑ₙ X_{i+m, j+n} K_{m,n}',
-    latex: '(X \\ast K)_{i,j} = \\sum_{m} \\sum_{n} X_{i+m, j+n} K_{m,n}',
-    name: '2D Spatial Cross-Correlation / Convolution',
-    pronunciation: 'X convolved with K at index i, j equals sum over m and n of X times kernel K',
-    category: 'deep-learning',
-    meaning: 'Slides a small learnable parameter matrix (kernel) across a 2D spatial grid (e.g. image feature map) computing local dot products to extract translation-invariant spatial features.',
-    example: 'A 3x3 Sobel kernel detects horizontal edges by computing positive differences across adjacent vertical pixel channels.',
-    ambiguity: 'In deep learning frameworks (PyTorch/TensorFlow), Conv2d actually implements cross-correlation without flipping the kernel 180°, which is mathematically identical because weights are learned.',
-    relatedLabId: 'convolution-visualizer',
-    relatedLabTitle: '2D Convolution Kernel & Feature Map Explorer'
+    id: 'mode',
+    glyph: 'Mode = argmax Frequency(x)',
+    latex: '\\text{Mode} = \\arg\\max_{x} f(x)',
+    name: 'Mode (Most Frequent Value)',
+    pronunciation: 'Mode equals argmax of frequency distribution',
+    category: 'statistics',
+    meaning: 'The observation or value that occurs with the highest frequency in a collection of data.',
+    example: 'A dataset can have one mode (unimodal), two modes (bimodal), or multiple modes; ideal for categorical data.'
   },
   {
-    id: 'relu-activation',
-    glyph: 'ReLU(z) = max(0, z)',
-    latex: '\\text{ReLU}(z) = \\max(0, z)',
-    name: 'Rectified Linear Unit',
-    pronunciation: 'R-E-L-U of z equals max of zero and z',
-    category: 'deep-learning',
-    meaning: 'The ubiquitous non-saturating non-linear activation function in deep networks. Passes positive pre-activations unchanged while zeroing out negative values.',
-    example: 'Enables deep neural networks (e.g., 50+ layer ResNets) to train without severe gradient vanishing because its derivative is 1 for any positive input.',
-    ambiguity: 'Can cause the "dying ReLU" problem where neurons with persistently negative inputs produce zero gradients and never update. Mitigated by Leaky ReLU, GeLU, or SwiGLU.',
-    relatedLabId: 'neural-playground',
-    relatedLabTitle: 'Neural Network & Activation Playground'
+    id: 'variance',
+    glyph: 'σ² = (1/N) ∑ (xᵢ - μ)²',
+    latex: '\\sigma^2 = \\frac{1}{N} \\sum_{i=1}^N (x_i - \\mu)^2',
+    name: 'Variance (Spread of Data)',
+    pronunciation: 'sigma squared equals one over N sum of x sub i minus mu squared',
+    category: 'statistics',
+    meaning: 'Measures the average squared distance of each individual data point from the distribution mean.',
+    example: 'Expressed in squared units of the data. Higher variance indicates wider dispersion around the center.'
   },
   {
-    id: 'sigmoid-function',
-    glyph: 'σ(z) = 1 / (1 + e⁻ᶻ)',
-    latex: '\\sigma(z) = \\frac{1}{1 + e^{-z}}',
-    name: 'Sigmoid Logistic Function',
-    pronunciation: 'Sigma of z equals one over one plus e to the negative z',
-    category: 'deep-learning',
-    meaning: 'Maps any real-valued scalar into the open interval (0, 1), making it ideal for modeling Bernoulli probabilities in binary classification or gate mechanisms (e.g. LSTM forget gates).',
-    example: 'In binary cross-entropy classification, the output logit z is passed through σ(z) to predict P(y=1 | x).',
-    ambiguity: 'Susceptible to vanishing gradients when |z| is large because σ\'(z) = σ(z)(1 - σ(z)), which peaks at only 0.25 and approaches 0 in the tails.',
-    relatedLabId: 'neural-playground',
-    relatedLabTitle: 'Neural Network & Activation Playground'
+    id: 'standard-deviation',
+    glyph: 'σ = √(σ²)',
+    latex: '\\sigma = \\sqrt{\\frac{1}{N} \\sum_{i=1}^N (x_i - \\mu)^2}',
+    name: 'Standard Deviation',
+    pronunciation: 'sigma equals square root of variance',
+    category: 'statistics',
+    meaning: 'The square root of variance, quantifying data spread in the exact same measurement units as the original observations.',
+    example: 'In a Gaussian curve, approximately 68.2% of data points fall within ±1σ of the mean, and 95.4% within ±2σ.'
   },
   {
-    id: 'big-o-notation',
-    glyph: 'O(N²)',
-    latex: '\\mathcal{O}(N^2)',
-    name: 'Big-O Asymptotic Complexity',
-    pronunciation: 'Order of N squared / Big-O of N squared',
-    category: 'inference',
-    meaning: 'Describes the upper bound on time or space resource scaling as the input sequence length N approaches infinity.',
-    example: 'Standard full self-attention scales in O(N²) memory and compute with sequence length N, motivating FlashAttention and linear attention approximations.',
-    ambiguity: 'Big-O describes asymptotic trends, not wall-clock hardware latency. An O(N²) algorithm with high GPU cache locality can run faster than an O(N) algorithm with uncoalesced memory access.',
-    relatedLabId: 'attention-visualizer',
-    relatedLabTitle: 'Transformer Self-Attention Visualizer'
-  },
-  {
-    id: 'expectation-operator',
-    glyph: '𝔼_{x ~ P}[f(x)]',
-    latex: '\\mathbb{E}_{x \\sim P}[f(x)]',
-    name: 'Mathematical Expectation',
-    pronunciation: 'Expectation over x sampled from P of f of x',
+    id: 'normal-distribution',
+    glyph: 'N(μ, σ²)',
+    latex: 'f(x) = \\frac{1}{\\sigma \\sqrt{2\\pi}} e^{-\\frac{1}{2}\\left(\\frac{x - \\mu}{\\sigma}\\right)^2}',
+    name: 'Normal (Gaussian) Distribution',
+    pronunciation: 'Normal distribution with mean mu and variance sigma squared',
     category: 'probability',
-    meaning: 'The probability-weighted average value of a function f(x) when the random variable x is drawn from distribution P.',
-    example: 'Empirical risk minimization optimizes the expected loss over the training data distribution: min_θ 𝔼_{(x,y)~D}[L(f_θ(x), y)].',
-    ambiguity: 'In practice, expectations over continuous high-dimensional distributions are intractable and approximated with Monte Carlo mini-batch averages: (1/B) ∑ f(xᵢ).',
-    relatedLabId: 'gradient-descent',
-    relatedLabTitle: 'Loss Surface & Gradient Descent Optimizer Lab'
+    meaning: 'A continuous, symmetric bell-shaped probability distribution fully specified by its central mean and standard deviation.',
+    example: 'Under the Central Limit Theorem, sums and averages of independent random variables approach a normal distribution.'
   },
+
+  // ── Linear Algebra ────────────────────────────────────────────────────────
   {
-    id: 'cross-entropy-loss',
-    glyph: 'H(P, Q) = -∑ P(x) log Q(x)',
-    latex: 'H(P, Q) = -\\sum_{x} P(x) \\log Q(x)',
-    name: 'Cross-Entropy Loss',
-    pronunciation: 'Cross entropy of P and Q equals negative sum of P of x times log Q of x',
-    category: 'probability',
-    meaning: 'Measures the dissimilarity between true probability distribution P (one-hot target) and predicted distribution Q (softmax outputs).',
-    example: 'Standard objective for training LLM next-token prediction: minimizing cross-entropy maximizes the log likelihood of the correct next token.',
-    ambiguity: 'When base 2 logarithm is used, entropy is measured in bits (shannons); in deep learning frameworks like PyTorch, natural log (ln) is used, measuring entropy in nats.'
-  },
-  {
-    id: 'kl-divergence',
-    glyph: 'D_KL(P || Q) = ∑ P(x) log(P(x) / Q(x))',
-    latex: 'D_{\\text{KL}}(P \\parallel Q) = \\sum_{x} P(x) \\log\\left(\\frac{P(x)}{Q(x)}\\right)',
-    name: 'Kullback-Leibler Divergence',
-    pronunciation: 'K-L divergence of P from Q',
-    category: 'probability',
-    meaning: 'Quantifies the information lost when distribution Q is used to approximate the reference distribution P. Always non-negative and zero only when P = Q.',
-    example: 'Used in RLHF (Reinforcement Learning from Human Feedback) penalty terms to prevent the fine-tuned model policy π_θ from drifting too far from the base model policy π_ref.',
-    ambiguity: 'Asymmetric! D_KL(P || Q) ≠ D_KL(Q || P). Forward KL is zero-avoiding (mode covering), while reverse KL is zero-forcing (mode seeking).'
-  },
-  {
-    id: 'hadamard-product',
-    glyph: 'A ⊙ B',
-    latex: 'A \\odot B',
-    name: 'Hadamard / Element-wise Product',
-    pronunciation: 'A element-wise times B / A Hadamard B',
+    id: 'dot-product',
+    glyph: 'u · v = ∑ uᵢ vᵢ',
+    latex: 'u \\cdot v = \\sum_{i=1}^d u_i v_i = \\|u\\| \\|v\\| \\cos(\\theta)',
+    name: 'Dot Product (Scalar Product)',
+    pronunciation: 'u dot v equals sum of u sub i times v sub i',
     category: 'linear-algebra',
-    meaning: 'Multiplies corresponding elements of two matrices or tensors of identical shape: (A ⊙ B)ᵢⱼ = Aᵢⱼ · Bᵢⱼ.',
-    example: 'Used in gated neural networks (e.g. SwiGLU activation: SwiGLU(x) = Swish(xW) ⊙ (xV)).',
-    ambiguity: 'Distinct from matrix multiplication (AB) and outer/tensor product (A ⊗ B). In Python/NumPy, `A * B` is Hadamard, whereas `A @ B` is matrix multiplication.',
-    relatedLabId: 'memory-explorer',
-    relatedLabTitle: 'CPython Memory & Reference Counting Explorer'
+    meaning: 'Calculates the sum of products of corresponding components of two vectors, measuring their directional alignment.',
+    example: 'If u · v = 0, the two vectors are strictly orthogonal (perpendicular). Powers dense linear layers in neural nets.'
   },
   {
-    id: 'l2-norm',
-    glyph: '||x||₂ = √(∑ xᵢ²)',
-    latex: '\\|x\\|_2 = \\sqrt{\\sum_{i} x_i^2}',
-    name: 'L2 Euclidean Norm',
-    pronunciation: 'L-2 norm of x / Euclidean length of x',
+    id: 'matrix-multiplication',
+    glyph: 'C_{i,j} = ∑_k A_{i,k} B_{k,j}',
+    latex: 'C_{i,j} = \\sum_{k=1}^m A_{i,k} B_{k,j}',
+    name: 'Matrix Multiplication (GEMM)',
+    pronunciation: 'Matrix A times Matrix B',
     category: 'linear-algebra',
-    meaning: 'Measures the straight-line geometric magnitude (length) of a vector in n-dimensional Euclidean space.',
-    example: 'In vector databases, embeddings are normalized by dividing by ||x||₂ so that dot product becomes equivalent to cosine similarity.',
-    ambiguity: 'L2 weight decay in SGD adds λ||θ||₂² to the loss function, which pulls weights toward zero to prevent overfitting.'
+    meaning: 'Linear algebraic operation composing two transformations by computing inner products of rows of A with columns of B.',
+    example: 'Forms >90% of the floating-point arithmetic workload in deep learning, hardware-accelerated by GPU Tensor Cores.'
+  },
+  {
+    id: 'eigenvalues-eigenvectors',
+    glyph: 'A v = λ v',
+    latex: 'A v = \\lambda v',
+    name: 'Eigenvalues & Eigenvectors',
+    pronunciation: 'A times v equals lambda times v',
+    category: 'linear-algebra',
+    meaning: 'Special non-zero vectors v whose direction is invariant under transformation matrix A, scaled only by constant λ.',
+    example: 'Powers Principal Component Analysis (PCA) dimensionality reduction by identifying axes of highest variance.'
   },
   {
     id: 'cosine-similarity',
@@ -157,80 +113,205 @@ export const MATH_GLOSSARY_ITEMS: MathSymbolItem[] = [
     name: 'Cosine Similarity',
     pronunciation: 'Cosine similarity of u and v',
     category: 'linear-algebra',
-    meaning: 'Measures the cosine of the angle between two multi-dimensional vectors, producing a score between -1 and +1 invariant to vector magnitude.',
-    example: 'Standard semantic search metric in RAG pipelines to rank retrieved document chunks against the user query embedding.',
-    ambiguity: 'Captures orientation but ignores magnitude. If token frequency or sentence length is critical, dot product without normalization may be preferable.'
+    meaning: 'Measures the cosine of the angle between two multi-dimensional vectors, evaluating orientation regardless of magnitude.',
+    example: 'Primary distance metric used in vector databases, semantic document retrieval, and RAG search.'
   },
   {
-    id: 'learning-rate-eta',
-    glyph: 'η (Eta)',
-    latex: '\\eta',
-    name: 'Learning Rate Hyperparameter',
-    pronunciation: 'Eta / Learning rate',
-    category: 'optimization',
-    meaning: 'The step size scalar factor scaling parameter updates along the negative gradient during optimizer iterations.',
-    example: 'θ_{t+1} = θ_t - η · m_t / (√v_t + ε) in the Adam optimizer update step.',
-    ambiguity: 'Too high causes divergence / exploding loss; too low causes agonizingly slow convergence or trapping in suboptimal local minima.',
-    relatedLabId: 'gradient-descent',
-    relatedLabTitle: 'Loss Surface & Gradient Descent Optimizer Lab'
-  },
-  {
-    id: 'softmax-temperature',
-    glyph: 'P(y_i) = exp(z_i / τ) / ∑ exp(z_j / τ)',
-    latex: 'P(y_i) = \\frac{e^{z_i / \\tau}}{\\sum_{j} e^{z_j / \\tau}}',
-    name: 'Softmax with Temperature Scaling',
-    pronunciation: 'Probability of y-sub-i equals exponential of z-sub-i over tau, divided by sum of exponentials',
-    category: 'inference',
-    meaning: 'Adjusts the entropy and peakiness of categorical probability distributions output by generative language models.',
-    example: 'Lower temperature (τ → 0.1) creates deterministic, greedy outputs; higher temperature (τ → 1.5) flattens probabilities for diverse, creative text.',
-    ambiguity: 'τ = 1 is standard unscaled softmax. As τ approaches 0, softmax approaches argmax (hard one-hot distribution).',
-    relatedLabId: 'attention-visualizer',
-    relatedLabTitle: 'Transformer Self-Attention Visualizer'
-  },
-  {
-    id: 'kv-cache',
-    glyph: 'K_{1:t}, V_{1:t}',
-    latex: 'K_{1:t}, V_{1:t}',
-    name: 'Key-Value Activation Cache',
-    pronunciation: 'K-V Cache',
-    category: 'inference',
-    meaning: 'Stores previously computed Key and Value projection tensors in GPU VRAM during autoregressive decoding to avoid redundant recomputation of past tokens.',
-    example: 'Reduces generation per-token latency from O(t²) to O(t), converting an O(N³) prompt generation into O(N²).',
-    ambiguity: 'Massive VRAM footprint! For long context windows (e.g. 128k tokens), KV cache often exceeds model weight memory, requiring techniques like PagedAttention (vLLM) or GQA (Grouped Query Attention).'
-  },
-  {
-    id: 'pareto-frontier',
-    glyph: 'Pareto(Cost, Quality)',
-    latex: '\\mathcal{P} = \\{m \\mid \\nexists m\': \\text{Cost}(m\') \\le \\text{Cost}(m) \\land \\text{Qual}(m\') \\ge \\text{Qual}(m)\\}',
-    name: 'Cost-Context Pareto Frontier',
-    pronunciation: 'Pareto frontier / Pareto optimal boundary',
-    category: 'inference',
-    meaning: 'The set of models or configurations where you cannot improve quality without increasing cost, or reduce cost without sacrificing quality.',
-    example: 'In model routing systems, requests are routed along the Pareto curve: cheap models (e.g. Flash/Haiku) handle simple queries, while expensive reasoning models (o1/R1) handle difficult tasks.',
-    ambiguity: 'Models sitting below or inside the Pareto curve are strictly dominated and should rarely be selected in production architectures.'
-  },
-  {
-    id: 'matrix-transpose',
-    glyph: 'Aᵀ',
-    latex: 'A^T',
-    name: 'Matrix Transpose Operator',
-    pronunciation: 'A transpose',
+    id: 'l2-norm',
+    glyph: '||x||₂ = √(∑ xᵢ²)',
+    latex: '\\|x\\|_2 = \\sqrt{\\sum_{i=1}^d x_i^2}',
+    name: 'L2 Euclidean Norm (Magnitude)',
+    pronunciation: 'L-2 norm of vector x',
     category: 'linear-algebra',
-    meaning: 'Flips a matrix over its diagonal, switching its row and column indices: (Aᵀ)ᵢⱼ = Aⱼᵢ.',
-    example: 'In attention QKᵀ, transposing key matrix K (shape [B, S, D]) to Kᵀ (shape [B, D, S]) allows matrix multiplication with Q to produce sequence-by-sequence score matrix [B, S, S].',
-    ambiguity: 'In CPython/NumPy/PyTorch, transposing a tensor is an O(1) zero-copy operation that simply swaps stride and shape metadata rather than reallocating memory.',
-    relatedLabId: 'memory-explorer',
-    relatedLabTitle: 'CPython Memory & Reference Counting Explorer'
+    meaning: 'The straight-line geometric length of a vector in multi-dimensional Euclidean space.',
+    example: 'Vectors are often divided by ||x||₂ to produce unit-length vectors with uniform scale.'
   },
   {
-    id: 'ttft-latency',
-    glyph: 'TTFT (Time to First Token)',
-    latex: '\\text{TTFT} = t_{\\text{first\\_token}} - t_{\\text{request}}',
-    name: 'Time to First Token (Prefill Latency)',
-    pronunciation: 'T-T-F-T / Time to First Token',
-    category: 'inference',
-    meaning: 'The latency elapsed between a client sending an LLM prompt and receiving the very first token in the streaming response.',
-    example: 'Prefill is compute-bound (processing the entire prompt matrix in parallel), whereas subsequent token decoding is memory-bandwidth bound.',
-    ambiguity: 'A model with excellent tokens-per-second decoding speed can still feel sluggish to users if its TTFT is several seconds long due to large prompt processing overhead.'
+    id: 'hadamard-product',
+    glyph: 'A ⊙ B',
+    latex: 'A \\odot B',
+    name: 'Hadamard (Element-Wise) Product',
+    pronunciation: 'A element-wise times B / A Hadamard B',
+    category: 'linear-algebra',
+    meaning: 'Multiplies corresponding elements of two tensors of identical shape: (A ⊙ B)ᵢⱼ = Aᵢⱼ · Bᵢⱼ.',
+    example: 'Used in gated activations (e.g. SwiGLU: Swish(xW) ⊙ (xV)) and dropout masks.'
+  },
+
+  // ── Calculus & Optimization ───────────────────────────────────────────────
+  {
+    id: 'nabla-gradient',
+    glyph: '∇_θ L(θ)',
+    latex: '\\nabla_\\theta \\mathcal{L}(\\theta) = \\left[ \\frac{\\partial \\mathcal{L}}{\\partial \\theta_1}, \\dots, \\frac{\\partial \\mathcal{L}}{\\partial \\theta_n} \\right]^T',
+    name: 'Nabla Gradient Operator',
+    pronunciation: 'Gradient of loss with respect to parameters theta',
+    category: 'optimization',
+    meaning: 'A vector of first-order partial derivatives pointing in the direction of greatest rate of increase of scalar loss L.',
+    example: 'During backpropagation, auto-differentiation computes ∇_θ L so optimizers can descend down the loss surface.',
+    relatedLabId: 'gradient-descent',
+    relatedLabTitle: 'Gradient Descent Optimizer Lab'
+  },
+  {
+    id: 'gradient-descent',
+    glyph: 'θ ← θ - η ∇_θ L(θ)',
+    latex: '\\theta \\leftarrow \\theta - \\eta \\nabla_\\theta \\mathcal{L}(\\theta)',
+    name: 'Gradient Descent Optimization',
+    pronunciation: 'theta updated as theta minus eta times gradient of loss',
+    category: 'optimization',
+    meaning: 'Iterative optimization algorithm that steps model parameters in the direction of steepest descent to minimize loss.',
+    example: 'The foundational training engine behind SGD, Adam, and modern deep neural network parameter updates.',
+    relatedLabId: 'gradient-descent',
+    relatedLabTitle: 'Gradient Descent Optimizer Lab'
+  },
+  {
+    id: 'learning-rate',
+    glyph: 'η (Step Size)',
+    latex: '\\eta \\in (0, 1)',
+    name: 'Learning Rate (η / Alpha)',
+    pronunciation: 'eta (or alpha) learning rate step size',
+    category: 'optimization',
+    meaning: 'Crucial hyperparameter that scales the magnitude of parameter updates along the gradient vector each iteration.',
+    example: 'Too large causes divergence and training explosion; too small leads to plateaus and slow convergence.'
+  },
+
+  // ── Machine Learning Fundamentals ─────────────────────────────────────────
+  {
+    id: 'mean-squared-error',
+    glyph: 'MSE = (1/N) ∑ (yᵢ - ŷᵢ)²',
+    latex: '\\text{MSE} = \\frac{1}{N} \\sum_{i=1}^N (y_i - \\hat{y}_i)^2',
+    name: 'Mean Squared Error (MSE Loss)',
+    pronunciation: 'M-S-E equals one over N sum of y minus y-hat squared',
+    category: 'machine-learning',
+    meaning: 'Calculates the average squared difference between true continuous target values y and model predictions ŷ.',
+    example: 'Standard objective function for linear regression and continuous numerical forecasting.'
+  },
+  {
+    id: 'cross-entropy-loss',
+    glyph: 'H(P, Q) = -∑ yᵢ log(pᵢ)',
+    latex: '\\mathcal{L}_{\\text{CE}} = -\\sum_{i=1}^C y_i \\log(\\hat{y}_i)',
+    name: 'Cross-Entropy Loss',
+    pronunciation: 'Cross entropy of true distribution and predicted distribution',
+    category: 'machine-learning',
+    meaning: 'Measures dissimilarity between ground truth one-hot classification label y and predicted probabilities ŷ.',
+    example: 'Standard loss function for multi-class classification and LLM next-token generation.'
+  },
+  {
+    id: 'bias-variance-tradeoff',
+    glyph: 'Error = Bias² + Variance + Noise',
+    latex: '\\mathbb{E}[(y - \\hat{f}(x))^2] = \\text{Bias}[\\hat{f}(x)]^2 + \\text{Var}[\\hat{f}(x)] + \\sigma^2',
+    name: 'Bias-Variance Tradeoff',
+    pronunciation: 'Expected error equals bias squared plus variance plus irreducible error',
+    category: 'machine-learning',
+    meaning: 'The balance between underfitting (high bias from an oversimplified model) and overfitting (high variance from oversensitivity).',
+    example: 'Increasing model capacity reduces training bias but risks inflating validation variance.'
+  },
+  {
+    id: 'regularization',
+    glyph: 'Loss + λ ||θ||²',
+    latex: '\\mathcal{L}_{\\text{reg}} = \\mathcal{L} + \\lambda \\|\\theta\\|_2^2',
+    name: 'L1 & L2 Regularization (Weight Decay)',
+    pronunciation: 'Loss plus lambda times norm of weights',
+    category: 'machine-learning',
+    meaning: 'Penalty added to loss function discouraging excessively large weights, keeping model complexity constrained.',
+    example: 'L2 (Ridge) penalizes large weights smoothly; L1 (Lasso) drives uninformative weights to exact zero.'
+  },
+  {
+    id: 'precision-recall',
+    glyph: 'P = TP/(TP+FP), R = TP/(TP+FN)',
+    latex: '\\text{Precision} = \\frac{\\text{TP}}{\\text{TP} + \\text{FP}}, \\quad \\text{Recall} = \\frac{\\text{TP}}{\\text{TP} + \\text{FN}}',
+    name: 'Precision & Recall',
+    pronunciation: 'Precision and recall evaluation metrics',
+    category: 'machine-learning',
+    meaning: 'Precision measures exactness (how many selected items were relevant); Recall measures completeness (how many relevant items were selected).',
+    example: 'In spam filtering, high precision prevents legitimate emails from being lost; in fraud detection, high recall catches all fraud.'
+  },
+  {
+    id: 'f1-score',
+    glyph: 'F1 = 2 · (P · R) / (P + R)',
+    latex: 'F_1 = 2 \\cdot \\frac{\\text{Precision} \\cdot \\text{Recall}}{\\text{Precision} + \\text{Recall}}',
+    name: 'F1 Score (Harmonic Mean)',
+    pronunciation: 'F-1 score harmonic mean of precision and recall',
+    category: 'machine-learning',
+    meaning: 'The harmonic mean of precision and recall, providing a balanced single metric on class-imbalanced datasets.',
+    example: 'Prevents deceptive high accuracy when negative samples overwhelmingly dominate positive samples.'
+  },
+
+  // ── Deep Learning & AI Architectures ──────────────────────────────────────
+  {
+    id: 'softmax-function',
+    glyph: 'Softmax(zᵢ) = e^(zᵢ) / ∑ e^(zⱼ)',
+    latex: '\\text{softmax}(z_i) = \\frac{e^{z_i}}{\\sum_{j=1}^K e^{z_j}}',
+    name: 'Softmax Function',
+    pronunciation: 'Softmax of z sub i',
+    category: 'deep-learning',
+    meaning: 'Transforms a vector of arbitrary real-valued raw logits into a valid probability distribution that strictly sums to 1.0.',
+    example: 'Applied at the final layer of classification models and within Transformer attention weight computations.'
+  },
+  {
+    id: 'sigmoid-function',
+    glyph: 'σ(z) = 1 / (1 + e⁻ᶻ)',
+    latex: '\\sigma(z) = \\frac{1}{1 + e^{-z}}',
+    name: 'Sigmoid Logistic Function',
+    pronunciation: 'Sigma of z equals one over one plus e to negative z',
+    category: 'deep-learning',
+    meaning: 'S-shaped mathematical curve mapping any real number into the range (0, 1), representing Bernoulli probabilities.',
+    example: 'Commonly used as the output activation for binary classification and recurrent gate mechanisms.',
+    relatedLabId: 'neural-playground',
+    relatedLabTitle: 'Neural Playground'
+  },
+  {
+    id: 'relu-activation',
+    glyph: 'ReLU(z) = max(0, z)',
+    latex: '\\text{ReLU}(z) = \\max(0, z)',
+    name: 'Rectified Linear Unit (ReLU)',
+    pronunciation: 'R-E-L-U of z equals max of zero and z',
+    category: 'deep-learning',
+    meaning: 'Piecewise linear activation function that passes positive inputs directly while setting all negative values to zero.',
+    example: 'Avoids vanishing gradients in deep feedforward networks and CNNs while offering fast execution.',
+    relatedLabId: 'neural-playground',
+    relatedLabTitle: 'Neural Playground'
+  },
+  {
+    id: 'attention-equation',
+    glyph: 'Attention(Q, K, V) = softmax(QKᵀ / √dₖ) V',
+    latex: '\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right) V',
+    name: 'Scaled Dot-Product Attention',
+    pronunciation: 'Attention of Q, K, V',
+    category: 'deep-learning',
+    meaning: 'Core routing mechanism of Transformers calculating contextual relevance between token queries Q and keys K to blend values V.',
+    example: 'Powers modern LLMs (GPT, Llama, Claude), allowing each token to dynamically attend to relevant context across the sequence.',
+    relatedLabId: 'attention-visualizer',
+    relatedLabTitle: 'Attention Visualizer'
+  },
+  {
+    id: 'discrete-convolution',
+    glyph: '(X ⊛ K)ᵢⱼ = ∑∑ X_{i+m, j+n} K_{m,n}',
+    latex: '(X \\ast K)_{i,j} = \\sum_{m} \\sum_{n} X_{i+m, j+n} K_{m,n}',
+    name: '2D Spatial Convolution (Filter)',
+    pronunciation: 'X convolved with kernel K',
+    category: 'deep-learning',
+    meaning: 'Slides a small learnable parameter matrix (kernel) across 2D inputs to extract spatial translation-invariant feature patterns.',
+    example: 'Foundational operation in Computer Vision CNNs for edge detection, texture extraction, and object recognition.',
+    relatedLabId: 'convolution-visualizer',
+    relatedLabTitle: '2D Convolution Lab'
+  },
+  {
+    id: 'big-o-notation',
+    glyph: 'O(1), O(N), O(N log N), O(N²)',
+    latex: '\\mathcal{O}(f(n))',
+    name: 'Big-O Asymptotic Complexity',
+    pronunciation: 'Big-O of f of n',
+    category: 'mathematics',
+    meaning: 'Mathematical convention describing upper bound on algorithm runtime or memory scaling as input size grows to infinity.',
+    example: 'Hash map lookups are O(1); sorting is O(N log N); full self-attention scales in O(N²) time and memory.'
+  },
+  {
+    id: 'kl-divergence',
+    glyph: 'D_KL(P || Q) = ∑ P(x) log(P(x) / Q(x))',
+    latex: 'D_{\\text{KL}}(P \\parallel Q) = \\sum_{x} P(x) \\log\\left(\\frac{P(x)}{Q(x)}\\right)',
+    name: 'Kullback-Leibler (KL) Divergence',
+    pronunciation: 'K-L divergence of P from Q',
+    category: 'probability',
+    meaning: 'Quantifies how much probability distribution Q differs from baseline reference distribution P in bits or nats.',
+    example: 'Used in RLHF alignment penalties to keep fine-tuned LLM responses from drifting wildly from the base model.'
   }
 ];

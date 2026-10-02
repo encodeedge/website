@@ -1,0 +1,11 @@
+name: "F1 Score (Harmonic Mean)"
+glyph: "F1 = 2 · (P · R) / (P + R)"
+latex: "F_1 = 2 \\cdot \\frac{\\text{Precision} \\cdot \\text{Recall}}{\\text{Precision} + \\text{Recall}}"
+pronunciation: "F-1 score harmonic mean of precision and recall"
+category: "machine-learning"
+meaning: "The harmonic mean of precision and recall, providing a balanced single metric on class-imbalanced datasets."
+example: "Prevents deceptive high accuracy when negative samples overwhelmingly dominate positive samples."
+ambiguity: ""
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

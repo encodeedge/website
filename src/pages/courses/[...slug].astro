@@ -3,7 +3,6 @@ import { getCollection, render } from 'astro:content';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { CourseCurriculumAccordion } from '@/components/ui/course-curriculum-accordion';
 import { CourseProgressCard } from '@/components/ui/course-progress-card';
-import { CoursePrerequisiteFlow } from '@/components/interactive/CoursePrerequisiteFlow';
 import { CourseFlashcardsDrawer } from '@/components/interactive/CourseFlashcardsDrawer';
 import { CourseCertificate } from '@/components/interactive/CourseCertificate';
 import { CourseCompletionBanner } from '@/components/ui/course-completion-banner';
@@ -258,10 +257,6 @@ const totalDurationStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
           />
         </section>
 
-        <!-- Career Path & Prerequisite Flow -->
-        <section>
-          <CoursePrerequisiteFlow courseId={course.id} client:load />
-        </section>
       </div>
 
       <!-- Right 1-Column: Sticky Progress Card & Instructor -->

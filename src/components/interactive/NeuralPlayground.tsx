@@ -163,7 +163,7 @@ export const NeuralPlayground: React.FC = () => {
               <text y="-8" textAnchor="middle" fill="currentColor" fontSize="12" fontWeight="700">Σ (z)</text>
               <text y="12" textAnchor="middle" fill="#6366F1" fontSize="12" fontWeight="800">{z.toFixed(2)}</text>
               {/* Bias pill */}
-              <rect x="-28" y="42" width="56" height="18" rx="5" fill="#E0E7FF" dark:fill="#312E81" />
+              <rect x="-28" y="42" width="56" height="18" rx="5" className="fill-[#E0E7FF] dark:fill-[#312E81]" />
               <text y="54" textAnchor="middle" fill="#4338CA" fontSize="10" fontWeight="700">b={bias.toFixed(2)}</text>
             </g>
 

@@ -261,7 +261,7 @@ const glossary = defineCollection({
     glyph: z.string(),
     latex: z.string().optional().default(''),
     pronunciation: z.string().optional().default(''),
-    category: z.enum(['deep-learning', 'optimization', 'linear-algebra', 'probability', 'inference']).default('deep-learning'),
+    category: z.enum(['deep-learning', 'machine-learning', 'mathematics', 'statistics', 'linear-algebra', 'optimization', 'probability', 'inference', 'python', 'computer-science', 'nlp', 'reinforcement-learning']).default('deep-learning'),
     meaning: z.string(),
     example: z.string().optional().default(''),
     ambiguity: z.string().optional().default(''),

@@ -1,0 +1,11 @@
+name: "L1 & L2 Regularization (Weight Decay)"
+glyph: "Loss + λ ||θ||²"
+latex: "\\mathcal{L}_{\\text{reg}} = \\mathcal{L} + \\lambda \\|\\theta\\|_2^2"
+pronunciation: "Loss plus lambda times norm of weights"
+category: "machine-learning"
+meaning: "Penalty added to loss function discouraging excessively large weights, keeping model complexity constrained."
+example: "L2 (Ridge) penalizes large weights smoothly; L1 (Lasso) drives uninformative weights to exact zero."
+ambiguity: ""
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

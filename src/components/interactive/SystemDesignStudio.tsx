@@ -319,46 +319,32 @@ export const SystemDesignStudio: React.FC<SystemDesignStudioProps> = ({
                         setSelectedProblemId(p.id);
                       }
                     }}
-                    className={`shrink-0 w-72 sm:w-80 p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-3 relative group ${
                     className={`shrink-0 w-56 sm:w-64 p-2.5 sm:p-3 rounded-xl border transition-all cursor-pointer flex flex-col justify-between space-y-2 relative group ${
                       isActive
-                        ? 'bg-card border-[#E5E795] ring-2 ring-[#E5E795]/40 shadow-xl shadow-[#E5E795]/10 scale-[1.01]'
-                        : 'bg-card/70 hover:bg-card border-border hover:border-border/90 shadow-2xs hover:shadow-md'
                         ? 'bg-card border-[#E5E795] ring-2 ring-[#E5E795]/40 shadow-md shadow-[#E5E795]/15'
                         : 'bg-card hover:bg-secondary/40 border-border hover:border-border/90 shadow-2xs'
                     }`}
                   >
                     {/* Top Level Bar */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[10px] font-mono font-bold uppercase text-muted-foreground">
-                          Mission 0{idx + 1} • {p.category}
                     <div className="space-y-1">
                       <div className="flex items-center justify-between gap-1.5 text-[9px] font-mono leading-none">
                         <span className="text-muted-foreground uppercase font-bold truncate">
                           0{idx + 1} • {p.category}
                         </span>
-                        <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${getDifficultyBadge(p.difficulty)}`}>
-                        <span className={`px-1.5 py-0.2 rounded-full font-bold border ${getDifficultyBadge(p.difficulty)}`}>
+                        <span className={`px-1.5 py-0.5 rounded-full font-bold border ${getDifficultyBadge(p.difficulty)}`}>
                           {p.difficulty}
                         </span>
                       </div>
 
-                      <h4 className="text-sm font-bold font-display text-foreground group-hover:text-primary transition-colors leading-snug">
                       <h4 className="text-xs font-bold font-display text-foreground group-hover:text-indigo-600 dark:group-hover:text-[#E5E795] transition-colors leading-tight truncate" title={p.title}>
                         {p.title}
                       </h4>
 
-                      <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                       <p className="text-[11px] text-muted-foreground line-clamp-1 leading-snug">
                         {p.summary}
                       </p>
                     </div>
 
-                    {/* Stats Pill Strip */}
-                    <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono">
-                      <div className="flex items-center gap-1.5 text-muted-foreground">
-                        <Activity className="w-3.5 h-3.5 text-indigo-600 dark:text-[#E5E795]" />
                     {/* Stats Strip */}
                     <div className="pt-1.5 border-t border-border flex items-center justify-between text-[10px] font-mono">
                       <div className="flex items-center gap-1 text-muted-foreground">
@@ -367,18 +353,12 @@ export const SystemDesignStudio: React.FC<SystemDesignStudioProps> = ({
                         <span className="font-semibold text-emerald-600 dark:text-emerald-400">&lt;{p.maxLatencyMs}ms</span>
                       </div>
 
-                      <div className="flex items-center gap-1 text-muted-foreground">
-                        <span>P99:</span>
-                        <span className="font-semibold text-emerald-600 dark:text-emerald-400">&lt; {p.maxLatencyMs}ms</span>
-                      </div>
-
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedProblemId(p.id);
                         }}
-                        className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
                         className={`px-2 py-0.5 rounded-lg text-[9px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
                           isActive
                             ? 'bg-[#E5E795] text-black shadow-xs font-black'
@@ -387,13 +367,11 @@ export const SystemDesignStudio: React.FC<SystemDesignStudioProps> = ({
                       >
                         {isActive ? (
                           <>
-                            <CheckCircle2 className="w-3 h-3 stroke-[2.5]" />
                             <CheckCircle2 className="w-2.5 h-2.5 stroke-[2.5]" />
                             <span>Active</span>
                           </>
                         ) : (
                           <>
-                            <Play className="w-3 h-3 fill-current" />
                             <Play className="w-2.5 h-2.5 fill-current" />
                             <span>Play</span>
                           </>
@@ -415,7 +393,7 @@ export const SystemDesignStudio: React.FC<SystemDesignStudioProps> = ({
             />
           </div>
 
-          {/* Features Grid (Website design tokens) */}
+          {/* Features Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
             <div className="p-6 rounded-3xl bg-card border border-border space-y-2.5 shadow-xs">
               <div className="size-10 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
@@ -479,33 +457,28 @@ export const SystemDesignStudio: React.FC<SystemDesignStudioProps> = ({
 
       {/* ── MODE 3: PRODUCTION REFERENCE ARCHITECTURES ─────────────────── */}
       {viewMode === 'reference' && (
-        <div id="reference-architectures" className="space-y-8">
-          <div className="space-y-1.5 border-b border-border pb-4">
+        <div id="reference-architectures" className="space-y-6">
+          <div className="space-y-1 border-b border-border pb-3">
             <div className="text-xs font-mono text-indigo-600 dark:text-[#E5E795] uppercase tracking-wider font-semibold">
               Architectural Blueprints
             </div>
-            <h2 className="text-2xl sm:text-3xl font-display font-extrabold text-foreground tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-foreground tracking-tight">
               Production Reference Architectures
             </h2>
-            <p className="text-sm text-muted-foreground max-w-2xl font-body">
+            <p className="text-xs text-muted-foreground max-w-2xl font-body">
               Battle-tested system blueprints designed to meet extreme enterprise latency budgets, high availability requirements, and data governance standards.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {architectures.map((arch) => (
               <div 
                 key={arch.id}
-                className="p-6 rounded-3xl bg-card border border-border hover:border-border/80 transition-all flex flex-col justify-between space-y-6 shadow-md relative overflow-hidden group"
                 className="p-4 sm:p-5 rounded-2xl bg-card border border-border hover:border-border/80 transition-all flex flex-col justify-between space-y-4 shadow-xs relative overflow-hidden group"
               >
                 {/* Top decorative accent */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-cyan-500 to-[#E5E795] opacity-70" />
 
-                <div className="space-y-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-muted border border-border text-indigo-600 dark:text-indigo-400 font-semibold">
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-secondary border border-border text-indigo-600 dark:text-indigo-400 font-semibold">
@@ -517,11 +490,9 @@ export const SystemDesignStudio: React.FC<SystemDesignStudioProps> = ({
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-bold font-display text-foreground group-hover:text-primary transition-colors">
                     <h3 className="text-base sm:text-lg font-bold font-display text-foreground group-hover:text-primary transition-colors">
                       {arch.title}
                     </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed mt-1.5 font-body">
                     <p className="text-xs text-muted-foreground leading-relaxed mt-1 font-body">
                       {arch.summary}
                     </p>
@@ -529,8 +500,6 @@ export const SystemDesignStudio: React.FC<SystemDesignStudioProps> = ({
 
                   {/* Visual Pipeline Dataflow: roadmap.sh Small Boxes */}
                   {arch.latencyBudget && arch.latencyBudget.length > 0 && (
-                    <div className="space-y-2.5 pt-2">
-                      <div className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider font-semibold flex items-center justify-between">
                     <div className="space-y-2 pt-1">
                       <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider font-semibold flex items-center justify-between">
                         <span className="flex items-center gap-1.5">
@@ -540,28 +509,23 @@ export const SystemDesignStudio: React.FC<SystemDesignStudioProps> = ({
                         <span className="text-indigo-600 dark:text-[#E5E795] font-bold">Total SLA: {arch.sla}</span>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-2 p-3.5 rounded-2xl bg-muted/20 border border-border/80">
                       <div className="flex flex-wrap items-center gap-1.5 p-2.5 rounded-xl bg-muted/20 border border-border/80">
                         {arch.latencyBudget.map((stage, idx) => (
                           <div key={idx} className="flex items-center gap-1.5">
                             {/* roadmap.sh small box with just title */}
                             <div 
-                              className="group/node relative rounded-xl border-2 px-3 py-1.5 text-xs font-semibold shadow-2xs hover:shadow-sm hover:scale-105 active:scale-95 transition-all cursor-pointer bg-card hover:bg-secondary border-border text-foreground flex items-center gap-1.5"
                               className="group/node relative rounded-lg border px-2 py-1 text-xs font-semibold shadow-2xs hover:shadow-xs hover:scale-105 active:scale-95 transition-all cursor-pointer bg-card hover:bg-secondary border-border text-foreground flex items-center gap-1.5"
                               title={`${stage.step} (Latency: ${stage.latency})`}
                             >
                               <span className="size-1.5 rounded-full bg-[#E5E795] shrink-0"></span>
-                              <span className="leading-tight">{stage.step}</span>
-                              <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-secondary text-indigo-600 dark:text-[#E5E795] ml-0.5 shrink-0">
                               <span className="leading-tight text-[11px]">{stage.step}</span>
-                              <span className="text-[9px] font-mono font-bold px-1 py-0.2 rounded bg-secondary text-indigo-600 dark:text-[#E5E795] ml-0.5 shrink-0">
+                              <span className="text-[9px] font-mono font-bold px-1 py-0.5 rounded bg-secondary text-indigo-600 dark:text-[#E5E795] ml-0.5 shrink-0">
                                 {stage.latency}
                               </span>
                             </div>
 
                             {/* Arrow connector */}
-                            {idx < arch.latencyBudget.length - 1 && (
-                              <svg className="w-3.5 h-3.5 text-muted-foreground shrink-0 hidden sm:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            {Boolean(arch.latencyBudget && idx < arch.latencyBudget.length - 1) && (
                               <svg className="w-3 h-3 text-muted-foreground shrink-0 hidden sm:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                 <path d="M5 12h14" />
                                 <path d="M12 5l7 7-7 7" />
@@ -575,7 +539,6 @@ export const SystemDesignStudio: React.FC<SystemDesignStudioProps> = ({
 
                   {/* Architectural Trade-off Note */}
                   {arch.coreTradeoff && (
-                    <div className="p-3.5 rounded-xl bg-muted/40 border border-border text-xs text-foreground space-y-1">
                     <div className="p-2.5 rounded-xl bg-muted/40 border border-border text-xs text-foreground space-y-0.5">
                       <span className="font-bold text-indigo-600 dark:text-indigo-400 block font-mono text-[10px] uppercase tracking-wider">
                         Key System Trade-off:
@@ -589,18 +552,14 @@ export const SystemDesignStudio: React.FC<SystemDesignStudioProps> = ({
 
                 {/* AWS Components Stack Tags */}
                 {arch.componentsUsed && arch.componentsUsed.length > 0 && (
-                  <div className="pt-3 border-t border-border space-y-1.5">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold block">
                   <div className="pt-2 border-t border-border space-y-1">
                     <span className="text-[9px] font-mono uppercase tracking-wider text-muted-foreground font-semibold block">
                       AWS Infrastructure Stack
                     </span>
-                    <div className="flex flex-wrap items-center gap-1.5">
                     <div className="flex flex-wrap items-center gap-1">
                       {arch.componentsUsed.map((comp, idx) => (
                         <span 
                           key={idx} 
-                          className="rounded-lg border px-2.5 py-1 text-[11px] font-medium font-mono bg-card border-border text-foreground hover:border-[#E5E795]/50 transition-colors shadow-2xs"
                           className="rounded-md border px-2 py-0.5 text-[10px] font-medium font-mono bg-card border-border text-foreground hover:border-[#E5E795]/50 transition-colors shadow-2xs"
                         >
                           {comp}
@@ -617,34 +576,25 @@ export const SystemDesignStudio: React.FC<SystemDesignStudioProps> = ({
 
       {/* ── MODE 4: GOLDEN PRINCIPLES ──────────────────────────────────── */}
       {viewMode === 'principles' && (
-        <div id="golden-principles" className="p-8 rounded-3xl bg-card border border-border shadow-md space-y-8">
-          <div className="max-w-2xl space-y-1.5">
         <div id="golden-principles" className="p-5 sm:p-6 rounded-2xl bg-card border border-border shadow-xs space-y-6">
           <div className="max-w-2xl space-y-1">
             <span className="text-xs font-mono text-indigo-600 dark:text-[#E5E795] uppercase tracking-wider font-semibold">
               Design Rules of Thumb
             </span>
-            <h2 className="text-2xl font-display font-extrabold text-foreground tracking-tight">
             <h2 className="text-xl sm:text-2xl font-display font-extrabold text-foreground tracking-tight">
               The 4 Golden Principles of Production ML
             </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground font-body">
             <p className="text-xs text-muted-foreground font-body">
               Core engineering patterns applied across high-scale ML infrastructures at Google, Meta, and Netflix.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {goldenPrinciples.map((principle) => (
-              <div key={principle.number} className="flex items-start gap-4 p-5 rounded-2xl bg-muted/30 border border-border">
-                <span className="font-mono text-2xl font-extrabold text-indigo-600 dark:text-[#E5E795] shrink-0">
               <div key={principle.number} className="flex items-start gap-3 p-3.5 sm:p-4 rounded-xl bg-muted/30 border border-border">
                 <span className="font-mono text-xl font-extrabold text-indigo-600 dark:text-[#E5E795] shrink-0">
                   {principle.number}
                 </span>
-                <div className="space-y-1">
-                  <h3 className="text-sm font-bold text-foreground font-display">
                 <div className="space-y-0.5">
                   <h3 className="text-xs sm:text-sm font-bold text-foreground font-display">
                     {principle.title}

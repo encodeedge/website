@@ -6,6 +6,8 @@ import { getCollection } from 'astro:content';
 const labsEntries = await getCollection('labs');
 const glossaryEntries = await getCollection('glossary');
 
+import { MATH_GLOSSARY_ITEMS } from '@/lib/math-glossary-data';
+
 // Map labs for LabsHub
 const labs = labsEntries.map(entry => ({
   id: entry.id,
@@ -21,8 +23,8 @@ const labs = labsEntries.map(entry => ({
   featured: entry.data.featured ?? true,
 })).sort((a, b) => a.order - b.order);
 
-// Map glossary items for LabsHub
-const glossaryItems = glossaryEntries.map(entry => ({
+// Map glossary items for LabsHub (merging CMS entries with core Math & AI glossary items)
+const cmsGlossaryItems = glossaryEntries.map(entry => ({
   id: entry.id,
   name: entry.data.name,
   glyph: entry.data.glyph,
@@ -36,6 +38,12 @@ const glossaryItems = glossaryEntries.map(entry => ({
   relatedLabTitle: entry.data.relatedLabTitle || '',
   featured: entry.data.featured ?? true,
 }));
+
+const cmsIds = new Set(cmsGlossaryItems.map(i => i.id));
+const glossaryItems = [
+  ...cmsGlossaryItems,
+  ...MATH_GLOSSARY_ITEMS.filter(i => !cmsIds.has(i.id))
+];
 
 const pageTitle = "Interactive AI Labs & Math Decoder | EncodeEdge";
 const pageDescription = "Explore interactive simulators for Transformers self-attention, 2D convolution kernels, loss surfaces, neural activations, CPython memory, and a comprehensive AI mathematical notation glossary.";

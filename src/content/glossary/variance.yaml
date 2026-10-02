@@ -1,0 +1,11 @@
+name: "Variance (Spread of Data)"
+glyph: "σ² = (1/N) ∑ (xᵢ - μ)²"
+latex: "\\sigma^2 = \\frac{1}{N} \\sum_{i=1}^N (x_i - \\mu)^2"
+pronunciation: "sigma squared equals one over N sum of x sub i minus mu squared"
+category: "statistics"
+meaning: "Measures the average squared distance of each individual data point from the distribution mean."
+example: "Expressed in squared units of the data. Higher variance indicates wider dispersion around the center."
+ambiguity: ""
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

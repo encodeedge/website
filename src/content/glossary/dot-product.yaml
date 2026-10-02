@@ -1,0 +1,11 @@
+name: "Dot Product (Scalar Product)"
+glyph: "u · v = ∑ uᵢ vᵢ"
+latex: "u \\cdot v = \\sum_{i=1}^d u_i v_i = \\|u\\| \\|v\\| \\cos(\\theta)"
+pronunciation: "u dot v equals sum of u sub i times v sub i"
+category: "linear-algebra"
+meaning: "Calculates the sum of products of corresponding components of two vectors, measuring their directional alignment."
+example: "If u · v = 0, the two vectors are strictly orthogonal (perpendicular). Powers dense linear layers in neural nets."
+ambiguity: ""
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

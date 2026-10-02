@@ -1,0 +1,11 @@
+name: "Bias-Variance Tradeoff"
+glyph: "Error = Bias² + Variance + Noise"
+latex: "\\mathbb{E}[(y - \\hat{f}(x))^2] = \\text{Bias}[\\hat{f}(x)]^2 + \\text{Var}[\\hat{f}(x)] + \\sigma^2"
+pronunciation: "Expected error equals bias squared plus variance plus irreducible error"
+category: "machine-learning"
+meaning: "The balance between underfitting (high bias from an oversimplified model) and overfitting (high variance from oversensitivity)."
+example: "Increasing model capacity reduces training bias but risks inflating validation variance."
+ambiguity: ""
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

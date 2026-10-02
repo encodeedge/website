@@ -1,0 +1,11 @@
+name: "Standard Deviation"
+glyph: "σ = √(σ²)"
+latex: "\\sigma = \\sqrt{\\frac{1}{N} \\sum_{i=1}^N (x_i - \\mu)^2}"
+pronunciation: "sigma equals square root of variance"
+category: "statistics"
+meaning: "The square root of variance, quantifying data spread in the exact same measurement units as the original observations."
+example: "In a Gaussian curve, approximately 68.2% of data points fall within ±1σ of the mean, and 95.4% within ±2σ."
+ambiguity: ""
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

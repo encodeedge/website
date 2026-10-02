@@ -1,0 +1,11 @@
+name: "Softmax Function"
+glyph: "Softmax(zᵢ) = e^(zᵢ) / ∑ e^(zⱼ)"
+latex: "\\text{softmax}(z_i) = \\frac{e^{z_i}}{\\sum_{j=1}^K e^{z_j}}"
+pronunciation: "Softmax of z sub i"
+category: "deep-learning"
+meaning: "Transforms a vector of arbitrary real-valued raw logits into a valid probability distribution that strictly sums to 1.0."
+example: "Applied at the final layer of classification models and within Transformer attention weight computations."
+ambiguity: ""
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

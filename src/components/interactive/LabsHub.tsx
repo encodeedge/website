@@ -190,7 +190,7 @@ export const LabsHub: React.FC<LabsHubProps> = ({ labs, glossaryItems }) => {
               }`}
             >
               <BookOpen className="size-4 text-primary" />
-              <span>Math Decoder & Glossary</span>
+              <span>Math &amp; AI Glossary</span>
             </button>
           </div>
         </div>

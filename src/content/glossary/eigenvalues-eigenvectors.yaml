@@ -1,0 +1,11 @@
+name: "Eigenvalues & Eigenvectors"
+glyph: "A v = λ v"
+latex: "A v = \\lambda v"
+pronunciation: "A times v equals lambda times v"
+category: "linear-algebra"
+meaning: "Special non-zero vectors v whose direction is invariant under transformation matrix A, scaled only by constant λ."
+example: "Powers Principal Component Analysis (PCA) dimensionality reduction by identifying axes of highest variance."
+ambiguity: ""
+relatedLabId: ""
+relatedLabTitle: ""
+featured: true

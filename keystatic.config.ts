@@ -1096,11 +1096,12 @@ export default config({
           label: 'AI Model (Workers AI / Gemini)',
           description: 'Workers AI offers 10,000 free daily neurons on Cloudflare Pages. Gemini can be used as fallback.',
           options: [
-            { label: 'Cloudflare Workers AI (Llama 3.3 70B Instruct - Free)', value: '@cf/meta/llama-3.3-70b-instruct' },
+            { label: 'Cloudflare Workers AI (Llama 3.3 70B Instruct Fast - Free)', value: '@cf/meta/llama-3.3-70b-instruct-fp8-fast' },
+            { label: 'Cloudflare Workers AI (Llama 3.1 8B Instruct - Free & Fast)', value: '@cf/meta/llama-3.1-8b-instruct' },
             { label: 'Cloudflare Workers AI (DeepSeek R1 Distill Qwen 32B - Free)', value: '@cf/deepseek-ai/deepseek-r1-distill-qwen-32b' },
             { label: 'Google Gemini 2.5 Flash (Generous Free Tier)', value: 'gemini-2.5-flash' },
           ],
-          defaultValue: '@cf/meta/llama-3.3-70b-instruct',
+          defaultValue: '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
         }),
         additionalDirectives: fields.text({
           label: 'Custom Author Directives / Focus Points (Optional)',

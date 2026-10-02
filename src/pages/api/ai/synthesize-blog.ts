@@ -2,7 +2,7 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 
 // Cloudflare Workers AI free tier default model (10,000 free daily neurons)
-const DEFAULT_CF_MODEL = '@cf/meta/llama-3.3-70b-instruct';
+const DEFAULT_CF_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
 
 interface SynthesisRequest {
   urls?: string[];
@@ -299,23 +299,35 @@ Respond ONLY with the raw JSON object.`;
 
     // 5. Dispatch to AI Model
     let aiResponseText = '';
-    const cfAccountId = cfEnv.CLOUDFLARE_ACCOUNT_ID || process.env.CLOUDFLARE_ACCOUNT_ID;
-    const cfApiToken = cfEnv.CLOUDFLARE_API_TOKEN || process.env.CLOUDFLARE_API_TOKEN;
-    const geminiApiKey = cfEnv.GEMINI_API_KEY || process.env.GEMINI_API_KEY || cfEnv.PUBLIC_GEMINI_API_KEY || process.env.PUBLIC_GEMINI_API_KEY;
+    const rawAccountId = cfEnv.CLOUDFLARE_ACCOUNT_ID || process.env.CLOUDFLARE_ACCOUNT_ID;
+    const rawApiToken = cfEnv.CLOUDFLARE_API_TOKEN || process.env.CLOUDFLARE_API_TOKEN;
+    const cfAccountId = typeof rawAccountId === 'string' ? rawAccountId.trim() : '';
+    const cfApiToken = typeof rawApiToken === 'string' ? rawApiToken.trim() : '';
+    const geminiApiKey = (cfEnv.GEMINI_API_KEY || process.env.GEMINI_API_KEY || cfEnv.PUBLIC_GEMINI_API_KEY || process.env.PUBLIC_GEMINI_API_KEY || '').trim();
+
+    // Map common aliases to exact Cloudflare Workers AI model endpoints
+    const MODEL_MAP: Record<string, string> = {
+      '@cf/meta/llama-3.3-70b-instruct': '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+      '@cf/meta/llama-3.1-70b-instruct': '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+      '@cf/meta/llama-3.1-8b-instruct': '@cf/meta/llama-3.1-8b-instruct',
+      '@cf/deepseek-ai/deepseek-r1-distill-qwen-32b': '@cf/deepseek-ai/deepseek-r1-distill-qwen-32b',
+    };
+    const modelToRun = MODEL_MAP[chosenModel] || chosenModel;
 
     console.log('[AI Synthesizer] AI credentials available:', {
       hasCfBinding: !!(cfEnv.AI && typeof cfEnv.AI.run === 'function'),
       hasCfAccountId: !!cfAccountId,
       hasCfToken: !!cfApiToken,
       hasGeminiKey: !!geminiApiKey,
-      model: chosenModel
+      modelRequested: chosenModel,
+      modelToRun,
     });
 
     // A. Check for Cloudflare Pages native Workers AI binding (env.AI)
     if (cfEnv.AI && typeof cfEnv.AI.run === 'function') {
       try {
-        console.log('[AI Synthesizer] Dispatching via native Cloudflare env.AI binding');
-        const cfResult = await cfEnv.AI.run(chosenModel, {
+        console.log(`[AI Synthesizer] Dispatching via native Cloudflare env.AI binding to ${modelToRun}`);
+        const cfResult = await cfEnv.AI.run(modelToRun, {
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userMessage },
@@ -329,9 +341,9 @@ Respond ONLY with the raw JSON object.`;
     }
 
     // B. Check for Cloudflare Workers AI REST API
-    if (!aiResponseText && chosenModel.startsWith('@cf/') && cfAccountId && cfApiToken) {
-      console.log('[AI Synthesizer] Dispatching via Cloudflare REST API');
-      const cfUrl = `https://api.cloudflare.com/client/v4/accounts/${cfAccountId}/ai/run/${chosenModel}`;
+    if (!aiResponseText && modelToRun.startsWith('@cf/') && cfAccountId && cfApiToken) {
+      console.log(`[AI Synthesizer] Dispatching via Cloudflare REST API to ${modelToRun}`);
+      const cfUrl = `https://api.cloudflare.com/client/v4/accounts/${cfAccountId}/ai/run/${modelToRun}`;
       const cfRes = await fetch(cfUrl, {
         method: 'POST',
         headers: {

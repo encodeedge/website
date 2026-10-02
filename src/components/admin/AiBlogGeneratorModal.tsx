@@ -31,7 +31,7 @@ export default function AiBlogGeneratorModal({ isStandalone = false }: AiBlogGen
   const [urls, setUrls] = useState('');
   const [topic, setTopic] = useState('machine-learning');
   const [tone, setTone] = useState<'engineer' | 'tutorial' | 'architecture'>('engineer');
-  const [model, setModel] = useState('@cf/meta/llama-3.3-70b-instruct');
+  const [model, setModel] = useState('@cf/meta/llama-3.3-70b-instruct-fp8-fast');
   const [targetBranch, setTargetBranch] = useState('drafts/ai-articles');
   const [commitToGit, setCommitToGit] = useState(false);
   const [customInstructions, setCustomInstructions] = useState('');
@@ -405,8 +405,11 @@ export default function AiBlogGeneratorModal({ isStandalone = false }: AiBlogGen
                           onChange={(e) => setModel(e.target.value)}
                           className="w-full px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-sm text-zinc-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                         >
-                          <option value="@cf/meta/llama-3.3-70b-instruct">
-                            Cloudflare Workers AI: Llama 3.3 70B (Free)
+                          <option value="@cf/meta/llama-3.3-70b-instruct-fp8-fast">
+                            Cloudflare Workers AI: Llama 3.3 70B Fast (Free)
+                          </option>
+                          <option value="@cf/meta/llama-3.1-8b-instruct">
+                            Cloudflare Workers AI: Llama 3.1 8B (Free & Instant)
                           </option>
                           <option value="@cf/deepseek-ai/deepseek-r1-distill-qwen-32b">
                             Cloudflare Workers AI: DeepSeek R1 32B (Free)

@@ -1,0 +1,128 @@
+---
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { SystemDesignSimulator } from '@/components/interactive/SystemDesignSimulator';
+import { getCollection } from 'astro:content';
+import { 
+  Network, 
+  Cpu, 
+  Zap, 
+  Sparkles, 
+  Boxes, 
+  ArrowRight, 
+  ShieldCheck, 
+  Layers, 
+  Trophy,
+  Play
+} from 'lucide-react';
+
+const title = 'System Design Simulator: Interactive Architecture & Interview Flight Simulator | EncodeEdge';
+const description = 'Practice designing high-scale distributed systems. Drag and drop infrastructure components, simulate live production traffic (1K–500K QPS), find bottlenecks, and get scored across 5 interview dimensions.';
+
+// Load dynamic problems from Keystatic collection
+const problemEntries = await getCollection('systemDesignProblems');
+
+const problems = problemEntries.length > 0
+  ? problemEntries.map(e => ({
+      id: e.id,
+      title: e.data.title,
+      difficulty: e.data.difficulty,
+      category: e.data.category,
+      targetQps: e.data.targetQps,
+      readRatioPercent: e.data.readRatioPercent,
+      maxLatencyMs: e.data.maxLatencyMs,
+      summary: e.data.summary,
+      functionalRequirements: e.data.functionalRequirements,
+      nonFunctionalRequirements: e.data.nonFunctionalRequirements,
+      hints: e.data.hints,
+      referenceNodes: e.data.referenceNodes,
+      referenceEdges: e.data.referenceEdges,
+      order: e.data.order ?? 1,
+    })).sort((a, b) => a.order - b.order)
+  : undefined;
+---
+
+<DefaultLayout title={title} description={description}>
+  <div class="relative overflow-hidden pt-6 pb-20 px-2 sm:px-4 lg:px-6 max-w-[1800px] w-full mx-auto space-y-6">
+    {/* Background ambient glow matching website dark theme */}
+    <div class="absolute top-10 left-1/2 -translate-x-1/2 -z-10 w-full max-w-6xl h-72 bg-gradient-to-tr from-[#E5E795]/10 via-cyan-500/10 to-blue-500/10 blur-3xl rounded-full pointer-events-none" />
+
+    {/* Hero Header */}
+    <header class="text-center max-w-3xl mx-auto space-y-2.5">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E5E795]/15 border border-[#E5E795]/30 text-[#303305] dark:text-[#E5E795] text-xs font-mono font-bold uppercase tracking-wider">
+        <Cpu class="w-3.5 h-3.5 text-[#E5E795]" />
+        <span>Flight Simulator for System Design Interviews</span>
+      </div>
+
+      <h1 class="text-2xl sm:text-4xl lg:text-5xl font-display font-extrabold text-foreground tracking-tight leading-tight">
+        Interactive System Design Simulator
+      </h1>
+
+      <p class="text-xs sm:text-sm text-muted-foreground leading-relaxed font-body">
+        Drag and drop 35+ verified infrastructure blocks, wire synchronous and asynchronous dataflows, push live production traffic (1K–500K QPS), find bottlenecks, and get scored across 5 interview dimensions.
+      </p>
+
+      {/* Quick Nav Pill Links */}
+      <div class="pt-1 flex flex-wrap items-center justify-center gap-2 text-xs font-medium">
+        <a 
+          href="/system-design"
+          class="px-3 py-1 rounded-xl bg-card border border-border text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 shadow-2xs"
+        >
+          <Network class="w-3.5 h-3.5 text-amber-500" />
+          <span>AIML Architecture Center</span>
+        </a>
+        <a 
+          href="/labs"
+          class="px-3 py-1 rounded-xl bg-card border border-border text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 shadow-2xs"
+        >
+          <Boxes class="w-3.5 h-3.5 text-cyan-500" />
+          <span>Interactive Labs</span>
+        </a>
+        <a 
+          href="/roadmaps"
+          class="px-3 py-1 rounded-xl bg-card border border-border text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 shadow-2xs"
+        >
+          <Layers class="w-3.5 h-3.5 text-emerald-500" />
+          <span>Roadmaps</span>
+        </a>
+      </div>
+    </header>
+
+    {/* The Interactive Simulator Island Component */}
+    <main class="relative z-10">
+      <SystemDesignSimulator initialProblems={problems} client:load />
+    </main>
+
+    {/* Features & Architectural Guide Grid */}
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+      <div class="p-6 rounded-3xl bg-card border border-border space-y-2.5 shadow-xs">
+        <div class="size-10 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold">
+          <Play class="w-5 h-5" />
+        </div>
+        <h3 class="text-base font-bold text-foreground font-display">Real-Time Traffic Engine</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed font-body">
+          Topological load propagation powered by Kahn's algorithm. Adjust offered QPS from 1,000 to 500,000 requests/sec with smart load balancer splitting and cache hit deductions.
+        </p>
+      </div>
+
+      <div class="p-6 rounded-3xl bg-card border border-border space-y-2.5 shadow-xs">
+        <div class="size-10 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold">
+          <Trophy class="w-5 h-5" />
+        </div>
+        <h3 class="text-base font-bold text-foreground font-display">5-Pillar Interview Scoring</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed font-body">
+          Evaluates your architecture like a Principal Engineer across Scalability, Reliability / SPOF detection, Latency Budget SLA, Cost Efficiency, and Layered Decoupling.
+        </p>
+      </div>
+
+      <div class="p-6 rounded-3xl bg-card border border-border space-y-2.5 shadow-xs">
+        <div class="size-10 rounded-2xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center font-bold">
+          <ShieldCheck class="w-5 h-5" />
+        </div>
+        <h3 class="text-base font-bold text-foreground font-display">Customizable via Keystatic CMS</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed font-body">
+          All design problems, reference solutions, target QPS thresholds, and hints are 100% manageable and expandable directly from Keystatic CMS without touching code.
+        </p>
+      </div>
+    </section>
+  </div>
+</DefaultLayout>

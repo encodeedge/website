@@ -1,0 +1,101 @@
+title: "Real-Time Recommendation Engine"
+difficulty: "Hard"
+category: "AI/ML"
+targetQps: 120000
+readRatioPercent: 90
+maxLatencyMs: 45
+summary: "Design a sub-45ms real-time recommendation funnel (like TikTok, Netflix, or Spotify) using a two-tower deep learning retrieval architecture, real-time feature stores, and offline continuous training feedback loops."
+functionalRequirements:
+  - "Personalized candidate generation from 100M+ catalog items in under 15ms"
+  - "Real-time user engagement feature extraction (recent clicks, watch percentage)"
+  - "Fine-grained neural scoring, diversity filtering, and business logic interleaving"
+nonFunctionalRequirements:
+  - "Strict P99 latency SLA < 45ms"
+  - "High throughput of 120,000 recommendations requested per second"
+  - "Online event streaming to update user embeddings in near real-time"
+hints:
+  - "A full deep neural network cannot evaluate 100M items within 45ms. Use the Funnel Pattern: Fast Vector Retrieval (100M -> 500) -> Scoring Model (500 -> 50) -> Reranking & Diversity (50 -> 10)."
+  - "Store dynamic real-time features in an in-memory Feature Store (Feast / Redis)."
+referenceNodes:
+  - id: "client-1"
+    componentType: "client"
+    label: "Mobile Feed Client"
+    x: 40
+    y: 190
+    instances: 1
+  - id: "lb-rec"
+    componentType: "load-balancer"
+    label: "Edge Load Balancer"
+    x: 180
+    y: 190
+    instances: 2
+  - id: "app-rec"
+    componentType: "app-server"
+    label: "Recommendation Funnel Gateway"
+    x: 330
+    y: 190
+    instances: 6
+  - id: "feature-store"
+    componentType: "feature-store"
+    label: "Redis Real-Time Feature Store"
+    x: 490
+    y: 90
+    instances: 4
+  - id: "vector-candidates"
+    componentType: "vector-db"
+    label: "Two-Tower ANN Retrieval"
+    x: 490
+    y: 280
+    instances: 6
+  - id: "reranker-model"
+    componentType: "neural-reranker"
+    label: "Heavy DLRM Neural Scorer"
+    x: 660
+    y: 280
+    instances: 6
+  - id: "stream-clicks"
+    componentType: "stream-processor"
+    label: "Flink Clickstream Processor"
+    x: 660
+    y: 90
+    instances: 3
+  - id: "queue-events"
+    componentType: "message-queue"
+    label: "Kafka Interaction Log"
+    x: 330
+    y: 90
+    instances: 2
+referenceEdges:
+  - from: "client-1"
+    to: "lb-rec"
+    isAsync: false
+    label: "Feed Request"
+  - from: "lb-rec"
+    to: "app-rec"
+    isAsync: false
+    label: "Balanced Load"
+  - from: "app-rec"
+    to: "feature-store"
+    isAsync: false
+    label: "Fetch User Features"
+  - from: "app-rec"
+    to: "vector-candidates"
+    isAsync: false
+    label: "Stage 1: Two-Tower ANN"
+  - from: "vector-candidates"
+    to: "reranker-model"
+    isAsync: false
+    label: "Stage 2: Neural Ranking"
+  - from: "app-rec"
+    to: "queue-events"
+    isAsync: true
+    label: "User Impression Event"
+  - from: "queue-events"
+    to: "stream-clicks"
+    isAsync: true
+    label: "Real-time Telemetry"
+  - from: "stream-clicks"
+    to: "feature-store"
+    isAsync: false
+    label: "Update Online Vector"
+order: 6

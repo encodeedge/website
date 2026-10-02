@@ -1,0 +1,102 @@
+title: "Real-Time Chat System (WhatsApp / Discord)"
+difficulty: "Hard"
+category: "Social"
+targetQps: 80000
+readRatioPercent: 50
+maxLatencyMs: 30
+summary: "Design a real-time messaging architecture supporting 1-on-1 private messaging, group chat channels, typing indicators, user online presence, and offline push delivery."
+functionalRequirements:
+  - "Low-latency message delivery (bidirectional WebSockets)"
+  - "Support 1-on-1 and multi-user group chat conversations"
+  - "Online / offline presence tracking and unread message counters"
+nonFunctionalRequirements:
+  - "Sub-30ms message delivery latency across connected clients"
+  - "Message ordering guarantee per conversation (monotonic sequence IDs)"
+  - "Offline message persistence and mobile push notification delivery"
+hints:
+  - "Persistent bidirectional connections are best managed via specialized WebSocket Servers."
+  - "Use a Pub/Sub message broker (Redis PubSub or Kafka) to route messages across different WebSocket servers when recipient is connected to another machine."
+  - "Store message history in a wide-column NoSQL database (Cassandra / DynamoDB) indexed by (chat_id, timestamp)."
+referenceNodes:
+  - id: "client-1"
+    componentType: "client"
+    label: "Active Chat Clients"
+    x: 40
+    y: 190
+    instances: 1
+  - id: "lb-ws"
+    componentType: "load-balancer"
+    label: "Sticky Session Load Balancer"
+    x: 200
+    y: 190
+    instances: 2
+  - id: "ws-server"
+    componentType: "websocket-server"
+    label: "WebSocket Connection Gateway"
+    x: 370
+    y: 190
+    instances: 4
+  - id: "pubsub-bus"
+    componentType: "pubsub-bus"
+    label: "Redis Cluster Pub/Sub"
+    x: 550
+    y: 110
+    instances: 2
+  - id: "queue-msg"
+    componentType: "message-queue"
+    label: "Kafka Message Archive Pipeline"
+    x: 550
+    y: 280
+    instances: 2
+  - id: "worker-persist"
+    componentType: "worker-server"
+    label: "Chat History Archivers"
+    x: 720
+    y: 280
+    instances: 4
+  - id: "db-messages"
+    componentType: "nosql-db"
+    label: "Cassandra Chat History"
+    x: 880
+    y: 280
+    instances: 3
+  - id: "notify-svc"
+    componentType: "notification-service"
+    label: "APNs / FCM Push Gateway"
+    x: 720
+    y: 110
+    instances: 2
+referenceEdges:
+  - from: "client-1"
+    to: "lb-ws"
+    isAsync: false
+    label: "WSS Handshake"
+  - from: "lb-ws"
+    to: "ws-server"
+    isAsync: false
+    label: "Keep-Alive Socket"
+  - from: "ws-server"
+    to: "pubsub-bus"
+    isAsync: false
+    label: "Publish Outgoing Message"
+  - from: "pubsub-bus"
+    to: "ws-server"
+    isAsync: false
+    label: "Broadcast to Recipient"
+  - from: "pubsub-bus"
+    to: "notify-svc"
+    isAsync: true
+    label: "Offline Device Alert"
+  - from: "ws-server"
+    to: "queue-msg"
+    isAsync: true
+    label: "Async Message Log"
+  - from: "queue-msg"
+    to: "worker-persist"
+    isAsync: true
+    label: "Batch Records"
+  - from: "worker-persist"
+    to: "db-messages"
+    isAsync: false
+    label: "Insert (chat_id, ts, body)"
+order: 4

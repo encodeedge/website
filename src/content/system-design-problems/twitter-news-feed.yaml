@@ -1,0 +1,112 @@
+title: "Twitter / X News Feed System"
+difficulty: "Hard"
+category: "Social"
+targetQps: 150000
+readRatioPercent: 90
+maxLatencyMs: 40
+summary: "Design a scalable social timeline news feed like Twitter / X. The system must support posting tweets, following users, fan-out delivery to millions of followers, and sub-40ms home timeline generation under 150,000 requests/sec."
+functionalRequirements:
+  - "Post new tweets with text and media attachments"
+  - "View Home Timeline (aggregated tweets from followed users sorted chronologically)"
+  - "Follow / unfollow users with near real-time timeline updates"
+nonFunctionalRequirements:
+  - "Sub-40ms P99 latency for Home Timeline retrieval"
+  - "Fan-out architecture: isolate normal users (push on write) from celebrity accounts (pull on read) to prevent hot-spot amplification"
+  - "High write throughput for global events (50K+ writes/sec)"
+hints:
+  - "Writing directly to all followers synchronously causes cascading server failure for users with millions of followers. Use a Message Queue (Kafka) and background Worker Servers to handle fan-out asynchronously."
+  - "Pre-compute timelines into Redis in-memory lists so read requests simply retrieve the top 20 IDs."
+  - "Serve static media files (photos/videos) through a global CDN backed by Object Storage (S3)."
+referenceNodes:
+  - id: "client-1"
+    componentType: "client"
+    label: "Web & Mobile Clients"
+    x: 40
+    y: 200
+    instances: 1
+  - id: "cdn-1"
+    componentType: "cdn"
+    label: "Cloudflare Edge CDN"
+    x: 200
+    y: 90
+    instances: 2
+  - id: "lb-1"
+    componentType: "load-balancer"
+    label: "Network Load Balancer"
+    x: 200
+    y: 260
+    instances: 2
+  - id: "app-feed"
+    componentType: "app-server"
+    label: "Timeline App Servers"
+    x: 370
+    y: 260
+    instances: 6
+  - id: "redis-feed"
+    componentType: "redis-cache"
+    label: "Redis Timeline Cache"
+    x: 550
+    y: 160
+    instances: 4
+  - id: "queue-fanout"
+    componentType: "message-queue"
+    label: "Kafka Fanout Pipeline"
+    x: 550
+    y: 330
+    instances: 3
+  - id: "worker-fanout"
+    componentType: "worker-server"
+    label: "Fanout Async Workers"
+    x: 720
+    y: 330
+    instances: 6
+  - id: "db-tweets"
+    componentType: "nosql-db"
+    label: "Cassandra Tweet Store"
+    x: 720
+    y: 160
+    instances: 4
+  - id: "s3-media"
+    componentType: "object-storage"
+    label: "Amazon S3 Media Bucket"
+    x: 370
+    y: 90
+    instances: 1
+referenceEdges:
+  - from: "client-1"
+    to: "cdn-1"
+    isAsync: false
+    label: "Media Content"
+  - from: "cdn-1"
+    to: "s3-media"
+    isAsync: false
+    label: "Origin Fetch"
+  - from: "client-1"
+    to: "lb-1"
+    isAsync: false
+    label: "API Requests"
+  - from: "lb-1"
+    to: "app-feed"
+    isAsync: false
+    label: "Balanced Load"
+  - from: "app-feed"
+    to: "redis-feed"
+    isAsync: false
+    label: "Read Home Feed"
+  - from: "app-feed"
+    to: "queue-fanout"
+    isAsync: true
+    label: "New Tweet Post Event"
+  - from: "queue-fanout"
+    to: "worker-fanout"
+    isAsync: true
+    label: "Process Fanout"
+  - from: "worker-fanout"
+    to: "redis-feed"
+    isAsync: false
+    label: "Inject to Follower Timelines"
+  - from: "worker-fanout"
+    to: "db-tweets"
+    isAsync: false
+    label: "Persist Post Record"
+order: 3

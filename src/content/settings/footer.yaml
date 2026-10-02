@@ -6,6 +6,8 @@ columns:
         href: "/labs"
       - label: "AIML System Design"
         href: "/system-design"
+      - label: "System Design Simulator"
+        href: "/simulator"
       - label: "Courses"
         href: "/courses"
       - label: "Live Classes"

@@ -17,6 +17,11 @@ navLinks:
         description: Production ML reference architectures, latency SLAs, and AWS blueprints
         badge: New
         openInNewTab: false
+      - label: System Design Simulator
+        href: /simulator
+        description: Interactive flight simulator for HLD interviews with live traffic simulation
+        badge: New
+        openInNewTab: false
       - label: Live Classes
         href: /live-classes
         description: Interactive cohorts, hands-on workshops, and webinars

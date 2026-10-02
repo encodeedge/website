@@ -1,0 +1,97 @@
+title: "Enterprise Multi-Tenant RAG & LLM Serving"
+difficulty: "Hard"
+category: "AI/ML"
+targetQps: 30000
+readRatioPercent: 85
+maxLatencyMs: 320
+summary: "Design an enterprise-scale Retrieval-Augmented Generation (RAG) system capable of serving sub-second grounded answers over 20M enterprise document chunks with strict latency budgets and tenant data isolation."
+functionalRequirements:
+  - "Query embedding generation and sub-linear hybrid retrieval (Dense Vector + BM25 Lexical)"
+  - "Cross-encoder neural reranking to condense top-100 candidates down to top-5"
+  - "LLM inference generation with streaming token delivery (TTFT < 150ms)"
+nonFunctionalRequirements:
+  - "P99 end-to-end response latency < 320ms"
+  - "Semantic response cache to prevent expensive redundant LLM generation"
+  - "Graceful degradation when vector indexes or LLM endpoints experience load spikes"
+hints:
+  - "Calling frontier LLMs for every query costs thousands of dollars per hour. A Redis Semantic Cache eliminates up to 40% of queries for frequent enterprise questions."
+  - "Separate the fast vector retrieval layer (Qdrant/Milvus on EKS) from deep neural scoring and LLM generation."
+referenceNodes:
+  - id: "client-1"
+    componentType: "client"
+    label: "Enterprise App Clients"
+    x: 40
+    y: 180
+    instances: 1
+  - id: "gw-rag"
+    componentType: "api-gateway"
+    label: "API Gateway & Auth"
+    x: 190
+    y: 180
+    instances: 2
+  - id: "cache-sem"
+    componentType: "redis-cache"
+    label: "Semantic Response Cache"
+    x: 340
+    y: 90
+    instances: 2
+  - id: "app-orchestrator"
+    componentType: "app-server"
+    label: "RAG Orchestrator Service"
+    x: 340
+    y: 250
+    instances: 4
+  - id: "svc-embed"
+    componentType: "embedding-service"
+    label: "Text Embedding Server"
+    x: 510
+    y: 250
+    instances: 3
+  - id: "vector-ann"
+    componentType: "vector-db"
+    label: "HNSW Vector DB (Qdrant/Pinecone)"
+    x: 680
+    y: 250
+    instances: 4
+  - id: "reranker-svc"
+    componentType: "neural-reranker"
+    label: "Cross-Encoder Reranker"
+    x: 830
+    y: 250
+    instances: 4
+  - id: "llm-serving"
+    componentType: "llm-inference"
+    label: "vLLM / TensorRT Inference"
+    x: 980
+    y: 250
+    instances: 6
+referenceEdges:
+  - from: "client-1"
+    to: "gw-rag"
+    isAsync: false
+    label: "HTTPS Query"
+  - from: "gw-rag"
+    to: "cache-sem"
+    isAsync: false
+    label: "Check Semantic Cache"
+  - from: "gw-rag"
+    to: "app-orchestrator"
+    isAsync: false
+    label: "Cache Miss Dispatch"
+  - from: "app-orchestrator"
+    to: "svc-embed"
+    isAsync: false
+    label: "Query Vectorization"
+  - from: "svc-embed"
+    to: "vector-ann"
+    isAsync: false
+    label: "ANN Top-100 Lookup"
+  - from: "vector-ann"
+    to: "reranker-svc"
+    isAsync: false
+    label: "Cross-Encoder Scoring"
+  - from: "reranker-svc"
+    to: "llm-serving"
+    isAsync: false
+    label: "Top-5 Augmented Context"
+order: 5

@@ -325,6 +325,37 @@ const systemDesignScenarios = defineCollection({
   }),
 });
 
+const systemDesignProblems = defineCollection({
+  loader: glob({ base: "./src/content/system-design-problems", pattern: "**/*.{yaml,yml,json}" }),
+  schema: z.object({
+    title: z.string(),
+    difficulty: z.enum(['Easy', 'Medium', 'Hard']).default('Medium'),
+    category: z.enum(['General', 'Social', 'Media', 'Finance', 'AI/ML']).default('General'),
+    targetQps: z.number().default(50000),
+    readRatioPercent: z.number().default(90),
+    maxLatencyMs: z.number().default(50),
+    summary: z.string(),
+    functionalRequirements: z.array(z.string()).default([]),
+    nonFunctionalRequirements: z.array(z.string()).default([]),
+    hints: z.array(z.string()).default([]),
+    referenceNodes: z.array(z.object({
+      id: z.string(),
+      componentType: z.string(),
+      label: z.string().optional(),
+      x: z.number().default(100),
+      y: z.number().default(100),
+      instances: z.number().default(1),
+    })).default([]),
+    referenceEdges: z.array(z.object({
+      from: z.string(),
+      to: z.string(),
+      isAsync: z.boolean().default(false),
+      label: z.string().optional(),
+    })).default([]),
+    order: z.number().default(1),
+  }),
+});
+
 export const collections = { 
   blog, 
   faqs, 
@@ -341,5 +372,6 @@ export const collections = {
   labs, 
   glossary,
   systemDesignArchitectures,
-  systemDesignScenarios
+  systemDesignScenarios,
+  systemDesignProblems
 };

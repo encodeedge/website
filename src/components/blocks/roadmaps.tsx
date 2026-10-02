@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowUpRight, Compass, Layers } from "lucide-react";
+import { ArrowUpRight, Compass, Layers, Sparkles } from "lucide-react";
 
 const pastelColors = [
   "bg-[#E5E795]/40 text-[#303305] dark:bg-[#E5E795]/20 dark:text-[#E5E795]",
@@ -12,6 +12,36 @@ const pastelColors = [
 const Roadmaps = ({ roadmaps }: { roadmaps: any[] }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Custom Roadmap Creator Card */}
+      <a
+        href="/roadmaps/builder"
+        className="group relative flex flex-col justify-between rounded-2xl border-2 border-dashed border-[#E5E795]/50 bg-gradient-to-br from-[#E5E795]/10 via-card to-card p-5 shadow-sm hover:shadow-lg hover:border-[#E5E795] hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+      >
+        <div>
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#E5E795] text-black">
+              <Sparkles className="size-3.5" />
+              Interactive Builder
+            </span>
+            <span className="text-xs text-muted-foreground flex items-center gap-1 font-medium">
+              Self-Paced
+            </span>
+          </div>
+
+          <h2 className="text-xl font-bold font-display text-foreground group-hover:text-primary transition-colors leading-snug mb-2">
+            Build Your Own Custom Roadmap
+          </h2>
+
+          <p className="text-xs sm:text-sm text-muted-foreground font-body leading-relaxed">
+            Design your personal engineering curriculum, organize milestones, track study progress, and save securely in your browser.
+          </p>
+        </div>
+
+        <div className="mt-5 pt-3.5 border-t border-black-150 dark:border-black-800 flex items-center justify-between text-xs font-bold text-foreground group-hover:text-primary transition-colors">
+          <span>Launch Roadmap Architect</span>
+          <ArrowUpRight className="size-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+        </div>
+      </a>
       {roadmaps.map((roadmap, idx) => {
         const badgeColor = pastelColors[idx % pastelColors.length];
         const moduleCount = roadmap.data.nodes?.length ?? 0;

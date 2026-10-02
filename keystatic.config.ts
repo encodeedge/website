@@ -225,7 +225,7 @@ export default config({
       'Design & Navigation': ['navigationSettings', 'footerSettings'],
       'Marketing': ['seoSettings', 'integrationsSettings'],
       'Content': ['blogs', 'faqs', 'roadmaps', 'glossary', 'systemDesignArchitectures'],
-      'Labs & Competitions': ['labs', 'competitions', 'systemDesignScenarios'],
+      'Labs & Competitions': ['labs', 'competitions', 'systemDesignScenarios', 'systemDesignProblems'],
       'Components': ['components'],
       'LMS Core': ['courses', 'batches', 'instructors', 'liveClasses'],
       'LMS Material': ['lessons', 'quizzes', 'assignments'],
@@ -2076,6 +2076,80 @@ export default config({
         engineeringInsight: fields.text({ label: 'Engineering Insight & Architectural Principles', multiline: true, validation: { isRequired: true } }),
         hint: fields.text({ label: 'Architect Hint / Advisory Note', multiline: true, validation: { isRequired: true } }),
         order: fields.number({ label: 'Challenge Order', defaultValue: 1 }),
+      },
+    }),
+
+    // --- System Design Interview Simulator Problems ---
+    systemDesignProblems: collection({
+      label: 'System Design Simulator Problems',
+      slugField: 'title',
+      path: 'src/content/system-design-problems/*',
+      format: { data: 'yaml' },
+      schema: {
+        title: fields.slug({ name: { label: 'Problem Title (e.g. URL Shortener / TinyURL)' } }),
+        difficulty: fields.select({
+          label: 'Difficulty',
+          options: [
+            { label: 'Easy', value: 'Easy' },
+            { label: 'Medium', value: 'Medium' },
+            { label: 'Hard', value: 'Hard' },
+          ],
+          defaultValue: 'Medium',
+        }),
+        category: fields.select({
+          label: 'Architecture Category',
+          options: [
+            { label: 'General Distributed Systems', value: 'General' },
+            { label: 'Social & Feed Networks', value: 'Social' },
+            { label: 'Media & Streaming', value: 'Media' },
+            { label: 'E-Commerce & High-Volume Payments', value: 'Finance' },
+            { label: 'AI, LLMs & Machine Learning', value: 'AI/ML' },
+          ],
+          defaultValue: 'General',
+        }),
+        targetQps: fields.number({ label: 'Target Peak QPS Load (Requests/sec)', defaultValue: 50000 }),
+        readRatioPercent: fields.number({ label: 'Read Ratio (%)', validation: { min: 0, max: 100 }, defaultValue: 90 }),
+        maxLatencyMs: fields.number({ label: 'Max Target P99 Latency Budget (ms)', defaultValue: 50 }),
+        summary: fields.text({ label: 'Problem Summary & Description', multiline: true, validation: { isRequired: true } }),
+        functionalRequirements: fields.array(fields.text({ label: 'Functional Requirement' }), {
+          label: 'Functional Requirements',
+          itemLabel: props => props.value || 'Requirement',
+        }),
+        nonFunctionalRequirements: fields.array(fields.text({ label: 'Non-Functional Requirement' }), {
+          label: 'Non-Functional Requirements',
+          itemLabel: props => props.value || 'Requirement',
+        }),
+        hints: fields.array(fields.text({ label: 'Interview Hint / Trade-off Guide' }), {
+          label: 'Architect Hints',
+          itemLabel: props => props.value || 'Hint',
+        }),
+        referenceNodes: fields.array(
+          fields.object({
+            id: fields.text({ label: 'Node ID (e.g. client-1, lb-1, app-1)' }),
+            componentType: fields.text({ label: 'Component Type (e.g. client, load-balancer, app-server, redis-cache, sql-db)' }),
+            label: fields.text({ label: 'Custom Label' }),
+            x: fields.number({ label: 'Canvas X Coordinate', defaultValue: 100 }),
+            y: fields.number({ label: 'Canvas Y Coordinate', defaultValue: 100 }),
+            instances: fields.number({ label: 'Instance Replicas Count', defaultValue: 1 }),
+          }),
+          {
+            label: 'Reference Architecture Nodes',
+            itemLabel: props => `${props.fields.label.value || props.fields.componentType.value} (x${props.fields.instances.value})`,
+          }
+        ),
+        referenceEdges: fields.array(
+          fields.object({
+            from: fields.text({ label: 'Source Node ID' }),
+            to: fields.text({ label: 'Target Node ID' }),
+            isAsync: fields.checkbox({ label: 'Asynchronous (Decoupled / Non-blocking)' }),
+            label: fields.text({ label: 'Edge Label / Traffic Type (e.g. Read, Write, Event)' }),
+          }),
+          {
+            label: 'Reference Architecture Connections / Edges',
+            itemLabel: props => `${props.fields.from.value} -> ${props.fields.to.value}${props.fields.isAsync.value ? ' (Async)' : ''}`,
+          }
+        ),
+        order: fields.number({ label: 'Display Order', defaultValue: 1 }),
       },
     }),
   },

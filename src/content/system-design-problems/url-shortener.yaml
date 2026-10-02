@@ -1,0 +1,92 @@
+title: "URL Shortener (TinyURL)"
+difficulty: "Easy"
+category: "General"
+targetQps: 100000
+readRatioPercent: 95
+maxLatencyMs: 25
+summary: "Design a high-throughput, low-latency URL shortening service like TinyURL or bit.ly. The system must handle 100,000 requests/sec with a 100:1 read-to-write ratio, ensuring sub-25ms redirection latency and persistent long-term storage."
+functionalRequirements:
+  - "Given a long URL, generate a unique, short 7-character alphanumeric hash"
+  - "Given a short URL, redirect the client with HTTP 301/302 to the original destination URL"
+  - "Custom URL aliases and configurable expiration timestamps"
+nonFunctionalRequirements:
+  - "Sub-25ms redirection latency for 99% of requests"
+  - "High read availability (99.99%) under 100K QPS peak load"
+  - "Read-heavy traffic pattern: 95% reads (redirections) vs 5% writes (link creations)"
+hints:
+  - "Directly querying SQL databases at 95,000 read QPS will overwhelm database connection pools. Put a distributed Redis Cache in front to serve 85%+ of read traffic in sub-2ms."
+  - "Use a Load Balancer to distribute client traffic across 4-6 App Server instances."
+  - "For URL generation, write newly generated hashes through a Primary SQL DB with Read Replicas for backup."
+referenceNodes:
+  - id: "client-1"
+    componentType: "client"
+    label: "Client Traffic"
+    x: 50
+    y: 180
+    instances: 1
+  - id: "dns-1"
+    componentType: "dns"
+    label: "Global Route53 DNS"
+    x: 180
+    y: 180
+    instances: 1
+  - id: "lb-1"
+    componentType: "load-balancer"
+    label: "Application Load Balancer"
+    x: 320
+    y: 180
+    instances: 2
+  - id: "app-1"
+    componentType: "app-server"
+    label: "URL Gateway Cluster"
+    x: 480
+    y: 180
+    instances: 4
+  - id: "cache-1"
+    componentType: "redis-cache"
+    label: "Redis Hot URL Cache"
+    x: 650
+    y: 100
+    instances: 2
+  - id: "db-primary"
+    componentType: "sql-db"
+    label: "PostgreSQL Primary (Writes)"
+    x: 650
+    y: 260
+    instances: 1
+  - id: "db-replica"
+    componentType: "sql-replica"
+    label: "PostgreSQL Read Replica"
+    x: 820
+    y: 260
+    instances: 2
+referenceEdges:
+  - from: "client-1"
+    to: "dns-1"
+    isAsync: false
+    label: "HTTP Requests"
+  - from: "dns-1"
+    to: "lb-1"
+    isAsync: false
+    label: "Resolved Anycast"
+  - from: "lb-1"
+    to: "app-1"
+    isAsync: false
+    label: "Round-Robin Split"
+  - from: "app-1"
+    to: "cache-1"
+    isAsync: false
+    label: "95% Read Lookup"
+  - from: "app-1"
+    to: "db-primary"
+    isAsync: false
+    label: "5% Create Link Writes"
+  - from: "db-primary"
+    to: "db-replica"
+    isAsync: true
+    label: "Async WAL Replication"
+  - from: "cache-1"
+    to: "db-replica"
+    isAsync: false
+    label: "Cache Miss Fallback"
+order: 1

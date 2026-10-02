@@ -26,6 +26,21 @@ const roadmaps = (await getCollection('roadmaps')).sort(
 			<p class="text-base sm:text-lg text-muted-foreground font-body">
 				Master complex engineering domains with our structured visual roadmaps from novice to production expert.
 			</p>
+			<div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+				<a
+					href="/roadmaps/builder"
+					class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#E5E795] text-black font-bold text-xs sm:text-sm hover:scale-105 active:scale-95 transition-all shadow-md cursor-pointer"
+				>
+					<span>✨</span>
+					<span>Build Your Own Roadmap</span>
+				</a>
+				<a
+					href="/simulator"
+					class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-card border border-border text-foreground hover:bg-muted font-semibold text-xs sm:text-sm transition-colors shadow-2xs"
+				>
+					<span>Flight Traffic Simulator ➔</span>
+				</a>
+			</div>
 		</div>
 		<Roadmaps roadmaps={roadmaps} client:load />
 	</div>

@@ -1,0 +1,67 @@
+title: "Distributed Rate Limiter"
+difficulty: "Easy"
+category: "General"
+targetQps: 75000
+readRatioPercent: 80
+maxLatencyMs: 10
+summary: "Design a distributed API rate limiter capable of throttling abusive clients and enforcing multi-tier tenant quotas across 75,000 requests/sec with strict sub-10ms overhead."
+functionalRequirements:
+  - "Throttle clients exceeding IP-based or User-Token rate limits (e.g. 100 req/min)"
+  - "Return HTTP 429 Too Many Requests with Retry-After header on threshold violations"
+  - "Support sliding-window or token-bucket rate limiting algorithms"
+nonFunctionalRequirements:
+  - "Extreme low latency (< 10ms P99) so API gateway overhead is negligible"
+  - "High accuracy across distributed server clusters without single point of failure (SPOF)"
+  - "Memory-efficient storage with TTL expiry for million unique client keys"
+hints:
+  - "Placing a Rate Limiter at the API Gateway layer ensures abusive traffic is dropped before hitting expensive backend compute."
+  - "In-memory Redis Cache with Lua scripts provides atomic sliding-window operations in under 2ms."
+referenceNodes:
+  - id: "client-1"
+    componentType: "client"
+    label: "Client Ingress"
+    x: 50
+    y: 180
+    instances: 1
+  - id: "gw-1"
+    componentType: "api-gateway"
+    label: "Envoy API Gateway"
+    x: 220
+    y: 180
+    instances: 2
+  - id: "limiter-1"
+    componentType: "rate-limiter"
+    label: "Token Bucket Filter"
+    x: 400
+    y: 180
+    instances: 3
+  - id: "redis-1"
+    componentType: "redis-cache"
+    label: "Redis Sliding Window Store"
+    x: 580
+    y: 90
+    instances: 2
+  - id: "app-1"
+    componentType: "app-server"
+    label: "Core Service Cluster"
+    x: 580
+    y: 260
+    instances: 4
+referenceEdges:
+  - from: "client-1"
+    to: "gw-1"
+    isAsync: false
+    label: "Raw Ingress"
+  - from: "gw-1"
+    to: "limiter-1"
+    isAsync: false
+    label: "Pre-Route Check"
+  - from: "limiter-1"
+    to: "redis-1"
+    isAsync: false
+    label: "Atomic Token Check (Lua)"
+  - from: "limiter-1"
+    to: "app-1"
+    isAsync: false
+    label: "Allowed Traffic Only"
+order: 2

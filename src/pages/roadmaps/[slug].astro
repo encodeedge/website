@@ -109,7 +109,7 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
         </p>
       </div>
 
-      {/* Header Stats Chips */}
+      {/* Header Stats Chips & Build Your Own Button */}
       <div class="flex items-center gap-2.5 sm:gap-3 shrink-0 flex-wrap">
         <div class="px-4 py-2.5 rounded-2xl border border-black-150 dark:border-black-800 bg-card/80 backdrop-blur-xs text-center min-w-[76px] shadow-xs">
           <span class="block text-xl font-bold font-serif text-foreground">{totalModules}</span>
@@ -123,6 +123,17 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
           <span class="block text-xl font-bold font-serif text-foreground">~{estimatedHours}h</span>
           <span class="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Total Time</span>
         </div>
+
+        <a
+          href="/roadmaps/builder"
+          class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#E5E795] hover:brightness-105 text-black font-bold text-xs hover:scale-105 active:scale-95 transition-all shadow-xs cursor-pointer"
+          title="Build, customize, and track your own personal roadmap"
+        >
+          <svg class="size-4 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>Build Your Own Roadmap</span>
+        </a>
       </div>
     </div>
   </div>
@@ -226,6 +237,18 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
             <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8" />
           </svg>
         </button>
+
+        {/* Build Your Own Roadmap Button */}
+        <a 
+          href="/roadmaps/builder"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-black bg-[#E5E795] hover:brightness-105 transition-all cursor-pointer shrink-0 shadow-xs hover:scale-105 active:scale-95"
+          title="Build, customize, and track your own learning roadmap"
+        >
+          <svg class="size-3.5 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>Build Your Own</span>
+        </a>
 
         {/* Export Progress Button */}
         <button 

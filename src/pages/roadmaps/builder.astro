@@ -1,0 +1,95 @@
+---
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { CustomRoadmapBuilder } from '@/components/interactive/CustomRoadmapBuilder';
+import { SITE_TITLE } from '@/consts';
+import { Compass, Sparkles, ArrowLeft, Layers, ShieldCheck } from 'lucide-react';
+
+const title = `Personal Roadmap Architect & Progress Tracker | ${SITE_TITLE}`;
+const description = 'Design, customize, and track your personalized software engineering and AI learning roadmaps. Interactive milestone nodes, automatic browser saving, progress tracking, and JSON/Markdown export.';
+---
+
+<DefaultLayout title={title} description={description}>
+  <div class="relative overflow-hidden pt-6 pb-20 px-2 sm:px-4 lg:px-6 max-w-[1700px] w-full mx-auto space-y-6">
+    {/* Ambient glow matching website design */}
+    <div class="absolute top-10 left-1/2 -translate-x-1/2 -z-10 w-full max-w-5xl h-64 bg-gradient-to-tr from-[#E5E795]/15 via-cyan-500/10 to-purple-500/10 blur-3xl rounded-full pointer-events-none" />
+
+    {/* Header & Back Link */}
+    <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
+      <div class="space-y-1.5">
+        <a 
+          href="/roadmaps" 
+          class="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors mb-1"
+        >
+          <ArrowLeft class="w-3.5 h-3.5" />
+          <span>Back to Curated Roadmaps</span>
+        </a>
+        <div class="flex items-center gap-2">
+          <div class="size-8 rounded-xl bg-[#E5E795]/20 text-[#303305] dark:text-[#E5E795] flex items-center justify-center font-bold">
+            <Compass class="w-4 h-4" />
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-display font-bold text-foreground tracking-tight">
+            Personal Roadmap Architect
+          </h1>
+        </div>
+        <p class="text-xs sm:text-sm text-muted-foreground max-w-2xl font-body">
+          Design your customized technical curriculum, add milestones, track topic completion in real-time, and save securely in your browser.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <a
+          href="/roadmaps"
+          class="px-3.5 py-1.5 rounded-xl bg-card border border-border text-foreground hover:bg-muted text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs"
+        >
+          <Layers class="w-3.5 h-3.5 text-[#E5E795]" />
+          <span>Curated Roadmaps</span>
+        </a>
+        <a
+          href="/simulator"
+          class="px-3.5 py-1.5 rounded-xl bg-[#E5E795]/15 hover:bg-[#E5E795]/25 border border-[#E5E795]/30 text-[#303305] dark:text-[#E5E795] text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs"
+        >
+          <Sparkles class="w-3.5 h-3.5 text-[#E5E795]" />
+          <span>System Design Simulator</span>
+        </a>
+      </div>
+    </header>
+
+    {/* Interactive Builder Island */}
+    <main class="relative z-10">
+      <CustomRoadmapBuilder client:load />
+    </main>
+
+    {/* Feature Highlights */}
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+      <div class="p-5 rounded-2xl bg-card border border-border space-y-2">
+        <h3 class="text-sm font-bold text-foreground font-display flex items-center gap-2">
+          <span class="text-[#E5E795]">●</span>
+          <span>100% Client-Side Persistence</span>
+        </h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Your custom roadmaps and checkbox study progression are automatically saved to your browser's local storage. Never lose your learning trajectory.
+        </p>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-card border border-border space-y-2">
+        <h3 class="text-sm font-bold text-foreground font-display flex items-center gap-2">
+          <span class="text-[#A2D2FF]">●</span>
+          <span>Portable JSON & Markdown</span>
+        </h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Download your roadmap as standard JSON to share with peers, backup your career progress, or copy a formatted GitHub markdown checklist with one click.
+        </p>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-card border border-border space-y-2">
+        <h3 class="text-sm font-bold text-foreground font-display flex items-center gap-2">
+          <span class="text-[#FDA4AF]">●</span>
+          <span>Adaptive Study Tracking</span>
+        </h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Cycle any topic between Not Started, In Progress, and Completed to watch your progress percentage ring and mastery analytics update in real time.
+        </p>
+      </div>
+    </section>
+  </div>
+</DefaultLayout>

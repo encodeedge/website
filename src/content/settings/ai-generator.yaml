@@ -1,6 +1,4 @@
 sourceUrls:
-  - >-
-    https://machinelearningmastery.com/how-to-define-your-machine-learning-problem/
   - https://machinelearningmastery.com/how-to-prepare-data-for-machine-learning/
 targetTopic: machine-learning
 writingTone: engineer

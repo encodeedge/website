@@ -1,0 +1,34 @@
+---
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { SystemDesignSimulator } from '@/components/interactive/SystemDesignSimulator';
+import { Sparkles, Layers, Cpu, ShieldAlert, Award } from 'lucide-react';
+
+const title = 'ML System Design Simulator & Decision RPG | EncodeEdge';
+const description = 'Step into the role of a Staff AI Systems Architect. Build high-throughput fraud engines and enterprise RAG systems, balance latency SLAs vs cloud cost, and stress-test your architecture against Black Friday surges.';
+---
+
+<DefaultLayout title={title} description={description}>
+  <div class="relative overflow-hidden pt-10 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    {/* Background glow effects */}
+    <div class="absolute top-10 left-1/2 -translate-x-1/2 -z-10 w-full max-w-4xl h-72 bg-gradient-to-tr from-indigo-500/10 via-purple-500/10 to-amber-500/10 blur-3xl opacity-60 pointer-events-none rounded-full" />
+
+    {/* Hero Section */}
+    <header class="text-center max-w-3xl mx-auto mb-10 space-y-3">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold uppercase tracking-wider">
+        <Sparkles class="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+        <span>Interactive Architecture Lab</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-serif font-bold text-white tracking-tight">
+        Machine Learning System Design Simulator
+      </h1>
+      <p class="text-sm sm:text-base text-zinc-400 leading-relaxed font-body">
+        Make real-world production engineering decisions. Swap message brokers, feature stores, and inference runtimes in real time. Can your stack maintain sub-45ms latency and survive a 12x traffic surge?
+      </p>
+    </header>
+
+    {/* Interactive Simulator React Island */}
+    <main>
+      <SystemDesignSimulator client:load />
+    </main>
+  </div>
+</DefaultLayout>

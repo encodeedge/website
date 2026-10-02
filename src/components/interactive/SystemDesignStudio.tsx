@@ -58,11 +58,25 @@ export const SystemDesignStudio: React.FC<SystemDesignStudioProps> = ({
   pageSettings
 }) => {
   // Mode switcher: 'simulator' (Game Play) | 'puzzle' (AWS Blueprint Lab) | 'reference' (Blueprints) | 'principles' (Golden Rules)
-  const [viewMode, setViewMode] = useState<SystemDesignMode>('simulator');
-
-  // Handle URL hash on mount
-  useEffect(() => {
+  const [viewMode, setViewMode] = useState<SystemDesignMode>(() => {
     if (typeof window !== 'undefined') {
+      const hash = window.location.hash;
+      const params = new URLSearchParams(window.location.search);
+      const queryMode = params.get('mode') as SystemDesignMode | null;
+      if (queryMode && ['simulator', 'puzzle', 'reference', 'principles'].includes(queryMode)) {
+        return queryMode;
+      }
+      if (hash === '#blueprint-lab') return 'puzzle';
+      if (hash === '#reference-architectures') return 'reference';
+      if (hash === '#golden-principles') return 'principles';
+    }
+    return 'simulator';
+  });
+
+  // Handle URL hash and mode params dynamically
+  useEffect(() => {
+    const handleUrlState = () => {
+      if (typeof window === 'undefined') return;
       const hash = window.location.hash;
       const params = new URLSearchParams(window.location.search);
       const queryMode = params.get('mode') as SystemDesignMode | null;
@@ -76,7 +90,49 @@ export const SystemDesignStudio: React.FC<SystemDesignStudioProps> = ({
       } else if (hash === '#golden-principles') {
         setViewMode('principles');
       }
-    }
+    };
+
+    const handleDocumentClick = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement)?.closest('a');
+      if (!target) return;
+      const href = target.getAttribute('href') || '';
+      if (href.includes('mode=puzzle') || href.includes('#blueprint-lab')) {
+        setViewMode('puzzle');
+        setTimeout(() => {
+          const el = document.getElementById('blueprint-lab');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 50);
+      } else if (href.includes('mode=reference') || href.includes('#reference-architectures')) {
+        setViewMode('reference');
+        setTimeout(() => {
+          const el = document.getElementById('reference-architectures');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 50);
+      } else if (href.includes('mode=principles') || href.includes('#golden-principles')) {
+        setViewMode('principles');
+        setTimeout(() => {
+          const el = document.getElementById('golden-principles');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 50);
+      } else if (href.endsWith('/system-design') || href.endsWith('/system-design/')) {
+        setViewMode('simulator');
+      }
+    };
+
+    handleUrlState();
+    window.addEventListener('hashchange', handleUrlState);
+    window.addEventListener('popstate', handleUrlState);
+    document.addEventListener('astro:page-load', handleUrlState);
+    document.addEventListener('astro:after-swap', handleUrlState);
+    document.addEventListener('click', handleDocumentClick);
+
+    return () => {
+      window.removeEventListener('hashchange', handleUrlState);
+      window.removeEventListener('popstate', handleUrlState);
+      document.removeEventListener('astro:page-load', handleUrlState);
+      document.removeEventListener('astro:after-swap', handleUrlState);
+      document.removeEventListener('click', handleDocumentClick);
+    };
   }, []);
 
   // Selected problem state for the draggable shelf and simulator
@@ -430,7 +486,7 @@ export const SystemDesignStudio: React.FC<SystemDesignStudioProps> = ({
 
       {/* ── MODE 2: AWS BLUEPRINT LAB (PUZZLE GAME) ───────────────────── */}
       {viewMode === 'puzzle' && (
-        <div id="blueprint-lab" className="space-y-4">
+        <div id="blueprint-lab" className="space-y-4 scroll-mt-24">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
             <div className="flex items-center gap-2.5">
               <div className="size-8 rounded-lg bg-[#E5E795]/20 border border-[#E5E795]/40 flex items-center justify-center text-slate-900 dark:text-[#E5E795]">

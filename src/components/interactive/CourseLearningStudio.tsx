@@ -31,7 +31,7 @@ import {
   ListOrdered,
   Maximize2,
   Code2,
-  Zap
+  Zap,
 } from 'lucide-react';
 import { persistentStorage } from '@/lib/storage';
 import PostComments from '@/components/ui/PostComments';
@@ -962,8 +962,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
                   <span>Finish Course</span>
                 </a>
               )}
-            </div>
-
+          </div>
           </div>
         </main>
       </div>

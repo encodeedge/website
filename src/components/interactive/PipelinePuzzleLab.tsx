@@ -598,39 +598,41 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
   return (
     <div className="w-full max-w-6xl mx-auto space-y-6 select-none font-sans">
       {/* Top Architecture Console Bar */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-slate-950 border border-slate-800 shadow-2xl relative overflow-hidden">
-        {/* Blueprint grid background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:32px_32px] opacity-30 pointer-events-none" />
+      <div className="p-5 sm:p-6 rounded-3xl bg-card border border-border shadow-xs relative overflow-hidden">
+        {/* Subtle grid background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <Network className="w-3.5 h-3.5" />
+              <span className="px-3 py-1 rounded-md bg-[#E5E795]/20 border border-[#E5E795]/40 text-[#2a2c07] dark:text-[#E5E795] text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <Network className="w-3.5 h-3.5 text-indigo-600 dark:text-[#E5E795]" />
                 AWS Graph Architecture Canvas
               </span>
-              <span className="text-xs text-slate-400 font-mono hidden sm:inline">
+              <span className="text-xs text-muted-foreground font-mono hidden sm:inline">
                 {scenario.systemName}.svg
               </span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-display font-extrabold text-foreground tracking-tight">
               {scenario.title}
             </h2>
-            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 font-mono">
-              <span className="text-emerald-400 font-bold">{scenario.slaTarget}</span>
-              <span>•</span>
-              <span className="text-slate-300">Accumulated Latency: {totalCalculatedLatency}ms</span>
+            <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
+              <span className="text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full font-bold">
+                {scenario.slaTarget}
+              </span>
+              <span className="text-muted-foreground">•</span>
+              <span className="text-muted-foreground">Accumulated Latency: <strong className="text-foreground">{totalCalculatedLatency}ms</strong></span>
             </div>
           </div>
 
           {/* User Architect Rank & Score Counter */}
-          <div className="flex items-center gap-4 shrink-0 bg-slate-900/90 p-3 sm:p-4 rounded-2xl border border-slate-800 backdrop-blur-md">
+          <div className="flex items-center gap-4 shrink-0 bg-secondary/60 p-3 sm:p-4 rounded-2xl border border-border shadow-2xs backdrop-blur-xs">
             <div className="flex items-center gap-3">
-              <div className="size-11 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-xl shrink-0">
+              <div className="size-11 rounded-xl bg-[#E5E795]/20 border border-[#E5E795]/40 flex items-center justify-center text-xl shrink-0">
                 {rank.icon}
               </div>
               <div>
-                <div className="text-[10px] uppercase font-mono text-slate-400 tracking-wider">
+                <div className="text-[10px] uppercase font-mono text-muted-foreground tracking-wider">
                   Architect Rank
                 </div>
                 <div className={`text-xs font-bold font-mono ${rank.color}`}>
@@ -639,11 +641,11 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
               </div>
             </div>
 
-            <div className="w-px h-8 bg-slate-800" />
+            <div className="w-px h-8 bg-border" />
 
             <div>
-              <div className="text-[10px] uppercase font-mono text-slate-400">Total XP</div>
-              <div className="text-base sm:text-lg font-bold font-mono text-white leading-none">
+              <div className="text-[10px] uppercase font-mono text-muted-foreground">Total XP</div>
+              <div className="text-base sm:text-lg font-bold font-mono text-foreground leading-none">
                 {totalXp} XP
               </div>
             </div>
@@ -651,7 +653,7 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
         </div>
 
         {/* Blueprint Scenario Tabs */}
-        <div className="relative z-10 mt-6 pt-5 border-t border-slate-800/80 flex items-center gap-2 overflow-x-auto pb-1">
+        <div className="relative z-10 mt-6 pt-5 border-t border-border flex items-center gap-2 overflow-x-auto pb-1">
           {activeScenarios.map((scen, idx) => {
             const isSelected = idx === selectedScenarioIndex;
             const isSolved = solvedScenarios.includes(scen.id);
@@ -659,21 +661,22 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
             return (
               <button
                 key={scen.id}
+                type="button"
                 onClick={() => setSelectedScenarioIndex(idx)}
                 className={`px-4 py-2 rounded-xl border text-left shrink-0 transition-all cursor-pointer flex items-center gap-2.5 ${
                   isSelected
-                    ? 'bg-amber-500 text-slate-950 font-bold border-amber-400 shadow-md shadow-amber-500/20'
-                    : 'bg-slate-900/80 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700'
+                    ? 'bg-[#E5E795] text-black font-bold border-[#E5E795] shadow-xs'
+                    : 'bg-card text-muted-foreground border-border hover:text-foreground hover:bg-secondary/60'
                 }`}
               >
                 {isSolved ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 ) : (
                   <span className="text-xs font-mono">0{idx + 1}</span>
                 )}
                 <span className="text-xs whitespace-nowrap">{scen.title.split(' ')[0]} {scen.title.split(' ')[1]}</span>
                 <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                  isSelected ? 'bg-slate-950/20 text-slate-950' : 'bg-slate-800 text-slate-300'
+                  isSelected ? 'bg-black/10 text-black font-semibold' : 'bg-muted text-muted-foreground'
                 }`}>
                   +{scen.xpReward} XP
                 </span>
@@ -684,27 +687,29 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
       </div>
 
       {/* Architecture Design Briefing & Canvas Controls */}
-      <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-5 rounded-2xl bg-card border border-border flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
         <div className="space-y-1">
-          <div className="text-xs font-mono text-amber-400 uppercase tracking-wider font-semibold">
+          <div className="text-xs font-mono text-indigo-600 dark:text-[#E5E795] uppercase tracking-wider font-bold">
             System Design Requirement:
           </div>
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-body">
+          <p className="text-xs sm:text-sm text-foreground/85 leading-relaxed font-body">
             {scenario.scenarioDescription} <strong>{scenario.objective}</strong>
           </p>
         </div>
 
         <div className="flex items-center gap-2 shrink-0 text-xs">
           <button
+            type="button"
             onClick={() => setShowHint(!showHint)}
-            className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-850 border border-slate-700 text-slate-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3.5 py-1.5 rounded-xl bg-secondary hover:bg-secondary/80 border border-border text-foreground flex items-center gap-1.5 transition-colors cursor-pointer font-medium"
           >
-            <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
+            <HelpCircle className="w-3.5 h-3.5 text-amber-500" />
             <span>{showHint ? 'Hide Hint' : 'Architecture Hint'}</span>
           </button>
           <button
+            type="button"
             onClick={() => initScenario(scenario)}
-            className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-850 border border-slate-700 text-slate-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3.5 py-1.5 rounded-xl bg-secondary hover:bg-secondary/80 border border-border text-foreground flex items-center gap-1.5 transition-colors cursor-pointer font-medium"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Clear Graph</span>
@@ -713,8 +718,8 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
       </div>
 
       {showHint && (
-        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs flex items-start gap-3 animate-fadeIn">
-          <Sparkles className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
+        <div className="p-4 rounded-2xl bg-[#E5E795]/15 border border-[#E5E795]/30 text-amber-900 dark:text-[#E5E795] text-xs flex items-start gap-3 animate-fadeIn">
+          <Sparkles className="w-4 h-4 shrink-0 mt-0.5 text-amber-500" />
           <div>
             <span className="font-bold font-mono uppercase tracking-wider block text-[11px] mb-0.5">Architect Advisory Note:</span>
             <span>{scenario.hint}</span>
@@ -725,20 +730,20 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
       {/* ======================================================== */}
       {/* THE INTERACTIVE AWS GRAPH CANVAS (SVG + PATH CONNECTORS) */}
       {/* ======================================================== */}
-      <div className="p-4 sm:p-6 rounded-3xl bg-slate-950 border-2 border-slate-800 relative overflow-hidden shadow-2xl">
+      <div className="p-4 sm:p-6 rounded-3xl bg-card border border-border relative overflow-hidden shadow-xs">
         {/* Subtle SVG Grid Background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:28px_28px] opacity-40 pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:28px_28px] pointer-events-none" />
 
         {/* VPC Header Band */}
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 mb-4 border-b border-slate-800/80 text-xs font-mono text-slate-400">
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 mb-4 border-b border-border text-xs font-mono text-muted-foreground">
           <div className="flex items-center gap-2">
-            <span className={`w-2.5 h-2.5 rounded-full ${isVerifiedSuccess ? 'bg-emerald-400 shadow-sm shadow-emerald-400' : 'bg-cyan-400'} animate-pulse`} />
-            <span className="text-white font-bold tracking-wider">{scenario.vpcName}</span>
+            <span className={`w-2.5 h-2.5 rounded-full ${isVerifiedSuccess ? 'bg-emerald-500 shadow-xs shadow-emerald-500' : 'bg-cyan-500'} animate-pulse`} />
+            <span className="text-foreground font-bold tracking-wider">{scenario.vpcName}</span>
           </div>
           <div className="flex items-center gap-3 text-[11px]">
-            <span>Active Target Socket: <strong className="text-amber-400">Node 0{activeTargetSlot + 1}</strong></span>
+            <span>Active Target Socket: <strong className="text-indigo-600 dark:text-[#E5E795]">Node 0{activeTargetSlot + 1}</strong></span>
             <span>•</span>
-            <span className="text-emerald-400">Interactive Dataflow Paths</span>
+            <span className="text-emerald-600 dark:text-emerald-400">Interactive Dataflow Paths</span>
           </div>
         </div>
 
@@ -968,27 +973,27 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
                     onDragOver={handleDragOver}
                     onDrop={() => handleDropOnSlot(idx)}
                     onClick={() => handleSlotItemClick(idx)}
-                    className={`size-full rounded-2xl p-2 transition-all cursor-pointer flex flex-col items-center justify-between text-center relative group shadow-lg ${
+                    className={`size-full rounded-2xl p-2 transition-all cursor-pointer flex flex-col items-center justify-between text-center relative group shadow-xs ${
                       item
                         ? isVerifiedSuccess
-                          ? 'bg-emerald-950/80 border-2 border-emerald-400 shadow-emerald-500/30'
+                          ? 'bg-emerald-500/10 border-2 border-emerald-500 shadow-emerald-500/20'
                           : isMistake
-                          ? 'bg-rose-950/90 border-2 border-rose-500 shadow-rose-500/30 animate-shake'
-                          : `bg-slate-900 border-2 ${domain?.border}`
+                          ? 'bg-rose-500/10 border-2 border-rose-500 shadow-rose-500/20 animate-shake'
+                          : `bg-card border-2 ${domain?.border}`
                         : isTarget
-                        ? 'bg-slate-900/90 border-2 border-amber-400 ring-4 ring-amber-400/20'
-                        : 'bg-slate-950/80 border-2 border-dashed border-slate-700 hover:border-slate-500'
+                        ? 'bg-secondary border-2 border-[#E5E795] ring-4 ring-[#E5E795]/20'
+                        : 'bg-card/80 border-2 border-dashed border-border hover:border-foreground/40'
                     }`}
                   >
                     {/* Node Header Badge */}
                     <div className="w-full flex items-center justify-between text-[9px] font-mono leading-none">
-                      <span className={`px-1.5 py-0.5 rounded font-bold ${item ? 'bg-slate-800 text-white' : 'bg-slate-800 text-slate-400'}`}>
+                      <span className={`px-1.5 py-0.5 rounded font-bold ${item ? 'bg-secondary text-foreground' : 'bg-secondary/60 text-muted-foreground'}`}>
                         0{idx + 1}
                       </span>
                       {item ? (
-                        <span className="text-[10px] text-slate-400 hover:text-rose-400">✕</span>
+                        <span className="text-[10px] text-muted-foreground hover:text-rose-500">✕</span>
                       ) : (
-                        <span className="text-[10px] text-amber-400">+</span>
+                        <span className="text-[10px] text-indigo-600 dark:text-[#E5E795]">+</span>
                       )}
                     </div>
 
@@ -998,26 +1003,26 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
                         <div className={`p-1.5 rounded-lg ${domain.iconBg} shadow-inner`}>
                           <Icon className="w-4 h-4" />
                         </div>
-                        <div className="text-[10px] font-bold text-white line-clamp-1 leading-tight tracking-tight">
+                        <div className="text-[10px] font-bold text-foreground line-clamp-1 leading-tight tracking-tight">
                           {item.title}
                         </div>
-                        <div className="text-[8px] font-mono text-cyan-400 truncate max-w-[85px]">
+                        <div className="text-[8px] font-mono text-indigo-600 dark:text-[#E5E795] truncate max-w-[85px] font-semibold">
                           {item.awsService}
                         </div>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center justify-center space-y-1 py-1">
-                        <div className={`p-1 rounded-full ${isTarget ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-800 text-slate-500'}`}>
+                        <div className={`p-1 rounded-full ${isTarget ? 'bg-[#E5E795]/30 text-slate-900 dark:text-[#E5E795]' : 'bg-muted text-muted-foreground'}`}>
                           <Plus className="w-4 h-4" />
                         </div>
-                        <span className="text-[9px] font-mono text-slate-400">
+                        <span className="text-[9px] font-mono text-muted-foreground">
                           {isTarget ? 'Target Socket' : `Slot 0${idx + 1}`}
                         </span>
                       </div>
                     )}
 
                     {/* Node Footer Latency Tag */}
-                    <div className="text-[8px] font-mono text-slate-400">
+                    <div className="text-[8px] font-mono text-muted-foreground">
                       {item ? `${item.latencyBudgetMs}ms` : 'Empty'}
                     </div>
                   </div>
@@ -1031,21 +1036,21 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
       {/* ======================================================== */}
       {/* AWS SERVICE STENCIL PALETTE (AVAILABLE NODES TO PLUG IN) */}
       {/* ======================================================== */}
-      <div className="p-6 rounded-3xl bg-slate-950 border border-slate-800 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800 text-xs font-mono text-slate-400">
+      <div className="p-6 rounded-3xl bg-card border border-border space-y-4 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-border text-xs font-mono text-muted-foreground">
           <div className="flex items-center gap-2">
-            <Layers className="w-4 h-4 text-amber-400" />
-            <span className="text-white font-bold uppercase tracking-wider">
+            <Layers className="w-4 h-4 text-indigo-600 dark:text-[#E5E795]" />
+            <span className="text-foreground font-bold uppercase tracking-wider">
               AWS Service Stencil Palette ({trayItems.length} Available Nodes)
             </span>
           </div>
-          <span className="text-[11px] text-amber-400">
-            Click any block to place into <strong>Socket 0{activeTargetSlot + 1}</strong> or drag onto the graph
+          <span className="text-[11px] text-muted-foreground">
+            Click any block to place into <strong className="text-indigo-600 dark:text-[#E5E795]">Socket 0{activeTargetSlot + 1}</strong> or drag onto the graph
           </span>
         </div>
 
         {trayItems.length === 0 ? (
-          <div className="p-6 text-center text-xs font-mono text-emerald-400 bg-emerald-950/20 border border-emerald-500/30 rounded-2xl flex items-center justify-center gap-2">
+          <div className="p-6 text-center text-xs font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center gap-2">
             <CheckCircle2 className="w-4 h-4" />
             <span>All architectural nodes positioned on the graph! Click <strong>Validate Architecture Dataflow</strong> below.</span>
           </div>
@@ -1062,14 +1067,14 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
                   onDragStart={() => handleDragStart(comp)}
                   onClick={() => handleTrayItemClick(comp)}
                   title={`${comp.title} (${comp.awsService}) — ${comp.description} [${comp.latencyBudgetMs}ms]`}
-                  className={`px-3.5 py-2.5 rounded-xl border-2 ${domain.border} bg-slate-900/90 hover:bg-slate-850 hover:scale-[1.03] active:scale-95 transition-all cursor-pointer flex items-center justify-between gap-2 shadow-xs group select-none`}
+                  className={`px-3.5 py-2.5 rounded-xl border-2 ${domain.border} bg-secondary/40 hover:bg-secondary/80 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer flex items-center justify-between gap-2 shadow-2xs group select-none`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <div className={`p-1.5 rounded-lg ${domain.iconBg} shrink-0`}>
                       <Icon className="w-3.5 h-3.5" />
                     </div>
                     {/* Small box with just the title */}
-                    <span className="text-xs font-semibold text-white group-hover:text-amber-300 truncate">
+                    <span className="text-xs font-semibold text-foreground group-hover:text-primary truncate">
                       {comp.title}
                     </span>
                   </div>
@@ -1085,25 +1090,25 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
       </div>
 
       {/* Verification & Dataflow Audit Console */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 rounded-3xl bg-slate-950 border border-slate-800 shadow-xl">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 rounded-3xl bg-card border border-border shadow-xs">
         <div className="w-full sm:w-auto">
           {verificationResult.status === 'success' && (
-            <div className="flex items-center gap-2 text-emerald-400 text-xs sm:text-sm font-semibold">
+            <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 text-xs sm:text-sm font-semibold">
               <CheckCircle2 className="w-5 h-5 shrink-0" />
               <span>{verificationResult.message}</span>
             </div>
           )}
 
           {verificationResult.status === 'error' && (
-            <div className="flex items-start gap-2 text-rose-400 text-xs sm:text-sm font-medium">
+            <div className="flex items-start gap-2 text-rose-600 dark:text-rose-400 text-xs sm:text-sm font-medium">
               <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
               <span>{verificationResult.message}</span>
             </div>
           )}
 
           {verificationResult.status === 'idle' && (
-            <div className="text-xs text-slate-400 font-mono flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-slate-600" />
+            <div className="text-xs text-muted-foreground font-mono flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-muted-foreground/40" />
               <span>Assemble all 6 graph nodes sequentially to connect client ingress to 200 OK egress.</span>
             </div>
           )}
@@ -1111,12 +1116,13 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
 
         <div className="flex items-center gap-3 w-full sm:w-auto shrink-0">
           <button
+            type="button"
             onClick={handleVerify}
             disabled={!isAllFilled}
-            className={`w-full sm:w-auto px-6 py-3 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg ${
+            className={`w-full sm:w-auto px-6 py-3 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs ${
               isAllFilled
-                ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-amber-500/25 active:scale-95'
-                : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                ? 'bg-[#E5E795] hover:bg-[#dada75] text-black active:scale-95'
+                : 'bg-muted text-muted-foreground cursor-not-allowed border border-border'
             }`}
           >
             <Check className="w-4 h-4 stroke-[3]" />
@@ -1125,8 +1131,9 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
 
           {verificationResult.status === 'success' && selectedScenarioIndex < activeScenarios.length - 1 && (
             <button
+              type="button"
               onClick={() => setSelectedScenarioIndex(prev => prev + 1)}
-              className="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-emerald-600/20 transition-all cursor-pointer"
+              className="px-5 py-3 rounded-2xl bg-[#E5E795] hover:bg-[#dada75] text-black font-bold text-xs sm:text-sm flex items-center gap-2 shadow-xs transition-all cursor-pointer"
             >
               <span>Next Blueprint</span>
               <ChevronRight className="w-4 h-4" />
@@ -1137,15 +1144,15 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
 
       {/* Engineering Walkthrough Breakdown (Unlocked upon success) */}
       {verificationResult.status === 'success' && (
-        <div className="p-6 rounded-3xl bg-gradient-to-b from-slate-900 to-slate-950 border border-emerald-500/40 space-y-3 animate-fadeIn shadow-2xl">
-          <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
+        <div className="p-6 rounded-3xl bg-card border border-emerald-500/40 space-y-3 animate-fadeIn shadow-xs">
+          <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
             <Brain className="w-4 h-4" />
             <span>AWS ML Well-Architected Framework: Architectural Analysis</span>
           </div>
-          <h4 className="text-base font-bold font-serif text-white">
+          <h4 className="text-base font-bold font-display text-foreground">
             Why this pipeline order satisfies enterprise latency and consistency SLAs:
           </h4>
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-body">
+          <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed font-body">
             {scenario.engineeringInsight}
           </p>
         </div>

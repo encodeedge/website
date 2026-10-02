@@ -1,0 +1,34 @@
+---
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { TechStackRadar } from '@/components/interactive/TechStackRadar';
+import { Sparkles, Radar, Layers, Cpu } from 'lucide-react';
+
+const title = 'AI Tech Stack & Benchmark Radar | EncodeEdge';
+const description = 'Interactive multi-dimensional benchmark radar comparing Frontier vs Open-Weights models, vector search engines, and inference runtimes across real-world cost, TTFT latency, and agentic reliability.';
+---
+
+<DefaultLayout title={title} description={description}>
+  <div class="relative overflow-hidden pt-10 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    {/* Background glow effects */}
+    <div class="absolute top-10 left-1/2 -translate-x-1/2 -z-10 w-full max-w-4xl h-72 bg-gradient-to-tr from-cyan-500/10 via-indigo-500/10 to-orange-500/10 blur-3xl opacity-60 pointer-events-none rounded-full" />
+
+    {/* Hero Section */}
+    <header class="text-center max-w-3xl mx-auto mb-10 space-y-3">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold uppercase tracking-wider">
+        <Radar class="w-3.5 h-3.5 text-cyan-300" />
+        <span>Enterprise AI Radar & Benchmark Matrix</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-serif font-bold text-white tracking-tight">
+        AI Tech Stack & Benchmark Radar
+      </h1>
+      <p class="text-sm sm:text-base text-zinc-400 leading-relaxed font-body">
+        Compare Claude 3.7, DeepSeek-R1, GPT-4o, Llama 3.3, and Qwen 2.5 against Qdrant, Pinecone, and pgvector. Tune priority weights to evaluate your optimal architectural stack.
+      </p>
+    </header>
+
+    {/* Interactive Radar Island */}
+    <main>
+      <TechStackRadar client:load />
+    </main>
+  </div>
+</DefaultLayout>

@@ -168,14 +168,20 @@ export default function AiBlogGeneratorModal({ isStandalone = false }: AiBlogGen
       clearTimeout(stepTimer2);
       clearTimeout(stepTimer3);
 
-      const data = await response.json();
+      const responseText = await response.text();
+      let data: any = {};
+      try {
+        data = JSON.parse(responseText);
+      } catch {
+        data = { error: responseText || `Server returned error (${response.status})` };
+      }
 
       if (!response.ok || !data.success) {
         if (response.status === 401) {
           setIsAuthenticated(false);
           throw new Error('Authentication expired. Please sign in with GitHub again.');
         }
-        throw new Error(data.error || 'Failed to synthesize blog post.');
+        throw new Error(data.error || `Failed to synthesize blog post (${response.status}).`);
       }
 
       setResult(data);

@@ -379,7 +379,7 @@ export const POST: APIRoute = async (context) => {
     const tone = body.tone || 'engineer';
     const chosenModel = body.model || DEFAULT_CF_MODEL;
     const directives = body.customInstructions || '';
-    const targetBranch = body.targetBranch || 'drafts/ai-articles';
+    const targetBranch = (body.targetBranch && body.targetBranch.trim()) ? body.targetBranch.trim() : 'master';
     const shouldAutoSave = body.autoSave !== undefined ? body.autoSave : true;
 
     // 3. Fetch content from URLs with universal AbortController

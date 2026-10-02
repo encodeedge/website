@@ -169,7 +169,7 @@ export default config({
     : {
         kind: 'github',
         repo: (process.env.KEYSTATIC_GITHUB_REPO || 'encodeedge/website') as `${string}/${string}`,
-        branchPrefix: process.env.KEYSTATIC_BRANCH_PREFIX || 'keystatic/',
+        branchPrefix: process.env.KEYSTATIC_BRANCH_PREFIX || undefined,
       },
 
   ui: {

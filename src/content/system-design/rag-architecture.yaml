@@ -1,0 +1,26 @@
+title: "Enterprise Multi-Tenant RAG System"
+category: "Information Retrieval & LLMs"
+sla: "P99 < 320ms • 10M Documents"
+summary: "A sub-second hybrid retrieval pipeline combining lexical BM25 and dense vector search with cross-encoder neural reranking and strict citation verification."
+latencyBudget:
+  - step: "API Gateway & JWT Auth"
+    latency: "12ms"
+  - step: "HyDE Query Rewriting"
+    latency: "45ms"
+  - step: "HNSW ANN Vector Retrieval (10M -> 100)"
+    latency: "18ms"
+  - step: "Cross-Encoder Neural Reranker (100 -> 5)"
+    latency: "65ms"
+  - step: "Context Assembly & Citation Guard"
+    latency: "8ms"
+  - step: "Frontier LLM Streaming Generation (TTFT)"
+    latency: "160ms"
+componentsUsed:
+  - "Amazon API Gateway"
+  - "OpenSearch / Qdrant on EKS"
+  - "SageMaker Real-Time Endpoint"
+  - "Amazon Bedrock / vLLM"
+  - "Redis Cache"
+coreTradeoff: "Running cross-encoders over all 10M chunks would take 45+ seconds. The Funnel Pattern prunes to 100 chunks via sub-linear vector search before neural scoring."
+order: 1
+featured: true

@@ -1,0 +1,10 @@
+title: "ML System Design Architecture & Pipeline Challenge"
+shortTitle: "System Design Lab"
+category: "Machine Learning"
+simulatorType: "pipeline-puzzle"
+badge: "AWS Architecture"
+description: "Interactive drag-and-drop architectural canvas: assemble enterprise RAG, recommendation funnels, and continuous MLOps gates into optimal execution order."
+lessonPath: "/system-design"
+lessonTitle: "AI & ML System Design Center"
+order: 7
+featured: true

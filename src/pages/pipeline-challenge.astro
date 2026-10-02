@@ -1,0 +1,55 @@
+---
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { PipelinePuzzleLab } from '@/components/interactive/PipelinePuzzleLab';
+import { getCollection } from 'astro:content';
+import { Puzzle } from 'lucide-react';
+
+const title = 'ML System Design Pipeline Ordering Challenge | EncodeEdge';
+const description = 'Interactive drag-and-drop learning game: assemble production RAG chains, recommendation engines, attention heads, and MLOps gates into the optimal order to earn XP and level up.';
+
+const scenarioEntries = await getCollection('systemDesignScenarios');
+const scenarios = scenarioEntries.length > 0
+  ? scenarioEntries.map(e => ({
+      id: e.id,
+      title: e.data.title,
+      systemName: e.data.systemName,
+      slaTarget: e.data.slaTarget,
+      difficulty: e.data.difficulty,
+      xpReward: e.data.xpReward,
+      scenarioDescription: e.data.scenarioDescription,
+      objective: e.data.objective,
+      vpcName: e.data.vpcName,
+      subnets: e.data.subnets,
+      components: e.data.components,
+      engineeringInsight: e.data.engineeringInsight,
+      hint: e.data.hint,
+      order: e.data.order ?? 1,
+    })).sort((a, b) => a.order - b.order)
+  : undefined;
+---
+
+<DefaultLayout title={title} description={description}>
+  <div class="relative overflow-hidden pt-8 pb-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-8">
+    {/* Background glow */}
+    <div class="absolute top-10 left-1/2 -translate-x-1/2 -z-10 w-full max-w-3xl h-64 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
+
+    {/* Header */}
+    <header class="text-center max-w-2xl mx-auto space-y-2">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold uppercase tracking-wider">
+        <Puzzle class="w-3.5 h-3.5 text-amber-300" />
+        <span>Gamified Learning Challenge</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-serif font-bold text-foreground tracking-tight">
+        ML System Design Ordering Challenge
+      </h1>
+      <p class="text-sm text-muted-foreground font-body">
+        Drag and drop or tap components into the correct execution sequence. Verify your architecture, read why the order matters, and earn XP to level up your systems rank.
+      </p>
+    </header>
+
+    {/* Interactive Game Island */}
+    <main>
+      <PipelinePuzzleLab scenarios={scenarios} client:load />
+    </main>
+  </div>
+</DefaultLayout>

@@ -3,6 +3,7 @@ import { GITHUB_URL } from "@/consts";
 export function Footer() {
   const navigation = [
     { name: "Home", href: "/" },
+    { name: "System Design", href: "/system-design" },
     { name: "Labs", href: "/labs" },
     { name: "Roadmaps", href: "/roadmaps" },
     { name: "Topics", href: "/topics" },

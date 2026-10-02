@@ -1,0 +1,24 @@
+title: "Distributed High-Throughput LLM Serving"
+category: "Distributed Systems & Inference"
+sla: "Throughput > 1,200 tokens/sec • P90 TTFT < 240ms"
+summary: "Production inference architecture utilizing PagedAttention, Tensor Parallelism across 8x H100 GPUs, continuous batching, and prefix caching for multi-turn chats."
+latencyBudget:
+  - step: "Reverse Proxy & Token Bucket Rate Limiting"
+    latency: "4ms"
+  - step: "Prefix Cache Radix Tree Lookup (Hit = 0ms)"
+    latency: "2ms"
+  - step: "Tensor Parallel Pre-fill Step (KV Cache Init)"
+    latency: "120ms"
+  - step: "Continuous Batching Autoregressive Decode Step"
+    latency: "14ms / token"
+  - step: "SSE Event Stream Token Dispatch"
+    latency: "3ms"
+componentsUsed:
+  - "vLLM / SGLang Engine"
+  - "NVIDIA H100 SXM5 80GB"
+  - "Ray Cluster Orchestrator"
+  - "Envoy Gateway"
+  - "Prometheus & Grafana"
+coreTradeoff: "Continuous batching interweaves decode tokens with prefill passes, maximizing GPU tensor core saturation from 35% to 85%."
+order: 3
+featured: true

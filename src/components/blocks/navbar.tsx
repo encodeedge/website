@@ -60,6 +60,12 @@ const FALLBACK_NAV_ITEMS: NavItem[] = [
         badge: "Popular"
       },
       {
+        label: "AIML System Design",
+        href: "/system-design",
+        description: "Production ML reference architectures, latency SLAs, and AWS blueprints",
+        badge: "New"
+      },
+      {
         label: "Live Classes",
         href: "/live-classes",
         description: "Interactive cohorts, hands-on workshops, and webinars",
@@ -87,6 +93,12 @@ const FALLBACK_NAV_ITEMS: NavItem[] = [
         href: "/labs",
         description: "Visual playgrounds for Attention, Convolutions, and Memory",
         badge: "New"
+      },
+      {
+        label: "AIML System Design Lab",
+        href: "/system-design",
+        description: "AWS-style drag-and-drop ML pipeline builder and game",
+        badge: "Game"
       },
       {
         label: "Math & AI Decoder",

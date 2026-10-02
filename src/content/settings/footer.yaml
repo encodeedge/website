@@ -4,6 +4,8 @@ columns:
     links:
       - label: "Interactive Labs"
         href: "/labs"
+      - label: "AIML System Design"
+        href: "/system-design"
       - label: "Courses"
         href: "/courses"
       - label: "Live Classes"

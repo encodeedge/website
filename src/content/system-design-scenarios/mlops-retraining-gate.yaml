@@ -1,0 +1,79 @@
+title: "Continuous MLOps Pipeline & Canary Gate"
+systemName: "aws-mlops-governance-vpc"
+slaTarget: "Automated CI/CD • Zero Regressions"
+difficulty: "Advanced"
+xpReward: 300
+vpcName: "VPC: 10.100.0.0/16 [Region: eu-west-1]"
+subnets:
+  - name: "Data Validation & Distributed Training Subnet"
+    x: 40
+    y: 45
+    width: 880
+    height: 140
+    stroke: "#f43f5e"
+  - name: "Model Registry & Canary Mesh Subnet"
+    x: 40
+    y: 230
+    width: 880
+    height: 145
+    stroke: "#06b6d4"
+scenarioDescription: "When concept drift is detected in production inference, trigger automated retraining, validate data and model metrics, and roll out a canary container safely."
+objective: "Connect the automated MLOps pipeline stages to ensure bad models never hit 100% traffic."
+hint: "Quality checks must bookend the training phase: validate data before training, and validate model metrics against production champion baselines before registry signing!"
+engineeringInsight: "Enterprise MLOps avoids silent production outages by placing automated gates: data validation prevents garbage-in; champion-vs-challenger comparisons on holdout sets prevent accuracy drops; and Istio canary routes test real traffic on 5% of users before complete promotion."
+components:
+  - id: "data-drift-trigger"
+    title: "Drift Monitor & Labeled Batch Query"
+    domain: "streaming"
+    awsService: "Amazon CloudWatch / Evidently"
+    badge: "CloudWatch / Evidently AI"
+    description: "Detects Kolmogorov-Smirnov distribution shifts in features and triggers retraining pipeline."
+    techExample: "Evidently AI / SageMaker Clarify"
+    latencyBudgetMs: 30
+    correctOrder: 1
+  - id: "data-validation-gate"
+    title: "Data Quality & Schema Assertion Gate"
+    domain: "security"
+    awsService: "AWS Step Functions (Gate)"
+    badge: "Great Expectations Step"
+    description: "Fails pipeline if unexpected nulls, schema drifts, or corrupted target distributions are found."
+    techExample: "Great Expectations / Pandera"
+    latencyBudgetMs: 120
+    correctOrder: 2
+  - id: "distributed-training"
+    title: "Distributed GPU Cluster Training"
+    domain: "compute"
+    awsService: "SageMaker HyperPod / Ray"
+    badge: "SageMaker HyperPod / Ray"
+    description: "Trains deep model across multi-GPU cluster with gradient accumulation and early stopping."
+    techExample: "Ray Train / PyTorch DDP"
+    latencyBudgetMs: 900
+    correctOrder: 3
+  - id: "champion-challenger-gate"
+    title: "Champion vs Challenger Metrics Gate"
+    domain: "ml"
+    awsService: "SageMaker Model Cards / MLflow"
+    badge: "MLflow Automated Gate"
+    description: "Compares F1/AUC against current production champion model on golden holdout set."
+    techExample: "MLflow / Weights & Biases"
+    latencyBudgetMs: 180
+    correctOrder: 4
+  - id: "model-registry"
+    title: "Signed Container & Model Registry"
+    domain: "storage"
+    awsService: "Amazon ECR / SageMaker Registry"
+    badge: "Amazon ECR / SageMaker Registry"
+    description: "Freezes model weights, signs artifact with SHA256 digest, and tags production container."
+    techExample: "MLflow Registry / S3 Artifacts"
+    latencyBudgetMs: 40
+    correctOrder: 5
+  - id: "canary-deployment"
+    title: "5% Canary Traffic Shift & Monitoring"
+    domain: "gateway"
+    awsService: "Amazon EKS / App Mesh"
+    badge: "EKS / Istio Service Mesh"
+    description: "Routes 5% live user requests to new model while monitoring P99 latency and error anomalies."
+    techExample: "Istio / Argo Rollouts / Envoy"
+    latencyBudgetMs: 25
+    correctOrder: 6
+order: 3

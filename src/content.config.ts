@@ -243,6 +243,7 @@ const labs = defineCollection({
       'memory-explorer',
       'code-sandbox',
       'custom-sandbox',
+      'pipeline-puzzle',
     ]).default('attention-visualizer'),
     badge: z.string().optional(),
     description: z.string().optional(),
@@ -270,4 +271,75 @@ const glossary = defineCollection({
   }),
 });
 
-export const collections = { blog, faqs, roadmaps, instructors, lessons, courses, batches, quizzes, assignments, certificates, components, competitions, labs, glossary };
+const systemDesignArchitectures = defineCollection({
+  loader: glob({ base: "./src/content/system-design", pattern: "**/*.{yaml,yml,json}" }),
+  schema: z.object({
+    title: z.string(),
+    category: z.string(),
+    sla: z.string(),
+    summary: z.string(),
+    latencyBudget: z.array(z.object({
+      step: z.string(),
+      latency: z.string(),
+    })),
+    componentsUsed: z.array(z.string()),
+    coreTradeoff: z.string(),
+    order: z.number().default(1),
+    featured: z.boolean().default(true),
+  }),
+});
+
+const systemDesignScenarios = defineCollection({
+  loader: glob({ base: "./src/content/system-design-scenarios", pattern: "**/*.{yaml,yml,json}" }),
+  schema: z.object({
+    title: z.string(),
+    systemName: z.string(),
+    slaTarget: z.string(),
+    difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']).default('Intermediate'),
+    xpReward: z.number().default(200),
+    scenarioDescription: z.string(),
+    objective: z.string(),
+    vpcName: z.string(),
+    subnets: z.array(z.object({
+      name: z.string(),
+      x: z.number(),
+      y: z.number(),
+      width: z.number(),
+      height: z.number(),
+      stroke: z.string(),
+    })),
+    components: z.array(z.object({
+      id: z.string(),
+      title: z.string(),
+      domain: z.enum(['compute', 'storage', 'ml', 'streaming', 'security', 'gateway']),
+      awsService: z.string(),
+      badge: z.string(),
+      description: z.string(),
+      techExample: z.string(),
+      latencyBudgetMs: z.number(),
+      correctOrder: z.number(),
+    })),
+    engineeringInsight: z.string(),
+    hint: z.string(),
+    order: z.number().default(1),
+  }),
+});
+
+export const collections = { 
+  blog, 
+  faqs, 
+  roadmaps, 
+  instructors, 
+  lessons, 
+  courses, 
+  batches, 
+  quizzes, 
+  assignments, 
+  certificates, 
+  components, 
+  competitions, 
+  labs, 
+  glossary,
+  systemDesignArchitectures,
+  systemDesignScenarios
+};

@@ -930,6 +930,35 @@ export interface PageDashboardSettings {
   seoTitle?: string;
 }
 
+export interface PageSystemDesignSettings {
+  hero: {
+    eyebrow: string;
+    heading: string;
+    subheading: string;
+    badge1Number: string;
+    badge1Label: string;
+    badge2Number: string;
+    badge2Label: string;
+    badge3Number: string;
+    badge3Label: string;
+  };
+  goldenPrinciples: {
+    number: string;
+    title: string;
+    description: string;
+  }[];
+  bottomCta: {
+    heading: string;
+    subheading: string;
+    primaryButtonText: string;
+    primaryButtonUrl: string;
+    secondaryButtonText: string;
+    secondaryButtonUrl: string;
+  };
+  seoTitle?: string;
+  seoDescription?: string;
+}
+
 // Defaults
 export const DEFAULT_COURSES_PAGE: PageCoursesSettings = {
   hero: { eyebrow: 'EncodeEdge Academy', heading: 'Build Real AI Skills', subheading: 'Master modern Artificial Intelligence, Machine Learning, Deep Learning, and Python through hands-on, production-grade courses.', ctaLabel: 'Browse All Courses', ctaUrl: '#courses', secondaryCtaLabel: 'View Roadmaps', secondaryCtaUrl: '/roadmaps' },
@@ -966,6 +995,51 @@ export const DEFAULT_DASHBOARD_PAGE: PageDashboardSettings = {
   hero: { heading: 'My Learning Dashboard', subheading: 'Track your progress, resume active modules, and manage earned certificates.' },
   showStreakWidget: true, showXpWidget: true, showCertificatesSection: true, showLeaderboardWidget: true, showRecommendedCourses: true,
 };
+export const DEFAULT_SYSTEM_DESIGN_PAGE: PageSystemDesignSettings = {
+  hero: {
+    eyebrow: 'AWS Well-Architected Framework for AI/ML',
+    heading: 'AI & ML System Design Architecture Center',
+    subheading: 'Real-world production engineering reference architectures. Design distributed RAG systems, sub-45ms recommendation funnels, and continuous MLOps pipelines with interactive AWS architectural blueprints.',
+    badge1Number: '4',
+    badge1Label: 'Reference Blueprints',
+    badge2Number: '<45ms',
+    badge2Label: 'Production SLAs',
+    badge3Number: 'Interactive',
+    badge3Label: 'Graph Canvas',
+  },
+  goldenPrinciples: [
+    {
+      number: '01',
+      title: 'The Funnel Principle of ML Retrieval',
+      description: 'Never run heavy neural models on the entire database. Structure every retrieval pipeline into coarse-to-fine filtering: 10M -> 2,000 (Two-Tower / HNSW) -> 100 (LightGBM) -> 10 (Cross-Encoder / LLM).'
+    },
+    {
+      number: '02',
+      title: 'Strict Latency Budget Partitioning',
+      description: 'Allocate hard millisecond timeouts to every network hop and model inference step. If the reranker exceeds 70ms, trigger circuit breakers to fallback to coarse ANN scores.'
+    },
+    {
+      number: '03',
+      title: 'Prevent Online-Offline Feature Skew',
+      description: 'Training and production inference must source features from the same unified feature store. Log exact point-in-time snapshot features during training to eliminate data leakage.'
+    },
+    {
+      number: '04',
+      title: 'Graceful Degradation & Fallback Heuristics',
+      description: 'When GPU clusters encounter backpressure or outages, fall back gracefully to lightweight quantized models or popularity-based heuristics instead of throwing 500 errors.'
+    }
+  ],
+  bottomCta: {
+    heading: 'Continue Learning AI Engineering',
+    subheading: 'Dive into step-by-step algorithms, loss surface mathematics, and complete code walkthroughs.',
+    primaryButtonText: 'Explore Courses',
+    primaryButtonUrl: '/courses',
+    secondaryButtonText: 'All Interactive Labs',
+    secondaryButtonUrl: '/labs',
+  },
+  seoTitle: 'AI & ML System Design: Reference Architectures & Blueprint Lab | EncodeEdge',
+  seoDescription: 'Master enterprise Machine Learning system design. Explore production reference architectures for RAG, real-time recommendations, distributed LLM serving, and continuous MLOps with interactive AWS-style dataflow labs.',
+};
 
 // Generic page settings getter
 async function getPageSetting<T>(singletonKey: string, defaults: T): Promise<T> {
@@ -986,6 +1060,7 @@ export const getRoadmapsPageSettings = () => getPageSetting<PageRoadmapsSettings
 export const getTopicsPageSettings = () => getPageSetting<PageTopicsSettings>('pageTopicsSettings', DEFAULT_TOPICS_PAGE);
 export const getLiveClassesPageSettings = () => getPageSetting<PageLiveClassesSettings>('pageLiveClassesSettings', DEFAULT_LIVE_CLASSES_PAGE);
 export const getDashboardPageSettings = () => getPageSetting<PageDashboardSettings>('pageDashboardSettings', DEFAULT_DASHBOARD_PAGE);
+export const getSystemDesignPageSettings = () => getPageSetting<PageSystemDesignSettings>('pageSystemDesignSettings', DEFAULT_SYSTEM_DESIGN_PAGE);
 
 // ─── AI Article Synthesizer Settings ────────────────────────────────────────
 

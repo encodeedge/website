@@ -1,0 +1,79 @@
+title: "Enterprise Multi-Tenant RAG Architecture"
+systemName: "aws-rag-production-vpc"
+slaTarget: "P99 < 320ms SLA • 10M Document Chunks"
+difficulty: "Beginner"
+xpReward: 200
+vpcName: "VPC: 10.0.0.0/16 [Region: us-east-1]"
+subnets:
+  - name: "Public Ingress Subnet (API Gateway / Auth)"
+    x: 40
+    y: 45
+    width: 880
+    height: 140
+    stroke: "#06b6d4"
+  - name: "Private ML & Vector Subnet (OpenSearch / Bedrock / EKS)"
+    x: 40
+    y: 230
+    width: 880
+    height: 145
+    stroke: "#10b981"
+scenarioDescription: "Design the production retrieval and generation dataflow for 10M internal technical documents with sub-second latency, tenant isolation, and strict source attribution."
+objective: "Drag AWS service nodes from the stencil palette onto the graph sockets to form an unbroken dataflow graph."
+hint: "Cross-Encoders are too computationally expensive to score all 10M vectors. Use fast sub-linear HNSW vector search to narrow to 100 before running neural reranking!"
+engineeringInsight: "High-throughput RAG follows the Funnel Architecture: (1) Query routing & HyDE expansion enrich the search vector; (2) Bi-Encoder HNSW vector search prunes 10M chunks down to 100 candidates in <15ms; (3) A Cross-Encoder reranks to the top 5; (4) Context is packed to avoid LLM context bloat; (5) LLM synthesizes cited answers with verifiable grounding."
+components:
+  - id: "query-classification"
+    title: "API Gateway & Intent Router"
+    domain: "gateway"
+    awsService: "Amazon API Gateway"
+    badge: "AWS API Gateway + Lambda"
+    description: "Sanitizes input payload, validates JWT auth, and classifies if retrieval is required."
+    techExample: "FastText / Llama-Guard / Kong"
+    latencyBudgetMs: 12
+    correctOrder: 1
+  - id: "query-expansion"
+    title: "HyDE Query Rewriting Engine"
+    domain: "compute"
+    awsService: "Amazon ECS (Fargate)"
+    badge: "ECS Task / Prompt Worker"
+    description: "Transforms terse human queries into dense hypothetical passage vectors."
+    techExample: "HyDE / Multi-Query Embeddings"
+    latencyBudgetMs: 45
+    correctOrder: 2
+  - id: "vector-retrieval"
+    title: "HNSW Vector ANN Cluster"
+    domain: "storage"
+    awsService: "Amazon OpenSearch Serverless"
+    badge: "OpenSearch / Qdrant on EKS"
+    description: "Executes sub-linear Cosine search across 10M vector chunks to yield top 100 candidate IDs."
+    techExample: "Qdrant / Milvus / pgvector"
+    latencyBudgetMs: 18
+    correctOrder: 3
+  - id: "cross-reranker"
+    title: "Cross-Encoder Neural Reranker"
+    domain: "ml"
+    awsService: "SageMaker Real-Time Endpoint"
+    badge: "SageMaker Real-Time Endpoint"
+    description: "Full cross-attention scoring between query and 100 chunks, pruning down to top 5."
+    techExample: "BGE-Reranker-Large / Cohere API"
+    latencyBudgetMs: 65
+    correctOrder: 4
+  - id: "context-packing"
+    title: "Context Budgeter & Token Guard"
+    domain: "security"
+    awsService: "AWS Lambda (Guardrail)"
+    badge: "Lambda Post-Filter"
+    description: "Deduplicates chunks, fits within token window, and injects citation markdown anchors."
+    techExample: "Token Budgeter / Guardrails AI"
+    latencyBudgetMs: 8
+    correctOrder: 5
+  - id: "llm-generation"
+    title: "Frontier LLM Streaming Node"
+    domain: "ml"
+    awsService: "Amazon Bedrock (Claude 3.5)"
+    badge: "Bedrock / vLLM GPU Node"
+    description: "Streams cited response with factual grounding verification."
+    techExample: "Claude 3.5 / DeepSeek-V3 / vLLM"
+    latencyBudgetMs: 160
+    correctOrder: 6
+order: 1

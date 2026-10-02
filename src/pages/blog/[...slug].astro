@@ -4,7 +4,7 @@ import { render } from 'astro:content';
 
 import BlogPost from '@/components/blocks/BlogPost.astro';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
-import { Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard } from '@/components/mdx';
+import { Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox, MathFormula } from '@/components/mdx';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('blog');
@@ -95,7 +95,7 @@ const allArticleTags = Array.from(new Set([...tags, ...topics]));
 			nextPost={nextPost}
 			relatedPosts={relatedPosts}
 		>
-			<Content components={{ Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard }} />
+			<Content components={{ Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox, MathFormula }} />
 		</BlogPost>
 	</div>
 </DefaultLayout>

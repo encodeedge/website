@@ -1,0 +1,27 @@
+title: "Automated Continuous ML Retraining & Canary Gate"
+category: "MLOps & Reliability"
+sla: "Zero-Downtime Rollout • Automated Regression Guard"
+summary: "Closed-loop MLOps pipeline that detects statistical concept drift, executes distributed Ray training, validates holdout metrics, and performs a 5% canary rollout."
+latencyBudget:
+  - step: "Evidently AI Kolmogorov-Smirnov Drift Trigger"
+    latency: "30ms"
+  - step: "Great Expectations Schema & Null Assertion Gate"
+    latency: "120ms"
+  - step: "Distributed Ray GPU Cluster Training"
+    latency: "15 mins"
+  - step: "Champion vs Challenger Golden Test Set Gate"
+    latency: "180ms"
+  - step: "Signed Container Registration (Amazon ECR)"
+    latency: "40ms"
+  - step: "Istio 5% Canary Traffic Shift & Error Metric Watch"
+    latency: "10 mins"
+componentsUsed:
+  - "Evidently AI"
+  - "Great Expectations"
+  - "Ray Train"
+  - "MLflow Model Registry"
+  - "Istio Service Mesh"
+  - "Kubernetes EKS"
+coreTradeoff: "Never auto-promote a retrained model directly to 100% traffic. Automated canary gates catch silent edge-case regressions before user experience degrades."
+order: 4
+featured: true

@@ -12,6 +12,11 @@ navLinks:
         description: Full-stack AI, ML, and Python curriculum with code walkthroughs
         badge: Popular
         openInNewTab: false
+      - label: AIML System Design
+        href: /system-design
+        description: Production ML reference architectures, latency SLAs, and AWS blueprints
+        badge: New
+        openInNewTab: false
       - label: Live Classes
         href: /live-classes
         description: Interactive cohorts, hands-on workshops, and webinars
@@ -34,6 +39,11 @@ navLinks:
         href: /labs
         description: Visual playgrounds for Attention, Convolutions, and Memory
         badge: New
+        openInNewTab: false
+      - label: AIML System Design Lab
+        href: /system-design
+        description: AWS-style drag-and-drop ML pipeline builder and game
+        badge: Game
         openInNewTab: false
       - label: AI ML Terms and Glossary
         href: /labs#math-decoder

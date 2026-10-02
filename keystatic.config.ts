@@ -132,9 +132,22 @@ export const mdxComponents = {
           { label: 'Neural Network & Activation Playground', value: 'neural-playground' },
           { label: 'Loss Surface & Gradient Descent Optimizer Lab', value: 'gradient-descent' },
           { label: 'CPython Stack & Heap Memory Explorer', value: 'memory-explorer' },
+          { label: 'ML Pipeline System Design Ordering Challenge', value: 'pipeline-puzzle' },
+          { label: 'Transformer Self-Attention Visualizer', value: 'attention-visualizer' },
+          { label: '2D Convolution & Feature Maps Lab', value: 'convolution-visualizer' },
+          { label: 'AI Model Router & Latency Simulator', value: 'model-router' },
+          { label: 'Math Decoder (Symbols & LaTeX)', value: 'math-decoder' },
         ],
         defaultValue: 'neural-playground',
       }),
+    },
+  }),
+  MathFormula: block({
+    label: 'Math Equation / LaTeX Formula',
+    description: 'LaTeX mathematical equation display block with caption',
+    schema: {
+      formula: fields.text({ label: 'LaTeX Equation (e.g. \\nabla L(\\theta) = ...)', multiline: true, validation: { isRequired: true } }),
+      caption: fields.text({ label: 'Caption / Formula Name (Optional)' }),
     },
   }),
   CodeSandbox: block({
@@ -211,14 +224,14 @@ export default config({
       'Feeds & Sources': ['sources'],
       'Design & Navigation': ['navigationSettings', 'footerSettings'],
       'Marketing': ['seoSettings', 'integrationsSettings'],
-      'Content': ['blogs', 'faqs', 'roadmaps', 'glossary'],
-      'Labs & Competitions': ['labs', 'competitions'],
+      'Content': ['blogs', 'faqs', 'roadmaps', 'glossary', 'systemDesignArchitectures'],
+      'Labs & Competitions': ['labs', 'competitions', 'systemDesignScenarios'],
       'Components': ['components'],
       'LMS Core': ['courses', 'batches', 'instructors', 'liveClasses'],
       'LMS Material': ['lessons', 'quizzes', 'assignments'],
       'LMS Administration': ['certificates'],
       'AI Assistant': ['aiBlogGenerator'],
-      'Page Settings': ['pageCoursesSettings', 'pageBlogSettings', 'pageLabsSettings', 'pageRoadmapsSettings', 'pageTopicsSettings', 'pageLiveClassesSettings', 'pageDashboardSettings'],
+      'Page Settings': ['pageCoursesSettings', 'pageBlogSettings', 'pageLabsSettings', 'pageRoadmapsSettings', 'pageTopicsSettings', 'pageLiveClassesSettings', 'pageDashboardSettings', 'pageSystemDesignSettings'],
     }
 
 
@@ -1049,6 +1062,45 @@ export default config({
         showLeaderboardWidget: fields.checkbox({ label: 'Show Mini-Leaderboard Widget', defaultValue: true }),
         showRecommendedCourses: fields.checkbox({ label: 'Show Recommended Courses Panel', defaultValue: true }),
         seoTitle: fields.text({ label: 'SEO Title Override' }),
+      },
+    }),
+
+    pageSystemDesignSettings: singleton({
+      label: 'System Design Page',
+      path: 'src/content/settings/pages/system-design',
+      schema: {
+        hero: fields.object({
+          eyebrow: fields.text({ label: 'Eyebrow Badge', defaultValue: 'AWS Well-Architected Framework for AI/ML' }),
+          heading: fields.text({ label: 'Heading', defaultValue: 'AI & ML System Design Architecture Center' }),
+          subheading: fields.text({ label: 'Subheading', multiline: true, defaultValue: 'Real-world production engineering reference architectures. Design distributed RAG systems, sub-45ms recommendation funnels, and continuous MLOps pipelines with interactive AWS architectural blueprints.' }),
+          badge1Number: fields.text({ label: 'Stat 1 Value', defaultValue: '4' }),
+          badge1Label: fields.text({ label: 'Stat 1 Label', defaultValue: 'Reference Blueprints' }),
+          badge2Number: fields.text({ label: 'Stat 2 Value', defaultValue: '<45ms' }),
+          badge2Label: fields.text({ label: 'Stat 2 Label', defaultValue: 'Production SLAs' }),
+          badge3Number: fields.text({ label: 'Stat 3 Value', defaultValue: 'Interactive' }),
+          badge3Label: fields.text({ label: 'Stat 3 Label', defaultValue: 'Graph Canvas' }),
+        }, { label: 'Hero Section' }),
+        goldenPrinciples: fields.array(
+          fields.object({
+            number: fields.text({ label: 'Principle Number (e.g. 01)' }),
+            title: fields.text({ label: 'Principle Title' }),
+            description: fields.text({ label: 'Description', multiline: true }),
+          }),
+          {
+            label: 'The 4 Golden Principles of Production ML',
+            itemLabel: props => `${props.fields.number.value} - ${props.fields.title.value}`,
+          }
+        ),
+        bottomCta: fields.object({
+          heading: fields.text({ label: 'CTA Heading', defaultValue: 'Continue Learning AI Engineering' }),
+          subheading: fields.text({ label: 'CTA Subheading', multiline: true, defaultValue: 'Dive into step-by-step algorithms, loss surface mathematics, and complete code walkthroughs.' }),
+          primaryButtonText: fields.text({ label: 'Primary Button Label', defaultValue: 'Explore Courses' }),
+          primaryButtonUrl: fields.text({ label: 'Primary Button URL', defaultValue: '/courses' }),
+          secondaryButtonText: fields.text({ label: 'Secondary Button Label', defaultValue: 'All Interactive Labs' }),
+          secondaryButtonUrl: fields.text({ label: 'Secondary Button URL', defaultValue: '/labs' }),
+        }, { label: 'Bottom CTA Banner' }),
+        seoTitle: fields.text({ label: 'SEO Title Override' }),
+        seoDescription: fields.text({ label: 'SEO Description Override', multiline: true }),
       },
     }),
 
@@ -1905,6 +1957,7 @@ export default config({
             { label: 'AI Model Router & Latency Simulator', value: 'model-router' },
             { label: 'Neural Network Playground', value: 'neural-playground' },
             { label: 'Math Decoder (Symbols & LaTeX)', value: 'math-decoder' },
+            { label: 'ML Pipeline System Design Ordering Challenge', value: 'pipeline-puzzle' },
           ],
           defaultValue: 'attention-visualizer',
         }),
@@ -1918,6 +1971,111 @@ export default config({
         lessonTitle: fields.text({ label: 'Related Lesson Title (Optional)' }),
         order: fields.number({ label: 'Display Order (lower = first)', defaultValue: 99 }),
         featured: fields.checkbox({ label: 'Featured Lab', defaultValue: false }),
+      },
+    }),
+
+    // --- System Design Architectures ---
+    systemDesignArchitectures: collection({
+      label: 'System Design Architectures',
+      slugField: 'title',
+      path: 'src/content/system-design/*',
+      format: { data: 'yaml' },
+      schema: {
+        title: fields.slug({ name: { label: 'Architecture Title' } }),
+        category: fields.text({ label: 'Category / Domain (e.g. Information Retrieval & LLMs)', validation: { isRequired: true } }),
+        sla: fields.text({ label: 'Production SLA (e.g. P99 < 320ms • 10M Documents)', validation: { isRequired: true } }),
+        summary: fields.text({ label: 'Summary', multiline: true, validation: { isRequired: true } }),
+        latencyBudget: fields.array(
+          fields.object({
+            step: fields.text({ label: 'Dataflow Step / Stage' }),
+            latency: fields.text({ label: 'Allocated Latency (e.g. 14ms)' }),
+          }),
+          {
+            label: 'Latency Budget Breakdown',
+            itemLabel: props => `${props.fields.step.value || 'Step'}: ${props.fields.latency.value || 'Latency'}`,
+          }
+        ),
+        componentsUsed: fields.array(
+          fields.text({ label: 'AWS Component / Technology' }),
+          {
+            label: 'Architecture Components Used',
+            itemLabel: props => props.value || 'Component',
+          }
+        ),
+        coreTradeoff: fields.text({ label: 'Core System Trade-off & Rationale', multiline: true, validation: { isRequired: true } }),
+        order: fields.number({ label: 'Display Order (lower = first)', defaultValue: 1 }),
+        featured: fields.checkbox({ label: 'Featured Blueprint', defaultValue: true }),
+      },
+    }),
+
+    // --- System Design Interactive Puzzles & Scenarios ---
+    systemDesignScenarios: collection({
+      label: 'System Design Puzzles & Challenges',
+      slugField: 'title',
+      path: 'src/content/system-design-scenarios/*',
+      format: { data: 'yaml' },
+      schema: {
+        title: fields.slug({ name: { label: 'Challenge Title' } }),
+        systemName: fields.text({ label: 'AWS System Name (e.g. aws-rag-production-vpc)', validation: { isRequired: true } }),
+        slaTarget: fields.text({ label: 'SLA Target (e.g. P99 < 320ms SLA • 10M Document Chunks)', validation: { isRequired: true } }),
+        difficulty: fields.select({
+          label: 'Difficulty Level',
+          options: [
+            { label: 'Beginner', value: 'Beginner' },
+            { label: 'Intermediate', value: 'Intermediate' },
+            { label: 'Advanced', value: 'Advanced' },
+          ],
+          defaultValue: 'Intermediate',
+        }),
+        xpReward: fields.number({ label: 'XP Reward Points', defaultValue: 200 }),
+        scenarioDescription: fields.text({ label: 'Scenario Requirement & Context', multiline: true, validation: { isRequired: true } }),
+        objective: fields.text({ label: 'Challenge Objective', multiline: true, validation: { isRequired: true } }),
+        vpcName: fields.text({ label: 'AWS VPC Name & CIDR (e.g. VPC: 10.0.0.0/16 [Region: us-east-1])', validation: { isRequired: true } }),
+        subnets: fields.array(
+          fields.object({
+            name: fields.text({ label: 'Subnet Name & Function' }),
+            x: fields.number({ label: 'SVG X Position', defaultValue: 40 }),
+            y: fields.number({ label: 'SVG Y Position', defaultValue: 45 }),
+            width: fields.number({ label: 'SVG Width', defaultValue: 880 }),
+            height: fields.number({ label: 'SVG Height', defaultValue: 140 }),
+            stroke: fields.text({ label: 'Subnet Boundary Color (Hex)', defaultValue: '#06b6d4' }),
+          }),
+          {
+            label: 'VPC Subnets',
+            itemLabel: props => props.fields.name.value || 'Subnet',
+          }
+        ),
+        components: fields.array(
+          fields.object({
+            id: fields.text({ label: 'Component ID', validation: { isRequired: true } }),
+            title: fields.text({ label: 'Component Title', validation: { isRequired: true } }),
+            domain: fields.select({
+              label: 'AWS Service Domain',
+              options: [
+                { label: 'API Gateway & Ingress', value: 'gateway' },
+                { label: 'Compute & Containers (ECS/EKS)', value: 'compute' },
+                { label: 'Storage & Vector Databases', value: 'storage' },
+                { label: 'Machine Learning & SageMaker', value: 'ml' },
+                { label: 'Event Streaming (MSK/Kafka)', value: 'streaming' },
+                { label: 'Security & Quality Gates', value: 'security' },
+              ],
+              defaultValue: 'compute',
+            }),
+            awsService: fields.text({ label: 'AWS Service Name (e.g. Amazon OpenSearch Serverless)', validation: { isRequired: true } }),
+            badge: fields.text({ label: 'Badge Label (e.g. OpenSearch / Qdrant on EKS)', validation: { isRequired: true } }),
+            description: fields.text({ label: 'Component Role & Function', multiline: true, validation: { isRequired: true } }),
+            techExample: fields.text({ label: 'Tech Stack Example (e.g. Qdrant / Milvus / pgvector)', validation: { isRequired: true } }),
+            latencyBudgetMs: fields.number({ label: 'Latency Budget (ms)', defaultValue: 15 }),
+            correctOrder: fields.number({ label: 'Correct Sequence Order (1 to 6)', validation: { min: 1, max: 6 }, defaultValue: 1 }),
+          }),
+          {
+            label: 'Architecture Components (6 Sequenced Nodes)',
+            itemLabel: props => `${props.fields.correctOrder.value || '?'}. ${props.fields.title.value || 'Component'} (${props.fields.awsService.value || 'AWS Service'})`,
+          }
+        ),
+        engineeringInsight: fields.text({ label: 'Engineering Insight & Architectural Principles', multiline: true, validation: { isRequired: true } }),
+        hint: fields.text({ label: 'Architect Hint / Advisory Note', multiline: true, validation: { isRequired: true } }),
+        order: fields.number({ label: 'Challenge Order', defaultValue: 1 }),
       },
     }),
   },

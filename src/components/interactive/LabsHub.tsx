@@ -21,6 +21,7 @@ import { GradientDescentLab } from './GradientDescentLab';
 import { MemoryExplorer } from './MemoryExplorer';
 import { ModelRouterLab } from './ModelRouterLab';
 import { MathDecoder } from './MathDecoder';
+import { PipelinePuzzleLab } from './PipelinePuzzleLab';
 
 export interface LabMeta {
   id: string;
@@ -103,6 +104,17 @@ const DEFAULT_LABS: LabMeta[] = [
     badge: 'CPython Runtime',
     lessonPath: '/lessons/py-memory-management',
     lessonTitle: 'Python Memory Management'
+  },
+  {
+    id: 'pipeline-puzzle',
+    title: 'ML System Design Pipeline Ordering Challenge',
+    shortTitle: 'Pipeline Challenge',
+    category: 'System Design',
+    simulatorType: 'pipeline-puzzle',
+    description: 'Drag and drop components to arrange production RAG, recommendations, attention blocks, and MLOps gates into the optimal architectural execution order to win XP.',
+    badge: 'Gamified Puzzle',
+    lessonPath: '/pipeline-challenge',
+    lessonTitle: 'System Design Ordering Game'
   }
 ];
 
@@ -274,6 +286,10 @@ export const LabsHub: React.FC<LabsHubProps> = ({ labs, glossaryItems }) => {
 
           {(activeLabMeta.simulatorType === 'memory-explorer' || activeLabMeta.id === 'memory-explorer') && (
             <MemoryExplorer />
+          )}
+
+          {(activeLabMeta.simulatorType === 'pipeline-puzzle' || activeLabMeta.id === 'pipeline-puzzle') && (
+            <PipelinePuzzleLab />
           )}
         </div>
       ) : (

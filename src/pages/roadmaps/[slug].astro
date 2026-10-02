@@ -170,17 +170,14 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
             type="button" 
             id="btnViewFlowchart"
             class="view-mode-btn active inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer shadow-xs"
-            title="Switch to Visual Zigzag Tree Canvas"
+            title="Switch to Roadmap Flowchart Canvas (roadmap.sh style)"
           >
             <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="5" r="3" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <circle cx="6" cy="19" r="3" />
-              <circle cx="18" cy="19" r="3" />
-              <path d="M12 12l-6 4" />
-              <path d="M12 12l6 4" />
+              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+              <line x1="8" y1="2" x2="8" y2="18"></line>
+              <line x1="16" y1="6" x2="16" y2="22"></line>
             </svg>
-            <span>Tree Graph</span>
+            <span>Roadmap View</span>
           </button>
           <button 
             type="button" 
@@ -483,10 +480,10 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
 
                   return (
                     <div 
-                      class={`topic-node-wrapper relative ${
+                      class={`topic-node-wrapper relative flex ${
                         isEven 
-                          ? 'md:w-[calc(50%-2.25rem)] md:mr-auto md:ml-0 ml-12' 
-                          : 'md:w-[calc(50%-2.25rem)] md:ml-auto md:mr-0 ml-12'
+                          ? 'md:w-[calc(50%-2.25rem)] md:mr-auto md:ml-0 md:justify-end ml-12' 
+                          : 'md:w-[calc(50%-2.25rem)] md:ml-auto md:mr-0 md:justify-start ml-12'
                       }`}
                       id={`topic-node-${topicSlug}`}
                     >
@@ -513,96 +510,35 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
                         <span class="size-1.5 rounded-full bg-muted-foreground dot-inner"></span>
                       </div>
 
-                      {/* Topic Card */}
+                      {/* Topic Node (roadmap.sh signature small box with just title) */}
                       <div 
-                        class={`topic-node group relative rounded-2xl border p-4 transition-all duration-200 cursor-pointer bg-card border-black-150 dark:border-black-800 hover:border-primary/60 hover:shadow-md ${topic.optional ? 'border-dashed' : ''}`}
+                        class={`topic-node group relative rounded-xl border-2 px-4 py-2.5 text-center font-medium text-xs sm:text-sm transition-all duration-150 cursor-pointer shadow-xs hover:shadow-md hover:scale-[1.03] active:scale-95 flex items-center justify-center gap-2 select-none w-full sm:w-auto sm:min-w-[190px] sm:max-w-xs ${
+                          topic.optional 
+                            ? 'border-dashed bg-card border-border text-foreground hover:border-foreground/50' 
+                            : 'bg-amber-100/95 hover:bg-amber-200/90 dark:bg-amber-950/45 dark:hover:bg-amber-900/50 border-amber-400 dark:border-amber-500/80 text-slate-900 dark:text-amber-100 font-semibold'
+                        }`}
                         data-topic-name={topic.name}
                         data-topic-slug={topicSlug}
                         data-difficulty={topic.difficulty}
                         data-optional={topic.optional ? 'true' : 'false'}
                         data-duration-hours={hours}
                         tabindex="0"
+                        title={`Click to open ${topic.name}`}
                       >
-                        <div class="flex flex-col justify-between gap-2.5">
-                          <div>
-                            {/* Card Badges & Star Button */}
-                            <div class="flex items-center justify-between gap-2 mb-1.5">
-                              <div class="flex items-center gap-1.5 flex-wrap">
-                                <span class={`size-2 rounded-full ${dotColor} shrink-0`}></span>
-                                <span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                  {topic.difficulty}
-                                </span>
-                                {topic.optional ? (
-                                  <span class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
-                                    Optional
-                                  </span>
-                                ) : (
-                                  <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-ghost-accent text-black border border-black/20">
-                                    Recommended
-                                  </span>
-                                )}
-                                {topic.duration && (
-                                  <span class="text-[10px] text-muted-foreground font-medium">
-                                    • {topic.duration}
-                                  </span>
-                                )}
-                              </div>
+                        {/* Status Checkmark / Indicator (shown when Done or Learning) */}
+                        <span class="status-icon-box shrink-0 hidden"></span>
 
-                              {/* Star / Bookmark Topic Button */}
-                              <button 
-                                type="button"
-                                class="star-topic-btn p-1 rounded-md text-muted-foreground hover:text-amber-500 transition-colors cursor-pointer"
-                                title="Star topic"
-                                aria-label="Star topic"
-                              >
-                                <svg class="size-3.5 star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                </svg>
-                              </button>
-                            </div>
+                        {/* Node Title (Small box with just the title) */}
+                        <span class="topic-title tracking-tight leading-snug line-clamp-2">
+                          {topic.name}
+                        </span>
 
-                            {/* Title */}
-                            <h3 class="text-base font-serif font-medium text-foreground group-hover:text-primary transition-colors leading-snug">
-                              {topic.name}
-                            </h3>
-
-                            {/* Description (collapsible in compact mode) */}
-                            {topic.description && (
-                              <p class="topic-description text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed font-body">
-                                {topic.description}
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Action Buttons Row */}
-                          <div class="flex items-center justify-between gap-2 pt-2 border-t border-black-150 dark:border-black-800/80">
-                            {/* Status Quick-Toggle Button */}
-                            <button 
-                              type="button" 
-                              class="status-toggle-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer bg-secondary hover:bg-secondary/80 text-foreground border-black-150 dark:border-black-800 shadow-2xs"
-                              title="Click to cycle status: Todo -> Done -> In Progress -> Skip"
-                            >
-                              <span class="status-icon-box">
-                                <span class="size-2 rounded-full bg-muted-foreground inline-block"></span>
-                              </span>
-                              <span class="status-text capitalize">Todo</span>
-                            </button>
-
-                            {/* Details Button */}
-                            <button 
-                              type="button" 
-                              class="topic-details-btn p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary border border-black-150 dark:border-black-800 transition-colors cursor-pointer shadow-2xs"
-                              title="Open study notes & blueprint"
-                              aria-label="Open topic details"
-                            >
-                              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M12 16v-4" />
-                                <path d="M12 8h.01" />
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
+                        {/* Star Indicator if user starred topic */}
+                        <span class="star-badge-indicator hidden absolute -top-1.5 -right-1.5 size-4 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center shadow-xs">
+                          <svg class="size-2.5 fill-current" viewBox="0 0 24 24">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </span>
                       </div>
                     </div>
                   );
@@ -1621,6 +1557,33 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
     fill: #f59e0b !important;
   }
 
+  /* roadmap.sh Node Status Styles */
+  .topic-node.status-done {
+    background-color: rgba(16, 185, 129, 0.16) !important;
+    border-color: #10b981 !important;
+    color: #065f46 !important;
+  }
+  :global(.dark) .topic-node.status-done {
+    background-color: rgba(16, 185, 129, 0.22) !important;
+    border-color: #10b981 !important;
+    color: #6ee7b7 !important;
+  }
+  .topic-node.status-learning {
+    background-color: rgba(14, 165, 233, 0.16) !important;
+    border-color: #0ea5e9 !important;
+    color: #0369a1 !important;
+  }
+  :global(.dark) .topic-node.status-learning {
+    background-color: rgba(14, 165, 233, 0.22) !important;
+    border-color: #0ea5e9 !important;
+    color: #7dd3fc !important;
+  }
+  .topic-node.status-skipped {
+    opacity: 0.5 !important;
+    text-decoration: line-through !important;
+    border-color: #94a3b8 !important;
+  }
+
   /* Compact Mode Adjustments */
   #flowchartCanvas.density-compact .topic-description {
     display: none !important;
@@ -2068,11 +2031,19 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
       topicNodes.forEach((node) => {
         const name = node.getAttribute('data-topic-name');
         const starBtn = node.querySelector('.star-topic-btn');
+        const starBadge = node.querySelector('.star-badge-indicator');
         if (starBtn) {
           if (starredTopics.has(name)) {
             starBtn.classList.add('starred');
           } else {
             starBtn.classList.remove('starred');
+          }
+        }
+        if (starBadge) {
+          if (starredTopics.has(name)) {
+            starBadge.classList.remove('hidden');
+          } else {
+            starBadge.classList.add('hidden');
           }
         }
       });
@@ -2113,20 +2084,32 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
           if (wrapper) wrapper.classList.add('status-done');
           completedHoursTotal += hours;
           if (textEl) textEl.textContent = 'Done';
-          if (iconEl) iconEl.innerHTML = '<svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" /></svg>';
+          if (iconEl) {
+            iconEl.classList.remove('hidden');
+            iconEl.innerHTML = '<span class="size-4 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-2xs"><svg class="size-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20 6 9 17 4 12" /></svg></span>';
+          }
         } else if (status === 'learning') {
           node.classList.add('status-learning');
           if (wrapper) wrapper.classList.add('status-learning');
           if (textEl) textEl.textContent = 'In Progress';
-          if (iconEl) iconEl.innerHTML = '<svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+          if (iconEl) {
+            iconEl.classList.remove('hidden');
+            iconEl.innerHTML = '<span class="size-4 rounded-full bg-sky-500 text-white flex items-center justify-center shrink-0 shadow-2xs"><svg class="size-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>';
+          }
         } else if (status === 'skipped') {
           node.classList.add('status-skipped');
           if (wrapper) wrapper.classList.add('status-skipped');
           if (textEl) textEl.textContent = 'Skipped';
-          if (iconEl) iconEl.innerHTML = '<svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>';
+          if (iconEl) {
+            iconEl.classList.add('hidden');
+            iconEl.innerHTML = '';
+          }
         } else {
           if (textEl) textEl.textContent = 'Todo';
-          if (iconEl) iconEl.innerHTML = '<span class="size-2 rounded-full bg-muted-foreground inline-block"></span>';
+          if (iconEl) {
+            iconEl.classList.add('hidden');
+            iconEl.innerHTML = '';
+          }
         }
       });
 

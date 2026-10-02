@@ -1,0 +1,26 @@
+title: "Real-Time E-Commerce Recommendation Funnel"
+category: "Candidate Generation & Ranking"
+sla: "P99 < 45ms • 50M Products • 100k QPS"
+summary: "Multi-stage candidate generation and deep ranking network capable of personalizing product feeds within 45ms based on in-session shopper click telemetry."
+latencyBudget:
+  - step: "Kafka / MSK Event Telemetry Ingestion"
+    latency: "5ms"
+  - step: "Online Feature Store (Redis User Vector Lookup)"
+    latency: "4ms"
+  - step: "Two-Tower Candidate Retrieval (50M -> 2,000)"
+    latency: "14ms"
+  - step: "Deep Ranking Neural Network (2,000 -> 50)"
+    latency: "16ms"
+  - step: "Diversity, Brand Deduplication & Business Rules"
+    latency: "3ms"
+  - step: "Edge CDN GraphQL Payload Delivery"
+    latency: "2ms"
+componentsUsed:
+  - "Amazon MSK (Kafka)"
+  - "Amazon ElastiCache (Redis)"
+  - "Two-Tower Embedding Index"
+  - "Triton GPU Inference Cluster"
+  - "Cloudflare Workers"
+coreTradeoff: "Separates retrieval (Two-Tower dot product) from ranking (DeepFM multi-feature cross). This ensures heavy neural forward passes only evaluate 2,000 candidates."
+order: 2
+featured: true

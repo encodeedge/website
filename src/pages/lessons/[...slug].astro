@@ -11,7 +11,7 @@ import { NeuralPlayground } from '@/components/interactive/NeuralPlayground';
 import { GradientDescentLab } from '@/components/interactive/GradientDescentLab';
 import { MemoryExplorer } from '@/components/interactive/MemoryExplorer';
 import { getCoursesMap } from '@/utils/course-map';
-import { Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox } from '@/components/mdx';
+import { Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox, MathFormula } from '@/components/mdx';
 import { Clock, PlayCircle, FileText, CheckCircle2, FlaskConical } from 'lucide-react';
 
 export async function getStaticPaths() {
@@ -144,7 +144,7 @@ const coursesMap = await getCoursesMap();
 
     <!-- Lesson Markdown Prose Content -->
     <div class="prose prose-lg dark:prose-invert max-w-none font-body leading-relaxed pt-4">
-      <Content components={{ Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox }} />
+      <Content components={{ Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox, MathFormula }} />
     </div>
 
     <!-- Bottom Actions: Completion Toggle + Bottom Navigation -->

@@ -1,0 +1,79 @@
+title: "Real-Time E-Commerce Recommendation Funnel"
+systemName: "aws-rec-pipeline-vpc"
+slaTarget: "P99 < 45ms SLA • 50M Products • 100k QPS"
+difficulty: "Intermediate"
+xpReward: 250
+vpcName: "VPC: 172.16.0.0/16 [Region: us-west-2]"
+subnets:
+  - name: "Streaming & In-Memory Cache Subnet"
+    x: 40
+    y: 45
+    width: 880
+    height: 140
+    stroke: "#a855f7"
+  - name: "Accelerated Deep Neural Ranking & Edge Subnet"
+    x: 40
+    y: 230
+    width: 880
+    height: 145
+    stroke: "#f59e0b"
+scenarioDescription: "When 100,000 active shoppers browse product catalogs, rank 50M candidate items within a strict 45ms SLA based on their live in-session click history."
+objective: "Order the graph nodes to stream events from Kafka into feature stores, Two-Tower ANN, deep ranking, and edge dispatch."
+hint: "You cannot run deep neural rankers on 50M items! Ingest stream -> pull features -> coarse retrieval (2000) -> deep neural ranking (50) -> diversity filter (20)."
+engineeringInsight: "Real-world e-commerce systems enforce strict latency budgets: Kafka ingests streaming events; Redis provides sub-5ms feature lookups; Two-Tower embeddings compress 50M items down to 2,000; Deep neural networks score those 2,000; and Determinantal Point Processes ensure brand and category diversity."
+components:
+  - id: "click-stream"
+    title: "Kinesis / Kafka Event Stream"
+    domain: "streaming"
+    awsService: "Amazon MSK (Kafka)"
+    badge: "Amazon MSK (Kafka)"
+    description: "Captures live clicks, add-to-carts, and dwell time telemetry from mobile and web apps."
+    techExample: "Apache Kafka / Amazon MSK"
+    latencyBudgetMs: 5
+    correctOrder: 1
+  - id: "online-feature-store"
+    title: "In-Memory Feature Store Lookup"
+    domain: "storage"
+    awsService: "Amazon ElastiCache (Redis)"
+    badge: "Amazon ElastiCache (Redis)"
+    description: "Pulls rolling 30-min user engagement vectors and merchant inventory levels in sub-3ms."
+    techExample: "Feast / Redis / Dragonfly"
+    latencyBudgetMs: 4
+    correctOrder: 2
+  - id: "two-tower-ann"
+    title: "Two-Tower Candidate Retrieval"
+    domain: "ml"
+    awsService: "Amazon SageMaker ANN"
+    badge: "SageMaker ANN Server"
+    description: "Computes dot-product of User Vector vs 50M Precomputed Item Vectors to yield top 2,000 candidates."
+    techExample: "ScaNN / Faiss / Two-Tower"
+    latencyBudgetMs: 14
+    correctOrder: 3
+  - id: "deep-ranking-model"
+    title: "Multi-Task Deep Ranking Network"
+    domain: "compute"
+    awsService: "AWS Inferentia / Triton"
+    badge: "GPU Triton Inference Server"
+    description: "Heavy PyTorch DLRM network scores CTR and Conversion probabilities for the 2,000 items."
+    techExample: "Triton / TensorRT-LLM / DLRM"
+    latencyBudgetMs: 16
+    correctOrder: 4
+  - id: "business-rules-diversity"
+    title: "Diversity & Deduplication Gate"
+    domain: "security"
+    awsService: "AWS Lambda (Rules Engine)"
+    badge: "Business Rules Engine"
+    description: "Filters out-of-stock items, enforces merchant brand diversity, and caps repeat categories."
+    techExample: "DPP Diversity Algorithm"
+    latencyBudgetMs: 3
+    correctOrder: 5
+  - id: "ui-delivery"
+    title: "Edge CDN GraphQL Dispatcher"
+    domain: "gateway"
+    awsService: "Amazon CloudFront Edge"
+    badge: "CloudFront Edge Worker"
+    description: "Formats top 20 recommendations and caches localized payload at edge PoPs."
+    techExample: "GraphQL API / Cloudflare Workers"
+    latencyBudgetMs: 2
+    correctOrder: 6
+order: 2

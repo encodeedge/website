@@ -1,6 +1,6 @@
 googleAnalytics:
   enabled: true
-  measurementId: "G-5WBXFR71Y5"
+  measurementId: G-5WBXFR71Y5
   debugMode: false
   excludeInternalTraffic: true
   sendPageViewOnLoad: true
@@ -8,31 +8,24 @@ googleAnalytics:
   trackEnhancedGeo: true
 googleTagManager:
   enabled: true
-  containerId: "GTM-NX6PVH5K"
+  containerId: GTM-NX6PVH5K
   trackEnhancedGeo: true
 crispChat:
   enabled: false
-  websiteId: ""
 convertKit:
   enabled: false
-  formId: ""
-  apiKey: ""
 discord:
   enabled: false
-  widgetServerId: ""
-  inviteUrl: ""
 posthog:
   enabled: false
-  apiKey: ""
-  apiHost: "https://app.posthog.com"
+  apiHost: https://app.posthog.com
 membership:
-  enabled: true
-  provider: "polar"
+  enabled: false
+  provider: polar
   proMonthlyPrice: 19
   proAnnualPrice: 190
   lifetimePrice: 399
-  proMonthlyCheckoutUrl: "https://polar.sh/encodeedge/subscriptions"
-  proAnnualCheckoutUrl: "https://polar.sh/encodeedge/subscriptions?cycle=yearly"
-  lifetimeCheckoutUrl: "https://polar.sh/encodeedge/products/lifetime-access"
-  customerPortalUrl: "https://polar.sh/purchases"
-
+  proMonthlyCheckoutUrl: https://polar.sh/encodeedge/subscriptions
+  proAnnualCheckoutUrl: https://polar.sh/encodeedge/subscriptions?cycle=yearly
+  lifetimeCheckoutUrl: https://polar.sh/encodeedge/products/lifetime-access
+  customerPortalUrl: https://polar.sh/purchases

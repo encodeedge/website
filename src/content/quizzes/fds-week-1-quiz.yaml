@@ -1,0 +1,21 @@
+title: 'Quiz: Week 1 - Data Science Introduction'
+description: Assess your understanding of the data science lifecycle, algorithmic
+  modeling, and decision-making systems.
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+- question: What is the primary difference between statistical modeling and algorithmic
+    modeling?
+  type: mcq
+  options:
+  - Statistical modeling assumes an underlying stochastic data-generating process,
+    whereas algorithmic modeling treats the data mechanism as complex and learns directly
+    via prediction algorithms
+  - Statistical modeling only works with images, while algorithmic modeling works
+    with text
+  - Algorithmic modeling requires no computing hardware
+  - Statistical modeling does not use probability
+  correctAnswer: 0
+  explanation: 'Leo Breiman formalized the two cultures: statistical models assume
+    a parametric stochastic model, whereas algorithmic models prioritize predictive
+    accuracy using general non-linear algorithms.'

@@ -1,0 +1,23 @@
+---
+title: "Measures of Centrality: Mean, Median, and Mode"
+description: "Defining arithmetic mean, median rank positioning, and mode frequencies, and understanding their physical interpretation as centers of mass."
+lessonType: "video"
+interactiveLab: "none"
+duration: 30
+---
+
+### Curriculum Objectives
+This lesson covers the core engineering concepts and implementations for:
+- Introduction - Measures of Centrality and Spread
+- Different measures of Centrality
+- Characteristics of Measures of Centrality
+
+### Overview
+In this module, you will explore the mathematical foundations, conceptual mechanisms, and code implementations underlying this topic.
+
+### Key Concepts & Takeaways
+- Conceptual understanding and first-principles intuition
+- Mathematical formulations and boundary behaviors
+- Production-grade Python implementations and visualization
+
+*Content placeholder — you can add specific lecture notes, video embeds, and hands-on exercises here.*

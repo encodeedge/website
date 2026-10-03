@@ -1,0 +1,17 @@
+title: 'Quiz: Data + Tasks'
+description: Assess your understanding of data representations, features, labels,
+  and machine learning task formulations.
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+- question: In the 6 Jars framework, which Jar defines whether the problem is classification,
+    regression, or clustering?
+  type: mcq
+  options:
+  - Tasks
+  - Data
+  - Models
+  - Loss Function
+  correctAnswer: 0
+  explanation: The 'Tasks' Jar defines what problem we want to solve (e.g., binary
+    classification, multi-class classification, or continuous regression).

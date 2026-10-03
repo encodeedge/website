@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#1e1b4b" />
+      <stop offset="100%" stop-color="#090d16" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4" />
+      <stop offset="50%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+    <linearGradient id="chartGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.8" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="15" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+
+  <!-- Subtle grid lines -->
+  <g stroke="#334155" stroke-width="1" opacity="0.2">
+    <line x1="100" y1="0" x2="100" y2="630" />
+    <line x1="250" y1="0" x2="250" y2="630" />
+    <line x1="400" y1="0" x2="400" y2="630" />
+    <line x1="550" y1="0" x2="550" y2="630" />
+    <line x1="700" y1="0" x2="700" y2="630" />
+    <line x1="850" y1="0" x2="850" y2="630" />
+    <line x1="1000" y1="0" x2="1000" y2="630" />
+    <line x1="0" y1="150" x2="1200" y2="150" />
+    <line x1="0" y1="300" x2="1200" y2="300" />
+    <line x1="0" y1="450" x2="1200" y2="450" />
+  </g>
+
+  <!-- Data Graphic: Bell Curve and Histogram Bars -->
+  <g transform="translate(680, 240)">
+    <!-- Histogram Bars -->
+    <rect x="0" y="140" width="35" height="60" fill="url(#chartGrad)" rx="4" />
+    <rect x="45" y="100" width="35" height="100" fill="url(#chartGrad)" rx="4" />
+    <rect x="90" y="60" width="35" height="140" fill="url(#chartGrad)" rx="4" />
+    <rect x="135" y="20" width="35" height="180" fill="url(#accent)" rx="4" opacity="0.9" />
+    <rect x="180" y="0" width="35" height="200" fill="url(#accent)" rx="4" />
+    <rect x="225" y="20" width="35" height="180" fill="url(#accent)" rx="4" opacity="0.9" />
+    <rect x="270" y="60" width="35" height="140" fill="url(#chartGrad)" rx="4" />
+    <rect x="315" y="100" width="35" height="100" fill="url(#chartGrad)" rx="4" />
+    <rect x="360" y="140" width="35" height="60" fill="url(#chartGrad)" rx="4" />
+
+    <!-- Gaussian Distribution Line -->
+    <path d="M -20,195 Q 110,190 150,110 T 197,-10 T 245,110 Q 285,190 415,195" 
+          fill="none" stroke="#38bdf8" stroke-width="4" filter="url(#glow)" />
+    
+    <!-- Base Axis -->
+    <line x1="-30" y1="200" x2="430" y2="200" stroke="#64748b" stroke-width="2" />
+  </g>
+
+  <!-- Badge Pill -->
+  <rect x="90" y="130" width="220" height="38" rx="19" fill="#06b6d4" fill-opacity="0.15" stroke="#06b6d4" stroke-width="1.5" />
+  <text x="110" y="154" fill="#38bdf8" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" letter-spacing="1.5">FOUNDATIONAL TRACK</text>
+
+  <!-- Typography -->
+  <text x="90" y="240" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="52" font-weight="800" letter-spacing="-1">
+    Foundations of
+  </text>
+  <text x="90" y="305" fill="url(#accent)" font-family="system-ui, -apple-system, sans-serif" font-size="52" font-weight="800" letter-spacing="-1">
+    Data Science
+  </text>
+
+  <text x="90" y="375" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="400">
+    Descriptive Statistics • Python &amp; NumPy • Pandas • Probability &amp; Distributions
+  </text>
+
+  <!-- Bottom Badges -->
+  <g transform="translate(90, 440)">
+    <rect x="0" y="0" width="140" height="36" rx="8" fill="#1e293b" stroke="#334155" />
+    <text x="20" y="23" fill="#cbd5e1" font-family="system-ui, sans-serif" font-size="14" font-weight="600">20 Modules</text>
+
+    <rect x="155" y="0" width="130" height="36" rx="8" fill="#1e293b" stroke="#334155" />
+    <text x="175" y="23" fill="#cbd5e1" font-family="system-ui, sans-serif" font-size="14" font-weight="600">Code &amp; Math</text>
+
+    <rect x="300" y="0" width="140" height="36" rx="8" fill="#1e293b" stroke="#334155" />
+    <text x="320" y="23" fill="#cbd5e1" font-family="system-ui, sans-serif" font-size="14" font-weight="600">Pure Python</text>
+  </g>
+</svg>

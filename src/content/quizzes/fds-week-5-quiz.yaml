@@ -1,0 +1,18 @@
+title: 'Quiz: Week 5 - Python Collections & File Handling'
+description: Assess your understanding of lists, dictionaries, tuples, sets, and file
+  streams.
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+- question: What is the primary operational difference between a Python list and a
+    Python tuple?
+  type: mcq
+  options:
+  - Lists are mutable and can be altered in-place, while tuples are immutable once
+    instantiated
+  - Tuples can only store numbers, while lists can store strings
+  - Lists are faster for hash-based lookups than tuples
+  - Tuples cannot be indexed or sliced
+  correctAnswer: 0
+  explanation: Lists allow in-place mutations (append, pop, slice assignments), while
+    tuples are immutable sequence containers.

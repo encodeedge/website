@@ -1,0 +1,16 @@
+title: 'Quiz: Week 15 - Probability & Bayes Theorem'
+description: Test your understanding of conditional probability, independent events,
+  and Bayes' Rule.
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+- question: What is the formula for Bayes' Theorem for events A and B?
+  type: mcq
+  options:
+  - P(A|B) = [P(B|A) * P(A)] / P(B)
+  - P(A|B) = P(A) * P(B)
+  - P(A|B) = P(A) + P(B) - P(A and B)
+  - P(A|B) = P(B|A) / P(A)
+  correctAnswer: 0
+  explanation: Bayes' rule updates prior probability P(A) with likelihood P(B|A) normalized
+    by marginal evidence P(B).

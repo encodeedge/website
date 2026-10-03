@@ -1,0 +1,23 @@
+title: "Quiz: Deep Learning Optimization"
+description: "Test your knowledge of Momentum, NAG, AdaGrad, RMSProp, and Adam."
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+  - question: "How does Momentum-based gradient descent solve the problem of oscillating in steep ravines?"
+    type: "mcq"
+    options:
+      - "By accumulating past velocity vectors, dampening perpendicular oscillations and accelerating along the consistent direction"
+      - "By setting the gradient to zero whenever oscillations occur"
+      - "By increasing the learning rate exponentially"
+      - "By replacing derivatives with numerical differences"
+    correctAnswer: 0
+    explanation: "Momentum uses an exponentially weighted moving average of gradients, averaging out opposing oscillations while building speed along consistent descents."
+  - question: "What key innovation does the Adam optimizer introduce over standard RMSProp?"
+    type: "mcq"
+    options:
+      - "It combines both first-moment exponential moving averages (momentum) and second-moment moving averages (RMSProp variance) with bias corrections"
+      - "It completely eliminates the learning rate hyperparameter"
+      - "It computes second-order Hessian matrix inverses in O(1) time"
+      - "It only updates weights that have positive gradients"
+    correctAnswer: 0
+    explanation: "Adam combines first moments (mean/momentum) and second raw moments (uncentered variance) along with initialization bias corrections."

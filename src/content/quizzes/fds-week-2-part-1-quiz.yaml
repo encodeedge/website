@@ -1,0 +1,18 @@
+title: 'Quiz: Week 2 Part 1 - Engineering Data Science Systems'
+description: Test your mastery of the CRISP-DM lifecycle and software engineering
+  principles in data science.
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+- question: Which of the following represents the correct sequence in the CRISP-DM
+    lifecycle?
+  type: mcq
+  options:
+  - Business Understanding -> Data Understanding -> Data Preparation -> Modeling ->
+    Evaluation -> Deployment
+  - Deployment -> Modeling -> Data Preparation -> Evaluation
+  - Data Preparation -> Business Understanding -> Deployment -> Modeling
+  - Evaluation -> Modeling -> Business Understanding -> Data Preparation
+  correctAnswer: 0
+  explanation: CRISP-DM begins with Business Understanding, followed by Data Understanding,
+    Data Preparation, Modeling, Evaluation, and Deployment.

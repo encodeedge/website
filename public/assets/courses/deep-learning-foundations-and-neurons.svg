@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#13091B" />
+      <stop offset="50%" stop-color="#221035" />
+      <stop offset="100%" stop-color="#0C0512" />
+    </linearGradient>
+    <linearGradient id="purpleGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A855F7" stop-opacity="0.9" />
+      <stop offset="50%" stop-color="#EC4899" stop-opacity="1" />
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0.9" />
+    </linearGradient>
+    <filter id="glow2" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bgGrad2)" />
+  <!-- Neural Curve / Loss Landscape Graphic -->
+  <g transform="translate(740, 240)" filter="url(#glow2)">
+    <!-- Contour Ellipses -->
+    <ellipse cx="80" cy="80" rx="190" ry="100" fill="none" stroke="#6B21A8" stroke-width="1.5" opacity="0.5" />
+    <ellipse cx="80" cy="80" rx="140" ry="70" fill="none" stroke="#9333EA" stroke-width="2" opacity="0.7" />
+    <ellipse cx="80" cy="80" rx="80" ry="40" fill="none" stroke="#C084FC" stroke-width="2.5" opacity="0.85" />
+    <ellipse cx="80" cy="80" rx="30" ry="16" fill="#EC4899" opacity="0.9" />
+    <!-- Gradient Descent Trajectory Line -->
+    <path d="M -90 -40 Q -10 10 20 40 T 75 75" fill="none" stroke="#F59E0B" stroke-width="4" stroke-dasharray="6,3" />
+    <circle cx="-90" cy="-40" r="6" fill="#F59E0B" />
+    <circle cx="75" cy="75" r="6" fill="#10B981" />
+  </g>
+  <!-- Text Overlay -->
+  <text x="80" y="260" font-family="system-ui, sans-serif" font-size="20" font-weight="bold" fill="#EC4899" letter-spacing="3">FIRST-PRINCIPLES NEURAL ARCHITECTURE</text>
+  <text x="80" y="330" font-family="system-ui, sans-serif" font-size="48" font-weight="900" fill="#FFFFFF">Deep Learning Foundations:</text>
+  <text x="80" y="395" font-family="system-ui, sans-serif" font-size="46" font-weight="900" fill="url(#purpleGlow)">6 Jars to Gradient Descent</text>
+  <text x="80" y="460" font-family="system-ui, sans-serif" font-size="18" fill="#94A3B8">MP Neuron • Perceptron • Taylor Series • Sigmoid • Loss Landscapes</text>
+</svg>

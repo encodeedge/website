@@ -1,0 +1,17 @@
+title: 'Quiz: Sigmoid - Evaluation'
+description: Assess your understanding of probability thresholding, accuracy, precision,
+  and log-loss evaluation.
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+- question: When converting sigmoid probability outputs into binary classifications,
+    what is the standard decision threshold?
+  type: mcq
+  options:
+  - '0.5'
+  - '0.0'
+  - '1.0'
+  - '0.75'
+  correctAnswer: 0
+  explanation: "Outputs y_pred \u2265 0.5 are classified as class 1, while y_pred\
+    \ < 0.5 are classified as class 0."

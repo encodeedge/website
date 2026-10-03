@@ -1,0 +1,10 @@
+enabled: true
+coffeeUrl: 'https://buymeacoffee.com/encodeedge'
+title: 'Enjoying the free courses & guides? ☕'
+message: 'EncodeEdge is 100% free with zero ads or paywalls. If our tutorials helped you learn, consider buying a coffee to keep our servers brewing!'
+triggerPageViews: 2
+delaySeconds: 4
+dismissDays: 7
+presetAmounts: '3, 5, 10'
+showFloatingButtonWhenDismissed: true
+position: 'bottom-right'

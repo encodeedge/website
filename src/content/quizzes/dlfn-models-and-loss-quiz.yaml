@@ -1,0 +1,19 @@
+title: 'Quiz: Models & Loss Functions'
+description: Verify your understanding of hypothesis spaces, parameterization, and
+  loss metrics.
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+- question: What distinguishes the hypothesis model from the loss function in supervised
+    learning?
+  type: mcq
+  options:
+  - The model maps inputs to predicted outputs; the loss function quantifies prediction
+    error against ground truth
+  - The model calculates the learning rate; the loss function stores datasets
+  - The loss function is only used during inference; the model is only used during
+    training
+  - There is no difference; they are interchangeable terms
+  correctAnswer: 0
+  explanation: "A model f(x; \u03B8) computes predictions, whereas a loss function\
+    \ L(y_pred, y_true) provides a scalar metric of error used to guide optimization."

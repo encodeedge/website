@@ -1,0 +1,23 @@
+title: "Quiz: Feedforward Neural Networks"
+description: "Test your mastery of multi-layer architectures, hidden activations, and matrix forward pass equations."
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+  - question: "If an input layer has dimension 784, hidden layer 1 has dimension 128, and output layer has dimension 10, what is the shape of the weight matrix W1 connecting input to hidden layer 1?"
+    type: "mcq"
+    options:
+      - "128 x 784 (or 784 x 128 depending on row/column vector convention)"
+      - "784 x 10"
+      - "128 x 10"
+      - "784 x 784"
+    correctAnswer: 0
+    explanation: "The weight matrix W1 maps from the input feature space (784) to the first hidden activation space (128)."
+  - question: "What is the primary role of the Softmax activation in the final layer of a multi-class neural network?"
+    type: "mcq"
+    options:
+      - "It converts unnormalized logits into a valid probability distribution that sums to 1"
+      - "It prevents vanishing gradients in deep layers"
+      - "It binarizes the inputs into 0 and 1"
+      - "It computes the Euclidean distance between predictions and targets"
+    correctAnswer: 0
+    explanation: "Softmax exponentiates logits and normalizes by their sum, yielding non-negative probabilities summing to 1."

@@ -1,0 +1,28 @@
+title: 'Quiz: Vectors and Matrices'
+description: Test your mastery of vector dot products, projections, matrix transformations,
+  and matrix-matrix multiplication.
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+- question: What is the geometric interpretation of the dot product between two unit
+    vectors u and v?
+  type: mcq
+  options:
+  - It is equal to the cosine of the angle between them
+  - It is equal to the sine of the angle between them
+  - It is the Euclidean distance between their endpoints
+  - It is the area of the parallelogram formed by them
+  correctAnswer: 0
+  explanation: "For unit vectors |u| = |v| = 1, u \xB7 v = |u||v|cos(\u03B8) = cos(\u03B8\
+    )."
+- question: If matrix A has shape (m, k) and matrix B has shape (k, n), what is the
+    shape of their product AB?
+  type: mcq
+  options:
+  - (m, n)
+  - (k, k)
+  - (m, k)
+  - (n, m)
+  correctAnswer: 0
+  explanation: Matrix multiplication combines inner dimension k, resulting in an (m,
+    n) matrix.

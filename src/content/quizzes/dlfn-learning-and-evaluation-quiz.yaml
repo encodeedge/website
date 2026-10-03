@@ -1,0 +1,17 @@
+title: 'Quiz: Learning Algorithm & Evaluation'
+description: Test your knowledge of parameter search algorithms and model evaluation
+  strategies.
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+- question: Why is evaluation performed on an unseen test set rather than the training
+    set?
+  type: mcq
+  options:
+  - To measure true generalization performance and detect overfitting
+  - Because training sets cannot be evaluated numerically
+  - To speed up execution of the learning algorithm
+  - Because test sets have fewer dimensions than training sets
+  correctAnswer: 0
+  explanation: Evaluating on unseen test data assesses how well the model generalizes
+    to new data rather than simply memorizing the training samples.

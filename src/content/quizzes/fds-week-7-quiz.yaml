@@ -1,0 +1,16 @@
+title: 'Quiz: Week 7 - Measures of Spread & Percentiles'
+description: Assess your knowledge of variance, standard deviation, percentiles, and
+  boxplots.
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+- question: In a standard Tukey Boxplot, what distance defines the Interquartile Range
+    (IQR)?
+  type: mcq
+  options:
+  - Q3 (75th percentile) - Q1 (25th percentile)
+  - Maximum - Minimum
+  - Mean - Standard Deviation
+  - Q2 (50th percentile) - Q1
+  correctAnswer: 0
+  explanation: IQR = Q3 - Q1 represents the middle 50% spread of the data.

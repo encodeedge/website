@@ -478,6 +478,63 @@ export async function getNavigationSettings(): Promise<NavigationSettings> {
   }
 }
 
+// ─── Buy Me a Coffee Widget Settings ───────────────────────────────────────
+
+export interface CoffeeWidgetSettings {
+  enabled: boolean;
+  coffeeUrl: string;
+  title: string;
+  message: string;
+  triggerPageViews: number;
+  delaySeconds: number;
+  dismissDays: number;
+  presetAmounts: string[];
+  showFloatingButtonWhenDismissed: boolean;
+  position: 'bottom-right' | 'bottom-left';
+}
+
+export const DEFAULT_COFFEE_WIDGET_SETTINGS: CoffeeWidgetSettings = {
+  enabled: true,
+  coffeeUrl: 'https://buymeacoffee.com/encodeedge',
+  title: 'Enjoying the free courses & guides? ☕',
+  message: 'EncodeEdge is 100% free with zero ads or paywalls. If our tutorials helped you learn, consider buying a coffee to keep our servers brewing!',
+  triggerPageViews: 2,
+  delaySeconds: 4,
+  dismissDays: 7,
+  presetAmounts: ['3', '5', '10'],
+  showFloatingButtonWhenDismissed: true,
+  position: 'bottom-right',
+};
+
+export async function getCoffeeWidgetSettings(): Promise<CoffeeWidgetSettings> {
+  try {
+    const reader = getReader();
+    const data = await (reader.singletons as any).coffeeWidget?.read();
+    if (!data) return DEFAULT_COFFEE_WIDGET_SETTINGS;
+
+    const rawPresets = data.presetAmounts || '3, 5, 10';
+    const presetAmounts = typeof rawPresets === 'string'
+      ? rawPresets.split(',').map((s: string) => s.trim()).filter(Boolean)
+      : DEFAULT_COFFEE_WIDGET_SETTINGS.presetAmounts;
+
+    return {
+      enabled: data.enabled ?? DEFAULT_COFFEE_WIDGET_SETTINGS.enabled,
+      coffeeUrl: data.coffeeUrl || DEFAULT_COFFEE_WIDGET_SETTINGS.coffeeUrl,
+      title: data.title || DEFAULT_COFFEE_WIDGET_SETTINGS.title,
+      message: data.message || DEFAULT_COFFEE_WIDGET_SETTINGS.message,
+      triggerPageViews: data.triggerPageViews ?? DEFAULT_COFFEE_WIDGET_SETTINGS.triggerPageViews,
+      delaySeconds: data.delaySeconds ?? DEFAULT_COFFEE_WIDGET_SETTINGS.delaySeconds,
+      dismissDays: data.dismissDays ?? DEFAULT_COFFEE_WIDGET_SETTINGS.dismissDays,
+      presetAmounts: presetAmounts.length > 0 ? presetAmounts : DEFAULT_COFFEE_WIDGET_SETTINGS.presetAmounts,
+      showFloatingButtonWhenDismissed: data.showFloatingButtonWhenDismissed ?? DEFAULT_COFFEE_WIDGET_SETTINGS.showFloatingButtonWhenDismissed,
+      position: (data.position as any) || DEFAULT_COFFEE_WIDGET_SETTINGS.position,
+    };
+  } catch (error) {
+    console.warn('[Keystatic Settings] Failed to load coffeeWidget, using defaults:', error);
+    return DEFAULT_COFFEE_WIDGET_SETTINGS;
+  }
+}
+
 // ─── SEO Settings ───────────────────────────────────────────────────────────
 
 export interface SeoSettings {

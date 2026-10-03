@@ -1,0 +1,17 @@
+title: 'Quiz: Week 17 - Continuous Distributions & Normal Curve'
+description: Test your mastery of probability density functions and the standard normal
+  distribution.
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+- question: Under a standard normal distribution Z ~ N(0, 1), approximately what percentage
+    of data falls within +/- 2 standard deviations?
+  type: mcq
+  options:
+  - 95.45% (approximately 95%)
+  - 68.27%
+  - 99.73%
+  - 50.00%
+  correctAnswer: 0
+  explanation: 'By the empirical 68-95-99.7 rule: ~68% falls within 1 SD, ~95% within
+    2 SD, and ~99.7% within 3 SD.'

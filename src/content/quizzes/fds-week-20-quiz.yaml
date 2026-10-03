@@ -1,0 +1,17 @@
+title: 'Quiz: Week 20 - Chi-Square Tests'
+description: Test your knowledge of Chi-Square distribution, degrees of freedom, and
+  contingency tables.
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+- question: In a Chi-Square test of independence with an r x c contingency table,
+    how are the degrees of freedom computed?
+  type: mcq
+  options:
+  - (r - 1) * (c - 1)
+  - r * c - 1
+  - r + c - 2
+  - n - r - c
+  correctAnswer: 0
+  explanation: Degrees of freedom for an r x c contingency table is given by (rows
+    - 1) * (columns - 1).

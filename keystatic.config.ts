@@ -220,7 +220,7 @@ export default config({
       },
     },
     navigation: {
-      'Site Settings': ['siteSettings', 'featureFlags', 'announcementBanner'],
+      'Site Settings': ['siteSettings', 'featureFlags', 'announcementBanner', 'coffeeWidget'],
       'Competition Feeds': ['sources'],
       'Design & Navigation': ['navigationSettings', 'footerSettings'],
       'Marketing': ['seoSettings', 'integrationsSettings'],
@@ -506,6 +506,66 @@ export default config({
         dismissible: fields.checkbox({
           label: 'Allow users to dismiss',
           defaultValue: true,
+        }),
+      },
+    }),
+
+    // ─── Buy Me a Coffee Widget ───────────────────────────────────────────
+    coffeeWidget: singleton({
+      label: 'Buy Me a Coffee Widget',
+      path: 'src/content/settings/coffee-widget',
+      schema: {
+        enabled: fields.checkbox({
+          label: 'Enable Navigation Coffee Popup',
+          description: 'Show an innovative, non-aggressive coffee support popup as users navigate the site.',
+          defaultValue: true,
+        }),
+        coffeeUrl: fields.text({
+          label: 'Buy Me a Coffee / Support URL',
+          description: 'Link to your BuyMeACoffee, Ko-fi, or GitHub Sponsors profile',
+          defaultValue: 'https://buymeacoffee.com/encodeedge',
+        }),
+        title: fields.text({
+          label: 'Popup Headline',
+          defaultValue: 'Enjoying the free courses & guides? ☕',
+        }),
+        message: fields.text({
+          label: 'Popup Message',
+          multiline: true,
+          defaultValue: 'EncodeEdge is 100% free with zero ads or paywalls. If our tutorials helped you learn, consider buying a coffee to keep our servers brewing!',
+        }),
+        triggerPageViews: fields.number({
+          label: 'Page Views Threshold Before Showing',
+          description: 'Number of pages visited in session before popup slides in (prevents aggressive first-second popups).',
+          defaultValue: 2,
+        }),
+        delaySeconds: fields.number({
+          label: 'Delay on Page (seconds)',
+          description: 'Seconds to wait on the qualifying page before displaying the card.',
+          defaultValue: 4,
+        }),
+        dismissDays: fields.number({
+          label: 'Dismiss Snooze Duration (Days)',
+          description: 'How many days to snooze the popup if the user closes it.',
+          defaultValue: 7,
+        }),
+        presetAmounts: fields.text({
+          label: 'Preset Dollar Amounts (comma-separated)',
+          defaultValue: '3, 5, 10',
+        }),
+        showFloatingButtonWhenDismissed: fields.checkbox({
+          label: 'Keep Subtle Floating Button When Dismissed',
+          description: 'Minimizes to an unobtrusive coffee cup icon in the corner instead of vanishing completely.',
+          defaultValue: true,
+        }),
+        position: fields.select({
+          label: 'Widget Screen Position',
+          description: 'Where the popup and floating button appear (Bottom Right auto-stacks cleanly above any progress bar).',
+          options: [
+            { label: 'Bottom Right (Auto-stacked above progress bar)', value: 'bottom-right' },
+            { label: 'Bottom Left (Stacked above achievements)', value: 'bottom-left' },
+          ],
+          defaultValue: 'bottom-right',
         }),
       },
     }),

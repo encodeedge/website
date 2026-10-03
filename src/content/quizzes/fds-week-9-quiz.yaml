@@ -1,0 +1,16 @@
+title: 'Quiz: Week 9 - Pandas Series & Indexing'
+description: Assess your understanding of Pandas Series and loc/iloc selection.
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+- question: What is the key difference between s.loc[x] and s.iloc[x] in Pandas?
+  type: mcq
+  options:
+  - loc selects by explicit index label, while iloc selects by integer zero-based
+    position
+  - iloc selects by column name, while loc selects by row index
+  - loc is only for strings, while iloc is for integers
+  - loc modifies data in-place, while iloc returns a copy
+  correctAnswer: 0
+  explanation: .loc is label-based indexing, whereas .iloc is integer position-based
+    indexing.

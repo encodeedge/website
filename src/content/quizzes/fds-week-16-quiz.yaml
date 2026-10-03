@@ -1,0 +1,17 @@
+title: 'Quiz: Week 16 - Random Variables & PMF'
+description: Assess your understanding of discrete distributions, expected values,
+  and variance.
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+- question: What is the expected value of a Binomial random variable X ~ Binomial(n,
+    p)?
+  type: mcq
+  options:
+  - n * p
+  - n * p * (1 - p)
+  - p / n
+  - sqrt(n * p)
+  correctAnswer: 0
+  explanation: For X ~ Binomial(n, p), the expectation E[X] = n*p, and variance Var(X)
+    = n*p*(1-p).

@@ -1,0 +1,14 @@
+title: "Quiz: Convolutional Neural Networks"
+description: "Assess your understanding of spatial convolutions, receptive fields, padding, and pooling."
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+  - question: "What is the output feature map dimension when convolving an input of size 32x32 with a 5x5 kernel, stride of 1, and no padding (padding = 0)?"
+    type: "mcq"
+    options:
+      - "28x28"
+      - "32x32"
+      - "27x27"
+      - "30x30"
+    correctAnswer: 0
+    explanation: "Output size = (W - K + 2P)/S + 1 = (32 - 5 + 0)/1 + 1 = 28."

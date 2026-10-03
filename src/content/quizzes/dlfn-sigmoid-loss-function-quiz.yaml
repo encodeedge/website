@@ -1,0 +1,18 @@
+title: 'Quiz: Sigmoid - Loss Function'
+description: Test your knowledge of loss functions used for sigmoid models and error
+  surface properties.
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+- question: Why can mean squared error loss with a sigmoid activation lead to slow
+    learning during initial training?
+  type: mcq
+  options:
+  - Because the derivative of sigmoid approaches 0 for saturated predictions, causing
+    the gradient to vanish
+  - Because squared error produces negative numbers for probabilities
+  - Because mean squared error requires matrix inversion
+  - Because sigmoid outputs are not bounded
+  correctAnswer: 0
+  explanation: "When predictions are strongly incorrect and saturated near 0 or 1,\
+    \ \u03C3'(z) \u2248 0, making the gradient extremely small."

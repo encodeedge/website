@@ -5,10 +5,11 @@ import { Navbar } from '@/components/blocks/navbar';
 import { AchievementsTrigger } from '@/components/ui/achievements-panel';
 import { NewsletterBanner } from '@/components/ui/newsletter-banner';
 import { AnnouncementBanner } from '@/components/ui/announcement-banner';
+import { BuyMeCoffeePopup } from '@/components/ui/buy-me-coffee-popup';
 import { PeerStudyRooms } from '@/components/interactive/PeerStudyRooms';
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics.astro';
 import GoogleTagManager from '@/components/analytics/GoogleTagManager.astro';
-import { getFeatureFlags, getAnnouncementBanner, getSiteSettings, getNavigationSettings } from '@/lib/settings';
+import { getFeatureFlags, getAnnouncementBanner, getSiteSettings, getNavigationSettings, getCoffeeWidgetSettings } from '@/lib/settings';
 
 interface Props {
 	title?: string;
@@ -40,6 +41,7 @@ const flags = await getFeatureFlags();
 const announcement = await getAnnouncementBanner();
 const site = await getSiteSettings();
 const navSettings = await getNavigationSettings();
+const coffeeWidget = await getCoffeeWidgetSettings();
 ---
 
 <html lang="en">
@@ -136,6 +138,21 @@ const navSettings = await getNavigationSettings();
           />
         )}
         {flags.peerStudyRooms.enabled && <PeerStudyRooms client:load />}
+        {coffeeWidget.enabled && (
+          <BuyMeCoffeePopup
+            client:load
+            enabled={coffeeWidget.enabled}
+            coffeeUrl={coffeeWidget.coffeeUrl}
+            title={coffeeWidget.title}
+            message={coffeeWidget.message}
+            triggerPageViews={coffeeWidget.triggerPageViews}
+            delaySeconds={coffeeWidget.delaySeconds}
+            dismissDays={coffeeWidget.dismissDays}
+            presetAmounts={coffeeWidget.presetAmounts}
+            showFloatingButtonWhenDismissed={coffeeWidget.showFloatingButtonWhenDismissed}
+            position={coffeeWidget.position}
+          />
+        )}
         <Footer />
         <script type="module" src="/scripts/cookieconsent-config.js"></script>
     </body>

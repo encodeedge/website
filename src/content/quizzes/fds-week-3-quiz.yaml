@@ -1,0 +1,16 @@
+title: 'Quiz: Week 3 - Python Fundamentals'
+description: Test your knowledge of basic data types, loops, and function syntax in
+  Python.
+passingScorePercentage: 70
+markCompletedOnAttempt: true
+questions:
+- question: 'What is the return type of the Python expression: type(3 / 2)?'
+  type: mcq
+  options:
+  - <class 'float'>
+  - <class 'int'>
+  - <class 'complex'>
+  - <class 'rational'>
+  correctAnswer: 0
+  explanation: In Python 3, the single slash division operator (/) always returns
+    a float (1.5), even when both operands are integers.

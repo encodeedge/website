@@ -5,6 +5,7 @@ import FAQs from "@/components/blocks/faqs";
 import References from "@/components/blocks/references";
 import { TOPIC_METADATA } from "@/lib/topics";
 import { CodeSandboxRunner } from "@/components/interactive/CodeSandboxRunner";
+import { hasSnippetForContent } from "@/lib/code-snippets";
 import EditorialPostCover from "@/components/ui/EditorialPostCover.astro";
 import { ArticleAI } from "@/components/ui/article-ai";
 import { getFeatureFlags } from "@/lib/settings";
@@ -44,6 +45,7 @@ const topicMeta = TOPIC_METADATA[primaryTopic] || {
   roadmapSlug: primaryTopic,
 };
 const roadmapSlug = topicMeta?.roadmapSlug;
+const hasRelevantLab = hasSnippetForContent(post.id) || (post.slug && hasSnippetForContent(post.slug));
 
 const formatSlug = (slug: string) => {
   if (TOPIC_METADATA[slug]) {
@@ -326,14 +328,16 @@ const postId = post.id;
           <slot />
         </div>
 
-        {/* Interactive Post Code Sandbox (Matched directly to article topic) */}
-        <div class="mt-14 not-prose print:hidden">
-          <CodeSandboxRunner 
-            contentId={post.id} 
-            titleOverride={`Interactive Code Lab: ${title}`}
-            client:load 
-          />
-        </div>
+        {/* Interactive Post Code Sandbox (Only rendered when strictly relevant to this article) */}
+        {hasRelevantLab && (
+          <div class="mt-14 not-prose print:hidden">
+            <CodeSandboxRunner 
+              contentId={post.id} 
+              titleOverride={`Interactive Code Lab: ${title}`}
+              client:load 
+            />
+          </div>
+        )}
 
         {/* Interactive Reactions Bar */}
         <div class="mt-14 pt-8 border-t border-border/60 not-prose print:hidden">

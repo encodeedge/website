@@ -4,7 +4,6 @@ import { getCollection } from 'astro:content';
 import { BookOpen, Award, CheckCircle, Clock, Users, Sparkles, ArrowRight, ShieldCheck, Code, Layers } from 'lucide-react';
 import { LearnerGamificationBar } from '@/components/interactive/LearnerGamificationBar';
 import { CourseFlashcardsDrawer } from '@/components/interactive/CourseFlashcardsDrawer';
-import { CodeSandboxRunner } from '@/components/interactive/CodeSandboxRunner';
 import { getCoursesPageSettings } from '@/lib/settings';
 
 const pageSettings = await getCoursesPageSettings();
@@ -249,26 +248,6 @@ const coursesWithMeta = publishedCourses.map(course => {
         );
       })}
     </div>
-
-    <!-- Interactive Academy Code Sandbox -->
-    {pageSettings.showInteractiveLab && (
-      <div class="space-y-6 max-w-5xl mx-auto">
-        <div class="text-center space-y-2">
-          <div class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary">
-            <Sparkles class="w-3.5 h-3.5" />
-            <span>{pageSettings.interactiveLabEyebrow || 'Hands-On Engineering'}</span>
-          </div>
-          <h3 class="text-2xl sm:text-3xl font-bold font-display text-foreground">
-            {pageSettings.interactiveLabHeading || 'Try Live Algorithms in the Browser'}
-          </h3>
-          <p class="text-xs sm:text-sm text-muted-foreground font-body max-w-xl mx-auto">
-            {pageSettings.interactiveLabSubheading || 'Test real PyTorch autograd computations, gradient descent steps, and semantic RAG cosine similarity with zero local environment setup.'}
-          </p>
-        </div>
-
-        <CodeSandboxRunner client:load />
-      </div>
-    )}
 
     <!-- Academy Value Proposition Strip -->
     <section class="rounded-3xl border border-border/80 bg-muted/20 p-8 md:p-12 space-y-8">

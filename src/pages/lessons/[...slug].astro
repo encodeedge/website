@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { CourseLearningStudio } from '@/components/interactive/CourseLearningStudio';
 import { CodeSandboxRunner } from '@/components/interactive/CodeSandboxRunner';
+import { hasSnippetForContent } from '@/lib/code-snippets';
 import { NeuralPlayground } from '@/components/interactive/NeuralPlayground';
 import { GradientDescentLab } from '@/components/interactive/GradientDescentLab';
 import { MemoryExplorer } from '@/components/interactive/MemoryExplorer';
@@ -120,7 +121,7 @@ const structuredChapters = (activeCourse?.data.chapters || []).map((chapter, chI
         </div>
       )}
 
-      {(lesson.data.interactiveLab === 'code-sandbox' || lesson.data.interactiveLab === 'custom-sandbox' || (lesson.data.lessonType === 'lab' && (!lesson.data.interactiveLab || lesson.data.interactiveLab === 'none'))) && (
+      {(lesson.data.interactiveLab === 'code-sandbox' || lesson.data.interactiveLab === 'custom-sandbox' || (lesson.data.lessonType === 'lab' && (!lesson.data.interactiveLab || lesson.data.interactiveLab === 'none'))) && (lesson.data.customLabCode || hasSnippetForContent(lesson.id)) && (
         <div class="my-6">
           <CodeSandboxRunner 
             contentId={lesson.id} 

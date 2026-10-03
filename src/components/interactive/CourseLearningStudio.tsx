@@ -36,6 +36,7 @@ import {
 import { persistentStorage } from '@/lib/storage';
 import PostComments from '@/components/ui/PostComments';
 import { CodeSandboxRunner } from '@/components/interactive/CodeSandboxRunner';
+import { hasSnippetForContent } from '@/lib/code-snippets';
 import {
   trackLessonCompletion,
   trackLessonRating,
@@ -623,9 +624,23 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
 
                 {/* Live Code Sandbox runner when not already a standalone lab component */}
                 {!isCurrentLessonPractice && (
-                  <div className="pt-2">
-                    <CodeSandboxRunner contentId={currentLesson.id} />
-                  </div>
+                  hasSnippetForContent(currentLesson.id) ? (
+                    <div className="pt-2">
+                      <CodeSandboxRunner contentId={currentLesson.id} />
+                    </div>
+                  ) : (
+                    <div className="p-4 rounded-xl bg-muted/40 border border-border text-center space-y-2 text-xs text-muted-foreground">
+                      <p>This lesson focuses on theoretical architecture. Interactive code labs are integrated into dedicated practice lessons.</p>
+                      {nextPracticeItem && (
+                        <a
+                          href={nextPracticeItem.url}
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+                        >
+                          Jump to hands-on lab: {nextPracticeItem.title} &rarr;
+                        </a>
+                      )}
+                    </div>
+                  )
                 )}
               </div>
             )}

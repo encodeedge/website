@@ -1128,88 +1128,103 @@ export function getSnippetsForCategory(category: string): CodeSnippet[] {
   return Object.values(CONTENT_SNIPPETS).filter(s => s.category === category);
 }
 
-export function getSnippetForContent(idOrSlug: string, fallbackCategory: string = 'General'): CodeSnippet {
-  const cleanId = (idOrSlug || '').replace(/\.(md|mdx|html)$/, '').toLowerCase().trim();
+export function getSnippetForContent(idOrSlug: string = '', fallbackCategory?: string): CodeSnippet | null {
+  if (!idOrSlug) return null;
+  const cleanId = idOrSlug.replace(/\.(md|mdx|html)$/, '').toLowerCase().trim();
 
-  // Direct match
+  // 1. Direct exact match in dictionary
   if (CONTENT_SNIPPETS[cleanId]) {
     return CONTENT_SNIPPETS[cleanId];
   }
 
-  // Exact key substring check before generic fallback
-  for (const key of Object.keys(CONTENT_SNIPPETS)) {
-    if (cleanId === key || cleanId.includes(key) || key.includes(cleanId)) {
-      return CONTENT_SNIPPETS[key];
-    }
+  // 2. Specific lesson/blog slug mappings (exact topic alignment)
+  if (cleanId.includes('context-manager') || cleanId.includes('with-block')) {
+    return CONTENT_SNIPPETS['python-context-managers-and-with-blocks'] || null;
   }
-
-  // Specific content topic matching
-  if (cleanId.includes('cnn') || cleanId.includes('conv') || cleanId.includes('resnet')) {
-    return CONTENT_SNIPPETS['dl-cnn-architectures'];
+  if (cleanId.includes('descriptor') || cleanId.includes('metaprogramming')) {
+    return CONTENT_SNIPPETS['python-descriptors-and-metaprogramming'] || null;
   }
-  if (cleanId.includes('transformer') || cleanId.includes('attention')) {
-    return CONTENT_SNIPPETS['dl-transformers-attention'];
+  if (cleanId.includes('variables-and-memory') || (cleanId.includes('variable') && cleanId.includes('memory'))) {
+    return CONTENT_SNIPPETS['python-variables-and-memory-references'] || null;
   }
-  if (cleanId.includes('tensor') || cleanId.includes('broadcasting') || cleanId.includes('stride')) {
-    return CONTENT_SNIPPETS['dl-python-foundations'];
+  if (cleanId.includes('regression-error') || cleanId.includes('error-metric')) {
+    return CONTENT_SNIPPETS['regression-error-metrics'] || null;
   }
-  if (cleanId.includes('perceptron') || cleanId.includes('backprop')) {
-    return CONTENT_SNIPPETS['dl-perceptrons-and-backprop'];
+  if (cleanId.includes('simple-linear-regres') || cleanId.includes('simple-linear-regression')) {
+    return CONTENT_SNIPPETS['regression-simple-linear-regresison'] || null;
   }
-  if (cleanId.includes('linear-regression') || cleanId.includes('regression')) {
-    return CONTENT_SNIPPETS['ml-linear-regression-from-scratch'];
-  }
-  if (cleanId.includes('gradient-descent')) {
-    return CONTENT_SNIPPETS['ml-gradient-descent-mechanics'];
-  }
-  if (cleanId.includes('regularization') || cleanId.includes('bias-variance')) {
-    return CONTENT_SNIPPETS['ml-regularization-bias-variance'];
-  }
-  if (cleanId.includes('supervised') || cleanId.includes('unsupervised')) {
-    return CONTENT_SNIPPETS['ml-supervised-unsupervised-intro'];
+  if (cleanId.includes('type-hierarchy')) {
+    return CONTENT_SNIPPETS['py-type-hierarchy'] || null;
   }
   if (cleanId.includes('closure') || cleanId.includes('decorator')) {
-    return CONTENT_SNIPPETS['py-closures-decorators'];
+    return CONTENT_SNIPPETS['py-closures-decorators'] || null;
   }
-  if (cleanId.includes('generator') || cleanId.includes('coroutine')) {
-    return CONTENT_SNIPPETS['py-generators-coroutines'];
+  if (cleanId.includes('generator') || cleanId.includes('coroutine') || cleanId.includes('iterables-iterators')) {
+    return CONTENT_SNIPPETS['py-generators-coroutines'] || null;
   }
-  if (cleanId.includes('dunder') || cleanId.includes('oop')) {
-    return CONTENT_SNIPPETS['py-oop-dunder-methods'];
+  if (cleanId.includes('dunder') || (cleanId.includes('object-oriented') && cleanId.includes('dunder'))) {
+    return CONTENT_SNIPPETS['py-oop-dunder-methods'] || null;
   }
-  if (cleanId.includes('type') || cleanId.includes('hierarchy')) {
-    return CONTENT_SNIPPETS['py-type-hierarchy'];
+  if (cleanId === 'py-memory-management' || cleanId.includes('memory-management')) {
+    return CONTENT_SNIPPETS['py-memory-management'] || null;
   }
-  if (cleanId.includes('memory')) {
-    return CONTENT_SNIPPETS['py-memory-management'];
+  if (cleanId.includes('cnn') || cleanId.includes('convolution') || cleanId.includes('resnet')) {
+    return CONTENT_SNIPPETS['dl-cnn-architectures'] || null;
   }
-  if (cleanId.includes('agent')) {
-    return CONTENT_SNIPPETS['llm-autonomous-agents-tools'];
+  if (cleanId.includes('transformer') || cleanId.includes('attention')) {
+    return CONTENT_SNIPPETS['dl-transformers-attention'] || null;
   }
-  if (cleanId.includes('vector') || cleanId.includes('search')) {
-    return CONTENT_SNIPPETS['llm-vector-search-pinecone-chroma'];
+  if (cleanId.includes('tensor') || cleanId.includes('broadcasting') || cleanId.includes('python-foundations') || cleanId === 'dl-python') {
+    return CONTENT_SNIPPETS['dl-python-foundations'] || null;
   }
-  if (cleanId.includes('prompt')) {
-    return CONTENT_SNIPPETS['llm-prompt-engineering-patterns'];
+  if (cleanId.includes('perceptron') || cleanId.includes('backprop')) {
+    return CONTENT_SNIPPETS['dl-perceptrons-and-backprop'] || null;
+  }
+  if (cleanId.includes('linear-regression-from-scratch') || cleanId === 'ml-linear-regression') {
+    return CONTENT_SNIPPETS['ml-linear-regression-from-scratch'] || null;
+  }
+  if (cleanId.includes('gradient-descent')) {
+    return CONTENT_SNIPPETS['ml-gradient-descent-mechanics'] || null;
+  }
+  if (cleanId.includes('regularization') || cleanId.includes('bias-variance')) {
+    return CONTENT_SNIPPETS['ml-regularization-bias-variance'] || null;
+  }
+  if (cleanId.includes('supervised-unsupervised') || cleanId.includes('introduction-to-machine-learning')) {
+    return CONTENT_SNIPPETS['ml-supervised-unsupervised-intro'] || null;
   }
   if (cleanId.includes('embedding') || cleanId.includes('token')) {
-    return CONTENT_SNIPPETS['llm-embeddings-and-tokens'];
+    return CONTENT_SNIPPETS['llm-embeddings-and-tokens'] || null;
+  }
+  if (cleanId.includes('vector-search') || cleanId.includes('pinecone') || cleanId.includes('chroma')) {
+    return CONTENT_SNIPPETS['llm-vector-search-pinecone-chroma'] || null;
+  }
+  if (cleanId.includes('autonomous-agent') || cleanId.includes('agents-tools')) {
+    return CONTENT_SNIPPETS['llm-autonomous-agents-tools'] || null;
+  }
+  if (cleanId.includes('prompt-engineering') || cleanId.includes('prompt-patterns')) {
+    return CONTENT_SNIPPETS['llm-prompt-engineering-patterns'] || null;
+  }
+  if (cleanId === 'dl-welcome') {
+    return CONTENT_SNIPPETS['dl-welcome'] || null;
+  }
+  if (cleanId.includes('interactive-lab')) {
+    if (cleanId.startsWith('py-')) return CONTENT_SNIPPETS['py-interactive-lab'] || null;
+    if (cleanId.startsWith('dl-')) return CONTENT_SNIPPETS['dl-interactive-lab'] || null;
+    if (cleanId.startsWith('ml-')) return CONTENT_SNIPPETS['ml-interactive-lab'] || null;
+    if (cleanId.startsWith('llm-')) return CONTENT_SNIPPETS['llm-interactive-lab'] || null;
   }
 
-  // Prefix heuristics with appropriate initial lesson
-  if (cleanId.startsWith('dl-') || cleanId.includes('deep-learning')) {
-    return CONTENT_SNIPPETS['dl-python-foundations'] || CONTENT_SNIPPETS['dl-perceptrons-and-backprop'];
-  }
-  if (cleanId.startsWith('ml-') || cleanId.includes('machine-learning')) {
-    return CONTENT_SNIPPETS['ml-linear-regression-from-scratch'] || CONTENT_SNIPPETS['ml-gradient-descent-mechanics'];
-  }
-  if (cleanId.startsWith('py-') || cleanId.includes('python')) {
-    return CONTENT_SNIPPETS['py-memory-management'];
-  }
-  if (cleanId.startsWith('llm-') || cleanId.includes('rag')) {
-    return CONTENT_SNIPPETS['llm-embeddings-and-tokens'];
+  // 3. Fallback to explicit category first snippet only if fallbackCategory was explicitly requested
+  if (fallbackCategory && fallbackCategory !== 'General') {
+    const catSnippets = getSnippetsForCategory(fallbackCategory);
+    if (catSnippets.length > 0) return catSnippets[0];
   }
 
-  return CONTENT_SNIPPETS['dl-perceptrons-and-backprop'];
+  // No arbitrary random fallback snippet
+  return null;
+}
+
+export function hasSnippetForContent(idOrSlug: string = ''): boolean {
+  return getSnippetForContent(idOrSlug) !== null;
 }
 

@@ -28,6 +28,8 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
   showPresetTabs = true,
   categoryScope,
 }) => {
+  const isContentBound = Boolean(contentId || customSnippet);
+
   // Determine strict category scope if tied to a lesson, course, or blog post
   const scopedCategory = useMemo(() => {
     if (categoryScope) return categoryScope;
@@ -60,23 +62,31 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
     return list;
   }, [scopedCategory, customSnippet]);
 
-  // Resolve initial default snippet
-  const resolvedDefault = useMemo<CodeSnippet>(() => {
+  // Resolve initial default snippet strictly related to the content
+  const resolvedDefault = useMemo<CodeSnippet | null>(() => {
     if (customSnippet) return customSnippet;
-    if (contentId) return getSnippetForContent(contentId);
     if (initialSnippetId && snippetMap[initialSnippetId]) return snippetMap[initialSnippetId];
-    return availableSnippets[0] || CONTENT_SNIPPETS['dl-perceptrons-and-backprop'];
+    if (contentId) {
+      const matched = getSnippetForContent(contentId);
+      return matched || null;
+    }
+    // Only un-scoped sandboxes use the first available snippet
+    return availableSnippets[0] || null;
   }, [contentId, initialSnippetId, customSnippet, availableSnippets, snippetMap]);
 
-  // STABLE list of preset snippets strictly within the scoped category
+  // STABLE list of preset snippets: for specific lesson/blog, strictly limit to that content
   const presetSnippets = useMemo<CodeSnippet[]>(() => {
+    if (!resolvedDefault) return [];
+    if (isContentBound) {
+      return [resolvedDefault];
+    }
     const others = availableSnippets.filter(s => s.id !== resolvedDefault.id);
     return [resolvedDefault, ...others];
-  }, [resolvedDefault, availableSnippets]);
+  }, [resolvedDefault, availableSnippets, isContentBound]);
 
   // Active selection state
-  const [selectedId, setSelectedId] = useState<string>(resolvedDefault.id);
-  const [codeContent, setCodeContent] = useState<string>(resolvedDefault.code);
+  const [selectedId, setSelectedId] = useState<string>(resolvedDefault?.id || '');
+  const [codeContent, setCodeContent] = useState<string>(resolvedDefault?.code || '');
   const [terminalOutput, setTerminalOutput] = useState<string[] | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -85,14 +95,16 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
 
   // Sync if props change
   useEffect(() => {
-    setSelectedId(resolvedDefault.id);
-    setCodeContent(resolvedDefault.code);
-    setTerminalOutput(null);
-    setExecutionStats(null);
+    if (resolvedDefault) {
+      setSelectedId(resolvedDefault.id);
+      setCodeContent(resolvedDefault.code);
+      setTerminalOutput(null);
+      setExecutionStats(null);
+    }
   }, [resolvedDefault]);
 
   // Current active snippet
-  const currentSnippet = snippetMap[selectedId] || resolvedDefault;
+  const currentSnippet = resolvedDefault ? (snippetMap[selectedId] || resolvedDefault) : null;
 
   // Handle switching code snippet
   const handleSelect = (snippet: CodeSnippet) => {
@@ -104,6 +116,7 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
   };
 
   const handleRunCode = async () => {
+    if (!currentSnippet) return;
     setIsRunning(true);
     setTerminalOutput(['[Python 3.12 Simulation Engine] Starting...']);
 
@@ -113,7 +126,11 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
       const lines: string[] = [];
 
       if (currentSnippet.expectedOutput) {
-        lines.push(...currentSnippet.expectedOutput.trim().split('\n'));
+        if (Array.isArray(currentSnippet.expectedOutput)) {
+          lines.push(...currentSnippet.expectedOutput);
+        } else if (typeof currentSnippet.expectedOutput === 'string') {
+          lines.push(...(currentSnippet.expectedOutput as string).trim().split('\n'));
+        }
       } else {
         lines.push('(Code executed successfully — no output defined for this snippet)');
       }
@@ -133,7 +150,7 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
       }
     } catch (err: any) {
       setExecutionStats({ timeMs: 0, success: false });
-      setTerminalOutput([`Execution error: ${err.message}`]);
+      setTerminalOutput([`Execution error: ${err?.message || String(err)}`]);
       trackCodeExecution('python', currentSnippet.title, false, 0);
     } finally {
       setIsRunning(false);
@@ -141,6 +158,7 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
   };
 
   const handleReset = () => {
+    if (!currentSnippet) return;
     setCodeContent(currentSnippet.code);
     setTerminalOutput(null);
     trackEvent('code_reset', { snippet_id: currentSnippet.id });
@@ -149,9 +167,16 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
   const handleCopy = () => {
     navigator.clipboard.writeText(codeContent);
     setCopied(true);
-    trackCodeCopy(currentSnippet.id, 'python');
+    if (currentSnippet) {
+      trackCodeCopy(currentSnippet.id, 'python');
+    }
     setTimeout(() => setCopied(false), 2000);
   };
+
+  // If no snippet matches the content (e.g., non-code blog post or lesson), render nothing
+  if (!resolvedDefault || !currentSnippet) {
+    return null;
+  }
 
   return (
     <div className="rounded-3xl border border-border/80 bg-card overflow-hidden shadow-sm">
@@ -169,10 +194,10 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
               <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                 {currentSnippet.category}
               </span>
-              {contentId && selectedId === resolvedDefault.id && (
+              {contentId && (
                 <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center gap-1">
                   <BookOpen className="size-2.5" />
-                  Matched to lesson
+                  Lesson / Article Lab
                 </span>
               )}
             </div>
@@ -182,41 +207,43 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
           </div>
         </div>
 
-        {/* Category-Scoped Dropdown Selector */}
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <select
-              value={selectedId}
-              onChange={(e) => {
-                const target = CONTENT_SNIPPETS[e.target.value];
-                if (target) handleSelect(target);
-              }}
-              className="appearance-none bg-card hover:bg-muted/60 border border-border/80 text-foreground text-xs font-semibold py-1.5 pl-3 pr-8 rounded-xl shadow-xs cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
-              aria-label="Select algorithm snippet"
-            >
-              {scopedCategory ? (
-                // Only show snippets for this specific category
-                availableSnippets.map(s => (
-                  <option key={s.id} value={s.id}>
-                    {s.shortTitle || s.title}
-                  </option>
-                ))
-              ) : (
-                // Unscoped (e.g. main catalog): show all categories
-                Array.from(new Set(Object.values(CONTENT_SNIPPETS).map(s => s.category))).map(cat => (
-                  <optgroup key={cat} label={cat}>
-                    {Object.values(CONTENT_SNIPPETS).filter(s => s.category === cat).map(s => (
-                      <option key={s.id} value={s.id}>
-                        {s.shortTitle || s.title}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))
-              )}
-            </select>
-            <ChevronDown className="size-3.5 text-muted-foreground absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+        {/* Category-Scoped Dropdown Selector (Only for non-content-bound playgrounds) */}
+        {!isContentBound && availableSnippets.length > 1 && (
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <select
+                value={selectedId}
+                onChange={(e) => {
+                  const target = CONTENT_SNIPPETS[e.target.value];
+                  if (target) handleSelect(target);
+                }}
+                className="appearance-none bg-card hover:bg-muted/60 border border-border/80 text-foreground text-xs font-semibold py-1.5 pl-3 pr-8 rounded-xl shadow-xs cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                aria-label="Select algorithm snippet"
+              >
+                {scopedCategory ? (
+                  // Only show snippets for this specific category
+                  availableSnippets.map(s => (
+                    <option key={s.id} value={s.id}>
+                      {s.shortTitle || s.title}
+                    </option>
+                  ))
+                ) : (
+                  // Unscoped (e.g. main catalog): show all categories
+                  Array.from(new Set(Object.values(CONTENT_SNIPPETS).map(s => s.category))).map(cat => (
+                    <optgroup key={cat} label={cat}>
+                      {Object.values(CONTENT_SNIPPETS).filter(s => s.category === cat).map(s => (
+                        <option key={s.id} value={s.id}>
+                          {s.shortTitle || s.title}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))
+                )}
+              </select>
+              <ChevronDown className="size-3.5 text-muted-foreground absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Preset Tabs Row (Only shows snippets for THIS course/category) */}

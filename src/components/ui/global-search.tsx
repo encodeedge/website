@@ -200,12 +200,12 @@ export const GlobalSearch = () => {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/60 border border-border/60 rounded-lg hover:bg-muted transition-colors"
+        className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/60 border border-border/60 rounded-lg hover:bg-muted transition-colors shrink-0 cursor-pointer"
         aria-label="Search (Ctrl+K)"
       >
         <Search className="w-3.5 h-3.5" />
         <span className="hidden sm:inline">Search...</span>
-        <kbd className="hidden sm:inline text-[10px] bg-background border border-border px-1.5 py-0.5 rounded font-mono">⌘K</kbd>
+        <kbd className="hidden 2xl:inline text-[10px] bg-background border border-border px-1.5 py-0.5 rounded font-mono">⌘K</kbd>
       </button>
     );
   }

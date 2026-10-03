@@ -317,9 +317,9 @@ export const Navbar = ({
 
         {/* Second Tier: Woords Navigation Bar */}
         <div className="py-2.5">
-          <div className="woords_container flex items-center justify-between xl:grid xl:grid-cols-[1fr_auto_1fr]">
+          <div className="woords_container flex items-center justify-between gap-3 2xl:gap-6">
             {/* Left Column: Social Links (Desktop) */}
-            <div className="hidden xl:flex items-center space-x-3 text-muted-foreground">
+            <div className="hidden xl:flex items-center space-x-2 2xl:space-x-2.5 text-muted-foreground shrink-0">
               <a
                 href={GITHUB_URL}
                 target="_blank"
@@ -369,12 +369,13 @@ export const Navbar = ({
             </div>
 
             {/* Center Column: Navigation Links (Desktop) */}
-            <nav className="hidden xl:flex items-center justify-center">
-              <ul className="flex items-center space-x-1 font-medium text-sm">
-                {formattedItems.map((item) => {
+            <nav className="hidden xl:flex items-center justify-center flex-1 min-w-0 px-1">
+              <ul className="flex items-center space-x-0.5 2xl:space-x-1 font-medium text-sm">
+                {formattedItems.map((item, index) => {
                   const hasChildren = item.children && item.children.length > 0;
                   const active = isParentActive(item);
                   const isDropdownOpen = activeDropdown === item.label;
+                  const isLastOrMore = item.label === "More" || index >= formattedItems.length - 2;
 
                   if (hasChildren) {
                     return (
@@ -389,7 +390,7 @@ export const Navbar = ({
                           onClick={() => setActiveDropdown(isDropdownOpen ? null : item.label)}
                           aria-expanded={isDropdownOpen}
                           className={cn(
-                            "px-3.5 py-1.5 rounded-full transition-all duration-150 relative inline-flex items-center gap-1.5 cursor-pointer select-none",
+                            "px-3 py-1.5 2xl:px-3.5 rounded-full transition-all duration-150 relative inline-flex items-center gap-1.5 cursor-pointer select-none text-xs 2xl:text-sm",
                             active || isDropdownOpen
                               ? "font-semibold text-foreground bg-black-100 dark:bg-black-800"
                               : "text-muted-foreground hover:text-foreground hover:bg-black-50 dark:hover:bg-black-850",
@@ -406,7 +407,10 @@ export const Navbar = ({
                         {/* Dropdown Menu Flyout */}
                         {isDropdownOpen && (
                           <div 
-                            className="absolute top-full left-1/2 -translate-x-1/2 pt-2 z-50 min-w-[300px] w-max max-w-[380px]"
+                            className={cn(
+                              "absolute top-full pt-2 z-50 min-w-[280px] w-max max-w-[360px]",
+                              isLastOrMore ? "right-0 left-auto translate-x-0" : "left-1/2 -translate-x-1/2"
+                            )}
                             onMouseEnter={() => handleMouseEnter(item.label)}
                             onMouseLeave={handleMouseLeave}
                           >
@@ -472,7 +476,7 @@ export const Navbar = ({
             </nav>
 
             {/* Right Column: Actions (Search, Subscribe & Theme Toggle) */}
-            <div className="flex items-center justify-end space-x-2.5 sm:space-x-3 xl:col-span-1">
+            <div className="flex items-center justify-end space-x-2 sm:space-x-2.5 shrink-0">
               {enableSearch && <GlobalSearch />}
 
               {showCoffeeButton && (

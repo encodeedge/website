@@ -69,6 +69,10 @@ navLinks:
         href: /verify/demo
         description: Cryptographically verify student certificates and credentials
         openInNewTab: false
+      - label: "☕ Buy Me a Coffee"
+        href: "https://buymeacoffee.com/encodeedge"
+        description: "Support our independent AI & ML open education"
+        openInNewTab: true
 showSearch: true
 showSubscribeButton: true
 subscribeButtonText: Subscribe

@@ -300,7 +300,7 @@ export const Navbar = ({
 
   return (
     <>
-      <header className="w-full bg-background/90 backdrop-blur-md sticky top-0 z-40 border-b border-black-150 dark:border-black-800 transition-colors">
+      <header className="w-full bg-background/90 backdrop-blur-md sticky top-0 z-50 border-b border-black-150 dark:border-black-800 transition-colors">
         {/* Top Tier: Centered Publication Brand */}
         <div className="py-4 md:py-5 flex justify-center border-b border-black-100 dark:border-black-850">
           <a href="/" className="flex items-center gap-2 group">
@@ -408,7 +408,7 @@ export const Navbar = ({
                         {isDropdownOpen && (
                           <div 
                             className={cn(
-                              "absolute top-full pt-2 z-50 min-w-[280px] w-max max-w-[360px]",
+                              "absolute top-full pt-2 z-[60] min-w-[280px] w-max max-w-[360px]",
                               isLastOrMore ? "right-0 left-auto translate-x-0" : "left-1/2 -translate-x-1/2"
                             )}
                             onMouseEnter={() => handleMouseEnter(item.label)}

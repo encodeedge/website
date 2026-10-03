@@ -327,7 +327,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-[#E5E795]/30 selection:text-foreground">
       
       {/* ── Top Header Navigation Bar ────────────────────────────────────────── */}
-      <header className="h-14 border-b border-border bg-card/90 px-4 flex items-center justify-between sticky top-0 z-40 backdrop-blur-md">
+      <header className="h-14 border-b border-border bg-card/90 px-4 flex items-center justify-between sticky top-[var(--site-header-height,3.5rem)] z-30 backdrop-blur-md">
         <div className="flex items-center gap-3 min-w-0">
           <a
             href={`/courses/${courseId}`}

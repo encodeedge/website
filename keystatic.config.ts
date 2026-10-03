@@ -1352,11 +1352,9 @@ export default config({
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
         description: fields.text({ label: 'Description', validation: { isRequired: true } }),
-        image: fields.image({
+        image: fields.text({
           label: 'Cover Image',
-          description: 'Roadmap preview graphic or illustration',
-          publicPath: '/assets/roadmaps/',
-          directory: 'public/assets/roadmaps',
+          description: 'Roadmap preview graphic or illustration (e.g. /assets/roadmaps/python.svg)',
         }),
         featured: fields.checkbox({ label: 'Featured', description: 'Highlight this roadmap' }),
         nodes: fields.array(
@@ -1423,10 +1421,9 @@ export default config({
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
         shortDescription: fields.text({ label: 'Short Description', multiline: true }),
-        coverImage: fields.image({
+        coverImage: fields.text({
           label: 'Cover Image',
-          publicPath: '/assets/courses/',
-          directory: 'public/assets/courses',
+          description: 'Path or URL to course cover image (e.g. /assets/courses/deep-learning-foundations-and-neurons.svg)',
         }),
         instructor: fields.relationship({
           label: 'Instructor',
@@ -1566,10 +1563,9 @@ export default config({
       schema: {
         name: fields.slug({ name: { label: 'Name' } }),
         title: fields.text({ label: 'Title / Role', defaultValue: 'AI & ML Instructor' }),
-        avatar: fields.image({
+        avatar: fields.text({
           label: 'Avatar',
-          publicPath: '/assets/instructors/',
-          directory: 'public/assets/instructors',
+          description: 'Avatar image URL or path (e.g. /assets/instructors/atul.jpg)',
         }),
         featured: fields.checkbox({ label: 'Featured Instructor', defaultValue: false }),
         specialties: fields.array(
@@ -1814,10 +1810,9 @@ export default config({
         title: fields.slug({ name: { label: 'Template Name' } }),
         description: fields.text({ label: 'Description', multiline: true }),
         course: fields.relationship({ label: 'Associated Course', collection: 'courses' }),
-        templateImage: fields.image({
+        templateImage: fields.text({
           label: 'Background Template Image',
-          publicPath: '/assets/certificates/',
-          directory: 'public/assets/certificates',
+          description: 'Path to template image (e.g. /assets/certificates/template.svg)',
         }),
       }
     }),

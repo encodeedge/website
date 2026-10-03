@@ -16,37 +16,223 @@ const trackEnhancedGeo = gtm?.trackEnhancedGeo ?? true;
 
 {isEnabled && part === 'head' && (
   <>
-    <!-- Google Tag Manager (Head Container) -->
+    <!-- Google Tag Manager (Head Container + Enhanced Telemetry DataLayer) -->
     <script is:inline define:vars={{ containerId, trackEnhancedGeo }}>
       (function() {
         window.dataLayer = window.dataLayer || [];
 
-        // Push enhanced geographic and device signals early to dataLayer for GTM triggers
+        // Push comprehensive geographic, hardware, network, learner, and campaign signals
         if (trackEnhancedGeo) {
           try {
+            // 1. Timezone & Geographic Signals
             var tz = 'unknown';
+            var tzOffset = 0;
             try {
               tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown';
+              tzOffset = new Date().getTimezoneOffset();
             } catch(e) {}
 
             var userLang = navigator.language || 'unknown';
             var userLangs = (navigator.languages || [userLang]).join(',');
-            var screenRes = window.screen ? (window.screen.width + 'x' + window.screen.height) : 'unknown';
-            var dpr = window.devicePixelRatio || 1;
-            var conn = (navigator.connection && navigator.connection.effectiveType) ? navigator.connection.effectiveType : 'unknown';
 
+            // 2. Display & Hardware Architecture
+            var screenRes = window.screen ? (window.screen.width + 'x' + window.screen.height) : 'unknown';
+            var viewportSize = window.innerWidth + 'x' + window.innerHeight;
+            var dpr = window.devicePixelRatio || 1;
+            var colorDepth = window.screen ? window.screen.colorDepth : 24;
+            var orientation = (window.screen && window.screen.orientation) ? window.screen.orientation.type : 'unknown';
+            var touchPoints = navigator.maxTouchPoints || 0;
+            var isTouch = touchPoints > 0;
+
+            // Device Category detection
+            var deviceCategory = 'desktop';
+            var width = window.innerWidth;
+            if (width < 640 || /Mobi|Android/i.test(navigator.userAgent)) {
+              deviceCategory = 'mobile';
+            } else if (width < 1024 || /Tablet|iPad/i.test(navigator.userAgent)) {
+              deviceCategory = 'tablet';
+            }
+
+            var cpuThreads = navigator.hardwareConcurrency || 'unknown';
+            var deviceMemory = navigator.deviceMemory || 'unknown';
+
+            // 3. Network & Connection Telemetry
+            var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            var connType = conn ? conn.effectiveType : 'unknown';
+            var connDownlink = conn ? conn.downlink : 'unknown';
+            var connRtt = conn ? conn.rtt : 'unknown';
+            var connSaveData = conn ? !!conn.saveData : false;
+
+            // 4. Accessibility & User Preferences
+            var isDark = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var prefersContrast = window.matchMedia('(prefers-contrast: more)').matches ? 'more' : 'normal';
+
+            // 5. Acquisition & Campaign Tracking
+            var urlParams = new URLSearchParams(window.location.search);
+            var utmSource = urlParams.get('utm_source') || '';
+            var utmMedium = urlParams.get('utm_medium') || '';
+            var utmCampaign = urlParams.get('utm_campaign') || '';
+            var utmTerm = urlParams.get('utm_term') || '';
+            var utmContent = urlParams.get('utm_content') || '';
+
+            var referrer = document.referrer || '';
+            var refHost = 'direct';
+            var trafficType = 'direct';
+            if (referrer) {
+              try {
+                refHost = new URL(referrer).hostname;
+                if (refHost === window.location.hostname) {
+                  trafficType = 'internal';
+                } else if (/google|bing|yahoo|duckduckgo|baidu|yandex/i.test(refHost)) {
+                  trafficType = 'search';
+                } else if (/twitter|x\.com|linkedin|facebook|reddit|instagram|youtube|t\.co/i.test(refHost)) {
+                  trafficType = 'social';
+                } else if (/github|hackernews|ycombinator|medium|dev\.to/i.test(refHost)) {
+                  trafficType = 'dev_community';
+                } else {
+                  trafficType = 'referral';
+                }
+              } catch(e) {}
+            }
+
+            // 6. Visitor Loyalty & Session Count (via localStorage)
+            var visitorType = 'new';
+            var visitCount = 1;
+            var daysSinceLastVisit = 0;
+            try {
+              var VISITOR_KEY = 'ee_visitor_telemetry';
+              var now = Date.now();
+              var stored = localStorage.getItem(VISITOR_KEY);
+              if (stored) {
+                var vData = JSON.parse(stored);
+                visitorType = 'returning';
+                visitCount = (vData.count || 1) + 1;
+                var lastTime = vData.lastVisit || now;
+                daysSinceLastVisit = Math.floor((now - lastTime) / (1000 * 60 * 60 * 24));
+                vData.count = visitCount;
+                vData.lastVisit = now;
+                localStorage.setItem(VISITOR_KEY, JSON.stringify(vData));
+              } else {
+                localStorage.setItem(VISITOR_KEY, JSON.stringify({ count: 1, firstVisit: now, lastVisit: now }));
+              }
+            } catch(e) {}
+
+            // 7. Real-Time Learner & Gamification State
+            var learnerXp = 0;
+            var solvedPuzzles = 0;
+            var completedLessons = 0;
+            try {
+              learnerXp = Number(localStorage.getItem('lms_learner_xp') || localStorage.getItem('encodeedge_pipeline_xp') || '0');
+              var puzzles = JSON.parse(localStorage.getItem('encodeedge_solved_puzzles') || '[]');
+              solvedPuzzles = Array.isArray(puzzles) ? puzzles.length : 0;
+              for (var i = 0; i < localStorage.length; i++) {
+                var k = localStorage.key(i);
+                if (k && k.indexOf('lms_completed_') === 0) {
+                  var arr = JSON.parse(localStorage.getItem(k) || '[]');
+                  if (Array.isArray(arr)) completedLessons += arr.length;
+                }
+              }
+            } catch(e) {}
+
+            // 8. Content Section & Structure
+            var path = window.location.pathname;
+            var contentSection = 'home';
+            if (path.indexOf('/blog') === 0) contentSection = 'blog';
+            else if (path.indexOf('/courses') === 0 || path.indexOf('/lessons') === 0) contentSection = 'courses';
+            else if (path.indexOf('/system-design') === 0) contentSection = 'system-design';
+            else if (path.indexOf('/roadmaps') === 0) contentSection = 'roadmaps';
+            else if (path.indexOf('/labs') === 0) contentSection = 'labs';
+            else if (path.indexOf('/quizzes') === 0) contentSection = 'quizzes';
+            else if (path.indexOf('/topics') === 0) contentSection = 'topics';
+            else if (path !== '/' && path !== '') contentSection = 'other';
+
+            var pathDepth = path.split('/').filter(Boolean).length;
+
+            // Push Master Telemetry Object into dataLayer
             window.dataLayer.push({
+              // Geographic & Regional
               'user_timezone': tz,
+              'user_timezone_offset': tzOffset,
               'user_language': userLang,
               'user_languages': userLangs,
+
+              // Device & Hardware
+              'device_category': deviceCategory,
               'screen_resolution': screenRes,
+              'viewport_size': viewportSize,
               'device_pixel_ratio': dpr,
-              'connection_type': conn,
+              'color_depth': colorDepth,
+              'screen_orientation': orientation,
+              'is_touch_device': isTouch,
+              'cpu_hardware_concurrency': cpuThreads,
+              'device_memory_gb': deviceMemory,
+
+              // Network & Connection
+              'connection_type': connType,
+              'connection_downlink_mbps': connDownlink,
+              'connection_rtt_ms': connRtt,
+              'connection_save_data': connSaveData,
+
+              // Preferences & Accessibility
+              'theme_mode': isDark,
+              'system_prefers_color_scheme': prefersDark,
+              'prefers_reduced_motion': prefersReducedMotion,
+              'prefers_contrast': prefersContrast,
+
+              // Attribution & Campaigns
+              'referrer_domain': refHost,
+              'traffic_source_type': trafficType,
+              'utm_source': utmSource,
+              'utm_medium': utmMedium,
+              'utm_campaign': utmCampaign,
+              'utm_term': utmTerm,
+              'utm_content': utmContent,
+
+              // Visitor & Loyalty
+              'visitor_type': visitorType,
+              'visit_count': visitCount,
+              'days_since_last_visit': daysSinceLastVisit,
+
+              // Learner & Gamification
+              'learner_xp': learnerXp,
+              'solved_puzzles_count': solvedPuzzles,
+              'completed_lessons_count': completedLessons,
+
+              // Content Architecture
+              'content_section': contentSection,
+              'content_path_depth': pathDepth,
+              'page_path': path,
+              'page_title': document.title,
+            });
+
+            // 9. Performance Timing Telemetry (dispatched after window load)
+            window.addEventListener('load', function() {
+              setTimeout(function() {
+                try {
+                  var perf = window.performance && window.performance.timing;
+                  if (perf) {
+                    var loadTime = perf.loadEventEnd > 0 ? (perf.loadEventEnd - perf.navigationStart) : 0;
+                    var domReady = perf.domContentLoadedEventEnd > 0 ? (perf.domContentLoadedEventEnd - perf.navigationStart) : 0;
+                    var ttfb = perf.responseStart > 0 ? (perf.responseStart - perf.requestStart) : 0;
+
+                    if (loadTime > 0) {
+                      window.dataLayer.push({
+                        event: 'performance_metrics',
+                        'page_load_time_ms': loadTime,
+                        'dom_ready_time_ms': domReady,
+                        'ttfb_ms': ttfb,
+                      });
+                    }
+                  }
+                } catch(e) {}
+              }, 500);
             });
           } catch(err) {}
         }
 
-        // Standard GTM snippet
+        // Standard GTM Container Loader
         window.dataLayer.push({
           'gtm.start': new Date().getTime(),
           event: 'gtm.js'

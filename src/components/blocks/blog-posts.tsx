@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { slugify } from '@/utils/slugs';
 import { TOPIC_METADATA } from '@/lib/topics';
 import { TechnicalBlueprintCover } from '@/components/ui/TechnicalBlueprintCover';
+import { trackNewsletterSubscribe } from '@/lib/analytics';
 import { 
   Search, 
   X, 
@@ -163,6 +164,7 @@ export const BlogPosts: React.FC<BlogPostsProps> = ({ posts }) => {
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newsletterEmail || !newsletterEmail.includes('@')) return;
+    trackNewsletterSubscribe('blog_archive_footer');
     setNewsletterSubscribed(true);
     setNewsletterEmail('');
   };

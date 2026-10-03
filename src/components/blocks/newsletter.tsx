@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Mail } from "lucide-react";
+import { trackNewsletterSubscribe } from "@/lib/analytics";
 
 export const Newsletter = () => {
   useEffect(() => {
@@ -19,6 +20,15 @@ export const Newsletter = () => {
     };
     (window as any).AUTOHIDE = Boolean(0);
 
+    // Track submission of Brevo newsletter form
+    const handleBrevoSubmit = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (target && (target.id === 'sib-form' || target.closest('#sib-form'))) {
+        trackNewsletterSubscribe('subscribe_page_brevo');
+      }
+    };
+    document.addEventListener('submit', handleBrevoSubmit, true);
+
     // Load Brevo main script
     const scriptMain = document.createElement('script');
     scriptMain.src = 'https://sibforms.com/forms/end-form/build/main.js';
@@ -33,6 +43,7 @@ export const Newsletter = () => {
     document.body.appendChild(scriptRecaptcha);
 
     return () => {
+      document.removeEventListener('submit', handleBrevoSubmit, true);
       document.body.removeChild(scriptMain);
       document.body.removeChild(scriptRecaptcha);
     };

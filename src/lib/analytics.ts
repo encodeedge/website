@@ -384,3 +384,54 @@ export function trackThemeChange(theme: 'dark' | 'light' | 'system'): void {
     theme_preference: theme,
   });
 }
+
+// ─── Forms & Lead Generation Tracking ────────────────────────────────────────
+
+/**
+ * Track newsletter subscription event.
+ */
+export function trackNewsletterSubscribe(formLocation: string = 'general', method: string = 'email'): void {
+  trackEvent('newsletter_subscribe', {
+    form_location: formLocation,
+    method,
+  });
+
+  // Official GA4 Lead conversion event
+  trackEvent('generate_lead', {
+    lead_type: 'newsletter',
+    form_location: formLocation,
+    value: 1,
+    currency: 'USD',
+  });
+}
+
+/**
+ * Track contact form inquiry submission.
+ */
+export function trackContactFormSubmit(formLocation: string = 'contact_page', subject?: string): void {
+  trackEvent('contact_form_submit', {
+    form_location: formLocation,
+    subject: subject || 'General Inquiry',
+  });
+
+  // Official GA4 Lead conversion event
+  trackEvent('generate_lead', {
+    lead_type: 'contact_inquiry',
+    form_location: formLocation,
+    value: 5,
+    currency: 'USD',
+  });
+}
+
+/**
+ * Track general lead generation action.
+ */
+export function trackGenerateLead(leadType: string, formLocation: string = 'general', value: number = 1): void {
+  trackEvent('generate_lead', {
+    lead_type: leadType,
+    form_location: formLocation,
+    value,
+    currency: 'USD',
+  });
+}
+

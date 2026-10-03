@@ -1,5 +1,6 @@
 import React from "react";
 import { Mail, Sparkles } from "lucide-react";
+import { trackNewsletterSubscribe } from "@/lib/analytics";
 
 interface NewsletterCTAProps {
   title?: string;
@@ -30,6 +31,9 @@ export const NewsletterCTA: React.FC<NewsletterCTAProps> = ({
         <form
           action="/subscribe"
           method="GET"
+          onSubmit={() => {
+            trackNewsletterSubscribe("mdx_post_cta");
+          }}
           className="mt-2 flex w-full max-w-md flex-col gap-2.5 sm:flex-row items-center"
         >
           <div className="relative w-full">

@@ -326,6 +326,51 @@ const isDev = import.meta.env.DEV;
               content_section: getSection(),
             });
           });
+
+          // H. Universal Form Submission Detection & GTM Conversion Trigger
+          document.addEventListener('submit', function(e) {
+            try {
+              var form = e.target;
+              if (!form || form.tagName !== 'FORM') return;
+
+              var formId = form.id || '';
+              var formName = form.getAttribute('name') || '';
+              var formAction = form.getAttribute('action') || '';
+              var path = window.location.pathname;
+
+              var isNewsletter = formId.indexOf('sib') !== -1 || formId.indexOf('newsletter') !== -1 || formAction.indexOf('sib') !== -1 || formAction.indexOf('subscribe') !== -1 || path.indexOf('/subscribe') !== -1;
+              var isContact = formId.indexOf('contact') !== -1 || formAction.indexOf('contact') !== -1 || path.indexOf('/contact') !== -1;
+              var formType = isNewsletter ? 'newsletter' : (isContact ? 'contact' : 'generic_form');
+
+              // GA4 Standard Event
+              gtag('event', 'form_submit', {
+                form_id: formId,
+                form_name: formName || formId || formType,
+                form_destination: formAction,
+                form_type: formType,
+                page_path: path,
+              });
+
+              // GA4 Primary Conversion Event
+              gtag('event', 'generate_lead', {
+                value: isContact ? 10 : 2,
+                currency: 'USD',
+                lead_type: formType,
+                form_id: formId,
+                page_path: path,
+              });
+
+              // GTM DataLayer Push
+              window.dataLayer.push({
+                event: 'generate_lead',
+                form_id: formId,
+                form_name: formName || formId || formType,
+                form_type: formType,
+                lead_type: formType,
+                page_path: path,
+              });
+            } catch(err) {}
+          }, true);
         }
       })();
     </script>

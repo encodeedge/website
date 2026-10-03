@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Mail, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { trackNewsletterSubscribe, trackEvent } from '@/lib/analytics';
 
 const DISMISS_KEY = 'ee_newsletter_banner_dismissed';
 const SUBSCRIBE_KEY = 'ee_newsletter_subscribed';
@@ -37,6 +38,7 @@ export const NewsletterBanner = ({
 
   const dismiss = () => {
     setVisible(false);
+    trackEvent('newsletter_banner_dismiss');
     try { sessionStorage.setItem(DISMISS_KEY, '1'); } catch { /* ignore */ }
   };
 
@@ -54,6 +56,7 @@ export const NewsletterBanner = ({
       // In production wire this to your email provider API endpoint
       await new Promise(resolve => setTimeout(resolve, 800)); // Simulate API call
       setStatus('success');
+      trackNewsletterSubscribe('floating_newsletter_banner');
       try { localStorage.setItem(SUBSCRIBE_KEY, '1'); } catch { /* ignore */ }
       setTimeout(() => { setVisible(false); }, 3000);
     } catch {

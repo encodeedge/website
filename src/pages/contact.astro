@@ -51,7 +51,29 @@ import DefaultLayout from '@/layouts/DefaultLayout.astro';
           
           const subject = `Contact Form Submission from ${name}`;
           const body = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
-          
+
+          // Dispatch GA4 and GTM lead events
+          if (typeof (window as any).gtag === 'function') {
+            (window as any).gtag('event', 'contact_form_submit', {
+              form_location: 'contact_page',
+              subject: subject,
+            });
+            (window as any).gtag('event', 'generate_lead', {
+              lead_type: 'contact_inquiry',
+              form_location: 'contact_page',
+              value: 5,
+              currency: 'USD',
+            });
+          }
+          if (Array.isArray((window as any).dataLayer)) {
+            (window as any).dataLayer.push({
+              event: 'generate_lead',
+              form_name: 'contact_us',
+              form_location: 'contact_page',
+              lead_type: 'contact_inquiry',
+            });
+          }
+
           window.location.href = `mailto:info@encodeedge.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         });
       }

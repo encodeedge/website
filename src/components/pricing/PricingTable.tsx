@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Check, Sparkles, ArrowRight, Shield, Zap, HelpCircle, Key, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useMembership } from '@/lib/membership';

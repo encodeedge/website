@@ -45,11 +45,6 @@ navLinks:
     badge: LMS
     openInNewTab: false
     children: []
-  - label: "☕ Buy me a coffee"
-    href: "https://buymeacoffee.com/encodeedge"
-    badge: "Support"
-    openInNewTab: true
-    children: []
   - label: Blog
     href: /blog
     openInNewTab: false
@@ -79,5 +74,5 @@ showSubscribeButton: true
 subscribeButtonText: Subscribe
 subscribeButtonUrl: /subscribe
 showCoffeeButton: true
-coffeeButtonText: "Buy Me a Coffee"
-coffeeButtonUrl: "https://buymeacoffee.com/encodeedge"
+coffeeButtonText: Buy Me a Coffee
+coffeeButtonUrl: https://buymeacoffee.com/encodeedge

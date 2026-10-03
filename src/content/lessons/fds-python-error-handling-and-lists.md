@@ -4,6 +4,8 @@ description: "Writing robust Python code: try-except blocks, graceful error reco
 lessonType: "video"
 interactiveLab: "none"
 duration: 34
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

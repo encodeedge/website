@@ -4,6 +4,8 @@ description: "Formulating the Perceptron criterion loss on misclassified points 
 lessonType: "video"
 interactiveLab: "none"
 duration: 28
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

@@ -4,6 +4,8 @@ description: "Recap of perceptron limits: non-separable data causing endless osc
 lessonType: "video"
 interactiveLab: "none"
 duration: 25
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

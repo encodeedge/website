@@ -4,6 +4,8 @@ description: "Visualizing neural execution as directed acyclic computation graph
 lessonType: "video"
 interactiveLab: "none"
 duration: 36
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

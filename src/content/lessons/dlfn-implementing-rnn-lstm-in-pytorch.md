@@ -4,6 +4,8 @@ description: "Building sequence models in PyTorch using nn.RNN and nn.LSTM, embe
 lessonType: "video"
 interactiveLab: "none"
 duration: 40
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

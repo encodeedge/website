@@ -4,6 +4,8 @@ description: "Object-oriented implementation of SigmoidNeuron with vectorized fo
 lessonType: "video"
 interactiveLab: "none"
 duration: 36
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

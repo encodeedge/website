@@ -4,6 +4,8 @@ description: "Formal procedure for computing p-th percentiles, interpolation var
 lessonType: "video"
 interactiveLab: "none"
 duration: 34
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

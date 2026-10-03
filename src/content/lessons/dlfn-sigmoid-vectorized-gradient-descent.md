@@ -4,6 +4,8 @@ description: "Generalizing the Sigmoid Neuron class to arbitrary feature dimensi
 lessonType: "video"
 interactiveLab: "none"
 duration: 32
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

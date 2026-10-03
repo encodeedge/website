@@ -4,6 +4,8 @@ description: "Applying the calculus chain rule to derive dL/dw and dL/db, Sigmoi
 lessonType: "video"
 interactiveLab: "none"
 duration: 35
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

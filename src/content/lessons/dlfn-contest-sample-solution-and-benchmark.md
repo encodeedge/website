@@ -4,6 +4,8 @@ description: "Deconstructing the benchmark baseline solution, submitting first p
 lessonType: "lab"
 interactiveLab: "none"
 duration: 25
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

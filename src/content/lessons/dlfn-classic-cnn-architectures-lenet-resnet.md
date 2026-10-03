@@ -4,6 +4,8 @@ description: "Evolution of vision architectures: LeNet, AlexNet, VGG-16, Incepti
 lessonType: "video"
 interactiveLab: "none"
 duration: 38
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

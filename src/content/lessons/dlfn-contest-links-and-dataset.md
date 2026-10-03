@@ -4,6 +4,8 @@ description: "Accessing the competition portal, dataset schema, submission forma
 lessonType: "article"
 interactiveLab: "none"
 duration: 20
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

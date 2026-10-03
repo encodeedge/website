@@ -4,6 +4,8 @@ description: "The decision boundary hyperplane in binary input space, orthogonal
 lessonType: "video"
 interactiveLab: "none"
 duration: 24
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

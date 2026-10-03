@@ -4,6 +4,8 @@ description: "Mapping outcomes to real numbers: discrete random variables X, PMF
 lessonType: "video"
 interactiveLab: "none"
 duration: 34
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

@@ -4,6 +4,8 @@ description: "Reviewing winning submissions for the first data science blog comp
 lessonType: "article"
 interactiveLab: "none"
 duration: 20
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

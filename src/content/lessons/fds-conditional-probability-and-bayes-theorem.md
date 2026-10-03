@@ -4,6 +4,8 @@ description: "Updating beliefs given evidence: conditional probability P(A|B), s
 lessonType: "video"
 interactiveLab: "none"
 duration: 38
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

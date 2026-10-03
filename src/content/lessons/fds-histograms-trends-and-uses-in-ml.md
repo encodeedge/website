@@ -4,6 +4,8 @@ description: "Constructing frequency histograms, selecting optimal bin widths, i
 lessonType: "video"
 interactiveLab: "none"
 duration: 35
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

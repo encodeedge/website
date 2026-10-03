@@ -4,6 +4,8 @@ description: "Loading real-world datasets, partitioning into train and test sets
 lessonType: "video"
 interactiveLab: "none"
 duration: 28
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

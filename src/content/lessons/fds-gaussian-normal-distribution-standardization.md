@@ -4,6 +4,8 @@ description: "The bell curve: mathematical formulation of the Gaussian distribut
 lessonType: "video"
 interactiveLab: "none"
 duration: 38
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

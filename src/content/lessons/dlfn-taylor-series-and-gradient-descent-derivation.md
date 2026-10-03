@@ -4,6 +4,8 @@ description: "First-order Taylor series expansion, geometric intuition of tangen
 lessonType: "video"
 interactiveLab: "none"
 duration: 38
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

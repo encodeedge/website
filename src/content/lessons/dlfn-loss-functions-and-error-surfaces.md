@@ -4,6 +4,8 @@ description: "Formulating differentiable loss functions for sigmoid neurons and 
 lessonType: "video"
 interactiveLab: "none"
 duration: 32
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

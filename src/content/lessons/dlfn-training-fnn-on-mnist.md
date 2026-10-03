@@ -4,6 +4,8 @@ description: "Training the custom neural network on MNIST digit classification: 
 lessonType: "video"
 interactiveLab: "none"
 duration: 35
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

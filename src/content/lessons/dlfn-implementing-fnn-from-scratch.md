@@ -4,6 +4,8 @@ description: "Writing an end-to-end NeuralNetwork class in pure Python/NumPy wit
 lessonType: "video"
 interactiveLab: "none"
 duration: 42
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

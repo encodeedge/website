@@ -4,6 +4,8 @@ description: "Statistical inference foundations: defining populations vs samples
 lessonType: "video"
 interactiveLab: "none"
 duration: 30
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

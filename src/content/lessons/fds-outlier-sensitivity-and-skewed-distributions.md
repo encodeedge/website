@@ -4,6 +4,8 @@ description: "Analyzing breakdown points of centrality metrics under extreme out
 lessonType: "video"
 interactiveLab: "none"
 duration: 28
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

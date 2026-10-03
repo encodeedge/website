@@ -4,6 +4,8 @@ description: "Mathematical formulation of deep feedforward networks, layer notat
 lessonType: "video"
 interactiveLab: "none"
 duration: 34
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

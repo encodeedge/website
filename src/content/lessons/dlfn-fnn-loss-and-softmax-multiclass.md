@@ -4,6 +4,8 @@ description: "Generalizing binary sigmoid to multinomial Softmax probabilities, 
 lessonType: "video"
 interactiveLab: "none"
 duration: 32
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

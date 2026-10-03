@@ -4,6 +4,8 @@ description: "Writing modular optimizer classes (SGD, Momentum, RMSProp, Adam) a
 lessonType: "video"
 interactiveLab: "none"
 duration: 35
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

@@ -4,6 +4,8 @@ description: "Calculating probabilities for sample means using z-tables, computi
 lessonType: "video"
 interactiveLab: "none"
 duration: 34
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

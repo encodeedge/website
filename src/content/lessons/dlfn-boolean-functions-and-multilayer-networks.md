@@ -4,6 +4,8 @@ description: "Why single neurons cannot solve XOR and non-linearly separable pro
 lessonType: "video"
 interactiveLab: "none"
 duration: 30
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

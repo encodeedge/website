@@ -4,6 +4,8 @@ description: "Exploring deterministic vs probabilistic associations between vari
 lessonType: "video"
 interactiveLab: "none"
 duration: 28
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

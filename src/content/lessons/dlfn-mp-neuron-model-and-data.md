@@ -4,6 +4,8 @@ description: "Biological inspiration of artificial neurons, binary inputs and ou
 lessonType: "video"
 interactiveLab: "none"
 duration: 32
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

@@ -4,6 +4,8 @@ description: "Exploratory distribution visualization using Seaborn: multi-class 
 lessonType: "video"
 interactiveLab: "none"
 duration: 35
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

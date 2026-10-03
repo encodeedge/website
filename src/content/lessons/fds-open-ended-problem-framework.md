@@ -4,6 +4,8 @@ description: "Developing intuition for ambiguous business objectives: explorator
 lessonType: "video"
 interactiveLab: "none"
 duration: 30
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

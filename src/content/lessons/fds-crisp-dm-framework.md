@@ -4,6 +4,8 @@ description: "Mastering the industry-standard Cross-Industry Standard Process fo
 lessonType: "video"
 interactiveLab: "none"
 duration: 32
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

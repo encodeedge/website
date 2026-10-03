@@ -4,6 +4,8 @@ description: "Classic parametric families: single-trial Bernoulli trials, n-tria
 lessonType: "video"
 interactiveLab: "none"
 duration: 36
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

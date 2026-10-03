@@ -4,6 +4,8 @@ description: "Defining 0-1 and squared loss for binary outputs, systematic thres
 lessonType: "video"
 interactiveLab: "none"
 duration: 28
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

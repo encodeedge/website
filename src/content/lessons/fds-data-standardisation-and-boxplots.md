@@ -4,6 +4,8 @@ description: "Using mean and variance to rescale variables to standard normal sc
 lessonType: "video"
 interactiveLab: "none"
 duration: 30
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

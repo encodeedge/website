@@ -4,6 +4,8 @@ description: "Implementing conditional branching, loop iterations, accumulator p
 lessonType: "video"
 interactiveLab: "none"
 duration: 34
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

@@ -4,6 +4,8 @@ description: "Per-parameter learning rates, historical squared gradient accumula
 lessonType: "video"
 interactiveLab: "none"
 duration: 38
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

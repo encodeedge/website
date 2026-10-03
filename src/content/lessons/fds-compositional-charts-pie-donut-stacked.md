@@ -4,6 +4,8 @@ description: "Representing part-to-whole relationships: proportional pie charts,
 lessonType: "video"
 interactiveLab: "none"
 duration: 30
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

@@ -4,6 +4,8 @@ description: "Constructing end-to-end PyTorch CNN pipelines: Conv2d, BatchNorm2d
 lessonType: "video"
 interactiveLab: "none"
 duration: 40
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

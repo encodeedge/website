@@ -4,6 +4,8 @@ description: "Bridging description to inference: population true parameters (mu,
 lessonType: "video"
 interactiveLab: "none"
 duration: 32
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

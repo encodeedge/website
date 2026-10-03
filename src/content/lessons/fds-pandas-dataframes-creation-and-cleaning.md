@@ -4,6 +4,8 @@ description: "Working with 2D tabular DataFrames: column selection, boolean mask
 lessonType: "video"
 interactiveLab: "none"
 duration: 38
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

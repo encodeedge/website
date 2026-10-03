@@ -4,6 +4,8 @@ description: "Formulating numerical summaries, theoretical probability guarantee
 lessonType: "video"
 interactiveLab: "none"
 duration: 35
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

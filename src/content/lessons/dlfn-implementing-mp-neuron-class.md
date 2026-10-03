@@ -4,6 +4,8 @@ description: "Writing an object-oriented MPNeuron class from scratch with .fit()
 lessonType: "video"
 interactiveLab: "none"
 duration: 30
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

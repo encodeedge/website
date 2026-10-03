@@ -4,6 +4,8 @@ description: "Deriving the Chi-Square distribution from sums of squared standard
 lessonType: "video"
 interactiveLab: "none"
 duration: 36
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

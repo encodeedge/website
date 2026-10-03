@@ -4,6 +4,8 @@ description: "Step-by-step rigorous derivation of backpropagation error signals 
 lessonType: "video"
 interactiveLab: "none"
 duration: 40
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

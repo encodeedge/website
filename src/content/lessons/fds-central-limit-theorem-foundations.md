@@ -4,6 +4,8 @@ description: "The cornerstone of statistical inference: why sums and means of in
 lessonType: "video"
 interactiveLab: "none"
 duration: 38
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

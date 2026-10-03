@@ -4,6 +4,8 @@ description: "Sequential data representations, recurrent state recurrence h_t = 
 lessonType: "video"
 interactiveLab: "none"
 duration: 36
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

@@ -4,6 +4,8 @@ description: "Understanding the distribution of sample statistics across repeate
 lessonType: "video"
 interactiveLab: "none"
 duration: 35
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

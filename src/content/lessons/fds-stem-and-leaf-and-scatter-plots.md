@@ -4,6 +4,8 @@ description: "Alternative exploratory representations using stem-and-leaf plots,
 lessonType: "video"
 interactiveLab: "none"
 duration: 28
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

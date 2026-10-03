@@ -4,6 +4,8 @@ description: "Generalizing gradient descent updates to N-dimensional weight vect
 lessonType: "video"
 interactiveLab: "none"
 duration: 28
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

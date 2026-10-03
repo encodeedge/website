@@ -4,6 +4,8 @@ description: "Mastering the Split-Apply-Combine paradigm in Pandas: aggregating 
 lessonType: "video"
 interactiveLab: "none"
 duration: 36
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

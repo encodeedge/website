@@ -4,6 +4,8 @@ description: "Constructing tower and step functions with opposing sigmoids, illu
 lessonType: "video"
 interactiveLab: "none"
 duration: 35
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

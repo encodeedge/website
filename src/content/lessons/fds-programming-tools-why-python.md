@@ -4,6 +4,8 @@ description: "Evaluating data science tooling languages and understanding why Py
 lessonType: "video"
 interactiveLab: "none"
 duration: 26
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

@@ -4,6 +4,8 @@ description: "Step-by-step deconstruction of algorithmic programming assignments
 lessonType: "lab"
 interactiveLab: "none"
 duration: 35
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

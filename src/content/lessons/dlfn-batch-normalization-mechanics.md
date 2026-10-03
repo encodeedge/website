@@ -4,6 +4,8 @@ description: "Mathematical mechanics of Batch Normalization, mini-batch mean and
 lessonType: "video"
 interactiveLab: "none"
 duration: 32
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

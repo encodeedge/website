@@ -4,6 +4,8 @@ description: "Building a custom Perceptron class: initializing weight vectors, i
 lessonType: "video"
 interactiveLab: "none"
 duration: 35
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

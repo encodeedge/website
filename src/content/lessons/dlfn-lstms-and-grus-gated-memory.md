@@ -4,6 +4,8 @@ description: "Solving vanishing gradients across long sequences: forget gates, i
 lessonType: "video"
 interactiveLab: "none"
 duration: 38
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

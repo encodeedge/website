@@ -4,6 +4,8 @@ description: "Taxonomy of data variables: nominal, ordinal, discrete, continuous
 lessonType: "video"
 interactiveLab: "none"
 duration: 26
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

@@ -4,6 +4,8 @@ description: "Navigating ML competition platforms, baseline pipelines, handling 
 lessonType: "video"
 interactiveLab: "none"
 duration: 26
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

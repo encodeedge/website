@@ -4,6 +4,8 @@ description: "Formulating parameterized hypothesis models and designing mathemat
 lessonType: "video"
 interactiveLab: "none"
 duration: 30
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

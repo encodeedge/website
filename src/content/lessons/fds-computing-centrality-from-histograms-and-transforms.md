@@ -4,6 +4,8 @@ description: "Estimating mean, median, and modal intervals from binned histogram
 lessonType: "video"
 interactiveLab: "none"
 duration: 32
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

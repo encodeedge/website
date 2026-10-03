@@ -4,6 +4,8 @@ description: "Tracking trends over time with line plots (COVID-19 case data), re
 lessonType: "video"
 interactiveLab: "none"
 duration: 34
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

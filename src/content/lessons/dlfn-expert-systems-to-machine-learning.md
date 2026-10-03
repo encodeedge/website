@@ -4,6 +4,8 @@ description: "Limitations of classical expert systems, human hand-crafted rules,
 lessonType: "video"
 interactiveLab: "none"
 duration: 25
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

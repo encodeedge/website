@@ -4,6 +4,8 @@ description: "Understanding the fundamental data science lifecycle: raw data col
 lessonType: "video"
 interactiveLab: "none"
 duration: 25
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

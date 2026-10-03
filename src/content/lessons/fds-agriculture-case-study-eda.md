@@ -4,6 +4,8 @@ description: "Multi-part practical case study: applying end-to-end data cleaning
 lessonType: "lab"
 interactiveLab: "none"
 duration: 38
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

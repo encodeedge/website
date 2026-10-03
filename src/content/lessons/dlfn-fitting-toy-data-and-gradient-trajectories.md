@@ -4,6 +4,8 @@ description: "Training sigmoid models on 2D non-linear toy datasets, recording w
 lessonType: "video"
 interactiveLab: "none"
 duration: 32
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

@@ -4,6 +4,8 @@ description: "Unpacking the first two jars: structured vs unstructured data repr
 lessonType: "video"
 interactiveLab: "none"
 duration: 28
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

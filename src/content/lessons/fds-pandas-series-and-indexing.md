@@ -4,6 +4,8 @@ description: "Constructing labeled 1D Series objects in Pandas, understanding in
 lessonType: "video"
 interactiveLab: "none"
 duration: 32
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

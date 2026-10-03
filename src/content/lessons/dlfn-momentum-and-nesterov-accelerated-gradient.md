@@ -4,6 +4,8 @@ description: "Pathologies of standard gradient descent in ill-conditioned ravine
 lessonType: "video"
 interactiveLab: "none"
 duration: 36
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

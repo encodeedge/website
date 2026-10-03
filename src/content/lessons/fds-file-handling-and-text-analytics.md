@@ -4,6 +4,8 @@ description: "Reading and writing files on disk, text stream processing, computi
 lessonType: "video"
 interactiveLab: "none"
 duration: 32
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

@@ -4,6 +4,8 @@ description: "Moving beyond binary inputs: real-valued features, weighted sum wÂ
 lessonType: "video"
 interactiveLab: "none"
 duration: 34
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

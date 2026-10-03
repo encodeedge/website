@@ -4,6 +4,8 @@ description: "Step-by-step update rule w ← w + y·x, geometric convergence pro
 lessonType: "video"
 interactiveLab: "none"
 duration: 36
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

@@ -4,6 +4,8 @@ description: "Detailed mathematical formulation of the Sigmoid function, smoothn
 lessonType: "video"
 interactiveLab: "none"
 duration: 34
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

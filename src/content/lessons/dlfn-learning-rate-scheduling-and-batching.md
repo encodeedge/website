@@ -4,6 +4,8 @@ description: "Implementing learning rate decay schedules, mini-batch vs full-bat
 lessonType: "video"
 interactiveLab: "none"
 duration: 30
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

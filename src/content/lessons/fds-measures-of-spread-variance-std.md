@@ -4,6 +4,8 @@ description: "Quantifying data dispersion: mean absolute deviation, mathematical
 lessonType: "video"
 interactiveLab: "none"
 duration: 36
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

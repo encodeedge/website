@@ -4,6 +4,8 @@ description: "Debunking common misconceptions about data science and navigating 
 lessonType: "video"
 interactiveLab: "none"
 duration: 20
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

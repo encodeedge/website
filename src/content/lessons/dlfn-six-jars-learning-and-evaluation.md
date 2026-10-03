@@ -4,6 +4,8 @@ description: "How learning algorithms search parameter space, minimizing loss, a
 lessonType: "video"
 interactiveLab: "none"
 duration: 26
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

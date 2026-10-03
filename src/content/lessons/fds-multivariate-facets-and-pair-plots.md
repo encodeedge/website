@@ -4,6 +4,8 @@ description: "Scaling visualization to high dimensions: FacetGrid subplots acros
 lessonType: "video"
 interactiveLab: "none"
 duration: 32
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

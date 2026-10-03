@@ -4,6 +4,8 @@ description: "Constructing dense numerical arrays with NumPy: memory layout (C v
 lessonType: "video"
 interactiveLab: "none"
 duration: 35
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

@@ -4,6 +4,8 @@ description: "Hands-on Python environment configuration in Google Colab: scalar 
 lessonType: "video"
 interactiveLab: "none"
 duration: 32
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

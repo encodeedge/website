@@ -4,6 +4,8 @@ description: "Element-wise transformations, handling index mismatches, and analy
 lessonType: "video"
 interactiveLab: "none"
 duration: 35
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

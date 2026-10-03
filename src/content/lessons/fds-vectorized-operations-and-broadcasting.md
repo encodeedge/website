@@ -4,6 +4,8 @@ description: "Eliminating Python loops with vectorized ufuncs, matrix arithmetic
 lessonType: "video"
 interactiveLab: "none"
 duration: 38
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

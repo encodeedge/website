@@ -4,6 +4,8 @@ description: "Multi-epoch convergence loops, learning rate tuning, best-weights 
 lessonType: "video"
 interactiveLab: "none"
 duration: 32
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

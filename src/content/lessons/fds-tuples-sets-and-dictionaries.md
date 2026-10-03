@@ -4,6 +4,8 @@ description: "Working with immutable tuples, set union/intersection lookups, key
 lessonType: "video"
 interactiveLab: "none"
 duration: 36
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

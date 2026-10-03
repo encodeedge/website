@@ -4,6 +4,8 @@ description: "Analyzing why deep sigmoid networks suffer from vanishing gradient
 lessonType: "video"
 interactiveLab: "none"
 duration: 35
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

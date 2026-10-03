@@ -4,6 +4,8 @@ description: "Viewing data science beyond standalone scripts: production archite
 lessonType: "video"
 interactiveLab: "none"
 duration: 25
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

@@ -4,6 +4,8 @@ description: "Transitioning to continuous domains: why single-point probability 
 lessonType: "video"
 interactiveLab: "none"
 duration: 35
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

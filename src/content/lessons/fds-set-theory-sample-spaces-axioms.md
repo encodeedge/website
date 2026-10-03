@@ -4,6 +4,8 @@ description: "Modeling chance: sample space omega, elementary outcomes, set oper
 lessonType: "video"
 interactiveLab: "none"
 duration: 32
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

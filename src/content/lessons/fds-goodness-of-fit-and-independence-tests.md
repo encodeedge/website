@@ -4,6 +4,8 @@ description: "Testing categorical hypotheses: observed vs expected frequencies, 
 lessonType: "video"
 interactiveLab: "none"
 duration: 35
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

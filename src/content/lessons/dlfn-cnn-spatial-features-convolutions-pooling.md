@@ -4,6 +4,8 @@ description: "Why dense layers fail on high-resolution images: parameter explosi
 lessonType: "video"
 interactiveLab: "none"
 duration: 36
+comingSoon: true
+draft: false
 ---
 
 ### Curriculum Objectives

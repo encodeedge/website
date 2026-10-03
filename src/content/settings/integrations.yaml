@@ -25,3 +25,14 @@ posthog:
   enabled: false
   apiKey: ""
   apiHost: "https://app.posthog.com"
+membership:
+  enabled: true
+  provider: "polar"
+  proMonthlyPrice: 19
+  proAnnualPrice: 190
+  lifetimePrice: 399
+  proMonthlyCheckoutUrl: "https://polar.sh/encodeedge/subscriptions"
+  proAnnualCheckoutUrl: "https://polar.sh/encodeedge/subscriptions?cycle=yearly"
+  lifetimeCheckoutUrl: "https://polar.sh/encodeedge/products/lifetime-access"
+  customerPortalUrl: "https://polar.sh/purchases"
+

@@ -9,4 +9,5 @@ export { ReferenceCard } from "./ReferenceCard";
 export { InteractiveLab } from "./InteractiveLab";
 export { CodeSandbox } from "./CodeSandbox";
 export { MathFormula } from "./MathFormula";
+export { PaywallGuard } from "@/components/membership/PaywallGuard";
 

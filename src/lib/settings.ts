@@ -307,6 +307,9 @@ export interface NavigationSettings {
   showSubscribeButton: boolean;
   subscribeButtonText: string;
   subscribeButtonUrl: string;
+  showCoffeeButton: boolean;
+  coffeeButtonText: string;
+  coffeeButtonUrl: string;
 }
 
 export const DEFAULT_NAVIGATION_SETTINGS: NavigationSettings = {
@@ -424,6 +427,9 @@ export const DEFAULT_NAVIGATION_SETTINGS: NavigationSettings = {
   showSubscribeButton: true,
   subscribeButtonText: 'Subscribe',
   subscribeButtonUrl: '/subscribe',
+  showCoffeeButton: true,
+  coffeeButtonText: 'Buy Me a Coffee',
+  coffeeButtonUrl: 'https://buymeacoffee.com/encodeedge',
 };
 
 /**
@@ -462,6 +468,9 @@ export async function getNavigationSettings(): Promise<NavigationSettings> {
       showSubscribeButton: nav.showSubscribeButton ?? DEFAULT_NAVIGATION_SETTINGS.showSubscribeButton,
       subscribeButtonText: nav.subscribeButtonText || DEFAULT_NAVIGATION_SETTINGS.subscribeButtonText,
       subscribeButtonUrl: nav.subscribeButtonUrl || DEFAULT_NAVIGATION_SETTINGS.subscribeButtonUrl,
+      showCoffeeButton: (nav as any).showCoffeeButton ?? DEFAULT_NAVIGATION_SETTINGS.showCoffeeButton,
+      coffeeButtonText: (nav as any).coffeeButtonText || DEFAULT_NAVIGATION_SETTINGS.coffeeButtonText,
+      coffeeButtonUrl: (nav as any).coffeeButtonUrl || DEFAULT_NAVIGATION_SETTINGS.coffeeButtonUrl,
     };
   } catch (error) {
     console.warn('[Keystatic Settings] Failed to load navigationSettings, using defaults:', error);
@@ -557,6 +566,17 @@ export interface IntegrationsSettings {
     apiKey: string;
     apiHost: string;
   };
+  membership: {
+    enabled: boolean;
+    provider: 'polar' | 'stripe' | 'lemonsqueezy' | 'custom';
+    proMonthlyPrice: number;
+    proAnnualPrice: number;
+    lifetimePrice: number;
+    proMonthlyCheckoutUrl: string;
+    proAnnualCheckoutUrl: string;
+    lifetimeCheckoutUrl: string;
+    customerPortalUrl: string;
+  };
 }
 
 export const DEFAULT_INTEGRATIONS_SETTINGS: IntegrationsSettings = {
@@ -581,7 +601,6 @@ export const DEFAULT_INTEGRATIONS_SETTINGS: IntegrationsSettings = {
   convertKit: {
     enabled: false,
     formId: '',
-    apiKey: '',
   },
   discord: {
     enabled: false,
@@ -592,6 +611,17 @@ export const DEFAULT_INTEGRATIONS_SETTINGS: IntegrationsSettings = {
     enabled: false,
     apiKey: '',
     apiHost: 'https://app.posthog.com',
+  },
+  membership: {
+    enabled: true,
+    provider: 'polar',
+    proMonthlyPrice: 19,
+    proAnnualPrice: 190,
+    lifetimePrice: 399,
+    proMonthlyCheckoutUrl: 'https://polar.sh/encodeedge/subscriptions',
+    proAnnualCheckoutUrl: 'https://polar.sh/encodeedge/subscriptions?cycle=yearly',
+    lifetimeCheckoutUrl: 'https://polar.sh/encodeedge/products/lifetime-access',
+    customerPortalUrl: 'https://polar.sh/purchases',
   },
 };
 
@@ -606,6 +636,7 @@ export async function getIntegrationsSettings(): Promise<IntegrationsSettings> {
 
     const ga = (integrations as any).googleAnalytics;
     const gtm = (integrations as any).googleTagManager;
+    const memb = (integrations as any).membership;
     return {
       googleAnalytics: {
         enabled: ga?.enabled ?? DEFAULT_INTEGRATIONS_SETTINGS.googleAnalytics.enabled,
@@ -639,6 +670,17 @@ export async function getIntegrationsSettings(): Promise<IntegrationsSettings> {
         enabled: integrations.posthog?.enabled ?? DEFAULT_INTEGRATIONS_SETTINGS.posthog.enabled,
         apiKey: integrations.posthog?.apiKey || DEFAULT_INTEGRATIONS_SETTINGS.posthog.apiKey,
         apiHost: integrations.posthog?.apiHost || DEFAULT_INTEGRATIONS_SETTINGS.posthog.apiHost,
+      },
+      membership: {
+        enabled: memb?.enabled ?? DEFAULT_INTEGRATIONS_SETTINGS.membership.enabled,
+        provider: memb?.provider || DEFAULT_INTEGRATIONS_SETTINGS.membership.provider,
+        proMonthlyPrice: memb?.proMonthlyPrice ?? DEFAULT_INTEGRATIONS_SETTINGS.membership.proMonthlyPrice,
+        proAnnualPrice: memb?.proAnnualPrice ?? DEFAULT_INTEGRATIONS_SETTINGS.membership.proAnnualPrice,
+        lifetimePrice: memb?.lifetimePrice ?? DEFAULT_INTEGRATIONS_SETTINGS.membership.lifetimePrice,
+        proMonthlyCheckoutUrl: memb?.proMonthlyCheckoutUrl || DEFAULT_INTEGRATIONS_SETTINGS.membership.proMonthlyCheckoutUrl,
+        proAnnualCheckoutUrl: memb?.proAnnualCheckoutUrl || DEFAULT_INTEGRATIONS_SETTINGS.membership.proAnnualCheckoutUrl,
+        lifetimeCheckoutUrl: memb?.lifetimeCheckoutUrl || DEFAULT_INTEGRATIONS_SETTINGS.membership.lifetimeCheckoutUrl,
+        customerPortalUrl: memb?.customerPortalUrl || DEFAULT_INTEGRATIONS_SETTINGS.membership.customerPortalUrl,
       },
     };
   } catch (error) {

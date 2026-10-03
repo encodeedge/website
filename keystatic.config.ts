@@ -545,6 +545,13 @@ export default config({
         showSubscribeButton: fields.checkbox({ label: 'Show Subscribe Button', defaultValue: true }),
         subscribeButtonText: fields.text({ label: 'Subscribe Button Text', defaultValue: 'Subscribe' }),
         subscribeButtonUrl: fields.text({ label: 'Subscribe Button URL', defaultValue: '/subscribe' }),
+        showCoffeeButton: fields.checkbox({ label: 'Show "Buy Me a Coffee" Button', defaultValue: true }),
+        coffeeButtonText: fields.text({ label: 'Coffee Button Text', defaultValue: 'Buy Me a Coffee' }),
+        coffeeButtonUrl: fields.text({
+          label: 'Buy Me a Coffee / Support URL',
+          description: 'Link to your BuyMeACoffee, Ko-fi, or GitHub Sponsors profile',
+          defaultValue: 'https://buymeacoffee.com/encodeedge',
+        }),
       },
     }),
 
@@ -698,6 +705,52 @@ export default config({
           apiKey: fields.text({ label: 'PostHog API Key' }),
           apiHost: fields.text({ label: 'PostHog API Host', defaultValue: 'https://app.posthog.com' }),
         }, { label: 'PostHog' }),
+        membership: fields.object({
+          enabled: fields.checkbox({ label: 'Enable Membership & Paid Plans', defaultValue: true }),
+          provider: fields.select({
+            label: 'Payment & Membership Provider',
+            options: [
+              { label: 'Polar.sh (Open-Source)', value: 'polar' },
+              { label: 'Stripe Payment Links', value: 'stripe' },
+              { label: 'LemonSqueezy', value: 'lemonsqueezy' },
+              { label: 'Custom / Other', value: 'custom' },
+            ],
+            defaultValue: 'polar',
+          }),
+          proMonthlyPrice: fields.integer({
+            label: 'Pro Monthly Price ($)',
+            defaultValue: 19,
+          }),
+          proAnnualPrice: fields.integer({
+            label: 'Pro Annual Price ($)',
+            description: 'Total billed annually (e.g. 190 for $15/mo)',
+            defaultValue: 190,
+          }),
+          lifetimePrice: fields.integer({
+            label: 'Lifetime Access Price ($)',
+            defaultValue: 399,
+          }),
+          proMonthlyCheckoutUrl: fields.text({
+            label: 'Pro Monthly Checkout URL',
+            description: 'Link to Polar / Stripe checkout for monthly subscription',
+            defaultValue: 'https://polar.sh/encodeedge/subscriptions',
+          }),
+          proAnnualCheckoutUrl: fields.text({
+            label: 'Pro Annual Checkout URL',
+            description: 'Link to Polar / Stripe checkout for annual subscription',
+            defaultValue: 'https://polar.sh/encodeedge/subscriptions?cycle=yearly',
+          }),
+          lifetimeCheckoutUrl: fields.text({
+            label: 'Lifetime Access Checkout URL',
+            description: 'Link to Polar / Stripe checkout for one-time lifetime access',
+            defaultValue: 'https://polar.sh/encodeedge/products/lifetime-access',
+          }),
+          customerPortalUrl: fields.text({
+            label: 'Customer Billing Portal URL',
+            description: 'Where members can manage or cancel their subscriptions (e.g. Polar or Stripe portal)',
+            defaultValue: 'https://polar.sh/purchases',
+          }),
+        }, { label: 'Membership & Subscriptions (Polar / Stripe)' }),
       },
     }),
 

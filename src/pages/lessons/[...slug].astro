@@ -6,7 +6,7 @@ import { CodeSandboxRunner } from '@/components/interactive/CodeSandboxRunner';
 import { NeuralPlayground } from '@/components/interactive/NeuralPlayground';
 import { GradientDescentLab } from '@/components/interactive/GradientDescentLab';
 import { MemoryExplorer } from '@/components/interactive/MemoryExplorer';
-import { Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox, MathFormula } from '@/components/mdx';
+import { Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox, MathFormula, PaywallGuard } from '@/components/mdx';
 
 export async function getStaticPaths() {
   const lessons = await getCollection('lessons');
@@ -141,7 +141,7 @@ const structuredChapters = (activeCourse?.data.chapters || []).map((chapter, chI
       )}
 
       <!-- Lesson Markdown Prose Content -->
-      <Content components={{ Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox, MathFormula }} />
+      <Content components={{ Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox, MathFormula, PaywallGuard }} />
     </CourseLearningStudio>
   </div>
 </DefaultLayout>

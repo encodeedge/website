@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { persistentStorage } from '@/lib/storage';
 import { CourseCertificateModal } from './CourseCertificateModal';
+import { useMembership } from '@/lib/membership';
 
 interface ChapterItem {
   discriminant: 'lesson' | 'quiz' | 'assignment';
@@ -67,6 +68,7 @@ interface CourseProgress {
 }
 
 export const StudentDashboard: React.FC<StudentDashboardProps> = ({ courses }) => {
+  const { isPro, activateLicenseKey } = useMembership();
   const [progressMap, setProgressMap] = useState<Record<string, CourseProgress>>({});
   const [streakDays, setStreakDays] = useState(3);
   const [totalCompletedCount, setTotalCompletedCount] = useState(0);
@@ -75,6 +77,20 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ courses }) =
   const [savedNotes, setSavedNotes] = useState<{ lessonId: string; note: string }[]>([]);
   const [backupStatus, setBackupStatus] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Automatically activate Pro when redirected back from Polar checkout
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const checkoutId = params.get('checkout_id') || params.get('session_id') || params.get('order_id');
+    const status = params.get('status');
+
+    if (checkoutId || status === 'success') {
+      const key = checkoutId ? `POLAR-${checkoutId}` : 'POLAR-SUCCESS';
+      activateLicenseKey(key);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
 
   const handleExportBackup = async () => {
     try {
@@ -248,6 +264,29 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ courses }) =
                 </span>
               </div>
             )}
+
+            {/* Membership Tier Status */}
+            <div className="pt-2 flex items-center gap-3">
+              {isPro ? (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-700 dark:text-amber-300">
+                  <Sparkles className="size-3.5 text-amber-500" />
+                  <span>Pro Member Active • All Labs & Credentials Unlocked</span>
+                </div>
+              ) : (
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-muted border border-border text-xs text-muted-foreground font-medium">
+                    <span>Community Plan (Free)</span>
+                  </div>
+                  <a
+                    href="/pricing"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gradient-to-r from-primary to-indigo-600 text-primary-foreground text-xs font-semibold hover:opacity-90 transition-all shadow-xs"
+                  >
+                    <span>Upgrade to Pro</span>
+                    <ArrowRight className="size-3" />
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Quick Metrics 2x2 Grid */}

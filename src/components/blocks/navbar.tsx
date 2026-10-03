@@ -13,7 +13,8 @@ import {
   Sparkles,
   LayoutDashboard,
   FlaskConical,
-  GraduationCap
+  GraduationCap,
+  Coffee
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { GITHUB_URL } from "@/consts";
@@ -45,6 +46,9 @@ interface NavbarProps {
   showSubscribeButton?: boolean;
   subscribeButtonText?: string;
   subscribeButtonUrl?: string;
+  showCoffeeButton?: boolean;
+  coffeeButtonText?: string;
+  coffeeButtonUrl?: string;
 }
 
 const FALLBACK_NAV_ITEMS: NavItem[] = [
@@ -150,6 +154,9 @@ export const Navbar = ({
   showSubscribeButton = true,
   subscribeButtonText = "Subscribe",
   subscribeButtonUrl = "/subscribe",
+  showCoffeeButton = true,
+  coffeeButtonText = "Buy Me a Coffee",
+  coffeeButtonUrl = "https://buymeacoffee.com/encodeedge",
 }: NavbarProps) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [pathname, setPathname] = useState("");
@@ -468,6 +475,19 @@ export const Navbar = ({
             <div className="flex items-center justify-end space-x-2.5 sm:space-x-3 xl:col-span-1">
               {enableSearch && <GlobalSearch />}
 
+              {showCoffeeButton && (
+                <a
+                  href={coffeeButtonUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#FFDD00] hover:bg-[#FFDD00]/90 text-slate-950 transition-all shadow-xs shrink-0 cursor-pointer font-sans"
+                  title="Buy Me a Coffee"
+                >
+                  <Coffee className="size-3.5 fill-black/20" />
+                  <span>{coffeeButtonText}</span>
+                </a>
+              )}
+
               {showSubscribeButton && (
                 <a
                   href={subscribeButtonUrl}
@@ -632,11 +652,24 @@ export const Navbar = ({
                       <Rss className="size-4" />
                     </a>
                   </div>
-                  {showSubscribeButton && (
-                    <a href={subscribeButtonUrl} className="text-xs font-semibold text-foreground underline">
-                      {subscribeButtonText}
-                    </a>
-                  )}
+                  <div className="flex items-center gap-3">
+                    {showCoffeeButton && (
+                      <a
+                        href={coffeeButtonUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#FFDD00] text-slate-950 shadow-xs"
+                      >
+                        <Coffee className="size-3.5 fill-black/20" />
+                        <span>Coffee</span>
+                      </a>
+                    )}
+                    {showSubscribeButton && (
+                      <a href={subscribeButtonUrl} className="text-xs font-semibold text-foreground underline">
+                        {subscribeButtonText}
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

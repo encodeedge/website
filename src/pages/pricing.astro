@@ -1,0 +1,59 @@
+---
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { PricingTable } from '@/components/pricing/PricingTable';
+import { getIntegrationsSettings } from '@/lib/settings';
+
+const integrations = await getIntegrationsSettings();
+const membership = (integrations as any)?.membership || {};
+
+const polarProMonthlyUrl = membership.proMonthlyCheckoutUrl || 'https://polar.sh/encodeedge/subscriptions';
+const polarProAnnualUrl = membership.proAnnualCheckoutUrl || 'https://polar.sh/encodeedge/subscriptions?cycle=yearly';
+const polarLifetimeUrl = membership.lifetimeCheckoutUrl || 'https://polar.sh/encodeedge/products/lifetime-access';
+const proMonthlyPrice = membership.proMonthlyPrice ?? 19;
+const proAnnualPrice = membership.proAnnualPrice ?? 190;
+const lifetimePrice = membership.lifetimePrice ?? 399;
+---
+
+<DefaultLayout 
+  title="Pricing & Paid Plans | EncodeEdge Pro"
+  description="Invest in your engineering career. Full access to interactive system design simulators, deep learning architecture blueprints, and verified certifications."
+>
+  <div class="relative mx-2.5 mt-2.5 lg:mx-4 from-black-100/60 dark:from-black-900/40 via-background to-background rounded-t-4xl rounded-b-2xl bg-gradient-to-b via-20%">
+    <div class="py-16 md:py-24 container mx-auto px-4 max-w-7xl space-y-16">
+      
+      {/* Hero Header */}
+      <div class="text-center max-w-3xl mx-auto space-y-4">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 shadow-xs">
+          <span>✨ Simple, Transparent Pricing</span>
+        </div>
+
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold font-serif tracking-tight text-foreground">
+          Level up from developer to <span class="bg-gradient-to-r from-primary via-indigo-500 to-purple-600 bg-clip-text text-transparent">AI Systems Architect</span>
+        </h1>
+
+        <p class="text-base md:text-lg text-muted-foreground leading-relaxed">
+          Master real-world machine learning architectures, high-scale system design puzzles, and get verified credentials without breaking the bank.
+        </p>
+
+        {/* Feature Highlights Pills */}
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-2 text-xs font-medium text-muted-foreground">
+          <span class="px-3 py-1 rounded-full bg-muted/60 border border-border">💻 Interactive Blueprints</span>
+          <span class="px-3 py-1 rounded-full bg-muted/60 border border-border">⚡ Production ML Code</span>
+          <span class="px-3 py-1 rounded-full bg-muted/60 border border-border">🎓 Verifiable Credentials</span>
+        </div>
+      </div>
+
+      {/* Main Pricing Table */}
+      <PricingTable 
+        polarProMonthlyUrl={polarProMonthlyUrl}
+        polarProAnnualUrl={polarProAnnualUrl}
+        polarLifetimeUrl={polarLifetimeUrl}
+        proMonthlyPrice={proMonthlyPrice}
+        proAnnualPrice={proAnnualPrice}
+        lifetimePrice={lifetimePrice}
+        client:load 
+      />
+
+    </div>
+  </div>
+</DefaultLayout>

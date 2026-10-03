@@ -159,6 +159,13 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
     });
   }, [currentLesson.id, chapters]);
 
+  // Auto-collapse sidebar on mobile screens on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
+  }, []);
+
   // Handle Mark Complete toggle
   const toggleComplete = async () => {
     const current = (persistentStorage.getSync<string[]>(`lms_completed_${courseId}`, []) || []) as string[];
@@ -327,7 +334,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-[#E5E795]/30 selection:text-foreground">
       
       {/* ── Top Header Navigation Bar ────────────────────────────────────────── */}
-      <header className="h-14 border-b border-border bg-card/90 px-4 flex items-center justify-between sticky top-[var(--site-header-height,3.5rem)] z-30 backdrop-blur-md">
+      <header className="h-14 border-b border-border bg-card/90 px-4 flex items-center justify-between sticky top-[var(--site-header-height,3.5rem)] z-40 backdrop-blur-md">
         <div className="flex items-center gap-3 min-w-0">
           <a
             href={`/courses/${courseId}`}
@@ -372,13 +379,22 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
         </div>
       </header>
 
+      {/* Mobile Backdrop Overlay when Drawer is open */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 top-[calc(var(--site-header-height,3.5rem)+3.5rem)] bg-background/60 backdrop-blur-xs z-25 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* ── Main Two-Column Layout ────────────────────────────────────────────── */}
-      <div className="flex-1 flex overflow-hidden relative">
+      <div className="flex-1 flex relative items-start">
 
         {/* ── Left Sidebar (Curriculum Drawer) ────────────────────────────────── */}
         <aside 
-          className={`transition-all duration-300 ease-in-out border-r border-border bg-card/95 backdrop-blur-md flex flex-col shrink-0 z-30 ${
-            sidebarOpen ? 'w-84 md:w-88 lg:w-96' : 'w-0 -translate-x-full overflow-hidden border-none'
+          className={`sticky top-[calc(var(--site-header-height,3.5rem)+3.5rem)] h-[calc(100vh-var(--site-header-height,3.5rem)-3.5rem)] max-h-[calc(100vh-var(--site-header-height,3.5rem)-3.5rem)] flex flex-col shrink-0 z-30 border-r border-border bg-card/95 backdrop-blur-md transition-all duration-300 ease-in-out ${
+            sidebarOpen ? 'w-84 max-w-[85vw] md:w-88 lg:w-96' : 'w-0 -translate-x-full overflow-hidden border-none pointer-events-none'
           }`}
         >
           {/* Mode Switcher: Learn vs Practice */}
@@ -452,7 +468,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
           </div>
 
           {/* Curriculum Chapters Accordion */}
-          <div className="flex-1 overflow-y-auto divide-y divide-border/40 custom-scrollbar">
+          <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-border/40 overscroll-contain lesson-list-scroll">
             {filteredChapters.map((chapter, chIdx) => {
               const isOpen = openChapters[chIdx] ?? false;
               const chTotal = chapter.items.length;
@@ -572,7 +588,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
         </aside>
 
         {/* ── Main Content Area ──────────────────────────────────────────────── */}
-        <main className="flex-1 overflow-y-auto bg-background flex flex-col">
+        <div className="flex-1 bg-background flex flex-col min-w-0">
           
           <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1">
             
@@ -991,7 +1007,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
               )}
           </div>
           </div>
-        </main>
+        </div>
       </div>
 
     </div>

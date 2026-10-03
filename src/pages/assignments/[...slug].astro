@@ -41,6 +41,10 @@ const structuredChapters = (activeCourse?.data.chapters || []).map((chapter, chI
     let lessonType = 'article';
     let duration = 20;
 
+    let comingSoon = false;
+    let draft = false;
+    let comingSoonMessage = '';
+
     if (item.discriminant === 'lesson' && item.value.lessonRef) {
       type = 'lesson';
       id = item.value.lessonRef;
@@ -48,6 +52,9 @@ const structuredChapters = (activeCourse?.data.chapters || []).map((chapter, chI
       title = l?.data.title || id.replace(/-/g, ' ');
       lessonType = l?.data.lessonType || 'article';
       duration = l?.data.duration || 20;
+      comingSoon = l?.data.comingSoon || false;
+      draft = l?.data.draft || false;
+      comingSoonMessage = l?.data.comingSoonMessage || '';
     } else if (item.discriminant === 'quiz' && item.value.quizRef) {
       type = 'quiz';
       id = item.value.quizRef;
@@ -73,7 +80,10 @@ const structuredChapters = (activeCourse?.data.chapters || []).map((chapter, chI
       lessonType,
       duration,
       url,
-      isFree: chIdx === 0 && itemIdx < 2
+      isFree: chIdx === 0 && itemIdx < 2,
+      comingSoon,
+      draft,
+      comingSoonMessage,
     };
   });
 

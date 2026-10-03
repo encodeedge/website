@@ -8,7 +8,8 @@ import {
   Circle, 
   ChevronDown, 
   Clock, 
-  FlaskConical 
+  FlaskConical,
+  Sparkles 
 } from 'lucide-react';
 import { persistentStorage } from '@/lib/storage';
 
@@ -19,6 +20,10 @@ export type CurriculumItem = {
   lessonType?: string;
   duration?: number;
   url: string;
+  isFree?: boolean;
+  comingSoon?: boolean;
+  draft?: boolean;
+  comingSoonMessage?: string;
 };
 
 export type Chapter = {
@@ -231,6 +236,16 @@ export const CourseCurriculumAccordion: React.FC<CourseCurriculumAccordionProps>
 
                         <div className="flex items-center gap-2 min-w-0 flex-wrap">
                           {getItemBadge(item.type, item.lessonType)}
+                          {item.comingSoon && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 shrink-0 animate-pulse">
+                              <Sparkles className="w-2.5 h-2.5" /> Coming Soon
+                            </span>
+                          )}
+                          {!item.comingSoon && item.draft && (
+                            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-muted text-muted-foreground border border-border shrink-0">
+                              Draft
+                            </span>
+                          )}
                           <a 
                             href={item.url}
                             className={`text-sm font-medium hover:underline truncate group-hover:text-primary transition-colors ${
@@ -254,10 +269,12 @@ export const CourseCurriculumAccordion: React.FC<CourseCurriculumAccordionProps>
                           className={`text-xs font-semibold px-3 py-1 rounded-full transition-colors ${
                             isDone 
                               ? 'bg-muted text-muted-foreground hover:bg-muted/80' 
-                              : 'bg-secondary hover:bg-secondary/80 text-foreground'
+                              : item.comingSoon
+                                ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25 border border-amber-500/30'
+                                : 'bg-secondary hover:bg-secondary/80 text-foreground'
                           }`}
                         >
-                          {isDone ? 'Review' : 'Start →'}
+                          {isDone ? 'Review' : item.comingSoon ? 'Preview →' : 'Start →'}
                         </a>
                       </div>
                     </div>

@@ -111,6 +111,10 @@ const lessons = defineCollection({
     customLabOutput: z.string().optional(),
     videoUrl: z.string().optional(),
     duration: z.number().optional(),
+    isFree: z.boolean().optional().default(false),
+    comingSoon: z.boolean().optional().default(false),
+    draft: z.boolean().optional().default(false),
+    comingSoonMessage: z.string().optional(),
   }),
 });
 

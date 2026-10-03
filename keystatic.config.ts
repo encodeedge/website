@@ -1682,6 +1682,21 @@ export default config({
         duration: fields.number({ label: 'Duration (in minutes)' }),
         order: fields.number({ label: 'Sort Order', description: 'Order within its chapter (lower = first)', defaultValue: 0 }),
         isFree: fields.checkbox({ label: 'Free Preview Lesson', description: 'Allow non-enrolled users to preview this lesson', defaultValue: false }),
+        comingSoon: fields.checkbox({ 
+          label: 'Coming Soon / In Preparation', 
+          description: 'Mark this lesson as Coming Soon. The lesson remains published and visible in the course curriculum, but indicates the contents are actively being finalized and displays an innovative coming soon announcement.', 
+          defaultValue: false 
+        }),
+        draft: fields.checkbox({ 
+          label: 'Draft Status', 
+          description: 'Mark this lesson as a work-in-progress draft.', 
+          defaultValue: false 
+        }),
+        comingSoonMessage: fields.text({ 
+          label: 'Coming Soon / Update Notice (Optional)', 
+          description: 'Custom message, expected release date, or teaser (e.g. "Interactive PyTorch notebook and HD video walkthrough dropping this Friday!")', 
+          multiline: true 
+        }),
         tags: fields.array(
           fields.text({ label: 'Tag' }),
           { label: 'Tags', itemLabel: props => props.value }

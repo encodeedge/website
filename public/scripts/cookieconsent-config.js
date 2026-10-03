@@ -80,5 +80,5 @@ CookieConsent.run({
             }
         }
     },
-    disablePageInteraction: true
+    disablePageInteraction: false
 });

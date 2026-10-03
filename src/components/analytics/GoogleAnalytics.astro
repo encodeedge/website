@@ -13,7 +13,7 @@ const isDev = import.meta.env.DEV;
   <>
     <!-- Global Google Analytics 4 (gtag.js) -->
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`} is:inline></script>
-    <script is:inline define:vars={{ measurementId, debugMode: ga.debugMode, excludeInternal: ga.excludeInternalTraffic, sendPageView: ga.sendPageViewOnLoad, trackEngagement: ga.trackEngagement, isDev }}>
+    <script is:inline define:vars={{ measurementId, debugMode: ga.debugMode, excludeInternal: ga.excludeInternalTraffic, sendPageView: ga.sendPageViewOnLoad, trackEngagement: ga.trackEngagement, trackEnhancedGeo: ga.trackEnhancedGeo, isDev }}>
       (function() {
         // 1. Check if user or admin has opted out of tracking
         var OPT_OUT_KEY = 'encodeedge_ga_optout';
@@ -50,11 +50,60 @@ const isDev = import.meta.env.DEV;
         var isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.indexOf('github.dev') !== -1 || hostname.indexOf('app.github.dev') !== -1 || hostname.indexOf('.internal') !== -1;
         var shouldMarkInternal = excludeInternal && isLocal;
 
-        // 5. Build Configuration
+        // 5. Determine Content Section & Theme for custom dimensions
+        function getSection() {
+          var path = window.location.pathname;
+          if (path === '/' || path === '') return 'home';
+          if (path.indexOf('/blog') === 0) return 'blog';
+          if (path.indexOf('/courses') === 0 || path.indexOf('/lessons') === 0) return 'courses';
+          if (path.indexOf('/system-design') === 0) return 'system-design';
+          if (path.indexOf('/roadmaps') === 0) return 'roadmaps';
+          if (path.indexOf('/labs') === 0) return 'labs';
+          if (path.indexOf('/quizzes') === 0) return 'quizzes';
+          return 'other';
+        }
+
+        var isDarkTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+
+        // 6. Build Configuration
         var configOptions = {
           send_page_view: sendPageView,
           cookie_flags: 'SameSite=None;Secure',
+          content_section: getSection(),
+          theme_mode: isDarkTheme,
         };
+
+        // Capture enhanced geographic and device signals
+        if (trackEnhancedGeo) {
+          try {
+            var tz = 'unknown';
+            try {
+              tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown';
+            } catch(e) {}
+
+            var userLang = navigator.language || 'unknown';
+            var userLangs = (navigator.languages || [userLang]).join(',');
+            var screenRes = window.screen ? (window.screen.width + 'x' + window.screen.height) : 'unknown';
+            var dpr = window.devicePixelRatio || 1;
+            var conn = (navigator.connection && navigator.connection.effectiveType) ? navigator.connection.effectiveType : 'unknown';
+
+            configOptions.user_timezone = tz;
+            configOptions.user_language = userLang;
+            configOptions.user_languages = userLangs;
+            configOptions.screen_resolution = screenRes;
+            configOptions.device_pixel_ratio = dpr;
+            configOptions.connection_type = conn;
+
+            window.dataLayer.push({
+              'user_timezone': tz,
+              'user_language': userLang,
+              'user_languages': userLangs,
+              'screen_resolution': screenRes,
+              'device_pixel_ratio': dpr,
+              'connection_type': conn,
+            });
+          } catch(err) {}
+        }
 
         // Enable debug_mode only if explicitly requested in Keystatic or in dev testing
         if (debugMode) {
@@ -68,7 +117,7 @@ const isDev = import.meta.env.DEV;
 
         gtag('config', measurementId, configOptions);
 
-        // 6. Global helper to toggle analytics opt-out for site owners
+        // 7. Global helper to toggle analytics opt-out for site owners
         window.toggleAnalyticsOptOut = function() {
           try {
             var current = localStorage.getItem(OPT_OUT_KEY) === 'true';
@@ -86,9 +135,10 @@ const isDev = import.meta.env.DEV;
           }
         };
 
-        // 7. Rich Educational & Reading Engagement Tracking
+        // 8. Rich Educational & Reading Engagement Tracking
         if (trackEngagement) {
-          var scrollDepths = [25, 50, 75, 90];
+          // A. Scroll Depth Milestones: 25%, 50%, 75%, 90%, 100%
+          var scrollDepths = [25, 50, 75, 90, 100];
           var trackedDepths = {};
 
           function handleScrollDepth() {
@@ -114,6 +164,7 @@ const isDev = import.meta.env.DEV;
                   depth_percentage: threshold,
                   page_path: window.location.pathname,
                   page_title: document.title,
+                  content_section: getSection(),
                 });
               }
             }
@@ -125,19 +176,156 @@ const isDev = import.meta.env.DEV;
             scrollTimeout = setTimeout(handleScrollDepth, 150);
           }, { passive: true });
 
-          // Track external links cleanly
+          // B. Active Reading Time & Dwell Heartbeat (Pauses when user leaves tab)
+          var activeSeconds = 0;
+          var activeInterval = null;
+          var milestones = [15, 30, 60, 120, 300, 600]; // 15s, 30s, 1m, 2m, 5m, 10m
+          var sentMilestones = {};
+
+          function startActiveTimer() {
+            if (activeInterval) return;
+            activeInterval = setInterval(function() {
+              if (document.visibilityState === 'visible') {
+                activeSeconds++;
+                for (var m = 0; m < milestones.length; m++) {
+                  var ms = milestones[m];
+                  if (activeSeconds >= ms && !sentMilestones[ms]) {
+                    sentMilestones[ms] = true;
+                    gtag('event', 'user_engagement_milestone', {
+                      seconds: ms,
+                      minutes: Math.round((ms / 60) * 10) / 10,
+                      page_path: window.location.pathname,
+                      page_title: document.title,
+                      content_section: getSection(),
+                    });
+                  }
+                }
+              }
+            }, 1000);
+          }
+
+          function stopActiveTimer() {
+            if (activeInterval) {
+              clearInterval(activeInterval);
+              activeInterval = null;
+            }
+          }
+
+          startActiveTimer();
+
+          // C. Active time report on visibility change / tab switch
+          document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden') {
+              stopActiveTimer();
+              if (activeSeconds >= 5) {
+                gtag('event', 'active_time_spent', {
+                  active_seconds: activeSeconds,
+                  page_path: window.location.pathname,
+                  page_title: document.title,
+                });
+              }
+            } else if (document.visibilityState === 'visible') {
+              startActiveTimer();
+            }
+          });
+
+          // D. Automatic Code Snippet Copy Detection
+          document.addEventListener('copy', function() {
+            try {
+              var selection = window.getSelection ? window.getSelection().toString() : '';
+              if (!selection || selection.trim().length === 0) return;
+              
+              var activeElem = document.activeElement;
+              var isCode = activeElem && (activeElem.closest('pre') || activeElem.closest('code') || activeElem.closest('.astro-code') || activeElem.closest('[data-code]'));
+              
+              var lang = 'unknown';
+              if (isCode) {
+                var pre = activeElem.closest('pre');
+                if (pre) {
+                  lang = pre.getAttribute('data-language') || pre.className.match(/language-([a-z0-9_-]+)/i)?.[1] || 'code';
+                }
+              }
+
+              gtag('event', 'copy_content', {
+                is_code: !!isCode,
+                language: lang,
+                text_length: selection.length,
+                page_path: window.location.pathname,
+                page_title: document.title,
+              });
+            } catch(e) {}
+          });
+
+          // E. Automatic File Download Detection & Outbound Link Intelligence
           document.addEventListener('click', function(e) {
             var target = e.target && e.target.closest ? e.target.closest('a') : null;
             if (!target || !target.href) return;
             var url = target.href;
+            var text = (target.innerText || target.getAttribute('aria-label') || '').trim().substring(0, 100);
+
+            // 1. Download detection (.pdf, .zip, .csv, .ipynb, .md, .py, .json, .tar.gz)
+            var downloadMatch = url.match(/\.(pdf|zip|csv|ipynb|md|py|json|tar\.gz|xlsx|epub)($|\?|#)/i);
+            if (downloadMatch) {
+              var ext = downloadMatch[1].toLowerCase();
+              var fileName = url.substring(url.lastIndexOf('/') + 1).split('?')[0].split('#')[0];
+              gtag('event', 'file_download', {
+                file_name: fileName,
+                file_extension: ext,
+                link_url: url,
+                link_text: text,
+                page_path: window.location.pathname,
+              });
+              return;
+            }
+
+            // 2. In-Page Anchor / TOC Navigation (e.g. #blueprint-lab, #section)
+            if (target.pathname === window.location.pathname && target.hash && target.hash.length > 1) {
+              gtag('event', 'anchor_click', {
+                anchor_hash: target.hash,
+                link_text: text,
+                page_path: window.location.pathname,
+              });
+              return;
+            }
+
+            // 3. Outbound Link Tracking with Smart Categorization
             if (url.indexOf('http') === 0 && url.indexOf(window.location.hostname) === -1) {
+              var category = 'external';
+              if (url.indexOf('github.com') !== -1) category = 'github';
+              else if (url.indexOf('twitter.com') !== -1 || url.indexOf('x.com') !== -1) category = 'twitter_x';
+              else if (url.indexOf('linkedin.com') !== -1) category = 'linkedin';
+              else if (url.indexOf('discord.gg') !== -1 || url.indexOf('discord.com') !== -1) category = 'discord';
+              else if (url.indexOf('arxiv.org') !== -1 || url.indexOf('.pdf') !== -1) category = 'academic_paper';
+
               gtag('event', 'click_external', {
                 link_url: url,
-                link_text: (target.innerText || '').trim().substring(0, 100),
+                link_domain: target.hostname || '',
+                link_text: text,
+                link_category: category,
                 outbound: true,
               });
             }
           }, { passive: true });
+
+          // F. Print Action Tracking
+          window.addEventListener('beforeprint', function() {
+            gtag('event', 'page_print', {
+              page_path: window.location.pathname,
+              page_title: document.title,
+            });
+          });
+
+          // G. Single Page App Navigation Listener (Astro View Transitions / Page-Load)
+          document.addEventListener('astro:page-load', function() {
+            activeSeconds = 0;
+            trackedDepths = {};
+            sentMilestones = {};
+            gtag('event', 'page_view', {
+              page_path: window.location.pathname,
+              page_title: document.title,
+              content_section: getSection(),
+            });
+          });
         }
       })();
     </script>

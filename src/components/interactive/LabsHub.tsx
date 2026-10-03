@@ -22,6 +22,7 @@ import { MemoryExplorer } from './MemoryExplorer';
 import { ModelRouterLab } from './ModelRouterLab';
 import { MathDecoder } from './MathDecoder';
 import { PipelinePuzzleLab } from './PipelinePuzzleLab';
+import { trackLabView, trackEvent } from '@/lib/analytics';
 
 export interface LabMeta {
   id: string;
@@ -170,7 +171,7 @@ export const LabsHub: React.FC<LabsHubProps> = ({ labs, glossaryItems }) => {
           {/* Main Tab Toggle: Simulators vs Math Decoder */}
           <div className="p-1.5 rounded-2xl bg-muted/60 border border-border/80 flex items-center gap-1.5 shrink-0">
             <button
-              onClick={() => { setActiveMainTab('simulators'); window.location.hash = selectedLabId; }}
+              onClick={() => { setActiveMainTab('simulators'); trackEvent('lab_main_tab_switch', { tab: 'simulators' }); window.location.hash = selectedLabId; }}
               className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer ${
                 activeMainTab === 'simulators'
                   ? 'bg-card text-foreground shadow-xs'
@@ -182,7 +183,7 @@ export const LabsHub: React.FC<LabsHubProps> = ({ labs, glossaryItems }) => {
             </button>
 
             <button
-              onClick={() => { setActiveMainTab('decoder'); window.location.hash = 'math-decoder'; }}
+              onClick={() => { setActiveMainTab('decoder'); trackEvent('lab_main_tab_switch', { tab: 'decoder' }); window.location.hash = 'math-decoder'; }}
               className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer ${
                 activeMainTab === 'decoder'
                   ? 'bg-card text-foreground shadow-xs'
@@ -210,7 +211,11 @@ export const LabsHub: React.FC<LabsHubProps> = ({ labs, glossaryItems }) => {
                 return (
                   <button
                     key={lab.id}
-                    onClick={() => { setSelectedLabId(lab.id); window.location.hash = lab.id; }}
+                    onClick={() => {
+                      setSelectedLabId(lab.id);
+                      trackLabView(lab.id, lab.title, lab.category);
+                      window.location.hash = lab.id;
+                    }}
                     className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-1.5 ${
                       isSelected
                         ? 'border-primary bg-primary/5 shadow-xs ring-1 ring-primary/20'

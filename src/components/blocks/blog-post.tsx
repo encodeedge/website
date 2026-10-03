@@ -8,6 +8,14 @@ import References from "@/components/blocks/references";
 import { TOPIC_METADATA } from "@/lib/topics";
 import { ArticleAI } from "@/components/ui/article-ai";
 import {
+  trackArticleReaction,
+  trackArticleBookmark,
+  trackArticleHighlight,
+  trackArticleShare,
+  trackTocClick,
+  trackEvent,
+} from "@/lib/analytics";
+import {
   Clock,
   Calendar,
   Bookmark,
@@ -203,9 +211,11 @@ const BlogPost: React.FC<BlogPostProps> = ({
       if (list.includes(post.id)) {
         list = list.filter((id) => id !== post.id);
         setIsBookmarked(false);
+        trackArticleBookmark(post.id, false);
       } else {
         list = [...list, post.id];
         setIsBookmarked(true);
+        trackArticleBookmark(post.id, true);
         setBookmarkToast(true);
         setTimeout(() => setBookmarkToast(false), 2500);
       }
@@ -223,6 +233,7 @@ const BlogPost: React.FC<BlogPostProps> = ({
     } else {
       newUserReactions.add(key);
       newReactions[key] = (newReactions[key] || 0) + 1;
+      trackArticleReaction(post.id, key, newReactions[key]);
     }
 
     setUserReactions(newUserReactions);
@@ -237,6 +248,7 @@ const BlogPost: React.FC<BlogPostProps> = ({
     (text: string) => {
       const newHighlights = [...highlights, text];
       setHighlights(newHighlights);
+      trackArticleHighlight(post.id, text.length);
       try {
         localStorage.setItem(`blog_highlights_${post.id}`, JSON.stringify(newHighlights));
       } catch (e) {}
@@ -376,12 +388,14 @@ const BlogPost: React.FC<BlogPostProps> = ({
     if (typeof window !== "undefined") {
       navigator.clipboard.writeText(window.location.href);
       setCopiedLink(true);
+      trackArticleShare(post.id, 'copy_link', window.location.href);
       setTimeout(() => setCopiedLink(false), 2000);
     }
   };
 
   const handlePrint = () => {
     if (typeof window !== "undefined") {
+      trackEvent('article_print', { post_id: post.id });
       window.print();
     }
   };
@@ -729,6 +743,7 @@ const BlogPost: React.FC<BlogPostProps> = ({
                   href={`https://twitter.com/intent/tweet?text=${currentTitle}&url=${currentUrl}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackArticleShare(post.id, 'twitter')}
                   aria-label="Share on X"
                   className="flex size-9 items-center justify-center rounded-full border border-border bg-background hover:bg-black-100 dark:hover:bg-black-800 transition-colors"
                 >
@@ -740,6 +755,7 @@ const BlogPost: React.FC<BlogPostProps> = ({
                   href={`https://www.linkedin.com/sharing/share-offsite/?url=${currentUrl}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackArticleShare(post.id, 'linkedin')}
                   aria-label="Share on LinkedIn"
                   className="flex size-9 items-center justify-center rounded-full border border-border bg-background hover:bg-black-100 dark:hover:bg-black-800 transition-colors"
                 >
@@ -862,6 +878,7 @@ const BlogPost: React.FC<BlogPostProps> = ({
                         href={`#${h.id}`}
                         onClick={(e) => {
                           e.preventDefault();
+                          trackTocClick(post.id, h.text, h.id);
                           const target = document.getElementById(h.id);
                           if (target) {
                             const headerOffset = 136;

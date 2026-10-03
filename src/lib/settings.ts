@@ -531,6 +531,12 @@ export interface IntegrationsSettings {
     excludeInternalTraffic: boolean;
     sendPageViewOnLoad: boolean;
     trackEngagement: boolean;
+    trackEnhancedGeo: boolean;
+  };
+  googleTagManager: {
+    enabled: boolean;
+    containerId: string;
+    trackEnhancedGeo: boolean;
   };
   crispChat: {
     enabled: boolean;
@@ -561,6 +567,12 @@ export const DEFAULT_INTEGRATIONS_SETTINGS: IntegrationsSettings = {
     excludeInternalTraffic: true,
     sendPageViewOnLoad: true,
     trackEngagement: true,
+    trackEnhancedGeo: true,
+  },
+  googleTagManager: {
+    enabled: true,
+    containerId: 'GTM-NX6PVH5K',
+    trackEnhancedGeo: true,
   },
   crispChat: {
     enabled: false,
@@ -593,6 +605,7 @@ export async function getIntegrationsSettings(): Promise<IntegrationsSettings> {
     if (!integrations) return DEFAULT_INTEGRATIONS_SETTINGS;
 
     const ga = (integrations as any).googleAnalytics;
+    const gtm = (integrations as any).googleTagManager;
     return {
       googleAnalytics: {
         enabled: ga?.enabled ?? DEFAULT_INTEGRATIONS_SETTINGS.googleAnalytics.enabled,
@@ -601,6 +614,12 @@ export async function getIntegrationsSettings(): Promise<IntegrationsSettings> {
         excludeInternalTraffic: ga?.excludeInternalTraffic ?? DEFAULT_INTEGRATIONS_SETTINGS.googleAnalytics.excludeInternalTraffic,
         sendPageViewOnLoad: ga?.sendPageViewOnLoad ?? DEFAULT_INTEGRATIONS_SETTINGS.googleAnalytics.sendPageViewOnLoad,
         trackEngagement: ga?.trackEngagement ?? DEFAULT_INTEGRATIONS_SETTINGS.googleAnalytics.trackEngagement,
+        trackEnhancedGeo: ga?.trackEnhancedGeo ?? DEFAULT_INTEGRATIONS_SETTINGS.googleAnalytics.trackEnhancedGeo,
+      },
+      googleTagManager: {
+        enabled: gtm?.enabled ?? DEFAULT_INTEGRATIONS_SETTINGS.googleTagManager.enabled,
+        containerId: gtm?.containerId || DEFAULT_INTEGRATIONS_SETTINGS.googleTagManager.containerId,
+        trackEnhancedGeo: gtm?.trackEnhancedGeo ?? DEFAULT_INTEGRATIONS_SETTINGS.googleTagManager.trackEnhancedGeo,
       },
       crispChat: {
         enabled: integrations.crispChat?.enabled ?? DEFAULT_INTEGRATIONS_SETTINGS.crispChat.enabled,

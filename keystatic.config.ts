@@ -653,10 +653,32 @@ export default config({
           }),
           trackEngagement: fields.checkbox({
             label: 'Track Rich Learning Engagement',
-            description: 'Automatically tracks reading depth (25%, 50%, 75%, 90%), lesson completions, and quiz submissions.',
+            description: 'Automatically tracks reading depth (25%, 50%, 75%, 90%, 100%), active reading dwell milestones, code copies, and downloads.',
+            defaultValue: true,
+          }),
+          trackEnhancedGeo: fields.checkbox({
+            label: 'Track Enhanced Geographic & Device Signals',
+            description: 'Captures browser timezone, system locale, preferred languages, screen resolution, and connection speed.',
             defaultValue: true,
           }),
         }, { label: 'Google Analytics 4' }),
+        googleTagManager: fields.object({
+          enabled: fields.checkbox({
+            label: 'Enable Google Tag Manager',
+            description: 'Use GTM container to manage tags, triggers, and custom geographic/marketing scripts without code deployments.',
+            defaultValue: true,
+          }),
+          containerId: fields.text({
+            label: 'GTM Container ID',
+            description: 'Your Google Tag Manager Container ID (e.g. GTM-NX6PVH5K)',
+            defaultValue: 'GTM-NX6PVH5K',
+          }),
+          trackEnhancedGeo: fields.checkbox({
+            label: 'Push Geographic & Device Details to dataLayer',
+            description: 'Pushes user_timezone, user_language, user_languages, screen_resolution, and connection_type into window.dataLayer for GTM triggers and variables.',
+            defaultValue: true,
+          }),
+        }, { label: 'Google Tag Manager' }),
         crispChat: fields.object({
           enabled: fields.checkbox({ label: 'Enable Crisp Chat', defaultValue: false }),
           websiteId: fields.text({ label: 'Crisp Website ID' }),

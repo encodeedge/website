@@ -3,6 +3,7 @@ import BaseHead from "@/components/BaseHead.astro";
 import { Footer } from "@/components/blocks/footer";
 import { Navbar } from "@/components/blocks/navbar";
 import GoogleAnalytics from "@/components/analytics/GoogleAnalytics.astro";
+import GoogleTagManager from "@/components/analytics/GoogleTagManager.astro";
 
 import { getNavigationSettings } from "@/lib/settings";
 
@@ -14,10 +15,14 @@ const navSettings = await getNavigationSettings();
   <head>
     <BaseHead title={title} description={description} />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.css" />
+    <!-- Google Tag Manager (Keystatic-controlled container) -->
+    <GoogleTagManager part="head" />
     <!-- Google Analytics 4 (Keystatic-controlled & consent-aware) -->
     <GoogleAnalytics />
   </head>
   <body class="min-h-screen flex flex-col antialiased bg-background text-foreground">
+    <!-- Google Tag Manager (noscript body fallback) -->
+    <GoogleTagManager part="body" />
     <Navbar 
       client:load 
       navLinks={navSettings.navLinks}

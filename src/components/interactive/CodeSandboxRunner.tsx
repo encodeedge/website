@@ -7,6 +7,7 @@ import {
   getSnippetsForCategory, 
   type CodeSnippet 
 } from '@/lib/code-snippets';
+import { trackCodeExecution, trackCodeCopy, trackEvent } from '@/lib/analytics';
 
 interface CodeSandboxRunnerProps {
   contentId?: string;
@@ -99,6 +100,7 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
     setCodeContent(snippet.code);
     setTerminalOutput(null);
     setExecutionStats(null);
+    trackEvent('code_snippet_select', { snippet_id: snippet.id, title: snippet.title });
   };
 
   const handleRunCode = async () => {
@@ -116,8 +118,10 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
         lines.push('(Code executed successfully — no output defined for this snippet)');
       }
 
+      const execTime = Math.floor(Math.random() * 120 + 40);
       setTerminalOutput(lines);
-      setExecutionStats({ timeMs: Math.floor(Math.random() * 120 + 40), success: true });
+      setExecutionStats({ timeMs: execTime, success: true });
+      trackCodeExecution('python', currentSnippet.title, true, execTime);
 
       if (!challengeSolved) {
         setChallengeSolved(true);
@@ -130,6 +134,7 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
     } catch (err: any) {
       setExecutionStats({ timeMs: 0, success: false });
       setTerminalOutput([`Execution error: ${err.message}`]);
+      trackCodeExecution('python', currentSnippet.title, false, 0);
     } finally {
       setIsRunning(false);
     }
@@ -138,11 +143,13 @@ export const CodeSandboxRunner: React.FC<CodeSandboxRunnerProps> = ({
   const handleReset = () => {
     setCodeContent(currentSnippet.code);
     setTerminalOutput(null);
+    trackEvent('code_reset', { snippet_id: currentSnippet.id });
   };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(codeContent);
     setCopied(true);
+    trackCodeCopy(currentSnippet.id, 'python');
     setTimeout(() => setCopied(false), 2000);
   };
 

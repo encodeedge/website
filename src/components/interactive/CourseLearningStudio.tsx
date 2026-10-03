@@ -36,6 +36,14 @@ import {
 import { persistentStorage } from '@/lib/storage';
 import PostComments from '@/components/ui/PostComments';
 import { CodeSandboxRunner } from '@/components/interactive/CodeSandboxRunner';
+import {
+  trackLessonCompletion,
+  trackLessonRating,
+  trackLmsTabSwitch,
+  trackLmsModeSwitch,
+  trackNotesExport,
+  trackEvent,
+} from '@/lib/analytics';
 
 export interface CurriculumItem {
   id: string;
@@ -157,8 +165,10 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
 
     if (current.includes(currentLesson.id)) {
       updated = current.filter(id => id !== currentLesson.id);
+      trackEvent('lesson_uncomplete', { course_id: courseId, lesson_slug: currentLesson.id });
     } else {
       updated = [...current, currentLesson.id];
+      trackLessonCompletion(courseId, currentLesson.id, currentLesson.title);
     }
 
     await persistentStorage.set(`lms_completed_${courseId}`, updated);
@@ -170,6 +180,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
   const handleRate = (stars: number) => {
     setRating(stars);
     setRatingSubmitted(true);
+    trackLessonRating(courseId, currentLesson.id, stars);
     localStorage.setItem(`lms_rating_${courseId}_${currentLesson.id}`, String(stars));
   };
 
@@ -373,7 +384,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
           <div className="p-3 border-b border-border flex items-center gap-2 bg-secondary/40">
             <button
               type="button"
-              onClick={() => setModeTab('learn')}
+              onClick={() => { setModeTab('learn'); trackLmsModeSwitch('learn', courseId); }}
               className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all text-center cursor-pointer flex items-center justify-center gap-1.5 ${
                 modeTab === 'learn' 
                   ? 'bg-[#E5E795] text-zinc-950 font-bold shadow-xs' 
@@ -385,7 +396,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => setModeTab('practice')}
+              onClick={() => { setModeTab('practice'); trackLmsModeSwitch('practice', courseId); }}
               className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all text-center cursor-pointer flex items-center justify-center gap-1.5 ${
                 modeTab === 'practice' 
                   ? 'bg-amber-400 text-zinc-950 font-bold shadow-xs' 
@@ -717,7 +728,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
               <div className="border-b border-border flex items-center gap-6 text-sm font-semibold">
                 <button
                   type="button"
-                  onClick={() => setActiveTab('about')}
+                  onClick={() => { setActiveTab('about'); trackLmsTabSwitch(courseId, currentLesson.id, 'about'); }}
                   className={`pb-3 px-1 border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
                     activeTab === 'about'
                       ? 'border-primary text-foreground font-bold'
@@ -730,7 +741,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
 
                 <button
                   type="button"
-                  onClick={() => setActiveTab('discussions')}
+                  onClick={() => { setActiveTab('discussions'); trackLmsTabSwitch(courseId, currentLesson.id, 'discussions'); }}
                   className={`pb-3 px-1 border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
                     activeTab === 'discussions'
                       ? 'border-primary text-foreground font-bold'
@@ -743,7 +754,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
 
                 <button
                   type="button"
-                  onClick={() => setActiveTab('notes')}
+                  onClick={() => { setActiveTab('notes'); trackLmsTabSwitch(courseId, currentLesson.id, 'notes'); }}
                   className={`pb-3 px-1 border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
                     activeTab === 'notes'
                       ? 'border-primary text-foreground font-bold'
@@ -756,7 +767,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
 
                 <button
                   type="button"
-                  onClick={() => setActiveTab('resources')}
+                  onClick={() => { setActiveTab('resources'); trackLmsTabSwitch(courseId, currentLesson.id, 'resources'); }}
                   className={`pb-3 px-1 border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
                     activeTab === 'resources'
                       ? 'border-primary text-foreground font-bold'
@@ -833,6 +844,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
                       <button
                         type="button"
                         onClick={() => {
+                          trackNotesExport(courseId, currentLesson.id, notes.length);
                           const blob = new Blob([notes], { type: 'text/markdown' });
                           const url = URL.createObjectURL(blob);
                           const a = document.createElement('a');

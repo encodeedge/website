@@ -1,0 +1,71 @@
+---
+import { getIntegrationsSettings } from '@/lib/settings';
+
+interface Props {
+  part?: 'head' | 'body';
+}
+
+const { part = 'head' } = Astro.props as Props;
+const integrations = await getIntegrationsSettings();
+const gtm = integrations.googleTagManager;
+
+const isEnabled = gtm?.enabled && gtm?.containerId && gtm.containerId.trim() !== '';
+const containerId = gtm?.containerId ? gtm.containerId.trim() : '';
+const trackEnhancedGeo = gtm?.trackEnhancedGeo ?? true;
+---
+
+{isEnabled && part === 'head' && (
+  <>
+    <!-- Google Tag Manager (Head Container) -->
+    <script is:inline define:vars={{ containerId, trackEnhancedGeo }}>
+      (function() {
+        window.dataLayer = window.dataLayer || [];
+
+        // Push enhanced geographic and device signals early to dataLayer for GTM triggers
+        if (trackEnhancedGeo) {
+          try {
+            var tz = 'unknown';
+            try {
+              tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown';
+            } catch(e) {}
+
+            var userLang = navigator.language || 'unknown';
+            var userLangs = (navigator.languages || [userLang]).join(',');
+            var screenRes = window.screen ? (window.screen.width + 'x' + window.screen.height) : 'unknown';
+            var dpr = window.devicePixelRatio || 1;
+            var conn = (navigator.connection && navigator.connection.effectiveType) ? navigator.connection.effectiveType : 'unknown';
+
+            window.dataLayer.push({
+              'user_timezone': tz,
+              'user_language': userLang,
+              'user_languages': userLangs,
+              'screen_resolution': screenRes,
+              'device_pixel_ratio': dpr,
+              'connection_type': conn,
+            });
+          } catch(err) {}
+        }
+
+        // Standard GTM snippet
+        window.dataLayer.push({
+          'gtm.start': new Date().getTime(),
+          event: 'gtm.js'
+        });
+
+        var f = document.getElementsByTagName('script')[0];
+        var j = document.createElement('script');
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + containerId;
+        f.parentNode.insertBefore(j, f);
+      })();
+    </script>
+  </>
+)}
+
+{isEnabled && part === 'body' && (
+  <!-- Google Tag Manager (noscript body fallback) -->
+  <noscript>
+    <iframe src={`https://www.googletagmanager.com/ns.html?id=${containerId}`}
+    height="0" width="0" style="display:none;visibility:hidden"></iframe>
+  </noscript>
+)}

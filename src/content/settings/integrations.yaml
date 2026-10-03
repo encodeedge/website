@@ -5,6 +5,11 @@ googleAnalytics:
   excludeInternalTraffic: true
   sendPageViewOnLoad: true
   trackEngagement: true
+  trackEnhancedGeo: true
+googleTagManager:
+  enabled: true
+  containerId: "GTM-NX6PVH5K"
+  trackEnhancedGeo: true
 crispChat:
   enabled: false
   websiteId: ""

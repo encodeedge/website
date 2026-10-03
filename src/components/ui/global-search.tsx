@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Search, X, BookOpen, Map, HelpCircle, GraduationCap, ArrowRight, Loader2, Clock, Sparkles } from 'lucide-react';
-import { trackSearchQuery } from '@/lib/analytics';
+import { trackSearchQuery, trackSearchSelect } from '@/lib/analytics';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface SearchItem {
@@ -171,6 +171,7 @@ export const GlobalSearch = () => {
   const handleSelect = useCallback((item?: SearchItem) => {
     if (item) {
       addRecent(query.trim());
+      trackSearchSelect(query, item.title, item.type, item.url);
       window.location.href = item.url;
     }
     close();

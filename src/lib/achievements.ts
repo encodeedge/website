@@ -2,6 +2,8 @@
 // Handles: quiz streaks, roadmap badges, localStorage persistence,
 // unlock detection, and the shared event bus.
 
+import { trackAchievementUnlock } from '@/lib/analytics';
+
 export interface Achievement {
   id: string;
   title: string;
@@ -154,6 +156,8 @@ export function unlockAchievement(id: string): boolean {
   if (earned[id]) return false; // Already earned
   earned[id] = Date.now();
   safeSet(STORAGE_KEY_ACHIEVEMENTS, earned);
+  const ach = ACHIEVEMENTS.find(a => a.id === id);
+  trackAchievementUnlock(id, ach ? ach.title : id);
   // Fire global event for toast notifications
   window.dispatchEvent(new CustomEvent('ee_achievement_unlocked', { detail: { id } }));
   return true;

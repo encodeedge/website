@@ -28,6 +28,7 @@ import {
   Activity,
   Plus
 } from 'lucide-react';
+import { trackBlueprintValidate, trackBlueprintScenarioSelect, trackEvent } from '@/lib/analytics';
 
 export type ServiceDomain = 'compute' | 'storage' | 'ml' | 'streaming' | 'security' | 'gateway';
 
@@ -559,6 +560,8 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
       setTotalXp(updatedXp);
       setSolvedScenarios(updatedSolved);
 
+      trackBlueprintValidate(scenario.id, scenario.title, true, totalCalculatedLatency);
+
       try {
         localStorage.setItem('encodeedge_pipeline_xp', updatedXp.toString());
         localStorage.setItem('encodeedge_solved_puzzles', JSON.stringify(updatedSolved));
@@ -574,6 +577,7 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
       });
     } else {
       const wrongComp = placedSlots[firstMistakeIndex];
+      trackBlueprintValidate(scenario.id, scenario.title, false, totalCalculatedLatency, firstMistakeIndex);
       setVerificationResult({
         status: 'error',
         mistakeIndex: firstMistakeIndex,
@@ -667,7 +671,10 @@ export const PipelinePuzzleLab: React.FC<PipelinePuzzleLabProps> = ({ scenarios 
               <button
                 key={scen.id}
                 type="button"
-                onClick={() => setSelectedScenarioIndex(idx)}
+                onClick={() => {
+                  setSelectedScenarioIndex(idx);
+                  trackBlueprintScenarioSelect(scen.id, scen.title);
+                }}
                 className={`px-4 py-2 rounded-xl border text-left shrink-0 transition-all cursor-pointer flex items-center gap-2.5 ${
                   isSelected
                     ? 'bg-[#E5E795] text-black font-bold border-[#E5E795] shadow-xs'

@@ -80,6 +80,17 @@ const coffeeWidget = await getCoffeeWidgetSettings();
             --brand-accent: var(--brandAccent);
           }
         </style>
+        <script is:inline>
+          (function() {
+            try {
+              var isFs = sessionStorage.getItem('lms_fullscreen') === 'true' || 
+                         new URLSearchParams(window.location.search).get('fullscreen') === '1';
+              if (isFs) {
+                document.documentElement.classList.add('in-course-fullscreen');
+              }
+            } catch(e) {}
+          })();
+        </script>
     </head>
     <body class="min-h-screen flex flex-col antialiased bg-background text-foreground">
         <!-- Google Tag Manager (noscript body fallback) -->

@@ -113,35 +113,69 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
   const [notesSavedStatus, setNotesSavedStatus] = useState<string>('');
   const notesSaveTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  // Fullscreen state
+  // Fullscreen state with session persistence
   const studioRef = useRef<HTMLDivElement>(null);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      return (
+        sessionStorage.getItem('lms_fullscreen') === 'true' ||
+        new URLSearchParams(window.location.search).get('fullscreen') === '1'
+      );
+    } catch {
+      return false;
+    }
+  });
+
+  // Sync body and documentElement classes & sessionStorage
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('lms_fullscreen', isFullscreen ? 'true' : 'false');
+    } catch {}
+    if (isFullscreen) {
+      document.body.classList.add('in-course-fullscreen');
+      document.documentElement.classList.add('in-course-fullscreen');
+    } else {
+      document.body.classList.remove('in-course-fullscreen');
+      document.documentElement.classList.remove('in-course-fullscreen');
+    }
+  }, [isFullscreen]);
+
+  // If in fullscreen and browser dropped native fullscreen on navigation, re-engage on first user click or keypress
+  useEffect(() => {
+    if (isFullscreen && !document.fullscreenElement) {
+      const handleUserGesture = () => {
+        if (!document.fullscreenElement && studioRef.current) {
+          const el = studioRef.current || document.documentElement;
+          if (el.requestFullscreen) {
+            el.requestFullscreen().catch(() => {});
+          } else if ((el as any).webkitRequestFullscreen) {
+            (el as any).webkitRequestFullscreen();
+          }
+        }
+      };
+
+      window.addEventListener('click', handleUserGesture, { once: true });
+      window.addEventListener('keydown', handleUserGesture, { once: true });
+      return () => {
+        window.removeEventListener('click', handleUserGesture);
+        window.removeEventListener('keydown', handleUserGesture);
+      };
+    }
+  }, [isFullscreen]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
       const active = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
-      setIsFullscreen(active);
-      if (active) {
-        document.body.classList.add('in-course-fullscreen');
-        document.documentElement.classList.add('in-course-fullscreen');
-      } else {
-        document.body.classList.remove('in-course-fullscreen');
-        document.documentElement.classList.remove('in-course-fullscreen');
+      // Only set to false if native fullscreen was exited via user action while not in session full screen
+      if (!active && !isFullscreen) {
+        setIsFullscreen(false);
       }
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isFullscreen) {
-        if (document.fullscreenElement || (document as any).webkitFullscreenElement) {
-          if (document.exitFullscreen) {
-            document.exitFullscreen().catch(() => {});
-          } else if ((document as any).webkitExitFullscreen) {
-            (document as any).webkitExitFullscreen();
-          }
-        }
-        setIsFullscreen(false);
-        document.body.classList.remove('in-course-fullscreen');
-        document.documentElement.classList.remove('in-course-fullscreen');
+        exitFullscreen();
       }
     };
 
@@ -153,8 +187,6 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
       document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
       window.removeEventListener('keydown', handleKeyDown);
-      document.body.classList.remove('in-course-fullscreen');
-      document.documentElement.classList.remove('in-course-fullscreen');
     };
   }, [isFullscreen]);
 
@@ -164,6 +196,9 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
 
       if (!isCurrentlyFs) {
         setIsFullscreen(true);
+        try {
+          sessionStorage.setItem('lms_fullscreen', 'true');
+        } catch {}
         document.body.classList.add('in-course-fullscreen');
         document.documentElement.classList.add('in-course-fullscreen');
 
@@ -174,20 +209,47 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
           await (el as any).webkitRequestFullscreen();
         }
       } else {
-        setIsFullscreen(false);
-        document.body.classList.remove('in-course-fullscreen');
-        document.documentElement.classList.remove('in-course-fullscreen');
-
-        if (document.fullscreenElement || (document as any).webkitFullscreenElement) {
-          if (document.exitFullscreen) {
-            await document.exitFullscreen();
-          } else if ((document as any).webkitExitFullscreen) {
-            await (document as any).webkitExitFullscreen();
-          }
-        }
+        exitFullscreen();
       }
     } catch (err) {
       console.warn('Fullscreen toggle issue, CSS fullscreen active:', err);
+    }
+  };
+
+  const exitFullscreen = () => {
+    setIsFullscreen(false);
+    try {
+      sessionStorage.setItem('lms_fullscreen', 'false');
+    } catch {}
+    document.body.classList.remove('in-course-fullscreen');
+    document.documentElement.classList.remove('in-course-fullscreen');
+
+    if (document.fullscreenElement || (document as any).webkitFullscreenElement) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      } else if ((document as any).webkitExitFullscreen) {
+        (document as any).webkitExitFullscreen();
+      }
+    }
+
+    if (window.location.search.includes('fullscreen=')) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('fullscreen');
+      window.history.replaceState({}, '', url.toString());
+    }
+  };
+
+  const getLessonUrl = (url: string) => {
+    if (!isFullscreen) return url;
+    const sep = url.includes('?') ? '&' : '?';
+    return `${url}${sep}fullscreen=1`;
+  };
+
+  const handleLessonClick = (_url: string) => {
+    if (isFullscreen) {
+      try {
+        sessionStorage.setItem('lms_fullscreen', 'true');
+      } catch {}
     }
   };
 
@@ -438,12 +500,11 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
     >
       
       {/* ── Top Header Navigation Bar ────────────────────────────────────────── */}
-      <header className={`h-14 border-b border-border bg-card/90 px-4 flex items-center justify-between sticky ${
-        isFullscreen ? 'top-0' : 'top-[var(--site-header-height,3.5rem)]'
-      } z-40 backdrop-blur-md course-studio-header`}>
+      <header className="course-studio-header h-14 border-b border-border bg-card/90 px-4 flex items-center justify-between backdrop-blur-md">
         <div className="flex items-center gap-3 min-w-0">
           <a
             href={`/courses/${courseId}`}
+            onClick={exitFullscreen}
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors bg-secondary hover:bg-secondary/80 px-2.5 py-1.5 rounded-lg border border-border shrink-0"
             title="Return to course overview"
           >
@@ -509,9 +570,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
       {/* Mobile Backdrop Overlay when Drawer is open */}
       {sidebarOpen && (
         <div
-          className={`fixed inset-0 ${
-            isFullscreen ? 'top-14' : 'top-[calc(var(--site-header-height,3.5rem)+3.5rem)]'
-          } bg-background/60 backdrop-blur-xs z-25 md:hidden`}
+          className="course-studio-backdrop fixed inset-0 bg-background/60 backdrop-blur-xs z-25 md:hidden"
           onClick={() => setSidebarOpen(false)}
           aria-hidden="true"
         />
@@ -522,11 +581,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
 
         {/* ── Left Sidebar (Curriculum Drawer) ────────────────────────────────── */}
         <aside 
-          className={`sticky ${
-            isFullscreen 
-              ? 'top-14 h-[calc(100vh-3.5rem)] max-h-[calc(100vh-3.5rem)]' 
-              : 'top-[calc(var(--site-header-height,3.5rem)+3.5rem)] h-[calc(100vh-var(--site-header-height,3.5rem)-3.5rem)] max-h-[calc(100vh-var(--site-header-height,3.5rem)-3.5rem)]'
-          } flex flex-col shrink-0 z-30 border-r border-border bg-card/95 backdrop-blur-md transition-all duration-300 ease-in-out ${
+          className={`course-studio-sidebar flex flex-col shrink-0 z-30 border-r border-border bg-card/95 backdrop-blur-md transition-all duration-300 ease-in-out ${
             sidebarOpen ? 'w-84 max-w-[85vw] md:w-88 lg:w-96' : 'w-0 -translate-x-full overflow-hidden border-none pointer-events-none'
           }`}
         >
@@ -644,7 +699,8 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
                         return (
                           <a
                             key={item.id}
-                            href={item.url}
+                            href={getLessonUrl(item.url)}
+                            onClick={() => handleLessonClick(item.url)}
                             className={`flex items-center gap-3 px-4 py-3 text-sm transition-all relative group ${
                               isActive
                                 ? 'bg-primary/15 text-primary dark:text-[#E5E795] border-l-4 border-primary dark:border-[#E5E795] font-bold shadow-xs'
@@ -761,7 +817,8 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
                 {nextReadyItem && (
                   <div className="pt-2">
                     <a
-                      href={nextReadyItem.url}
+                      href={getLessonUrl(nextReadyItem.url)}
+                      onClick={() => handleLessonClick(nextReadyItem.url)}
                       className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold transition-colors shadow-xs"
                     >
                       <span>Next Available Lesson</span>
@@ -800,7 +857,8 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
                       <div className="flex items-center gap-2 shrink-0">
                         {nextPracticeItem && nextPracticeItem.id !== currentLesson.id && (
                           <a
-                            href={nextPracticeItem.url}
+                            href={getLessonUrl(nextPracticeItem.url)}
+                            onClick={() => handleLessonClick(nextPracticeItem.url)}
                             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500 text-black font-bold text-xs hover:bg-amber-400 transition-colors shadow-xs"
                           >
                             <Zap className="w-3.5 h-3.5" />
@@ -829,7 +887,8 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
                           <p>This lesson focuses on theoretical architecture. Interactive code labs are integrated into dedicated practice lessons.</p>
                           {nextPracticeItem && (
                             <a
-                              href={nextPracticeItem.url}
+                              href={getLessonUrl(nextPracticeItem.url)}
+                              onClick={() => handleLessonClick(nextPracticeItem.url)}
                               className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
                             >
                               Jump to hands-on lab: {nextPracticeItem.title} &rarr;
@@ -1165,7 +1224,8 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
             <div className="pt-8 border-t border-border flex items-center justify-between gap-4 flex-wrap">
               {prevItem ? (
                 <a
-                  href={prevItem.url}
+                  href={getLessonUrl(prevItem.url)}
+                  onClick={() => handleLessonClick(prevItem.url)}
                   className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card hover:bg-secondary border border-border text-xs font-semibold text-foreground transition-colors group cursor-pointer shadow-xs"
                 >
                   <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
@@ -1180,7 +1240,8 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
 
               {nextItem ? (
                 <a
-                  href={nextItem.url}
+                  href={getLessonUrl(nextItem.url)}
+                  onClick={() => handleLessonClick(nextItem.url)}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition-all shadow-xs group cursor-pointer ml-auto"
                 >
                   <div className="text-right">
@@ -1192,6 +1253,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
               ) : (
                 <a
                   href={`/courses/${courseId}`}
+                  onClick={exitFullscreen}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition-all shadow-xs cursor-pointer ml-auto"
                 >
                   <CheckCircle2 className="w-4 h-4" />

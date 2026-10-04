@@ -2,18 +2,36 @@ import React, { useState, useEffect } from 'react';
 import { Maximize2, Minimize2 } from 'lucide-react';
 
 export const CourseFullscreenButton: React.FC = () => {
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      return (
+        sessionStorage.getItem('lms_fullscreen') === 'true' ||
+        new URLSearchParams(window.location.search).get('fullscreen') === '1'
+      );
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('lms_fullscreen', isFullscreen ? 'true' : 'false');
+    } catch {}
+    if (isFullscreen) {
+      document.body.classList.add('in-course-fullscreen');
+      document.documentElement.classList.add('in-course-fullscreen');
+    } else {
+      document.body.classList.remove('in-course-fullscreen');
+      document.documentElement.classList.remove('in-course-fullscreen');
+    }
+  }, [isFullscreen]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
       const active = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
-      setIsFullscreen(active);
-      if (active) {
-        document.body.classList.add('in-course-fullscreen');
-        document.documentElement.classList.add('in-course-fullscreen');
-      } else {
-        document.body.classList.remove('in-course-fullscreen');
-        document.documentElement.classList.remove('in-course-fullscreen');
+      if (!active && !isFullscreen) {
+        setIsFullscreen(false);
       }
     };
 
@@ -27,8 +45,16 @@ export const CourseFullscreenButton: React.FC = () => {
           }
         }
         setIsFullscreen(false);
+        try {
+          sessionStorage.setItem('lms_fullscreen', 'false');
+        } catch {}
         document.body.classList.remove('in-course-fullscreen');
         document.documentElement.classList.remove('in-course-fullscreen');
+        if (window.location.search.includes('fullscreen=')) {
+          const url = new URL(window.location.href);
+          url.searchParams.delete('fullscreen');
+          window.history.replaceState({}, '', url.toString());
+        }
       }
     };
 
@@ -40,8 +66,6 @@ export const CourseFullscreenButton: React.FC = () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
       document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
       window.removeEventListener('keydown', handleKeyDown);
-      document.body.classList.remove('in-course-fullscreen');
-      document.documentElement.classList.remove('in-course-fullscreen');
     };
   }, [isFullscreen]);
 
@@ -51,6 +75,9 @@ export const CourseFullscreenButton: React.FC = () => {
 
       if (!isCurrentlyFs) {
         setIsFullscreen(true);
+        try {
+          sessionStorage.setItem('lms_fullscreen', 'true');
+        } catch {}
         document.body.classList.add('in-course-fullscreen');
         document.documentElement.classList.add('in-course-fullscreen');
 
@@ -61,6 +88,9 @@ export const CourseFullscreenButton: React.FC = () => {
         }
       } else {
         setIsFullscreen(false);
+        try {
+          sessionStorage.setItem('lms_fullscreen', 'false');
+        } catch {}
         document.body.classList.remove('in-course-fullscreen');
         document.documentElement.classList.remove('in-course-fullscreen');
 
@@ -70,6 +100,12 @@ export const CourseFullscreenButton: React.FC = () => {
           } else if ((document as any).webkitExitFullscreen) {
             await (document as any).webkitExitFullscreen();
           }
+        }
+
+        if (window.location.search.includes('fullscreen=')) {
+          const url = new URL(window.location.href);
+          url.searchParams.delete('fullscreen');
+          window.history.replaceState({}, '', url.toString());
         }
       }
     } catch (err) {

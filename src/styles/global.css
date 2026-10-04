@@ -637,3 +637,48 @@ body.in-course-fullscreen aside[role="dialog"][aria-labelledby="coffee-popup-tit
   width: 100vw !important;
   height: 100vh !important;
 }
+
+/* ── Course Studio Layout: Non-fullscreen vs Fullscreen ───────────────────────── */
+.course-studio-header {
+  position: relative;
+  z-index: 10;
+}
+
+.course-studio-sidebar {
+  position: sticky;
+  top: calc(var(--site-header-height, 7.5rem) + 0.5rem);
+  height: calc(100vh - var(--site-header-height, 7.5rem) - 1rem);
+  max-height: calc(100vh - var(--site-header-height, 7.5rem) - 1rem);
+}
+
+.course-studio-backdrop {
+  position: fixed;
+  inset: 0;
+  top: calc(var(--site-header-height, 7.5rem) + 3.5rem);
+}
+
+/* When in fullscreen, pin header to top-0 and stretch sidebar */
+:root:fullscreen .course-studio-header,
+:root.in-course-fullscreen .course-studio-header,
+body.in-course-fullscreen .course-studio-header,
+.course-studio-fullscreen .course-studio-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 40 !important;
+}
+
+:root:fullscreen .course-studio-sidebar,
+:root.in-course-fullscreen .course-studio-sidebar,
+body.in-course-fullscreen .course-studio-sidebar,
+.course-studio-fullscreen .course-studio-sidebar {
+  top: 3.5rem !important;
+  height: calc(100vh - 3.5rem) !important;
+  max-height: calc(100vh - 3.5rem) !important;
+}
+
+:root:fullscreen .course-studio-backdrop,
+:root.in-course-fullscreen .course-studio-backdrop,
+body.in-course-fullscreen .course-studio-backdrop,
+.course-studio-fullscreen .course-studio-backdrop {
+  top: 3.5rem !important;
+}

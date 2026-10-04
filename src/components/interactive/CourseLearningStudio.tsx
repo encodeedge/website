@@ -145,8 +145,8 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
   useEffect(() => {
     if (isFullscreen && !document.fullscreenElement) {
       const handleUserGesture = () => {
-        if (!document.fullscreenElement && studioRef.current) {
-          const el = studioRef.current || document.documentElement;
+        if (!document.fullscreenElement) {
+          const el = document.documentElement;
           if (el.requestFullscreen) {
             el.requestFullscreen().catch(() => {});
           } else if ((el as any).webkitRequestFullscreen) {
@@ -202,7 +202,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
         document.body.classList.add('in-course-fullscreen');
         document.documentElement.classList.add('in-course-fullscreen');
 
-        const el = studioRef.current || document.documentElement;
+        const el = document.documentElement;
         if (el.requestFullscreen) {
           await el.requestFullscreen();
         } else if ((el as any).webkitRequestFullscreen) {
@@ -249,6 +249,11 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
     if (isFullscreen) {
       try {
         sessionStorage.setItem('lms_fullscreen', 'true');
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else if (!document.fullscreenElement && (document.documentElement as any).webkitRequestFullscreen) {
+          (document.documentElement as any).webkitRequestFullscreen();
+        }
       } catch {}
     }
   };

@@ -1,10 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import yaml from 'js-yaml';
+import { findMatchingLesson } from './lesson-matcher.js';
 
 /**
  * Automatically synchronizes course and chapter/module assignments
- * from all course definition files into each individual lesson's frontmatter.
+ * from all course definition files into each individual lesson's frontmatter,
+ * and auto-heals any renamed lesson references in course curriculum files.
  */
 export function syncCourseLessons(rootDir = process.cwd()) {
   const coursesDir = path.join(rootDir, 'src/content/courses');
@@ -14,13 +16,27 @@ export function syncCourseLessons(rootDir = process.cwd()) {
     return { updated: 0 };
   }
 
+  // Pre-load all existing lessons for quick resolution
+  const allLessonEntries = fs.readdirSync(lessonsDir).filter(f => f.endsWith('.md') || f.endsWith('.mdx')).map(f => {
+    const id = f.replace(/\.mdx?$/, '');
+    try {
+      const c = fs.readFileSync(path.join(lessonsDir, f), 'utf8');
+      const m = c.match(/^---\n([\s\S]*?)\n---/);
+      const d = m ? yaml.load(m[1]) : {};
+      return { id, data: d || {} };
+    } catch {
+      return { id, data: {} };
+    }
+  });
+
   const courseFiles = fs.readdirSync(coursesDir).filter(f => f.endsWith('.md') || f.endsWith('.mdx'));
   const lessonToCourseInfo = {};
 
   for (const courseFile of courseFiles) {
+    const courseFilePath = path.join(coursesDir, courseFile);
     const courseSlug = courseFile.replace(/\.mdx?$/, '');
-    const courseContent = fs.readFileSync(path.join(coursesDir, courseFile), 'utf8');
-    const match = courseContent.match(/^---\n([\s\S]*?)\n---/);
+    const courseContent = fs.readFileSync(courseFilePath, 'utf8');
+    const match = courseContent.match(/^---\n([\s\S]*?)\n---([\s\S]*)$/);
     if (!match) continue;
 
     let data;
@@ -33,19 +49,40 @@ export function syncCourseLessons(rootDir = process.cwd()) {
 
     if (!data?.chapters || !Array.isArray(data.chapters)) continue;
 
+    let courseChanged = false;
     for (const chapter of data.chapters) {
       const chapterTitle = chapter?.title || '';
       if (!chapter?.items || !Array.isArray(chapter.items)) continue;
 
       for (const item of chapter.items) {
         if (item?.discriminant === 'lesson' && item?.value?.lessonRef) {
-          const lessonRef = String(item.value.lessonRef).trim();
+          let lessonRef = String(item.value.lessonRef).trim();
+          let lessonPath = path.join(lessonsDir, `${lessonRef}.md`);
+
+          // Auto-heal if the lesson was renamed
+          if (!fs.existsSync(lessonPath)) {
+            const matched = findMatchingLesson(lessonRef, allLessonEntries);
+            if (matched && matched.id !== lessonRef) {
+              console.log(`[sync-course-lessons] Auto-healing broken reference in ${courseFile}: '${lessonRef}' -> '${matched.id}'`);
+              item.value.lessonRef = matched.id;
+              lessonRef = matched.id;
+              courseChanged = true;
+            }
+          }
+
           lessonToCourseInfo[lessonRef] = {
             course: courseSlug,
             chapter: chapterTitle,
           };
         }
       }
+    }
+
+    if (courseChanged) {
+      const newFm = yaml.dump(data, { lineWidth: -1 });
+      const body = match[2].startsWith('\n') ? match[2] : `\n${match[2]}`;
+      fs.writeFileSync(courseFilePath, `---\n${newFm}---${body}`);
+      console.log(`[sync-course-lessons] Successfully healed and updated curriculum references in ${courseFile}.`);
     }
   }
 

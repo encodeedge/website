@@ -9,6 +9,7 @@ import { BuyMeCoffeePopup } from '@/components/ui/buy-me-coffee-popup';
 import { PeerStudyRooms } from '@/components/interactive/PeerStudyRooms';
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics.astro';
 import GoogleTagManager from '@/components/analytics/GoogleTagManager.astro';
+import { ClientRouter } from 'astro:transitions';
 import { getFeatureFlags, getAnnouncementBanner, getSiteSettings, getNavigationSettings, getCoffeeWidgetSettings } from '@/lib/settings';
 
 interface Props {
@@ -80,15 +81,28 @@ const coffeeWidget = await getCoffeeWidgetSettings();
             --brand-accent: var(--brandAccent);
           }
         </style>
+        <ClientRouter />
         <script is:inline>
           (function() {
-            try {
-              var isFs = sessionStorage.getItem('lms_fullscreen') === 'true' || 
-                         new URLSearchParams(window.location.search).get('fullscreen') === '1';
-              if (isFs) {
-                document.documentElement.classList.add('in-course-fullscreen');
+            function updateFullscreenClass() {
+              try {
+                var isFs = sessionStorage.getItem('lms_fullscreen') === 'true' || 
+                           new URLSearchParams(window.location.search).get('fullscreen') === '1' ||
+                           Boolean(document.fullscreenElement);
+                if (isFs) {
+                  document.documentElement.classList.add('in-course-fullscreen');
+                } else {
+                  document.documentElement.classList.remove('in-course-fullscreen');
+                }
+              } catch(e) {}
+            }
+            updateFullscreenClass();
+            document.addEventListener('astro:page-load', function() {
+              updateFullscreenClass();
+              if (window.renderMathInElement) {
+                try { window.renderMathInElement(document.body); } catch(e) {}
               }
-            } catch(e) {}
+            });
           })();
         </script>
     </head>

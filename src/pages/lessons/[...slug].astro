@@ -8,29 +8,33 @@ import { NeuralPlayground } from '@/components/interactive/NeuralPlayground';
 import { GradientDescentLab } from '@/components/interactive/GradientDescentLab';
 import { MemoryExplorer } from '@/components/interactive/MemoryExplorer';
 import { Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox, MathFormula, PaywallGuard } from '@/components/mdx';
+import { findMatchingLesson } from '@/lib/lesson-matcher.js';
 
 export async function getStaticPaths() {
   const lessons = await getCollection('lessons');
-  const paths = lessons.map(lesson => ({
-    params: { slug: lesson.id },
-    props: { lesson },
-  }));
-  // Legacy aliases so old links (dlfn-*, fds-*, etc.) automatically resolve
+  const courses = await getCollection('courses');
+  const pathMap = new Map();
+
+  // 1. Primary lesson paths & prefix variants
   for (const lesson of lessons) {
+    pathMap.set(lesson.id, lesson);
+
+    // Prefix variants (with and without prefix)
+    const baseId = lesson.id.replace(/^(dlfn|fds|pbla|dl|ds|py|ml|llm)-+/, '');
+    if (baseId && baseId !== lesson.id) {
+      if (!pathMap.has(baseId)) pathMap.set(baseId, lesson);
+    }
     if (lesson.id.startsWith('dl-')) {
-      paths.push({
-        params: { slug: lesson.id.replace(/^dl-/, 'dlfn-') },
-        props: { lesson },
-      });
+      pathMap.set(lesson.id.replace(/^dl-/, 'dlfn-'), lesson);
     } else if (lesson.id.startsWith('ds-')) {
-      paths.push({
-        params: { slug: lesson.id.replace(/^ds-/, 'fds-') },
-        props: { lesson },
-      });
+      pathMap.set(lesson.id.replace(/^ds-/, 'fds-'), lesson);
+    } else if (lesson.id.startsWith('py-')) {
+      pathMap.set('python-' + baseId, lesson);
     }
   }
-  // Specific legacy names renamed during refinement
-  const specificAliases: Record<string, string> = {
+
+  // 2. Specific legacy named routes
+  const specificAliases = {
     'dl-backprop-computation-graphs-and-chain-rule': 'dl-computation-graphs-and-the-multivariate-chain-rule',
     'dl-adaptive-learning-rates-rmsprop-adam': 'dl-adaptive-learning-rate-algorithms-ada-grad-rms-prop-and-adam',
     'dl-batch-normalization-mechanics': 'dl-batch-normalization',
@@ -43,17 +47,38 @@ export async function getStaticPaths() {
     'dlfn-six-jars-framework-data-and-tasks': 'dl-data-and-tasks',
     'dlfn-six-jars-models-and-loss-functions': 'dl-models-and-loss-functions',
     'dlfn-six-jars-learning-and-evaluation': 'dl-learning-algorithms-and-evaluation',
+    'data-and-tasks': 'dl-data-and-tasks',
+    'models-and-loss-functions': 'dl-models-and-loss-functions',
+    'learning-algorithms-and-evaluation': 'dl-learning-algorithms-and-evaluation',
   };
   for (const [oldSlug, targetId] of Object.entries(specificAliases)) {
     const targetLesson = lessons.find(l => l.id === targetId);
-    if (targetLesson) {
-      paths.push({
-        params: { slug: oldSlug },
-        props: { lesson: targetLesson },
-      });
+    if (targetLesson && !pathMap.has(oldSlug)) {
+      pathMap.set(oldSlug, targetLesson);
     }
   }
-  return paths;
+
+  // 3. Ensure EVERY lessonRef in EVERY course curriculum is guaranteed to have a route!
+  for (const course of courses) {
+    for (const chapter of course.data.chapters || []) {
+      for (const item of chapter.items || []) {
+        if (item.discriminant === 'lesson' && item.value?.lessonRef) {
+          const ref = String(item.value.lessonRef).trim();
+          if (!pathMap.has(ref)) {
+            const matched = findMatchingLesson(ref, lessons);
+            if (matched) {
+              pathMap.set(ref, matched);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return Array.from(pathMap.entries()).map(([slug, lesson]) => ({
+    params: { slug },
+    props: { lesson },
+  }));
 }
 
 const { lesson } = Astro.props;
@@ -86,7 +111,11 @@ const structuredChapters = (activeCourse?.data.chapters || []).map((chapter, chI
     if (item.discriminant === 'lesson' && item.value.lessonRef) {
       type = 'lesson';
       id = item.value.lessonRef;
-      const l = allLessons.find(x => x.id === id);
+      let l = allLessons.find(x => x.id === id);
+      if (!l) {
+        l = findMatchingLesson(id, allLessons);
+        if (l) id = l.id;
+      }
       title = l?.data.title || id.replace(/-/g, ' ');
       lessonType = l?.data.lessonType || 'article';
       duration = l?.data.duration || 20;

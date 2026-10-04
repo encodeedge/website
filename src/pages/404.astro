@@ -44,7 +44,8 @@ import DefaultLayout from "@/layouts/DefaultLayout.astro";
     (function() {
       try {
         const path = window.location.pathname;
-        const searchParams = new URLSearchParams(window.location.search);
+        const search = window.location.search;
+        const searchParams = new URLSearchParams(search);
         let branch = searchParams.get('branch');
         if (!branch) {
           const cookieMatch = document.cookie.match(/ks-branch=([^;]+)/);
@@ -53,6 +54,47 @@ import DefaultLayout from "@/layouts/DefaultLayout.astro";
         if (branch && (path.startsWith('/blog/') || path.startsWith('/courses/') || path.startsWith('/lessons/') || path.startsWith('/preview/start'))) {
           const targetTo = path.startsWith('/preview/start') ? (searchParams.get('to') || '/blog') : path;
           window.location.replace('/preview/?branch=' + encodeURIComponent(branch) + '&to=' + encodeURIComponent(targetTo));
+          return;
+        }
+
+        // Automatic redirect for outdated or renamed lesson URLs
+        if (path.startsWith('/lessons/')) {
+          const rawSlug = path.replace(/^\/lessons\/?/, '').replace(/\/$/, '');
+          const course = searchParams.get('course');
+          if (rawSlug) {
+            fetch('/search.json')
+              .then(res => res.json())
+              .then(items => {
+                if (Array.isArray(items)) {
+                  const lessons = items.filter(it => it.url && it.url.includes('/lessons/'));
+                  const stripPrefix = s => s.toLowerCase().replace(/^(dlfn|fds|pbla|dl|ds|py|ml|llm)-+/, '').replace(/[^a-z0-9]+/g, '-');
+                  const targetNorm = stripPrefix(rawSlug);
+
+                  // Try finding match by normalized slug or title
+                  const matched = lessons.find(l => {
+                    const slug = l.url.replace(/^\/lessons\/?/, '').split('?')[0].replace(/\/$/, '');
+                    return slug === rawSlug || stripPrefix(slug) === targetNorm || stripPrefix(l.title || '') === targetNorm;
+                  });
+
+                  if (matched && matched.url) {
+                    const sep = matched.url.includes('?') ? '&' : '?';
+                    const targetUrl = course && !matched.url.includes('course=')
+                      ? `${matched.url}${sep}course=${encodeURIComponent(course)}`
+                      : matched.url;
+                    window.location.replace(targetUrl);
+                    return;
+                  }
+                }
+                if (course) {
+                  window.location.replace('/courses/' + encodeURIComponent(course));
+                }
+              })
+              .catch(() => {
+                if (course) {
+                  window.location.replace('/courses/' + encodeURIComponent(course));
+                }
+              });
+          }
         }
       } catch (e) {
         // ignore

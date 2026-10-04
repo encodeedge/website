@@ -8,6 +8,7 @@ import { CourseCertificate } from '@/components/interactive/CourseCertificate';
 import { CourseCompletionBanner } from '@/components/ui/course-completion-banner';
 import { CourseFullscreenButton } from '@/components/ui/course-fullscreen-button';
 import { getFeatureFlags } from '@/lib/settings';
+import { findMatchingLesson } from '@/lib/lesson-matcher.js';
 import { 
   Clock, 
   BookOpen, 
@@ -70,7 +71,11 @@ const structuredChapters = (course.data.chapters || []).map((chapter, chIdx) => 
     if (item.discriminant === 'lesson' && item.value.lessonRef) {
       type = 'lesson';
       id = item.value.lessonRef;
-      const lesson = allLessons.find(l => l.id === id);
+      let lesson = allLessons.find(l => l.id === id);
+      if (!lesson) {
+        lesson = findMatchingLesson(id, allLessons);
+        if (lesson) id = lesson.id;
+      }
       title = lesson?.data.title || id.replace(/-/g, ' ');
       lessonType = lesson?.data.lessonType || 'article';
       duration = lesson?.data.duration || 20;

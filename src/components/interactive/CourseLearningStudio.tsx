@@ -92,12 +92,66 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
   chapters,
   children
 }) => {
-  // Sidebar states
+  // Sidebar states & refs
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const sidebarScrollRef = useRef<HTMLDivElement>(null);
+  const activeLessonRef = useRef<HTMLAnchorElement>(null);
   const [activeTab, setActiveTab] = useState<'about' | 'discussions' | 'notes' | 'resources'>('about');
   const [modeTab, setModeTab] = useState<'learn' | 'practice'>('learn');
   const [searchQuery, setSearchQuery] = useState('');
-  const [openChapters, setOpenChapters] = useState<Record<number, boolean>>({ 0: true, 1: true });
+
+  // Find chapter containing active lesson
+  const currentChapterIndex = useMemo(() => {
+    return chapters.findIndex(ch => ch.items.some(it => it.id === currentLesson.id));
+  }, [chapters, currentLesson.id]);
+
+  const [openChapters, setOpenChapters] = useState<Record<number, boolean>>(() => {
+    const initial: Record<number, boolean> = { 0: true };
+    const chIdx = chapters.findIndex(ch => ch.items.some(it => it.id === currentLesson.id));
+    if (chIdx >= 0) {
+      initial[chIdx] = true;
+    }
+    return initial;
+  });
+
+  // Whenever lesson changes, ensure its chapter is automatically opened
+  useEffect(() => {
+    if (currentChapterIndex >= 0) {
+      setOpenChapters(prev => ({
+        ...prev,
+        [currentChapterIndex]: true,
+      }));
+    }
+  }, [currentChapterIndex, currentLesson.id]);
+
+  // Auto-scroll the sidebar container to center on the active lesson
+  useEffect(() => {
+    const scrollActiveIntoView = () => {
+      if (activeLessonRef.current && sidebarScrollRef.current) {
+        const container = sidebarScrollRef.current;
+        const target = activeLessonRef.current;
+
+        const containerRect = container.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+
+        const relativeTop = targetRect.top - containerRect.top + container.scrollTop;
+        const centeredTop = relativeTop - (container.clientHeight / 2) + (target.clientHeight / 2);
+
+        container.scrollTo({
+          top: Math.max(0, centeredTop),
+          behavior: 'smooth'
+        });
+      }
+    };
+
+    const timer1 = setTimeout(scrollActiveIntoView, 60);
+    const timer2 = setTimeout(scrollActiveIntoView, 220);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, [currentLesson.id, currentChapterIndex, openChapters, sidebarOpen]);
   
   // Progress & Completion state
   const [completedItems, setCompletedItems] = useState<string[]>([]);
@@ -661,7 +715,10 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
           </div>
 
           {/* Curriculum Chapters Accordion */}
-          <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-border/40 overscroll-contain lesson-list-scroll">
+          <div 
+            ref={sidebarScrollRef}
+            className="flex-1 min-h-0 overflow-y-auto divide-y divide-border/40 overscroll-contain lesson-list-scroll scroll-smooth"
+          >
             {filteredChapters.map((chapter, chIdx) => {
               const isOpen = openChapters[chIdx] ?? false;
               const chTotal = chapter.items.length;
@@ -704,6 +761,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
                         return (
                           <a
                             key={item.id}
+                            ref={isActive ? activeLessonRef : null}
                             href={getLessonUrl(item.url)}
                             onClick={() => handleLessonClick(item.url)}
                             className={`flex items-center gap-3 px-4 py-3 text-sm transition-all relative group ${

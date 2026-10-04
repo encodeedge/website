@@ -1,5 +1,7 @@
 ---
 title: Welcome
+course: deep-learning
+chapter: Welcome
 lessonType: article
 interactiveLab: none
 order: 0

@@ -1455,18 +1455,21 @@ export default config({
               {
                 lesson: {
                   label: 'Lesson',
+                  itemLabel: props => props.fields.lessonRef.value ? `Lesson: ${props.fields.lessonRef.value}` : 'Lesson',
                   schema: fields.object({
                     lessonRef: fields.relationship({ label: 'Select Lesson', collection: 'lessons' })
                   })
                 },
                 quiz: {
                   label: 'Quiz',
+                  itemLabel: props => props.fields.quizRef.value ? `Quiz: ${props.fields.quizRef.value}` : 'Quiz',
                   schema: fields.object({
                     quizRef: fields.relationship({ label: 'Select Quiz', collection: 'quizzes' })
                   })
                 },
                 assignment: {
                   label: 'Assignment',
+                  itemLabel: props => props.fields.assignmentRef.value ? `Assignment: ${props.fields.assignmentRef.value}` : 'Assignment',
                   schema: fields.object({
                     assignmentRef: fields.relationship({ label: 'Select Assignment', collection: 'assignments' })
                   })

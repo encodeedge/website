@@ -1,6 +1,8 @@
 ---
 title: FAQ on Course
 description: Frequently asked questions about the course
+course: deep-learning
+chapter: Welcome
 lessonType: article
 interactiveLab: none
 order: 0

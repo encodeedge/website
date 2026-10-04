@@ -9,6 +9,8 @@ isFree: false
 comingSoon: false
 draft: false
 tags: []
+course: deep-learning
+chapter: Welcome
 ---
 Welcome to this first course on Deep Learning on EncodeEdge. Please continue to the next lecture.
 

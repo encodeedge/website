@@ -17,6 +17,7 @@ import cloudflare from "@astrojs/cloudflare";
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { syncCourseLessons } from './src/lib/sync-course-lessons.js';
 
 const copyAssetFiles = [
   {
@@ -83,7 +84,29 @@ export default defineConfig({
     '/courses/deep-learning-foundations-and-neurons': '/courses/deep-learning',
   },
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+      {
+        name: 'auto-sync-course-lessons',
+        buildStart() {
+          syncCourseLessons();
+        },
+        configureServer(server) {
+          syncCourseLessons();
+          const coursesDir = path.resolve('./src/content/courses');
+          /**
+           * @param {string} filePath
+           */
+          const triggerSync = (filePath) => {
+            if (filePath && filePath.startsWith(coursesDir)) {
+              syncCourseLessons();
+            }
+          };
+          server.watcher.on('add', triggerSync);
+          server.watcher.on('change', triggerSync);
+        },
+      },
+    ],
     build: {
       rollupOptions: {
         external: ['sharp'],

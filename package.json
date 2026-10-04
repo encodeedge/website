@@ -10,6 +10,7 @@
     "notebook:wrap": "node public/scripts/wrap-notebook-html.js",
     "notebook:export-wrap": "node public/scripts/export_and_wrap.js",
     "notebook:html-to-astro": "node public/scripts/html_to_astro.js",
+    "sync:lessons": "node src/lib/sync-course-lessons.js",
     "astro": "astro",
     "lint": "eslint . --fix",
     "format": "prettier -w ."

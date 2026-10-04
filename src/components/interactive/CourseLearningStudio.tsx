@@ -30,6 +30,7 @@ import {
   Video,
   ListOrdered,
   Maximize2,
+  Minimize2,
   Code2,
   Zap,
 } from 'lucide-react';
@@ -111,6 +112,41 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
   const [notes, setNotes] = useState<string>('');
   const [notesSavedStatus, setNotesSavedStatus] = useState<string>('');
   const notesSaveTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  // Fullscreen state
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        } else if ((document.documentElement as any).webkitRequestFullscreen) {
+          await (document.documentElement as any).webkitRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if ((document as any).webkitExitFullscreen) {
+          await (document as any).webkitExitFullscreen();
+        }
+      }
+    } catch (err) {
+      console.error('Failed to toggle fullscreen:', err);
+    }
+  };
 
   // Flat list of all items for prev/next
   const flatItems = useMemo(() => {
@@ -385,6 +421,27 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
               />
             </div>
           </div>
+
+          {/* Full Screen Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            title={isFullscreen ? "Exit Full Screen (Esc)" : "Enter Full Screen"}
+            aria-label={isFullscreen ? "Exit Full Screen" : "Enter Full Screen"}
+          >
+            {isFullscreen ? (
+              <>
+                <Minimize2 className="w-3.5 h-3.5 text-indigo-600 dark:text-[#E5E795]" />
+                <span className="hidden sm:inline">Exit Full Screen</span>
+              </>
+            ) : (
+              <>
+                <Maximize2 className="w-3.5 h-3.5 text-indigo-600 dark:text-[#E5E795]" />
+                <span className="hidden sm:inline">Full Screen</span>
+              </>
+            )}
+          </button>
 
           {/* Toggle Sidebar Button */}
           <button

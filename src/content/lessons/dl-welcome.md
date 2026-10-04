@@ -1,6 +1,5 @@
 ---
 title: Welcome
-description: Welcome to this first course on Deep Learning on EncodeEdge.
 lessonType: article
 interactiveLab: none
 order: 0

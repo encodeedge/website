@@ -33,6 +33,8 @@ import {
   Minimize2,
   Code2,
   Zap,
+  Keyboard,
+  X,
 } from 'lucide-react';
 import { persistentStorage } from '@/lib/storage';
 import PostComments from '@/components/ui/PostComments';
@@ -96,6 +98,10 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const sidebarScrollRef = useRef<HTMLDivElement>(null);
   const activeLessonRef = useRef<HTMLAnchorElement>(null);
+  const prevLessonRef = useRef<HTMLAnchorElement>(null);
+  const nextLessonRef = useRef<HTMLAnchorElement>(null);
+  const finishCourseRef = useRef<HTMLAnchorElement>(null);
+  const [showShortcutsModal, setShowShortcutsModal] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'about' | 'discussions' | 'notes' | 'resources'>('about');
   const [modeTab, setModeTab] = useState<'learn' | 'practice'>('learn');
   const [searchQuery, setSearchQuery] = useState('');
@@ -227,20 +233,12 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
       }
     };
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isFullscreen) {
-        exitFullscreen();
-      }
-    };
-
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
       document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
-      window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isFullscreen]);
 
@@ -402,6 +400,146 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
     setCompletedItems(updated);
     window.dispatchEvent(new Event('lms_progress_updated'));
   };
+
+  // Programmatic keyboard navigation helpers
+  const navigateToPrevious = () => {
+    if (prevLessonRef.current) {
+      prevLessonRef.current.click();
+    } else if (prevItem) {
+      handleLessonClick(prevItem.url);
+      const url = getLessonUrl(prevItem.url);
+      const a = document.createElement('a');
+      a.href = url;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+  };
+
+  const navigateToNext = () => {
+    if (nextLessonRef.current) {
+      nextLessonRef.current.click();
+    } else if (finishCourseRef.current) {
+      finishCourseRef.current.click();
+    } else if (nextItem) {
+      handleLessonClick(nextItem.url);
+      const url = getLessonUrl(nextItem.url);
+      const a = document.createElement('a');
+      a.href = url;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } else if (isComingSoon && nextReadyItem) {
+      handleLessonClick(nextReadyItem.url);
+      const url = getLessonUrl(nextReadyItem.url);
+      const a = document.createElement('a');
+      a.href = url;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+  };
+
+  // Keyboard navigation & control shortcuts
+  useEffect(() => {
+    const isEditableTarget = (el: EventTarget | null): boolean => {
+      if (!el || !(el instanceof HTMLElement)) return false;
+      const tag = el.tagName.toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || tag === 'select') return true;
+      if (el.isContentEditable) return true;
+      if (el.closest('input, textarea, select, [contenteditable="true"], .monaco-editor, .cm-editor, #post-comments')) {
+        return true;
+      }
+      return false;
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 1. Never intercept when user is typing in form controls or editors
+      if (isEditableTarget(e.target)) {
+        return;
+      }
+
+      // 2. Escape: Close shortcuts modal or exit fullscreen
+      if (e.key === 'Escape') {
+        if (showShortcutsModal) {
+          e.preventDefault();
+          setShowShortcutsModal(false);
+          return;
+        }
+        if (isFullscreen) {
+          exitFullscreen();
+          return;
+        }
+      }
+
+      // 3. Question mark (?) or 'h' / 'H': Toggle keyboard shortcuts help dialog
+      if ((e.key === '?' || e.key === 'h' || e.key === 'H') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        setShowShortcutsModal(prev => !prev);
+        return;
+      }
+
+      // If shortcuts modal is currently open, ignore other navigation shortcuts
+      if (showShortcutsModal) {
+        return;
+      }
+
+      // 4. Do not hijack if Ctrl, Cmd, or Alt is active (preserves browser shortcuts)
+      if (e.ctrlKey || e.metaKey || e.altKey) {
+        return;
+      }
+
+      // 5. Next Lesson: ArrowRight, 'n', 'N', ']'
+      if (e.key === 'ArrowRight' || e.key === 'n' || e.key === 'N' || e.key === ']') {
+        e.preventDefault();
+        navigateToNext();
+        return;
+      }
+
+      // 6. Previous Lesson: ArrowLeft, 'p', 'P', '['
+      if (e.key === 'ArrowLeft' || e.key === 'p' || e.key === 'P' || e.key === '[') {
+        e.preventDefault();
+        navigateToPrevious();
+        return;
+      }
+
+      // 7. Fullscreen toggle: 'f' or 'F'
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+        return;
+      }
+
+      // 8. Sidebar / Syllabus toggle: 's' or 'S' or 'b' or 'B'
+      if (e.key === 's' || e.key === 'S' || e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        setSidebarOpen(prev => !prev);
+        return;
+      }
+
+      // 9. Mark complete toggle: 'c' or 'C'
+      if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        toggleComplete();
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [
+    showShortcutsModal,
+    isFullscreen,
+    prevItem,
+    nextItem,
+    nextReadyItem,
+    isComingSoon,
+    courseId,
+    currentLesson.id,
+    completedItems
+  ]);
 
   // Handle Star Rating
   const handleRate = (stars: number) => {
@@ -593,23 +731,36 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
             </div>
           </div>
 
+          {/* Keyboard Shortcuts Trigger Button */}
+          <button
+            type="button"
+            onClick={() => setShowShortcutsModal(true)}
+            className="p-1.5 rounded-lg bg-secondary hover:bg-secondary/80 border border-border text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            title="Keyboard Shortcuts (?)"
+            aria-label="Keyboard Shortcuts"
+          >
+            <Keyboard className="w-4 h-4" />
+          </button>
+
           {/* Full Screen Toggle Button */}
           <button
             type="button"
             onClick={toggleFullscreen}
             className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-            title={isFullscreen ? "Exit Full Screen (Esc)" : "Enter Full Screen"}
+            title={isFullscreen ? "Exit Full Screen (Esc or F)" : "Enter Full Screen (F)"}
             aria-label={isFullscreen ? "Exit Full Screen" : "Enter Full Screen"}
           >
             {isFullscreen ? (
               <>
                 <Minimize2 className="w-3.5 h-3.5 text-indigo-600 dark:text-[#E5E795]" />
                 <span className="hidden sm:inline">Exit Full Screen</span>
+                <kbd className="hidden lg:inline-block font-mono text-[9px] px-1 py-0.2 rounded bg-muted text-muted-foreground border border-border">F</kbd>
               </>
             ) : (
               <>
                 <Maximize2 className="w-3.5 h-3.5 text-indigo-600 dark:text-[#E5E795]" />
                 <span className="hidden sm:inline">Full Screen</span>
+                <kbd className="hidden lg:inline-block font-mono text-[9px] px-1 py-0.2 rounded bg-muted text-muted-foreground border border-border">F</kbd>
               </>
             )}
           </button>
@@ -618,10 +769,12 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
           <button
             type="button"
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-1.5 rounded-lg bg-secondary hover:bg-secondary/80 border border-border text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-            title={sidebarOpen ? "Hide syllabus sidebar" : "Show syllabus sidebar"}
+            className="inline-flex items-center gap-1 p-1.5 rounded-lg bg-secondary hover:bg-secondary/80 border border-border text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            title={sidebarOpen ? "Hide syllabus sidebar (S)" : "Show syllabus sidebar (S)"}
+            aria-label={sidebarOpen ? "Hide syllabus sidebar" : "Show syllabus sidebar"}
           >
             {sidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
+            <kbd className="hidden lg:inline-block font-mono text-[9px] px-1 py-0.2 rounded bg-muted text-muted-foreground border border-border">S</kbd>
           </button>
         </div>
       </header>
@@ -880,11 +1033,14 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
                 {nextReadyItem && (
                   <div className="pt-2">
                     <a
+                      ref={nextLessonRef}
                       href={getLessonUrl(nextReadyItem.url)}
                       onClick={() => handleLessonClick(nextReadyItem.url)}
                       className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold transition-colors shadow-xs"
+                      title="Next available lesson (→ or N)"
                     >
                       <span>Next Available Lesson</span>
+                      <kbd className="hidden sm:inline-block font-mono text-[9px] px-1 py-0.2 rounded bg-black/20 text-white border border-white/20">→</kbd>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </a>
                   </div>
@@ -1058,9 +1214,15 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
                         ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25'
                         : 'bg-primary hover:bg-primary/90 text-primary-foreground font-bold'
                     }`}
+                    title={isCompleted ? "Completed (C to toggle)" : "Mark complete (C)"}
                   >
                     <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-emerald-500' : 'text-primary-foreground'}`} />
                     <span>{isCompleted ? 'Completed ✓' : 'Mark Complete'}</span>
+                    <kbd className={`hidden sm:inline-block font-mono text-[9px] px-1 py-0.2 rounded border ${
+                      isCompleted
+                        ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30'
+                        : 'bg-white/20 text-white border-white/30'
+                    }`}>C</kbd>
                   </button>
                 </div>
               </div>
@@ -1287,13 +1449,18 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
             <div className="pt-8 border-t border-border flex items-center justify-between gap-4 flex-wrap">
               {prevItem ? (
                 <a
+                  ref={prevLessonRef}
                   href={getLessonUrl(prevItem.url)}
                   onClick={() => handleLessonClick(prevItem.url)}
                   className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card hover:bg-secondary border border-border text-xs font-semibold text-foreground transition-colors group cursor-pointer shadow-xs"
+                  title="Previous lesson (← or P)"
                 >
                   <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
                   <div className="text-left">
-                    <div className="text-[10px] text-muted-foreground">Previous</div>
+                    <div className="text-[10px] text-muted-foreground flex items-center gap-1.5">
+                      <span>Previous</span>
+                      <kbd className="hidden sm:inline-block font-mono text-[9px] px-1 py-0.2 rounded bg-muted text-muted-foreground border border-border">←</kbd>
+                    </div>
                     <div className="font-bold text-foreground truncate max-w-[180px] sm:max-w-xs">{prevItem.title}</div>
                   </div>
                 </a>
@@ -1303,21 +1470,28 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
 
               {nextItem ? (
                 <a
+                  ref={nextLessonRef}
                   href={getLessonUrl(nextItem.url)}
                   onClick={() => handleLessonClick(nextItem.url)}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition-all shadow-xs group cursor-pointer ml-auto"
+                  title="Next lesson (→ or N)"
                 >
                   <div className="text-right">
-                    <div className="text-[10px] opacity-80">Next Lesson</div>
+                    <div className="text-[10px] opacity-80 flex items-center justify-end gap-1.5">
+                      <span>Next Lesson</span>
+                      <kbd className="hidden sm:inline-block font-mono text-[9px] px-1 py-0.2 rounded bg-black/20 text-white border border-white/20">→</kbd>
+                    </div>
                     <div className="font-bold truncate max-w-[180px] sm:max-w-xs">{nextItem.title}</div>
                   </div>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                 </a>
               ) : (
                 <a
+                  ref={finishCourseRef}
                   href={`/courses/${courseId}`}
                   onClick={exitFullscreen}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition-all shadow-xs cursor-pointer ml-auto"
+                  title="Finish course overview"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Finish Course</span>
@@ -1327,6 +1501,114 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
           </div>
         </div>
       </div>
+
+      {/* ── Keyboard Shortcuts Modal ────────────────────────────────────────── */}
+      {showShortcutsModal && (
+        <div 
+          className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-150"
+          onClick={() => setShowShortcutsModal(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="shortcuts-title"
+        >
+          <div 
+            className="bg-card border border-border rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-primary/10 text-primary">
+                  <Keyboard className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 id="shortcuts-title" className="font-bold text-foreground text-base font-display">Keyboard Shortcuts</h3>
+                  <p className="text-xs text-muted-foreground">Quickly navigate and control your study session</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowShortcutsModal(false)}
+                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+                title="Close (Esc)"
+                aria-label="Close keyboard shortcuts dialog"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              <div>
+                <h4 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">Lesson Navigation</h4>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between py-1 border-b border-border/40">
+                    <span className="text-foreground font-medium">Next lesson</span>
+                    <div className="flex items-center gap-1">
+                      <kbd className="px-2 py-0.5 rounded bg-secondary border border-border font-mono font-semibold text-foreground">→</kbd>
+                      <span className="text-muted-foreground">or</span>
+                      <kbd className="px-2 py-0.5 rounded bg-secondary border border-border font-mono font-semibold text-foreground">N</kbd>
+                      <span className="text-muted-foreground">or</span>
+                      <kbd className="px-2 py-0.5 rounded bg-secondary border border-border font-mono font-semibold text-foreground">]</kbd>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-border/40">
+                    <span className="text-foreground font-medium">Previous lesson</span>
+                    <div className="flex items-center gap-1">
+                      <kbd className="px-2 py-0.5 rounded bg-secondary border border-border font-mono font-semibold text-foreground">←</kbd>
+                      <span className="text-muted-foreground">or</span>
+                      <kbd className="px-2 py-0.5 rounded bg-secondary border border-border font-mono font-semibold text-foreground">P</kbd>
+                      <span className="text-muted-foreground">or</span>
+                      <kbd className="px-2 py-0.5 rounded bg-secondary border border-border font-mono font-semibold text-foreground">[</kbd>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">View &amp; Progress</h4>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between py-1 border-b border-border/40">
+                    <span className="text-foreground font-medium">Toggle Full Screen</span>
+                    <kbd className="px-2 py-0.5 rounded bg-secondary border border-border font-mono font-semibold text-foreground">F</kbd>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-border/40">
+                    <span className="text-foreground font-medium">Toggle Syllabus Sidebar</span>
+                    <div className="flex items-center gap-1">
+                      <kbd className="px-2 py-0.5 rounded bg-secondary border border-border font-mono font-semibold text-foreground">S</kbd>
+                      <span className="text-muted-foreground">or</span>
+                      <kbd className="px-2 py-0.5 rounded bg-secondary border border-border font-mono font-semibold text-foreground">B</kbd>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-border/40">
+                    <span className="text-foreground font-medium">Toggle Mark Completed</span>
+                    <kbd className="px-2 py-0.5 rounded bg-secondary border border-border font-mono font-semibold text-foreground">C</kbd>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-border/40">
+                    <span className="text-foreground font-medium">Exit Full Screen / Close Modal</span>
+                    <kbd className="px-2 py-0.5 rounded bg-secondary border border-border font-mono font-semibold text-foreground">Esc</kbd>
+                  </div>
+                  <div className="flex items-center justify-between py-1">
+                    <span className="text-foreground font-medium">Show / Hide Shortcuts</span>
+                    <kbd className="px-2 py-0.5 rounded bg-secondary border border-border font-mono font-semibold text-foreground">?</kbd>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-border flex items-center justify-between">
+              <p className="text-[11px] text-muted-foreground">
+                Shortcuts are disabled while typing in notes or comments.
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowShortcutsModal(false)}
+                className="px-4 py-1.5 rounded-xl bg-primary text-primary-foreground font-semibold text-xs hover:bg-primary/90 transition-colors cursor-pointer"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

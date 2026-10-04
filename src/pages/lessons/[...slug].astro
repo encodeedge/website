@@ -37,6 +37,12 @@ export async function getStaticPaths() {
     'dlfn-backprop-computation-graphs-and-chain-rule': 'dl-computation-graphs-and-the-multivariate-chain-rule',
     'dlfn-adaptive-learning-rates-rmsprop-adam': 'dl-adaptive-learning-rate-algorithms-ada-grad-rms-prop-and-adam',
     'dlfn-batch-normalization-mechanics': 'dl-batch-normalization',
+    'dl-six-jars-framework-data-and-tasks': 'dl-data-and-tasks',
+    'dl-six-jars-models-and-loss-functions': 'dl-models-and-loss-functions',
+    'dl-six-jars-learning-and-evaluation': 'dl-learning-algorithms-and-evaluation',
+    'dlfn-six-jars-framework-data-and-tasks': 'dl-data-and-tasks',
+    'dlfn-six-jars-models-and-loss-functions': 'dl-models-and-loss-functions',
+    'dlfn-six-jars-learning-and-evaluation': 'dl-learning-algorithms-and-evaluation',
   };
   for (const [oldSlug, targetId] of Object.entries(specificAliases)) {
     const targetLesson = lessons.find(l => l.id === targetId);

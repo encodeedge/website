@@ -1643,20 +1643,20 @@ export default config({
         description: fields.text({ label: 'Description', multiline: true }),
         course: fields.select({
           label: 'Course',
-          description: 'Course this lesson belongs to (helps filter and segregate lessons)',
+          description: 'Course this lesson belongs to (can be chosen manually or automatically synced when assigned in a Course curriculum)',
           options: [
+            { label: 'Unassigned / Standalone', value: 'standalone' },
             { label: 'Deep Learning', value: 'deep-learning' },
             { label: 'Foundations of Data Science', value: 'foundations-of-data-science' },
             { label: 'Python & Linear Algebra', value: 'python' },
             { label: 'Machine Learning', value: 'machine-learning' },
             { label: 'LLM & Generative AI', value: 'llm' },
-            { label: 'Standalone / Other', value: 'standalone' },
           ],
-          defaultValue: 'deep-learning'
+          defaultValue: 'standalone'
         }),
         chapter: fields.text({
           label: 'Chapter / Module',
-          description: 'Chapter or module name (e.g. "MP Neuron", "Perceptron", "Introduction")',
+          description: 'Chapter or module name (automatically synced when assigned in a Course curriculum)',
         }),
         lessonType: fields.select({
           label: 'Lesson Type',

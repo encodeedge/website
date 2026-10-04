@@ -72,7 +72,8 @@ export function syncCourseLessons(rootDir = process.cwd()) {
       data.course = info.course;
       data.chapter = info.chapter;
       const newFm = yaml.dump(data, { lineWidth: -1 });
-      fs.writeFileSync(lessonPath, `---\n${newFm}---\n${match[2].trimStart()}`);
+      const body = match[2].startsWith('\n') ? match[2] : `\n${match[2]}`;
+      fs.writeFileSync(lessonPath, `---\n${newFm}---${body}`);
       updatedCount++;
     }
   }

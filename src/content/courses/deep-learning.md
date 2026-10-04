@@ -27,13 +27,13 @@ chapters:
           lessonRef: dl-expert-systems-to-machine-learning
       - discriminant: lesson
         value:
-          lessonRef: dl-six-jars-framework-data-and-tasks
+          lessonRef: dl-data-and-tasks
       - discriminant: lesson
         value:
-          lessonRef: dl-six-jars-models-and-loss-functions
+          lessonRef: dl-models-and-loss-functions
       - discriminant: lesson
         value:
-          lessonRef: dl-six-jars-learning-and-evaluation
+          lessonRef: dl-learning-algorithms-and-evaluation
   - title: MP Neuron
     description: >-
       McCulloch-Pitts artificial neuron model: biological motivation, boolean

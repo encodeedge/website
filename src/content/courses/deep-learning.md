@@ -4,7 +4,7 @@ shortDescription: >-
   The definitive, code-first deep learning curriculum. Master MP Neurons,
   Perceptrons, Sigmoids, Backpropagation, Modern Optimizers (Adam, RMSProp),
   CNNs, and RNNs from scratch in Python.
-coverImage: /assets/courses/deep-learning-foundations-and-neurons.svg
+coverImage: /assets/courses/deep-learning.svg
 instructor: atul-jha
 level: intermediate
 status: published

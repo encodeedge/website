@@ -1,9 +1,6 @@
 ---
 title: Deep Learning
-shortDescription: >-
-  The definitive, code-first deep learning curriculum. Master MP Neurons,
-  Perceptrons, Sigmoids, Backpropagation, Modern Optimizers (Adam, RMSProp),
-  CNNs, and RNNs from scratch in Python.
+shortDescription: The definitive, code-first deep learning curriculum. Master MP Neurons, Perceptrons, Sigmoids, Backpropagation, Modern Optimizers (Adam, RMSProp), CNNs, and RNNs from scratch in Python.
 coverImage: /assets/courses/deep-learning.svg
 instructor: atul-jha
 level: intermediate
@@ -23,26 +20,22 @@ chapters:
         value:
           lessonRef: py-python-basics-about-this-chapter
   - title: Expert Systems
-    description: >-
-      The paradigm shift from heuristic expert systems to data-driven learning
-      and the framework of Machine Learning.
+    description: The paradigm shift from heuristic expert systems to data-driven learning and the framework of Machine Learning.
     items:
       - discriminant: lesson
         value:
           lessonRef: dl-expert-systems-to-machine-learning
       - discriminant: lesson
         value:
-          lessonRef: dl-six-jars-framework-data-and-tasks
+          lessonRef: dl-data-and-tasks
       - discriminant: lesson
         value:
-          lessonRef: dl-six-jars-models-and-loss-functions
+          lessonRef: dl-models-and-loss-functions
       - discriminant: lesson
         value:
-          lessonRef: dl-six-jars-learning-and-evaluation
+          lessonRef: dl-learning-algorithms-and-evaluation
   - title: MP Neuron
-    description: >-
-      McCulloch-Pitts artificial neuron model: biological motivation, boolean
-      aggregation, loss surfaces, and geometric linear separability.
+    description: 'McCulloch-Pitts artificial neuron model: biological motivation, boolean aggregation, loss surfaces, and geometric linear separability.'
     items:
       - discriminant: lesson
         value:
@@ -54,9 +47,7 @@ chapters:
         value:
           lessonRef: dl-mp-neuron-geometry-and-interpretation
   - title: Perceptron
-    description: >-
-      Rosenblatt's Perceptron: real-valued feature spaces, hyperplanes,
-      perceptron loss criterion, and the convergence proof.
+    description: 'Rosenblatt''s Perceptron: real-valued feature spaces, hyperplanes, perceptron loss criterion, and the convergence proof.'
     items:
       - discriminant: lesson
         value:
@@ -83,9 +74,7 @@ chapters:
         value:
           lessonRef: dl-perceptron-training-epochs-checkpointing-animation
   - title: Sigmoid Neuron, Gradient Descent
-    description: >-
-      Smooth logistic activations, continuous probability outputs, Taylor series
-      derivation of gradient descent, and partial derivatives.
+    description: Smooth logistic activations, continuous probability outputs, Taylor series derivation of gradient descent, and partial derivatives.
     items:
       - discriminant: lesson
         value:
@@ -121,9 +110,7 @@ chapters:
         value:
           quizRef: dlfn-sigmoid-evaluation-quiz
   - title: 'Python: Sigmoid, Gradient Descent'
-    description: >-
-      Implementing Sigmoid Neuron with vectorized gradient descent in Python,
-      plotting 3D loss surfaces, contours, and optimization paths.
+    description: Implementing Sigmoid Neuron with vectorized gradient descent in Python, plotting 3D loss surfaces, contours, and optimization paths.
     items:
       - discriminant: lesson
         value:
@@ -135,9 +122,7 @@ chapters:
         value:
           lessonRef: dl-fitting-toy-data-and-gradient-trajectories
   - title: Representation Power of Functions
-    description: >-
-      Universal Approximation Theorem, why deep architectures can approximate
-      any continuous function, and building sigmoid towers.
+    description: Universal Approximation Theorem, why deep architectures can approximate any continuous function, and building sigmoid towers.
     items:
       - discriminant: lesson
         value:
@@ -146,9 +131,7 @@ chapters:
         value:
           lessonRef: dl-universal-approximation-theorem
   - title: Feedforward Neural Networks
-    description: >-
-      Deep multilayer perceptrons, layer notation, batched matrix forward
-      propagation, Softmax probability layers, and Cross-Entropy loss.
+    description: Deep multilayer perceptrons, layer notation, batched matrix forward propagation, Softmax probability layers, and Cross-Entropy loss.
     items:
       - discriminant: lesson
         value:
@@ -160,10 +143,7 @@ chapters:
         value:
           quizRef: dlfn-fnn-architecture-quiz
   - title: 'Learning in Feedforward Networks: Backpropagation'
-    description: >-
-      Analytical derivation of backpropagation using computation graphs,
-      multivariate chain rule, delta error backpropagation, and weight
-      gradients.
+    description: Analytical derivation of backpropagation using computation graphs, multivariate chain rule, delta error backpropagation, and weight gradients.
     items:
       - discriminant: lesson
         value:
@@ -175,9 +155,7 @@ chapters:
         value:
           quizRef: dlfn-backprop-quiz
   - title: 'Python: Feedforward Neural Networks'
-    description: >-
-      Building a complete neural network from scratch in pure Python and NumPy
-      with automated backpropagation, and training on MNIST.
+    description: Building a complete neural network from scratch in pure Python and NumPy with automated backpropagation, and training on MNIST.
     items:
       - discriminant: lesson
         value:
@@ -186,9 +164,7 @@ chapters:
         value:
           lessonRef: dl-training-fnn-on-mnist
   - title: Optimization Algorithms in Deep Learning
-    description: >-
-      Mastering modern optimizers: ill-conditioned curvature ravines, Momentum,
-      Nesterov Accelerated Gradient (NAG), AdaGrad, RMSProp, and Adam.
+    description: 'Mastering modern optimizers: ill-conditioned curvature ravines, Momentum, Nesterov Accelerated Gradient (NAG), AdaGrad, RMSProp, and Adam.'
     items:
       - discriminant: lesson
         value:
@@ -200,10 +176,7 @@ chapters:
         value:
           quizRef: dlfn-optimization-algorithms-quiz
   - title: 'Python: Optimization Algorithms'
-    description: >-
-      Coding custom Momentum, RMSProp, and Adam optimizers from scratch, and
-      plotting comparative trajectory visualizations on non-convex loss
-      surfaces.
+    description: Coding custom Momentum, RMSProp, and Adam optimizers from scratch, and plotting comparative trajectory visualizations on non-convex loss surfaces.
     items:
       - discriminant: lesson
         value:
@@ -212,10 +185,7 @@ chapters:
         value:
           lessonRef: dl-visualizing-optimizer-loss-trajectories
   - title: Vanishing and Exploding Gradients
-    description: >-
-      Understanding gradient flow pathologies in deep networks: Sigmoid
-      saturation, ReLU activations, He/Xavier initializations, and Batch
-      Normalization.
+    description: 'Understanding gradient flow pathologies in deep networks: Sigmoid saturation, ReLU activations, He/Xavier initializations, and Batch Normalization.'
     items:
       - discriminant: lesson
         value:
@@ -224,10 +194,7 @@ chapters:
         value:
           lessonRef: dl-batch-normalization
   - title: Convolutional Neural Networks (CNNs)
-    description: >-
-      Computer vision with spatial convolutions: kernel filtering, padding,
-      strides, pooling, translation equivariance, and deep residual networks
-      (ResNet).
+    description: 'Computer vision with spatial convolutions: kernel filtering, padding, strides, pooling, translation equivariance, and deep residual networks (ResNet).'
     items:
       - discriminant: lesson
         value:
@@ -239,9 +206,7 @@ chapters:
         value:
           quizRef: dlfn-cnn-quiz
   - title: 'Python: CNNs'
-    description: >-
-      Implementing convolutional neural networks using PyTorch nn.Module, GPU
-      training loops, and inspecting learned visual filter representations.
+    description: Implementing convolutional neural networks using PyTorch nn.Module, GPU training loops, and inspecting learned visual filter representations.
     items:
       - discriminant: lesson
         value:
@@ -250,9 +215,7 @@ chapters:
         value:
           lessonRef: dl-visualizing-cnn-filters-and-feature-maps
   - title: Recurrent Neural Networks (RNNs)
-    description: >-
-      Sequence modeling across time: recurrent feedback cells, Backpropagation
-      Through Time (BPTT), vanishing memory, and gated LSTM/GRU architectures.
+    description: 'Sequence modeling across time: recurrent feedback cells, Backpropagation Through Time (BPTT), vanishing memory, and gated LSTM/GRU architectures.'
     items:
       - discriminant: lesson
         value:
@@ -261,9 +224,7 @@ chapters:
         value:
           lessonRef: dl-lstms-and-grus-gated-memory
   - title: 'Python: Sequence Models with PyTorch'
-    description: >-
-      Implementing character-level RNNs, sequence embeddings, and text
-      classification models using PyTorch recurrent layers.
+    description: Implementing character-level RNNs, sequence embeddings, and text classification models using PyTorch recurrent layers.
     items:
       - discriminant: lesson
         value:

@@ -1,6 +1,6 @@
 ---
 title: 'Python Basics : About this chapter'
-course: python
+course: deep-learning
 chapter: Python Basics
 lessonType: article
 interactiveLab: none

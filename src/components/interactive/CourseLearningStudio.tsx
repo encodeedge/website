@@ -130,9 +130,17 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
     }
   }, [currentChapterIndex, currentLesson.id]);
 
-  // Auto-scroll the sidebar container to center on the active lesson
+  // Auto-scroll the sidebar container to center on the active lesson without visible blip or jump
   useEffect(() => {
-    const scrollActiveIntoView = () => {
+    // 1. Immediately restore saved scroll position if available
+    try {
+      const saved = sessionStorage.getItem(`sidebar_scroll_${courseId}`);
+      if (saved && sidebarScrollRef.current) {
+        sidebarScrollRef.current.scrollTop = Number(saved);
+      }
+    } catch {}
+
+    const ensureActiveInView = () => {
       if (activeLessonRef.current && sidebarScrollRef.current) {
         const container = sidebarScrollRef.current;
         const target = activeLessonRef.current;
@@ -140,24 +148,44 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
         const containerRect = container.getBoundingClientRect();
         const targetRect = target.getBoundingClientRect();
 
+        // If active lesson is already visible in the viewport (e.g. user just clicked it),
+        // DO NOT scroll at all! This prevents any jarring jump or scroll blip under the user's eyes.
+        const isAlreadyVisible = (
+          targetRect.top >= containerRect.top + 24 &&
+          targetRect.bottom <= containerRect.bottom - 24
+        );
+
+        if (isAlreadyVisible) {
+          try {
+            sessionStorage.setItem(`sidebar_scroll_${courseId}`, String(container.scrollTop));
+          } catch {}
+          return;
+        }
+
+        // If it's outside the view (e.g. initial load directly to deep lesson, or keyboard nav),
+        // position it instantly ('instant') with zero animation blip
         const relativeTop = targetRect.top - containerRect.top + container.scrollTop;
         const centeredTop = relativeTop - (container.clientHeight / 2) + (target.clientHeight / 2);
 
         container.scrollTo({
           top: Math.max(0, centeredTop),
-          behavior: 'smooth'
+          behavior: 'instant' as ScrollBehavior,
         });
+
+        try {
+          sessionStorage.setItem(`sidebar_scroll_${courseId}`, String(container.scrollTop));
+        } catch {}
       }
     };
 
-    const timer1 = setTimeout(scrollActiveIntoView, 60);
-    const timer2 = setTimeout(scrollActiveIntoView, 220);
+    // Run immediately without delays to eliminate any visual blip or lag
+    ensureActiveInView();
+    const rId = requestAnimationFrame(ensureActiveInView);
 
     return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
+      cancelAnimationFrame(rId);
     };
-  }, [currentLesson.id, currentChapterIndex, openChapters, sidebarOpen]);
+  }, [currentLesson.id, currentChapterIndex, openChapters, sidebarOpen, courseId]);
   
   // Progress & Completion state
   const [completedItems, setCompletedItems] = useState<string[]>([]);
@@ -298,6 +326,11 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
   };
 
   const handleLessonClick = (_url: string) => {
+    if (sidebarScrollRef.current) {
+      try {
+        sessionStorage.setItem(`sidebar_scroll_${courseId}`, String(sidebarScrollRef.current.scrollTop));
+      } catch {}
+    }
     if (isFullscreen) {
       try {
         sessionStorage.setItem('lms_fullscreen', 'true');
@@ -870,7 +903,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
           {/* Curriculum Chapters Accordion */}
           <div 
             ref={sidebarScrollRef}
-            className="flex-1 min-h-0 overflow-y-auto divide-y divide-border/40 overscroll-contain lesson-list-scroll scroll-smooth"
+            className="flex-1 min-h-0 overflow-y-auto divide-y divide-border/40 overscroll-contain lesson-list-scroll"
           >
             {filteredChapters.map((chapter, chIdx) => {
               const isOpen = openChapters[chIdx] ?? false;

@@ -1,13 +1,14 @@
 ---
-title: "Taylor Series Approximation & Analytical Derivation of Gradient Descent"
-description: "First-order Taylor series expansion, geometric intuition of tangents, proving why moving in negative gradient direction guarantees loss decrease."
-lessonType: "video"
-interactiveLab: "none"
+title: Taylor Series Approximation & Analytical Derivation of Gradient Descent
+description: First-order Taylor series expansion, geometric intuition of tangents, proving why moving in negative gradient direction guarantees loss decrease.
+lessonType: video
+interactiveLab: none
 duration: 38
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Sigmoid Neuron, Gradient Descent
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Learning: Introducing Taylor Series

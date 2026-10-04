@@ -1,13 +1,14 @@
 ---
-title: "From Rule-Based Expert Systems to Machine Learning"
-description: "Limitations of classical expert systems, human hand-crafted rules, and the fundamental paradigm shift to learning from data."
-lessonType: "video"
-interactiveLab: "none"
+title: From Rule-Based Expert Systems to Machine Learning
+description: Limitations of classical expert systems, human hand-crafted rules, and the fundamental paradigm shift to learning from data.
+lessonType: video
+interactiveLab: none
 duration: 25
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Expert Systems
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Expert Systems

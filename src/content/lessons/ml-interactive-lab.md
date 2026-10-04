@@ -1,11 +1,12 @@
 ---
-title: "Interactive Loss Surface & Gradient Descent Optimizer Lab"
-description: "Hands-on virtual laboratory visualizing convex and non-convex loss surfaces, gradient trajectories, and optimizer convergence mechanics."
-lessonType: "lab"
-interactiveLab: "gradient-descent"
+title: Interactive Loss Surface & Gradient Descent Optimizer Lab
+description: Hands-on virtual laboratory visualizing convex and non-convex loss surfaces, gradient trajectories, and optimizer convergence mechanics.
+lessonType: lab
+interactiveLab: gradient-descent
 duration: 25
+course: machine-learning
+chapter: Machine Learning Foundations
 ---
-
 Welcome to the **Loss Surface Optimization & Gradient Descent Lab**.
 
 Training machine learning models is fundamentally an optimization exercise: navigating high-dimensional parameter spaces to find global or high-quality local minima of empirical risk functions.

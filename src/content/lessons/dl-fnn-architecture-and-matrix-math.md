@@ -1,13 +1,14 @@
 ---
-title: "Feedforward Neural Network Architecture & Matrix Forward Pass"
-description: "Mathematical formulation of deep feedforward networks, layer notation, weight tensor shapes, bias vectors, and batched matrix forward propagation."
-lessonType: "video"
-interactiveLab: "none"
+title: Feedforward Neural Network Architecture & Matrix Forward Pass
+description: Mathematical formulation of deep feedforward networks, layer notation, weight tensor shapes, bias vectors, and batched matrix forward propagation.
+lessonType: video
+interactiveLab: none
 duration: 34
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Feedforward Neural Networks
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Deep Feedforward Network Layer Notation

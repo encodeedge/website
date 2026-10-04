@@ -1,11 +1,12 @@
 ---
-title: "Data Visualization & Plotting with Matplotlib"
-description: "Creating line charts, scatter plots, subplots, configuring axes, legends, and rendering visual output in Colab."
-lessonType: "video"
-interactiveLab: "none"
+title: Data Visualization & Plotting with Matplotlib
+description: Creating line charts, scatter plots, subplots, configuring axes, legends, and rendering visual output in Colab.
+lessonType: video
+interactiveLab: none
 duration: 24
+course: python
+chapter: Python Basics & Linear Algebra
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Basic: Plotting

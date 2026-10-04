@@ -1,13 +1,14 @@
 ---
-title: "Gated Memory Cells: Long Short-Term Memory (LSTM) & GRU"
-description: "Solving vanishing gradients across long sequences: forget gates, input gates, candidate states, cell state highways, and Gated Recurrent Units."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Gated Memory Cells: Long Short-Term Memory (LSTM) & GRU'
+description: 'Solving vanishing gradients across long sequences: forget gates, input gates, candidate states, cell state highways, and Gated Recurrent Units.'
+lessonType: video
+interactiveLab: none
 duration: 38
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Recurrent Neural Networks (RNNs)
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - The Constant Error Carousel: Additive Cell State Highways (C_t)

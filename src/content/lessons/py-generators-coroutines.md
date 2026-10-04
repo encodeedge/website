@@ -1,9 +1,11 @@
 ---
-title: "Iterators, Infinite Streams & Generator-Based Coroutines"
-description: "Yield expressions, bidirectional pipeline communication with send(), memory-efficient data streaming."
-lessonType: "video"
-videoUrl: "https://www.youtube.com/embed/D1twn9kLmYg"
+title: Iterators, Infinite Streams & Generator-Based Coroutines
+description: Yield expressions, bidirectional pipeline communication with send(), memory-efficient data streaming.
+lessonType: video
+videoUrl: https://www.youtube.com/embed/D1twn9kLmYg
 duration: 25
+course: python
+chapter: Advanced Python
 ---
 Generators suspend execution state on `yield`, allowing processing of multi-gigabyte datasets with near-zero memory consumption.
 

@@ -1,13 +1,14 @@
 ---
-title: "Combinatorial Foundations: Multiplication & Addition Principles"
-description: "Foundations of discrete counting: the rule of product (multiplication principle) with and without repetition, and the rule of sum (addition principle)."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Combinatorial Foundations: Multiplication & Addition Principles'
+description: 'Foundations of discrete counting: the rule of product (multiplication principle) with and without repetition, and the rule of sum (addition principle).'
+lessonType: video
+interactiveLab: none
 duration: 30
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Probability
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Introduction to Counting

@@ -1,13 +1,14 @@
 ---
-title: "Fitting Toy Data & Visualizing Optimization Trajectories"
-description: "Training sigmoid models on 2D non-linear toy datasets, recording weight updates, and animating parameter descent across loss contour valleys."
-lessonType: "video"
-interactiveLab: "none"
+title: Fitting Toy Data & Visualizing Optimization Trajectories
+description: Training sigmoid models on 2D non-linear toy datasets, recording weight updates, and animating parameter descent across loss contour valleys.
+lessonType: video
+interactiveLab: none
 duration: 32
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: 'Python: Sigmoid, Gradient Descent'
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Toy Data Fit

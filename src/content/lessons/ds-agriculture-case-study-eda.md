@@ -1,13 +1,14 @@
 ---
-title: "Real-World Case Study: End-to-End Agriculture Yield & Climate Analysis"
-description: "Multi-part practical case study: applying end-to-end data cleaning, descriptive metrics, and visualization to analyze crop yields against climatic variables."
-lessonType: "lab"
-interactiveLab: "none"
+title: 'Real-World Case Study: End-to-End Agriculture Yield & Climate Analysis'
+description: 'Multi-part practical case study: applying end-to-end data cleaning, descriptive metrics, and visualization to analyze crop yields against climatic variables.'
+lessonType: lab
+interactiveLab: none
 duration: 38
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Approaching Open-Ended DS Problems
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Multi-Part Agriculture Case Study

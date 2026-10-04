@@ -1,13 +1,14 @@
 ---
-title: "Deriving Analytical Backpropagation: Delta Error Signals & Weight Updates"
-description: "Step-by-step rigorous derivation of backpropagation error signals (delta vectors), weight gradient outer products, and reverse-mode accumulation."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Deriving Analytical Backpropagation: Delta Error Signals & Weight Updates'
+description: Step-by-step rigorous derivation of backpropagation error signals (delta vectors), weight gradient outer products, and reverse-mode accumulation.
+lessonType: video
+interactiveLab: none
 duration: 40
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: 'Learning in Feedforward Networks: Backpropagation'
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Mathematical Derivation of Output Layer Error (delta_L)

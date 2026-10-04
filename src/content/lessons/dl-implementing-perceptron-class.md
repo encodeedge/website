@@ -1,13 +1,14 @@
 ---
-title: "Implementing the Perceptron Class in Python from Scratch"
-description: "Building a custom Perceptron class: initializing weight vectors, implementing the dot product forward pass, and updating on misclassifications."
-lessonType: "video"
-interactiveLab: "none"
+title: Implementing the Perceptron Class in Python from Scratch
+description: 'Building a custom Perceptron class: initializing weight vectors, implementing the dot product forward pass, and updating on misclassifications.'
+lessonType: video
+interactiveLab: none
 duration: 35
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: 'Python: MP Neuron, Perceptron'
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Perceptron: Toy Example

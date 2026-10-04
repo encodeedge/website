@@ -1,9 +1,11 @@
 ---
-title: "Ridge, Lasso, ElasticNet & The Bias-Variance Tradeoff"
-description: "Combating overfitting through L1/L2 penalty constraints, feature sparsity, and cross-validation."
-lessonType: "article"
-videoUrl: ""
+title: Ridge, Lasso, ElasticNet & The Bias-Variance Tradeoff
+description: Combating overfitting through L1/L2 penalty constraints, feature sparsity, and cross-validation.
+lessonType: article
+videoUrl: ''
 duration: 21
+course: machine-learning
+chapter: Machine Learning Foundations
 ---
 Overfitting occurs when a model captures random noise in training data rather than true underlying relationships. Regularization constrains model capacity:
 

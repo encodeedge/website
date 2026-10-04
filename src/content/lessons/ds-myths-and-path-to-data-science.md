@@ -1,13 +1,14 @@
 ---
-title: "The Myths and The Modern Path to Becoming a Data Scientist"
-description: "Debunking common misconceptions about data science and navigating the structured path from programming fundamentals to applied machine learning."
-lessonType: "video"
-interactiveLab: "none"
+title: The Myths and The Modern Path to Becoming a Data Scientist
+description: Debunking common misconceptions about data science and navigating the structured path from programming fundamentals to applied machine learning.
+lessonType: video
+interactiveLab: none
 duration: 20
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Introduction
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - The Myths of Data Science

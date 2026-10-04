@@ -1,13 +1,14 @@
 ---
-title: "Softmax Activation & Multi-Class Cross-Entropy Loss"
-description: "Generalizing binary sigmoid to multinomial Softmax probabilities, deriving Categorical Cross-Entropy loss, and evaluating multi-class decision boundaries."
-lessonType: "video"
-interactiveLab: "none"
+title: Softmax Activation & Multi-Class Cross-Entropy Loss
+description: Generalizing binary sigmoid to multinomial Softmax probabilities, deriving Categorical Cross-Entropy loss, and evaluating multi-class decision boundaries.
+lessonType: video
+interactiveLab: none
 duration: 32
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Feedforward Neural Networks
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Softmax Probability Distribution Function

@@ -1,9 +1,11 @@
 ---
-title: "Object Protocols, Operator Overloading & C3 Linearization"
-description: "Implementing rich comparisons, dunder operators, custom hashability, and cooperative multiple inheritance with super()."
-lessonType: "article"
-videoUrl: ""
+title: Object Protocols, Operator Overloading & C3 Linearization
+description: Implementing rich comparisons, dunder operators, custom hashability, and cooperative multiple inheritance with super().
+lessonType: article
+videoUrl: ''
 duration: 24
+course: python
+chapter: Advanced Python
 ---
 Python classes are dynamic dictionaries governed by the descriptor protocol and special method lookups.
 

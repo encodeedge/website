@@ -1,13 +1,14 @@
 ---
-title: "Statistical vs Algorithmic Modelling: Decision Making, Perception & AI"
-description: "Comparing statistical inference with algorithmic prediction: knowledge representation, reasoning engines, automated decision-making, and links to modern AI."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Statistical vs Algorithmic Modelling: Decision Making, Perception & AI'
+description: 'Comparing statistical inference with algorithmic prediction: knowledge representation, reasoning engines, automated decision-making, and links to modern AI.'
+lessonType: video
+interactiveLab: none
 duration: 30
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Introduction
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Statistical Modelling

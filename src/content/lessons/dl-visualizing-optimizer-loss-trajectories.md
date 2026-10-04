@@ -1,13 +1,14 @@
 ---
-title: "Visualizing Optimizer Trajectories on Non-Convex Loss Landscapes"
-description: "Simulating and plotting 2D/3D optimization paths on Beale, Rosenbrock, and saddle-point loss surfaces to observe momentum and adaptive steps."
-lessonType: "video"
-interactiveLab: "none"
+title: Visualizing Optimizer Trajectories on Non-Convex Loss Landscapes
+description: Simulating and plotting 2D/3D optimization paths on Beale, Rosenbrock, and saddle-point loss surfaces to observe momentum and adaptive steps.
+lessonType: video
+interactiveLab: none
 duration: 30
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: 'Python: Optimization Algorithms'
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Classic Optimization Test Surfaces (Rosenbrock Banana, Beale, Saddle Points)

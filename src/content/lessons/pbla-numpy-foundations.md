@@ -1,11 +1,12 @@
 ---
-title: "NumPy Fundamentals for AI"
-description: "Array creation, multidimensional shapes, broadcasting semantics, vectorization, and fast arithmetic computations."
-lessonType: "video"
-interactiveLab: "none"
+title: NumPy Fundamentals for AI
+description: Array creation, multidimensional shapes, broadcasting semantics, vectorization, and fast arithmetic computations.
+lessonType: video
+interactiveLab: none
 duration: 35
+course: python
+chapter: Python Basics & Linear Algebra
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Basic: Numpy

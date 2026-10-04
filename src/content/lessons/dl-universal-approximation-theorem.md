@@ -1,13 +1,14 @@
 ---
-title: "The Universal Approximation Theorem & Sigmoid Towers"
-description: "Constructing tower and step functions with opposing sigmoids, illustrative proof of the Universal Approximation Theorem, and network depth vs width."
-lessonType: "video"
-interactiveLab: "none"
+title: The Universal Approximation Theorem & Sigmoid Towers
+description: Constructing tower and step functions with opposing sigmoids, illustrative proof of the Universal Approximation Theorem, and network depth vs width.
+lessonType: video
+interactiveLab: none
 duration: 35
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Representation Power of Functions
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Constructing Tower Functions via Paired Sigmoids

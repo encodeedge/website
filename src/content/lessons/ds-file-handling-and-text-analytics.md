@@ -1,13 +1,14 @@
 ---
-title: "File I/O (Read/Write) & String Processing: N-Grams and Word Counts"
-description: "Reading and writing files on disk, text stream processing, computing word frequency histograms, and extracting bigram / n-gram token statistics."
-lessonType: "video"
-interactiveLab: "none"
+title: 'File I/O (Read/Write) & String Processing: N-Grams and Word Counts'
+description: Reading and writing files on disk, text stream processing, computing word frequency histograms, and extracting bigram / n-gram token statistics.
+lessonType: video
+interactiveLab: none
 duration: 32
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Data Science Practice
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - File Handling - Read

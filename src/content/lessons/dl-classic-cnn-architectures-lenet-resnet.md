@@ -1,13 +1,14 @@
 ---
-title: "Modern CNN Architectures: From LeNet-5 to Deep Residual Networks"
-description: "Evolution of vision architectures: LeNet, AlexNet, VGG-16, Inception multi-scale filters, and ResNet skip connections solving vanishing degradation."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Modern CNN Architectures: From LeNet-5 to Deep Residual Networks'
+description: 'Evolution of vision architectures: LeNet, AlexNet, VGG-16, Inception multi-scale filters, and ResNet skip connections solving vanishing degradation.'
+lessonType: video
+interactiveLab: none
 duration: 38
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Convolutional Neural Networks (CNNs)
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Foundational Milestones: LeNet-5 & AlexNet 2012 ImageNet Breakthrough

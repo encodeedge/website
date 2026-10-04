@@ -1,13 +1,14 @@
 ---
-title: "Groupby Workflows: Split-Apply-Combine, Custom Lambdas & Multi-Index Aggregations"
-description: "Mastering the Split-Apply-Combine paradigm in Pandas: aggregating groups with mean/sum, custom apply functions, and multi-index hierarchical transformations."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Groupby Workflows: Split-Apply-Combine, Custom Lambdas & Multi-Index Aggregations'
+description: 'Mastering the Split-Apply-Combine paradigm in Pandas: aggregating groups with mean/sum, custom apply functions, and multi-index hierarchical transformations.'
+lessonType: video
+interactiveLab: none
 duration: 36
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Data Science Practice
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - GroupBy Method

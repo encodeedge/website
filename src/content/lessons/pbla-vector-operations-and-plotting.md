@@ -1,11 +1,12 @@
 ---
-title: "Vector Arithmetic & Geometric Plotting in Python"
-description: "Implementing vector addition, vector subtraction, and visualizing 2D/3D vectors with Matplotlib quiver plots."
-lessonType: "video"
-interactiveLab: "none"
+title: Vector Arithmetic & Geometric Plotting in Python
+description: Implementing vector addition, vector subtraction, and visualizing 2D/3D vectors with Matplotlib quiver plots.
+lessonType: video
+interactiveLab: none
 duration: 28
+course: python
+chapter: Python Basics & Linear Algebra
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Plotting Vectors

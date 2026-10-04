@@ -1,13 +1,14 @@
 ---
-title: "Summarising Data, Probability Guarantees & Hypothesis Testing"
-description: "Formulating numerical summaries, theoretical probability guarantees for sample estimates, null vs alternative hypotheses, and statistical significance."
-lessonType: "video"
-interactiveLab: "none"
+title: Summarising Data, Probability Guarantees & Hypothesis Testing
+description: Formulating numerical summaries, theoretical probability guarantees for sample estimates, null vs alternative hypotheses, and statistical significance.
+lessonType: video
+interactiveLab: none
 duration: 35
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Statistics
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - How to Describe & Summarise Data

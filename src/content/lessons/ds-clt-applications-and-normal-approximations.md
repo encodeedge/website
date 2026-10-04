@@ -1,13 +1,14 @@
 ---
-title: "CLT Applications: Likelihood of Sample Means & Binomial Approximation"
-description: "Calculating probabilities for sample means using z-tables, computing confidence intervals, and the De Moivre-Laplace normal approximation of binomial counts."
-lessonType: "video"
-interactiveLab: "none"
+title: 'CLT Applications: Likelihood of Sample Means & Binomial Approximation'
+description: Calculating probabilities for sample means using z-tables, computing confidence intervals, and the De Moivre-Laplace normal approximation of binomial counts.
+lessonType: video
+interactiveLab: none
 duration: 34
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Central Limit Theorem (CLT)
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Computing Areas Under the Normal Curve

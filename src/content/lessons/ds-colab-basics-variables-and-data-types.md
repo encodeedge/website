@@ -1,13 +1,14 @@
 ---
-title: "Google Colab, Basic Data Types, Variables & Type Conversions"
-description: "Hands-on Python environment configuration in Google Colab: scalar data types, integers, floating-point precision, booleans, string manipulation, and user input."
-lessonType: "video"
-interactiveLab: "none"
+title: Google Colab, Basic Data Types, Variables & Type Conversions
+description: 'Hands-on Python environment configuration in Google Colab: scalar data types, integers, floating-point precision, booleans, string manipulation, and user input.'
+lessonType: video
+interactiveLab: none
 duration: 32
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Introduction to Python
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Getting started with Python

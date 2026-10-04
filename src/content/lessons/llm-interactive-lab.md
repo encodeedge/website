@@ -1,11 +1,12 @@
 ---
-title: "Interactive Vector Embeddings & Semantic Search Lab"
-description: "Hands-on virtual laboratory exploring dense vector spaces, cosine similarity metrics, top-k retrieval, and chunking trade-offs for production RAG pipelines."
-lessonType: "lab"
-interactiveLab: "code-sandbox"
+title: Interactive Vector Embeddings & Semantic Search Lab
+description: Hands-on virtual laboratory exploring dense vector spaces, cosine similarity metrics, top-k retrieval, and chunking trade-offs for production RAG pipelines.
+lessonType: lab
+interactiveLab: code-sandbox
 duration: 25
+course: llm
+chapter: LLMs & AI Engineering
 ---
-
 Welcome to the **Vector Embeddings & Semantic Retrieval Lab**.
 
 Retrieval Augmented Generation (RAG) bridges private knowledge stores with foundational Large Language Models. At the center of every RAG system lies vector semantic search: converting raw text passages into high-dimensional geometric embeddings where semantic similarity maps directly to angular proximity.

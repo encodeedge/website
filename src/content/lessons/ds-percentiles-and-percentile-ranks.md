@@ -1,13 +1,14 @@
 ---
-title: "Measures of Relative Standing: Percentiles, Rank Calculation & Transformations"
-description: "Formal procedure for computing p-th percentiles, interpolation variants, percentile ranks, and the invariance of order statistics under monotonic shifts."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Measures of Relative Standing: Percentiles, Rank Calculation & Transformations'
+description: Formal procedure for computing p-th percentiles, interpolation variants, percentile ranks, and the invariance of order statistics under monotonic shifts.
+lessonType: video
+interactiveLab: none
 duration: 34
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Data Science Practice
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Introduction to Measures of Spread - Percentiles

@@ -1,13 +1,14 @@
 ---
-title: "Types of Data: Qualitative vs Quantitative Representations"
-description: "Taxonomy of data variables: nominal, ordinal, discrete, continuous, and appropriate tabular and frequency summary representations."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Types of Data: Qualitative vs Quantitative Representations'
+description: 'Taxonomy of data variables: nominal, ordinal, discrete, continuous, and appropriate tabular and frequency summary representations.'
+lessonType: video
+interactiveLab: none
 duration: 26
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Descriptive Statistics
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Introduction to Descriptive Statistics

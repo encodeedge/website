@@ -1,13 +1,14 @@
 ---
-title: "Visualizing Convolutional Filters and Feature Activation Maps"
-description: "Inspecting learned weight kernels, visualizing intermediate layer feature maps, and understanding hierarchical edge-to-object feature representations."
-lessonType: "video"
-interactiveLab: "none"
+title: Visualizing Convolutional Filters and Feature Activation Maps
+description: Inspecting learned weight kernels, visualizing intermediate layer feature maps, and understanding hierarchical edge-to-object feature representations.
+lessonType: video
+interactiveLab: none
 duration: 30
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: 'Python: CNNs'
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Extracting and Plotting Learned First-Layer Convolutional Kernels

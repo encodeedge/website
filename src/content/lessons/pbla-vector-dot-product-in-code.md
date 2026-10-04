@@ -1,11 +1,12 @@
 ---
-title: "Vector Dot Products & Projections in Code"
-description: "Comparing explicit loop computations with vectorized NumPy inner products, measuring performance, and verifying geometric projections."
-lessonType: "video"
-interactiveLab: "none"
+title: Vector Dot Products & Projections in Code
+description: Comparing explicit loop computations with vectorized NumPy inner products, measuring performance, and verifying geometric projections.
+lessonType: video
+interactiveLab: none
 duration: 22
+course: python
+chapter: Python Basics & Linear Algebra
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Vector Dot Product

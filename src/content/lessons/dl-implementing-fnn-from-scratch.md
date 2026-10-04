@@ -1,13 +1,14 @@
 ---
-title: "Coding a Deep Feedforward Neural Network from Scratch in Pure Python"
-description: "Writing an end-to-end NeuralNetwork class in pure Python/NumPy with configurable hidden layers, forward pass, and vectorized backprop."
-lessonType: "video"
-interactiveLab: "none"
+title: Coding a Deep Feedforward Neural Network from Scratch in Pure Python
+description: Writing an end-to-end NeuralNetwork class in pure Python/NumPy with configurable hidden layers, forward pass, and vectorized backprop.
+lessonType: video
+interactiveLab: none
 duration: 42
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: 'Python: Feedforward Neural Networks'
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Object-Oriented Neural Network Architecture in NumPy

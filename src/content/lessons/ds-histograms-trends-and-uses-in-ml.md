@@ -1,13 +1,14 @@
 ---
-title: "Histograms: Construction, Frequency Trends & Applications in Machine Learning"
-description: "Constructing frequency histograms, selecting optimal bin widths, identifying skewness and multimodal peaks, and feature distribution analysis for ML."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Histograms: Construction, Frequency Trends & Applications in Machine Learning'
+description: Constructing frequency histograms, selecting optimal bin widths, identifying skewness and multimodal peaks, and feature distribution analysis for ML.
+lessonType: video
+interactiveLab: none
 duration: 35
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Descriptive Statistics
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - How to describe Quantative Data? Histograms

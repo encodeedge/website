@@ -1,13 +1,14 @@
 ---
-title: "Competitive Machine Learning: Kaggle Workflow & Preprocessing"
-description: "Navigating ML competition platforms, baseline pipelines, handling missing values, encoding categories, and submitting predictions."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Competitive Machine Learning: Kaggle Workflow & Preprocessing'
+description: Navigating ML competition platforms, baseline pipelines, handling missing values, encoding categories, and submitting predictions.
+lessonType: video
+interactiveLab: none
 duration: 26
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Deep Learning Labs & Contests
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Contests intro

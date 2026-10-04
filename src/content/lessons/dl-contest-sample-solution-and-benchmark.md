@@ -1,13 +1,14 @@
 ---
-title: "Contest 1.1 Sample Solution & Benchmark Walkthrough"
-description: "Deconstructing the benchmark baseline solution, submitting first predictions, and evaluating leaderboard standings."
-lessonType: "lab"
-interactiveLab: "none"
+title: Contest 1.1 Sample Solution & Benchmark Walkthrough
+description: Deconstructing the benchmark baseline solution, submitting first predictions, and evaluating leaderboard standings.
+lessonType: lab
+interactiveLab: none
 duration: 25
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Deep Learning Labs & Contests
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Sample Solution File Analysis

@@ -1,13 +1,14 @@
 ---
-title: "Relational Time Series, Bivariate Trend Lines & Correlation Heatmaps"
-description: "Tracking trends over time with line plots (COVID-19 case data), regression trend lines, and constructing 2D correlation matrix heatmaps with diverging colormaps."
-lessonType: "video"
-interactiveLab: "none"
+title: Relational Time Series, Bivariate Trend Lines & Correlation Heatmaps
+description: Tracking trends over time with line plots (COVID-19 case data), regression trend lines, and constructing 2D correlation matrix heatmaps with diverging colormaps.
+lessonType: video
+interactiveLab: none
 duration: 34
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Data Science Practice
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Relational Scatter Plots

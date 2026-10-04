@@ -1,11 +1,12 @@
 ---
-title: "Vectors: Geometric Intuition, Dot Products & Unit Vectors"
-description: "Vector representations in geometric space, vector magnitudes, dot product formulas, and unit vector normalization."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Vectors: Geometric Intuition, Dot Products & Unit Vectors'
+description: Vector representations in geometric space, vector magnitudes, dot product formulas, and unit vector normalization.
+lessonType: video
+interactiveLab: none
 duration: 32
+course: python
+chapter: Python Basics & Linear Algebra
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Introduction to Vectors

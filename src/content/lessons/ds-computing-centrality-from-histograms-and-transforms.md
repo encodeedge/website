@@ -1,13 +1,14 @@
 ---
-title: "Computing Centrality from Grouped Histograms & Linear Transformations"
-description: "Estimating mean, median, and modal intervals from binned histogram tables, and proving the effect of linear scaling (y = ax + b) on centrality measures."
-lessonType: "video"
-interactiveLab: "none"
+title: Computing Centrality from Grouped Histograms & Linear Transformations
+description: Estimating mean, median, and modal intervals from binned histogram tables, and proving the effect of linear scaling (y = ax + b) on centrality measures.
+lessonType: video
+interactiveLab: none
 duration: 32
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Data Science Practice
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Compute median from a Histogram

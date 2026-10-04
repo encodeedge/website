@@ -22,10 +22,19 @@ import {
 
 export async function getStaticPaths() {
   const courses = await getCollection('courses');
-  return courses.map(course => ({
+  const paths = courses.map(course => ({
     params: { slug: course.id },
     props: { course },
   }));
+  // Legacy aliases for renamed courses
+  const dlCourse = courses.find(c => c.id === 'deep-learning');
+  if (dlCourse) {
+    paths.push({
+      params: { slug: 'deep-learning-foundations-and-neurons' },
+      props: { course: dlCourse },
+    });
+  }
+  return paths;
 }
 
 const { course } = Astro.props;

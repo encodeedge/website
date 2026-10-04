@@ -1,13 +1,14 @@
 ---
-title: "Continuous Random Variables: Probability Density Functions (PDF) vs Mass"
-description: "Transitioning to continuous domains: why single-point probability is zero, probability density functions (PDF), integration over intervals, and cumulative distribution functions (CDF)."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Continuous Random Variables: Probability Density Functions (PDF) vs Mass'
+description: 'Transitioning to continuous domains: why single-point probability is zero, probability density functions (PDF), integration over intervals, and cumulative distribution functions (CDF).'
+lessonType: video
+interactiveLab: none
 duration: 35
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Distributions & Sampling Strategies
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Continuous Random Variables

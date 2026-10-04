@@ -1,13 +1,14 @@
 ---
-title: "Building & Training Convolutional Networks with PyTorch nn.Module"
-description: "Constructing end-to-end PyTorch CNN pipelines: Conv2d, BatchNorm2d, MaxPool2d, linear classifiers, GPU CUDA acceleration, and evaluation on CIFAR-10."
-lessonType: "video"
-interactiveLab: "none"
+title: Building & Training Convolutional Networks with PyTorch nn.Module
+description: 'Constructing end-to-end PyTorch CNN pipelines: Conv2d, BatchNorm2d, MaxPool2d, linear classifiers, GPU CUDA acceleration, and evaluation on CIFAR-10.'
+lessonType: video
+interactiveLab: none
 duration: 40
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: 'Python: CNNs'
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Writing Custom CNNs subclassing PyTorch `nn.Module`

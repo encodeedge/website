@@ -1,13 +1,14 @@
 ---
-title: "The 6 Jars Framework: Data & Tasks"
-description: "Unpacking the first two jars: structured vs unstructured data representations, classification, regression, and generation tasks."
-lessonType: "video"
-interactiveLab: "none"
+title: 'The 6 Jars Framework: Data & Tasks'
+description: 'Unpacking the first two jars: structured vs unstructured data representations, classification, regression, and generation tasks.'
+lessonType: video
+interactiveLab: none
 duration: 28
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Expert Systems
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Data

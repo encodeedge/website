@@ -11,10 +11,43 @@ import { Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, C
 
 export async function getStaticPaths() {
   const lessons = await getCollection('lessons');
-  return lessons.map(lesson => ({
+  const paths = lessons.map(lesson => ({
     params: { slug: lesson.id },
     props: { lesson },
   }));
+  // Legacy aliases so old links (dlfn-*, fds-*, etc.) automatically resolve
+  for (const lesson of lessons) {
+    if (lesson.id.startsWith('dl-')) {
+      paths.push({
+        params: { slug: lesson.id.replace(/^dl-/, 'dlfn-') },
+        props: { lesson },
+      });
+    } else if (lesson.id.startsWith('ds-')) {
+      paths.push({
+        params: { slug: lesson.id.replace(/^ds-/, 'fds-') },
+        props: { lesson },
+      });
+    }
+  }
+  // Specific legacy names renamed during refinement
+  const specificAliases: Record<string, string> = {
+    'dl-backprop-computation-graphs-and-chain-rule': 'dl-computation-graphs-and-the-multivariate-chain-rule',
+    'dl-adaptive-learning-rates-rmsprop-adam': 'dl-adaptive-learning-rate-algorithms-ada-grad-rms-prop-and-adam',
+    'dl-batch-normalization-mechanics': 'dl-batch-normalization',
+    'dlfn-backprop-computation-graphs-and-chain-rule': 'dl-computation-graphs-and-the-multivariate-chain-rule',
+    'dlfn-adaptive-learning-rates-rmsprop-adam': 'dl-adaptive-learning-rate-algorithms-ada-grad-rms-prop-and-adam',
+    'dlfn-batch-normalization-mechanics': 'dl-batch-normalization',
+  };
+  for (const [oldSlug, targetId] of Object.entries(specificAliases)) {
+    const targetLesson = lessons.find(l => l.id === targetId);
+    if (targetLesson) {
+      paths.push({
+        params: { slug: oldSlug },
+        props: { lesson: targetLesson },
+      });
+    }
+  }
+  return paths;
 }
 
 const { lesson } = Astro.props;

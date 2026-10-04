@@ -1,13 +1,14 @@
 ---
-title: "Introduction to Inferential Statistics: Sample Statistics vs Population Parameters"
-description: "Bridging description to inference: population true parameters (mu, sigma) vs sample estimates (x_bar, s), sampling variability, and the roadmap for inference."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Introduction to Inferential Statistics: Sample Statistics vs Population Parameters'
+description: 'Bridging description to inference: population true parameters (mu, sigma) vs sample estimates (x_bar, s), sampling variability, and the roadmap for inference.'
+lessonType: video
+interactiveLab: none
 duration: 32
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Distributions of Sample Statistics
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Introduction to Inferential Statistics

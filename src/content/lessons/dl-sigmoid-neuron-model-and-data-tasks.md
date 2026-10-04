@@ -1,13 +1,14 @@
 ---
-title: "The Sigmoid Neuron Model: Logistic Activation & Probability Outputs"
-description: "Detailed mathematical formulation of the Sigmoid function, smoothness, outputs as calibrated probabilities, and handling continuous tasks."
-lessonType: "video"
-interactiveLab: "none"
+title: 'The Sigmoid Neuron Model: Logistic Activation & Probability Outputs'
+description: Detailed mathematical formulation of the Sigmoid function, smoothness, outputs as calibrated probabilities, and handling continuous tasks.
+lessonType: video
+interactiveLab: none
 duration: 34
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Sigmoid Neuron, Gradient Descent
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Sigmoid Model Part 1

@@ -1,13 +1,14 @@
 ---
-title: "The 6 Jars Framework: Models & Loss Functions"
-description: "Formulating parameterized hypothesis models and designing mathematical loss functions that quantify error on predictions."
-lessonType: "video"
-interactiveLab: "none"
+title: 'The 6 Jars Framework: Models & Loss Functions'
+description: Formulating parameterized hypothesis models and designing mathematical loss functions that quantify error on predictions.
+lessonType: video
+interactiveLab: none
 duration: 30
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Expert Systems
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Models

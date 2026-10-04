@@ -1,13 +1,14 @@
 ---
-title: "The CRISP-DM Framework: Business Understanding to Deployment"
-description: "Mastering the industry-standard Cross-Industry Standard Process for Data Mining: business objectives, data understanding, preparation, modeling, evaluation, and production deployment."
-lessonType: "video"
-interactiveLab: "none"
+title: 'The CRISP-DM Framework: Business Understanding to Deployment'
+description: 'Mastering the industry-standard Cross-Industry Standard Process for Data Mining: business objectives, data understanding, preparation, modeling, evaluation, and production deployment.'
+lessonType: video
+interactiveLab: none
 duration: 32
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Engineering Data Science Systems
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - CRISP - DM_Business Understanding

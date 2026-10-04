@@ -1,13 +1,14 @@
 ---
-title: "Spatial Convolutions, Kernel Filters, Strides & Max Pooling"
-description: "Why dense layers fail on high-resolution images: parameter explosion, spatial locality, 2D cross-correlation, kernel filters, padding, and subsampling."
-lessonType: "video"
-interactiveLab: "none"
+title: Spatial Convolutions, Kernel Filters, Strides & Max Pooling
+description: 'Why dense layers fail on high-resolution images: parameter explosion, spatial locality, 2D cross-correlation, kernel filters, padding, and subsampling.'
+lessonType: video
+interactiveLab: none
 duration: 36
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Convolutional Neural Networks (CNNs)
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Spatial Locality & Parameter Sharing vs Dense Networks

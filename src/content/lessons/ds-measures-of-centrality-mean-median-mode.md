@@ -1,13 +1,14 @@
 ---
-title: "Measures of Centrality: Mean, Median, and Mode"
-description: "Defining arithmetic mean, median rank positioning, and mode frequencies, and understanding their physical interpretation as centers of mass."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Measures of Centrality: Mean, Median, and Mode'
+description: Defining arithmetic mean, median rank positioning, and mode frequencies, and understanding their physical interpretation as centers of mass.
+lessonType: video
+interactiveLab: none
 duration: 30
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Data Science Practice
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Introduction - Measures of Centrality and Spread

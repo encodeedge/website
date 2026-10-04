@@ -1,13 +1,14 @@
 ---
-title: "Contest 1.1 Links, Rules & Dataset Setup"
-description: "Accessing the competition portal, dataset schema, submission format guidelines, and baseline evaluation metrics."
-lessonType: "article"
-interactiveLab: "none"
+title: Contest 1.1 Links, Rules & Dataset Setup
+description: Accessing the competition portal, dataset schema, submission format guidelines, and baseline evaluation metrics.
+lessonType: article
+interactiveLab: none
 duration: 20
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Deep Learning Labs & Contests
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Contest Links & Rules

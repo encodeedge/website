@@ -1,13 +1,14 @@
 ---
-title: "Building Custom Optimizers from Scratch in Python"
-description: "Writing modular optimizer classes (SGD, Momentum, RMSProp, Adam) and cleanly integrating them into the custom neural network training loop."
-lessonType: "video"
-interactiveLab: "none"
+title: Building Custom Optimizers from Scratch in Python
+description: Writing modular optimizer classes (SGD, Momentum, RMSProp, Adam) and cleanly integrating them into the custom neural network training loop.
+lessonType: video
+interactiveLab: none
 duration: 35
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: 'Python: Optimization Algorithms'
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Modular Python BaseOptimizer Architecture

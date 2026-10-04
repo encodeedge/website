@@ -1,12 +1,14 @@
 ---
-title: "CPython Memory Internals, Reference Counts & Garbage Collection"
-description: "Understanding PyObject headers, arena allocators, cyclic reference detection, and weakref mechanics."
-lessonType: "article"
-interactiveLab: "memory-explorer"
-interactiveLabTitle: "CPython Memory & Reference Counting Explorer"
-interactiveLabDescription: "Trace heap vs stack memory addresses, inspect ob_refcnt increments, and visualize cyclic references."
-videoUrl: ""
+title: CPython Memory Internals, Reference Counts & Garbage Collection
+description: Understanding PyObject headers, arena allocators, cyclic reference detection, and weakref mechanics.
+lessonType: article
+interactiveLab: memory-explorer
+interactiveLabTitle: CPython Memory & Reference Counting Explorer
+interactiveLabDescription: Trace heap vs stack memory addresses, inspect ob_refcnt increments, and visualize cyclic references.
+videoUrl: ''
 duration: 20
+course: python
+chapter: Advanced Python
 ---
 Every variable in Python is a pointer referencing an underlying `PyObject` allocated on the heap. In this lesson, we explore how CPython tracks reference counts and when the cyclic garbage collector triggers generation-based sweeps.
 

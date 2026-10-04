@@ -1,13 +1,14 @@
 ---
-title: "Week 3 Hands-on Assignment Walkthrough & Code Solutions"
-description: "Step-by-step deconstruction of algorithmic programming assignments: problem decomposition, debugging edge cases, and optimized reference solutions."
-lessonType: "lab"
-interactiveLab: "none"
+title: Week 3 Hands-on Assignment Walkthrough & Code Solutions
+description: 'Step-by-step deconstruction of algorithmic programming assignments: problem decomposition, debugging edge cases, and optimized reference solutions.'
+lessonType: lab
+interactiveLab: none
 duration: 35
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Introduction to Python
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Assignment Problems

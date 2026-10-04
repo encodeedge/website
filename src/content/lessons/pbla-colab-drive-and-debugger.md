@@ -1,11 +1,12 @@
 ---
-title: "Google Drive & Colab Integration with Python Debugger"
-description: "Connecting Google Drive to persistent Colab runtimes and using the Python Debugger (PDB) to step through code execution."
-lessonType: "video"
-interactiveLab: "none"
+title: Google Drive & Colab Integration with Python Debugger
+description: Connecting Google Drive to persistent Colab runtimes and using the Python Debugger (PDB) to step through code execution.
+lessonType: video
+interactiveLab: none
 duration: 25
+course: python
+chapter: Python Basics & Linear Algebra
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Google Drive and Colab Integration

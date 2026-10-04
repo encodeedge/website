@@ -1,11 +1,12 @@
 ---
-title: "Interactive CPython Stack & Heap Memory Explorer"
-description: "Hands-on virtual laboratory investigating PyObject references, refcounting, arena memory blocks, and generational garbage collection."
-lessonType: "lab"
-interactiveLab: "memory-explorer"
+title: Interactive CPython Stack & Heap Memory Explorer
+description: Hands-on virtual laboratory investigating PyObject references, refcounting, arena memory blocks, and generational garbage collection.
+lessonType: lab
+interactiveLab: memory-explorer
 duration: 25
+course: python
+chapter: Advanced Python
 ---
-
 Welcome to the **CPython Memory Architecture Interactive Lab**.
 
 High-performance AI pipelines in Python frequently suffer from silent memory bloat, unexpected object copies, and uncoordinated garbage collection pauses. In this hands-on laboratory, you will directly interact with CPython's memory structures.

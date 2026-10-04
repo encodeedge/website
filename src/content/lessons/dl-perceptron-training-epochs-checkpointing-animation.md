@@ -1,13 +1,14 @@
 ---
-title: "Perceptron Training Dynamics: Epochs, Checkpointing & Weight Animation"
-description: "Multi-epoch convergence loops, learning rate tuning, best-weights checkpointing on validation splits, and decision boundary animation."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Perceptron Training Dynamics: Epochs, Checkpointing & Weight Animation'
+description: Multi-epoch convergence loops, learning rate tuning, best-weights checkpointing on validation splits, and decision boundary animation.
+lessonType: video
+interactiveLab: none
 duration: 32
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: 'Python: MP Neuron, Perceptron'
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Epochs

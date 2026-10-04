@@ -1,13 +1,14 @@
 ---
-title: "Implementing Character-Level RNNs & Text Classifiers in PyTorch"
-description: "Building sequence models in PyTorch using nn.RNN and nn.LSTM, embedding layers, sequence packing, and training a text classification pipeline."
-lessonType: "video"
-interactiveLab: "none"
+title: Implementing Character-Level RNNs & Text Classifiers in PyTorch
+description: Building sequence models in PyTorch using nn.RNN and nn.LSTM, embedding layers, sequence packing, and training a text classification pipeline.
+lessonType: video
+interactiveLab: none
 duration: 40
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: 'Python: Sequence Models with PyTorch'
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Tokenization & `nn.Embedding` Vector Lookup Tables

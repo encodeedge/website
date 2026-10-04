@@ -1,13 +1,14 @@
 ---
-title: "MP Neuron: Loss Landscape, Brute-Force Learning & Evaluation"
-description: "Defining 0-1 and squared loss for binary outputs, systematic threshold search algorithm, and measuring classification accuracy."
-lessonType: "video"
-interactiveLab: "none"
+title: 'MP Neuron: Loss Landscape, Brute-Force Learning & Evaluation'
+description: Defining 0-1 and squared loss for binary outputs, systematic threshold search algorithm, and measuring classification accuracy.
+lessonType: video
+interactiveLab: none
 duration: 28
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: MP Neuron
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - MP Neuron Loss

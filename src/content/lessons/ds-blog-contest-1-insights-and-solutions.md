@@ -1,13 +1,14 @@
 ---
-title: "Blog Contest 1: Technical Writing, Case Study Analysis & Winners"
-description: "Reviewing winning submissions for the first data science blog competition: translating statistical findings into compelling technical narratives."
-lessonType: "article"
-interactiveLab: "none"
+title: 'Blog Contest 1: Technical Writing, Case Study Analysis & Winners'
+description: 'Reviewing winning submissions for the first data science blog competition: translating statistical findings into compelling technical narratives.'
+lessonType: article
+interactiveLab: none
 duration: 20
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Data Science Practice
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Bog Contest 1 - Winners

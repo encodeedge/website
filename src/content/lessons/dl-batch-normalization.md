@@ -1,8 +1,6 @@
 ---
 title: Batch Normalization
-description: >-
-  Mathematical mechanics of Batch Normalization, mini-batch mean and variance
-  standardization, learnable gamma/beta parameters, and inference statistics.
+description: Mathematical mechanics of Batch Normalization, mini-batch mean and variance standardization, learnable gamma/beta parameters, and inference statistics.
 lessonType: video
 interactiveLab: none
 duration: 32
@@ -10,6 +8,8 @@ isFree: false
 comingSoon: true
 draft: false
 tags: []
+course: deep-learning
+chapter: Vanishing and Exploding Gradients
 ---
 ### Curriculum Objectives
 

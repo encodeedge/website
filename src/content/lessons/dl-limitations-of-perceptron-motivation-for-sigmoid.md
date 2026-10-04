@@ -1,13 +1,14 @@
 ---
-title: "Why Perceptrons Fail: Non-Separable Data & Motivation for Sigmoid"
-description: "Recap of perceptron limits: non-separable data causing endless oscillations, step function zero derivative, and the need for smooth activations."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Why Perceptrons Fail: Non-Separable Data & Motivation for Sigmoid'
+description: 'Recap of perceptron limits: non-separable data causing endless oscillations, step function zero derivative, and the need for smooth activations.'
+lessonType: video
+interactiveLab: none
 duration: 25
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Sigmoid Neuron, Gradient Descent
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Recap from last lecture

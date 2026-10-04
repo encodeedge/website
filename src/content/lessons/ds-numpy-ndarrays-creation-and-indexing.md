@@ -1,13 +1,14 @@
 ---
-title: "NumPy n-Dimensional Arrays: Creation, Data Types & Multidimensional Slicing"
-description: "Constructing dense numerical arrays with NumPy: memory layout (C vs Fortran contiguous), shape attributes, multidimensional indexing, and view vs copy mechanics."
-lessonType: "video"
-interactiveLab: "none"
+title: 'NumPy n-Dimensional Arrays: Creation, Data Types & Multidimensional Slicing'
+description: 'Constructing dense numerical arrays with NumPy: memory layout (C vs Fortran contiguous), shape attributes, multidimensional indexing, and view vs copy mechanics.'
+lessonType: video
+interactiveLab: none
 duration: 35
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Numpy
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - NumPy

@@ -1,8 +1,6 @@
 ---
 title: Computation Graphs & The Multivariate Chain Rule
-description: >-
-  Visualizing neural execution as directed acyclic computation graphs, forward
-  evaluation of intermediate activations, and local Jacobian gradients.
+description: Visualizing neural execution as directed acyclic computation graphs, forward evaluation of intermediate activations, and local Jacobian gradients.
 lessonType: video
 interactiveLab: none
 duration: 36
@@ -10,6 +8,8 @@ isFree: false
 comingSoon: true
 draft: false
 tags: []
+course: deep-learning
+chapter: 'Learning in Feedforward Networks: Backpropagation'
 ---
 ### Curriculum Objectives
 

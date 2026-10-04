@@ -1,13 +1,14 @@
 ---
-title: "Sequence Modeling, Recurrent Cells & Backpropagation Through Time"
-description: "Sequential data representations, recurrent state recurrence h_t = tanh(W_hh h_{t-1} + W_xh x_t), unrolling through time, and BPTT gradients."
-lessonType: "video"
-interactiveLab: "none"
+title: Sequence Modeling, Recurrent Cells & Backpropagation Through Time
+description: Sequential data representations, recurrent state recurrence h_t = tanh(W_hh h_{t-1} + W_xh x_t), unrolling through time, and BPTT gradients.
+lessonType: video
+interactiveLab: none
 duration: 36
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Recurrent Neural Networks (RNNs)
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Sequential Data vs Static Features

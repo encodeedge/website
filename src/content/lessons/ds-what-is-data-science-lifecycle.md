@@ -1,13 +1,14 @@
 ---
-title: "What is Data Science: Lifecycle, Collection, Storage & Processing"
-description: "Understanding the fundamental data science lifecycle: raw data collection methodologies, structured storage paradigms, and preprocessing transformations."
-lessonType: "video"
-interactiveLab: "none"
+title: 'What is Data Science: Lifecycle, Collection, Storage & Processing'
+description: 'Understanding the fundamental data science lifecycle: raw data collection methodologies, structured storage paradigms, and preprocessing transformations.'
+lessonType: video
+interactiveLab: none
 duration: 25
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Introduction
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Introduction

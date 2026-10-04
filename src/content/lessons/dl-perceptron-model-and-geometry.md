@@ -1,13 +1,14 @@
 ---
-title: "Rosenblatt's Perceptron: Real-Valued Inputs & Affine Hyperplanes"
-description: "Moving beyond binary inputs: real-valued features, weighted sum w·x + b, sign activation, and geometric decision planes."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Rosenblatt''s Perceptron: Real-Valued Inputs & Affine Hyperplanes'
+description: 'Moving beyond binary inputs: real-valued features, weighted sum w·x + b, sign activation, and geometric decision planes.'
+lessonType: video
+interactiveLab: none
 duration: 34
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Perceptron
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Introduction

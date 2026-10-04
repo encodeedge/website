@@ -79,6 +79,9 @@ export default defineConfig({
 	],
   output: isCloudflare ? 'server' : 'static',
   adapter: isCloudflare ? cloudflare() : vercel(),
+  redirects: {
+    '/courses/deep-learning-foundations-and-neurons': '/courses/deep-learning',
+  },
   vite: {
     plugins: [tailwindcss()],
     build: {

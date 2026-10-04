@@ -1,12 +1,14 @@
 ---
-title: "Tokenization, Context Windows & High-Dimensional Embeddings"
-description: "Byte-Pair Encoding (BPE), SentencePiece, vector representations, and semantic distance metrics."
-lessonType: "article"
-interactiveLab: "code-sandbox"
-interactiveLabTitle: "Vector Embeddings & Semantic Cosine Distance Lab"
-interactiveLabDescription: "Compute dot product similarity scores, normalize high-dimensional vectors, and rank semantic text chunks."
-videoUrl: ""
+title: Tokenization, Context Windows & High-Dimensional Embeddings
+description: Byte-Pair Encoding (BPE), SentencePiece, vector representations, and semantic distance metrics.
+lessonType: article
+interactiveLab: code-sandbox
+interactiveLabTitle: Vector Embeddings & Semantic Cosine Distance Lab
+interactiveLabDescription: Compute dot product similarity scores, normalize high-dimensional vectors, and rank semantic text chunks.
+videoUrl: ''
 duration: 20
+course: llm
+chapter: LLMs & AI Engineering
 ---
 Language models do not read text directly—they process discrete numerical identifiers called **tokens**. In this lesson, we trace how strings convert into token embeddings in high-dimensional vector spaces (e.g. 1536 dimensions for OpenAI `text-embedding-3-small`).
 

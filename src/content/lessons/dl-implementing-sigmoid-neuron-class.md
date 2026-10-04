@@ -1,13 +1,14 @@
 ---
-title: "Implementing the Sigmoid Neuron Class from Scratch in Python"
-description: "Object-oriented implementation of SigmoidNeuron with vectorized forward pass, analytical gradient computation, and loss logging."
-lessonType: "video"
-interactiveLab: "none"
+title: Implementing the Sigmoid Neuron Class from Scratch in Python
+description: Object-oriented implementation of SigmoidNeuron with vectorized forward pass, analytical gradient computation, and loss logging.
+lessonType: video
+interactiveLab: none
 duration: 36
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: 'Python: Sigmoid, Gradient Descent'
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Class

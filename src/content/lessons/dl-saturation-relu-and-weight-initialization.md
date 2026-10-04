@@ -1,13 +1,14 @@
 ---
-title: "Gradient Satiation, ReLU Activations & He/Xavier Weight Initialization"
-description: "Analyzing why deep sigmoid networks suffer from vanishing gradients, dying ReLUs, Leaky ReLU variants, and Xavier/He variance-preserving initializations."
-lessonType: "video"
-interactiveLab: "none"
+title: Gradient Satiation, ReLU Activations & He/Xavier Weight Initialization
+description: Analyzing why deep sigmoid networks suffer from vanishing gradients, dying ReLUs, Leaky ReLU variants, and Xavier/He variance-preserving initializations.
+lessonType: video
+interactiveLab: none
 duration: 35
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Vanishing and Exploding Gradients
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Vanishing Gradients in Deep Sigmoid / Tanh Networks

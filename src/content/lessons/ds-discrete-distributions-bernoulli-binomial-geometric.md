@@ -1,13 +1,14 @@
 ---
-title: "Discrete Distributions: Bernoulli, Binomial, Geometric & Discrete Uniform"
-description: "Classic parametric families: single-trial Bernoulli trials, n-trial Binomial distributions, first-success Geometric distributions, and discrete Uniform spaces."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Discrete Distributions: Bernoulli, Binomial, Geometric & Discrete Uniform'
+description: 'Classic parametric families: single-trial Bernoulli trials, n-trial Binomial distributions, first-success Geometric distributions, and discrete Uniform spaces.'
+lessonType: video
+interactiveLab: none
 duration: 36
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Random Variables
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Bernoulli Distribution

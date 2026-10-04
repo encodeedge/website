@@ -1,11 +1,12 @@
 ---
-title: "Object-Oriented Programming & Classes"
-description: "Defining reusable classes, instance methods, __init__ constructor initialization, encapsulation, and state management in Python."
-lessonType: "video"
-interactiveLab: "none"
+title: Object-Oriented Programming & Classes
+description: Defining reusable classes, instance methods, __init__ constructor initialization, encapsulation, and state management in Python.
+lessonType: video
+interactiveLab: none
 duration: 28
+course: python
+chapter: Python Basics & Linear Algebra
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Basic: Class

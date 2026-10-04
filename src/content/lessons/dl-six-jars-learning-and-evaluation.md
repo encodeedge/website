@@ -1,13 +1,14 @@
 ---
-title: "The 6 Jars Framework: Learning Algorithms & Evaluation"
-description: "How learning algorithms search parameter space, minimizing loss, and quantitatively evaluating performance against ground truth."
-lessonType: "video"
-interactiveLab: "none"
+title: 'The 6 Jars Framework: Learning Algorithms & Evaluation'
+description: How learning algorithms search parameter space, minimizing loss, and quantitatively evaluating performance against ground truth.
+lessonType: video
+interactiveLab: none
 duration: 26
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Expert Systems
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Learning Algorithm

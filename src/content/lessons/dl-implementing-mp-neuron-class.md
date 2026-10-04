@@ -1,13 +1,14 @@
 ---
-title: "Implementing the MP Neuron Class in Python: Search & Inference"
-description: "Writing an object-oriented MPNeuron class from scratch with .fit() threshold grid search and vectorized .predict()."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Implementing the MP Neuron Class in Python: Search & Inference'
+description: Writing an object-oriented MPNeuron class from scratch with .fit() threshold grid search and vectorized .predict().
+lessonType: video
+interactiveLab: none
 duration: 30
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: 'Python: MP Neuron, Perceptron'
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Inference And Search

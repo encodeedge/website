@@ -1,13 +1,14 @@
 ---
-title: "Measures of Spread: Variance, Standard Deviation & Why We Square Deviations"
-description: "Quantifying data dispersion: mean absolute deviation, mathematical rationale for squared deviations, degrees of freedom, variance, and standard deviation."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Measures of Spread: Variance, Standard Deviation & Why We Square Deviations'
+description: 'Quantifying data dispersion: mean absolute deviation, mathematical rationale for squared deviations, degrees of freedom, variance, and standard deviation.'
+lessonType: video
+interactiveLab: none
 duration: 36
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Data Science Practice
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Measures of Spread

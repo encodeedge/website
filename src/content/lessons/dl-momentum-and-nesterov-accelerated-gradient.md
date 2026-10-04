@@ -1,13 +1,14 @@
 ---
-title: "Overcoming Ravines: Momentum & Nesterov Accelerated Gradient (NAG)"
-description: "Pathologies of standard gradient descent in ill-conditioned ravines, physical intuition of momentum, velocity vectors, and lookahead NAG correction."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Overcoming Ravines: Momentum & Nesterov Accelerated Gradient (NAG)'
+description: Pathologies of standard gradient descent in ill-conditioned ravines, physical intuition of momentum, velocity vectors, and lookahead NAG correction.
+lessonType: video
+interactiveLab: none
 duration: 36
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Optimization Algorithms in Deep Learning
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Ill-Conditioned Curvature & Oscillations in Ravines

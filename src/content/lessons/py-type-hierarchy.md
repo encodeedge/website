@@ -1,9 +1,11 @@
 ---
-title: "Numeric Primitives, Precision Traps & Sequence Protocol"
-description: "Arbitrary precision integers, IEEE-754 float rounding errors, Fraction, Decimal, and sequence dunders."
-lessonType: "article"
-videoUrl: ""
+title: Numeric Primitives, Precision Traps & Sequence Protocol
+description: Arbitrary precision integers, IEEE-754 float rounding errors, Fraction, Decimal, and sequence dunders.
+lessonType: article
+videoUrl: ''
 duration: 22
+course: python
+chapter: Advanced Python
 ---
 Python handles numbers with remarkable flexibility, but production machine learning pipelines require an exact understanding of memory sizing and precision limitations.
 

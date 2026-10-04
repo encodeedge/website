@@ -16,13 +16,13 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: fds-what-is-data-science-lifecycle
+          lessonRef: ds-what-is-data-science-lifecycle
       - discriminant: lesson
         value:
-          lessonRef: fds-statistical-vs-algorithmic-modelling
+          lessonRef: ds-statistical-vs-algorithmic-modelling
       - discriminant: lesson
         value:
-          lessonRef: fds-myths-and-path-to-data-science
+          lessonRef: ds-myths-and-path-to-data-science
       - discriminant: quiz
         value:
           quizRef: fds-week-1-quiz
@@ -33,13 +33,13 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: fds-engineering-aspects-and-system-perspective
+          lessonRef: ds-engineering-aspects-and-system-perspective
       - discriminant: lesson
         value:
-          lessonRef: fds-crisp-dm-framework
+          lessonRef: ds-crisp-dm-framework
       - discriminant: lesson
         value:
-          lessonRef: fds-programming-tools-why-python
+          lessonRef: ds-programming-tools-why-python
       - discriminant: quiz
         value:
           quizRef: fds-week-2-part-1-quiz
@@ -51,13 +51,13 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: fds-introduction-to-statistics-sampling-design
+          lessonRef: ds-introduction-to-statistics-sampling-design
       - discriminant: lesson
         value:
-          lessonRef: fds-summarising-data-probability-guarantees
+          lessonRef: ds-summarising-data-probability-guarantees
       - discriminant: lesson
         value:
-          lessonRef: fds-modelling-relationships-and-goodness-of-fit
+          lessonRef: ds-modelling-relationships-and-goodness-of-fit
       - discriminant: quiz
         value:
           quizRef: fds-week-2-part-2-quiz
@@ -68,13 +68,13 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: fds-colab-basics-variables-and-data-types
+          lessonRef: ds-colab-basics-variables-and-data-types
       - discriminant: lesson
         value:
-          lessonRef: fds-control-flow-and-functions
+          lessonRef: ds-control-flow-and-functions
       - discriminant: lesson
         value:
-          lessonRef: fds-assignment-walkthrough-python-basics
+          lessonRef: ds-assignment-walkthrough-python-basics
       - discriminant: quiz
         value:
           quizRef: fds-week-3-quiz
@@ -85,13 +85,13 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: fds-numpy-ndarrays-creation-and-indexing
+          lessonRef: ds-numpy-ndarrays-creation-and-indexing
       - discriminant: lesson
         value:
-          lessonRef: fds-vectorized-operations-and-broadcasting
+          lessonRef: ds-vectorized-operations-and-broadcasting
       - discriminant: lesson
         value:
-          lessonRef: fds-numerical-statistics-and-case-studies
+          lessonRef: ds-numerical-statistics-and-case-studies
       - discriminant: quiz
         value:
           quizRef: fds-week-8-quiz
@@ -102,10 +102,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: fds-pandas-series-and-indexing
+          lessonRef: ds-pandas-series-and-indexing
       - discriminant: lesson
         value:
-          lessonRef: fds-series-operations-and-financial-case-study
+          lessonRef: ds-series-operations-and-financial-case-study
       - discriminant: quiz
         value:
           quizRef: fds-week-9-quiz
@@ -116,10 +116,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: fds-distribution-visualizations
+          lessonRef: ds-distribution-visualizations
       - discriminant: lesson
         value:
-          lessonRef: fds-multivariate-facets-and-pair-plots
+          lessonRef: ds-multivariate-facets-and-pair-plots
       - discriminant: quiz
         value:
           quizRef: fds-week-11-quiz
@@ -130,10 +130,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: fds-open-ended-problem-framework
+          lessonRef: ds-open-ended-problem-framework
       - discriminant: lesson
         value:
-          lessonRef: fds-agriculture-case-study-eda
+          lessonRef: ds-agriculture-case-study-eda
   - title: Probability
     description: >-
       Discrete probability foundations: multiplication principle with/without
@@ -141,10 +141,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: fds-multiplication-and-addition-principles
+          lessonRef: ds-multiplication-and-addition-principles
       - discriminant: lesson
         value:
-          lessonRef: fds-permutations-combinations-subtractions
+          lessonRef: ds-permutations-combinations-subtractions
       - discriminant: quiz
         value:
           quizRef: fds-week-14-quiz
@@ -155,10 +155,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: fds-set-theory-sample-spaces-axioms
+          lessonRef: ds-set-theory-sample-spaces-axioms
       - discriminant: lesson
         value:
-          lessonRef: fds-conditional-probability-and-bayes-theorem
+          lessonRef: ds-conditional-probability-and-bayes-theorem
       - discriminant: quiz
         value:
           quizRef: fds-week-15-quiz
@@ -170,10 +170,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: fds-discrete-random-variables-pmf
+          lessonRef: ds-discrete-random-variables-pmf
       - discriminant: lesson
         value:
-          lessonRef: fds-discrete-distributions-bernoulli-binomial-geometric
+          lessonRef: ds-discrete-distributions-bernoulli-binomial-geometric
       - discriminant: quiz
         value:
           quizRef: fds-week-16-quiz
@@ -184,13 +184,13 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: fds-qualitative-vs-quantitative-data
+          lessonRef: ds-qualitative-vs-quantitative-data
       - discriminant: lesson
         value:
-          lessonRef: fds-histograms-trends-and-uses-in-ml
+          lessonRef: ds-histograms-trends-and-uses-in-ml
       - discriminant: lesson
         value:
-          lessonRef: fds-stem-and-leaf-and-scatter-plots
+          lessonRef: ds-stem-and-leaf-and-scatter-plots
       - discriminant: quiz
         value:
           quizRef: fds-week-4-quiz
@@ -201,10 +201,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: fds-continuous-random-variables-pdf
+          lessonRef: ds-continuous-random-variables-pdf
       - discriminant: lesson
         value:
-          lessonRef: fds-gaussian-normal-distribution-standardization
+          lessonRef: ds-gaussian-normal-distribution-standardization
       - discriminant: quiz
         value:
           quizRef: fds-week-17-quiz
@@ -216,10 +216,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: fds-inferential-statistics-and-sample-means
+          lessonRef: ds-inferential-statistics-and-sample-means
       - discriminant: lesson
         value:
-          lessonRef: fds-sampling-distributions-and-unbiased-estimators
+          lessonRef: ds-sampling-distributions-and-unbiased-estimators
   - title: Central Limit Theorem (CLT)
     description: >-
       The Central Limit Theorem: mathematical statements, empirical proof
@@ -227,10 +227,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: fds-central-limit-theorem-foundations
+          lessonRef: ds-central-limit-theorem-foundations
       - discriminant: lesson
         value:
-          lessonRef: fds-clt-applications-and-normal-approximations
+          lessonRef: ds-clt-applications-and-normal-approximations
       - discriminant: quiz
         value:
           quizRef: fds-week-19-quiz
@@ -242,10 +242,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: fds-chi-square-distribution-and-degrees-of-freedom
+          lessonRef: ds-chi-square-distribution-and-degrees-of-freedom
       - discriminant: lesson
         value:
-          lessonRef: fds-goodness-of-fit-and-independence-tests
+          lessonRef: ds-goodness-of-fit-and-independence-tests
       - discriminant: quiz
         value:
           quizRef: fds-week-20-quiz

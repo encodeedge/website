@@ -1,13 +1,14 @@
 ---
-title: "Permutations, Combinations & The Subtraction Principle"
-description: "Ordered arrangements (permutations nPr), unordered subsets (combinations nCr), complementary counting via the subtraction principle, and urn models."
-lessonType: "video"
-interactiveLab: "none"
+title: Permutations, Combinations & The Subtraction Principle
+description: Ordered arrangements (permutations nPr), unordered subsets (combinations nCr), complementary counting via the subtraction principle, and urn models.
+lessonType: video
+interactiveLab: none
 duration: 34
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Probability
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - The Subtraction Principle

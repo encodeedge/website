@@ -1,11 +1,12 @@
 ---
-title: "Python Data Structures: Lists, Tuples, Sets & Dictionaries"
-description: "Essential Python collection primitives: indexing, slicing, mutation, tuple immutability, set operations, and key-value dictionary mappings."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Python Data Structures: Lists, Tuples, Sets & Dictionaries'
+description: 'Essential Python collection primitives: indexing, slicing, mutation, tuple immutability, set operations, and key-value dictionary mappings.'
+lessonType: video
+interactiveLab: none
 duration: 30
+course: python
+chapter: Python Basics & Linear Algebra
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Basic: List

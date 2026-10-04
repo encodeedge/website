@@ -1,13 +1,14 @@
 ---
-title: "Commenting, Exception Handling & List Operations"
-description: "Writing robust Python code: try-except blocks, graceful error recovery, list indexing, slicing, comprehensions, and algorithmic mutations."
-lessonType: "video"
-interactiveLab: "none"
+title: Commenting, Exception Handling & List Operations
+description: 'Writing robust Python code: try-except blocks, graceful error recovery, list indexing, slicing, comprehensions, and algorithmic mutations.'
+lessonType: video
+interactiveLab: none
 duration: 34
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Data Science Practice
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Commenting and Error Handling

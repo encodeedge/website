@@ -1,9 +1,11 @@
 ---
-title: "The Machine Learning Paradigm: From Rules to Representations"
-description: "Contrasting heuristic programming with statistical learning, loss surfaces, and generalization bounds."
-lessonType: "article"
-videoUrl: ""
+title: 'The Machine Learning Paradigm: From Rules to Representations'
+description: Contrasting heuristic programming with statistical learning, loss surfaces, and generalization bounds.
+lessonType: article
+videoUrl: ''
 duration: 18
+course: machine-learning
+chapter: Machine Learning Foundations
 ---
 In traditional software engineering, developers write explicit logic and feed input data to produce outputs:
 

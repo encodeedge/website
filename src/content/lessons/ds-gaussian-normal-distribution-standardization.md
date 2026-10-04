@@ -1,13 +1,14 @@
 ---
-title: "The Normal (Gaussian) Distribution, Z-Scores & Sampling Protocols"
-description: "The bell curve: mathematical formulation of the Gaussian distribution, standard normal N(0, 1), empirical 68-95-99.7 rule, and randomized sampling strategies."
-lessonType: "video"
-interactiveLab: "none"
+title: The Normal (Gaussian) Distribution, Z-Scores & Sampling Protocols
+description: 'The bell curve: mathematical formulation of the Gaussian distribution, standard normal N(0, 1), empirical 68-95-99.7 rule, and randomized sampling strategies.'
+lessonType: video
+interactiveLab: none
 duration: 38
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Distributions & Sampling Strategies
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Normal Distribution Formulation

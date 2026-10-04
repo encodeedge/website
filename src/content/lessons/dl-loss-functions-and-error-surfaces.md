@@ -1,13 +1,14 @@
 ---
-title: "Loss Functions & Error Surfaces: Mean Squared Error vs Cross-Entropy"
-description: "Formulating differentiable loss functions for sigmoid neurons and visualizing non-linear error surfaces and local minima."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Loss Functions & Error Surfaces: Mean Squared Error vs Cross-Entropy'
+description: Formulating differentiable loss functions for sigmoid neurons and visualizing non-linear error surfaces and local minima.
+lessonType: video
+interactiveLab: none
 duration: 32
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Sigmoid Neuron, Gradient Descent
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Sigmoid: Loss Function

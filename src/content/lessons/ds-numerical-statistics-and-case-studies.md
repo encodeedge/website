@@ -1,13 +1,14 @@
 ---
-title: "Fast Descriptive Statistics with NumPy & Numerical Case Studies"
-description: "Computing array statistics (np.mean, np.median, np.std, np.percentile), verifying mathematical rules of statistics in code, and solving end-to-end data case studies."
-lessonType: "video"
-interactiveLab: "none"
+title: Fast Descriptive Statistics with NumPy & Numerical Case Studies
+description: Computing array statistics (np.mean, np.median, np.std, np.percentile), verifying mathematical rules of statistics in code, and solving end-to-end data case studies.
+lessonType: video
+interactiveLab: none
 duration: 34
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Numpy
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Stats with Numpy

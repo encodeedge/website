@@ -1,13 +1,14 @@
 ---
-title: "Modelling Variable Relationships & Goodness of Fit"
-description: "Exploring deterministic vs probabilistic associations between variables, linear relationship models, and evaluating goodness-of-fit metrics."
-lessonType: "video"
-interactiveLab: "none"
+title: Modelling Variable Relationships & Goodness of Fit
+description: Exploring deterministic vs probabilistic associations between variables, linear relationship models, and evaluating goodness-of-fit metrics.
+lessonType: video
+interactiveLab: none
 duration: 28
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Statistics
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - How to model relationship between variables?

@@ -1,11 +1,12 @@
 ---
-title: "Introduction to Matrices & Linear Transformations"
-description: "Understanding matrices as coordinate transformations, dimensionality, indexing conventions, and matrix transposition."
-lessonType: "video"
-interactiveLab: "none"
+title: Introduction to Matrices & Linear Transformations
+description: Understanding matrices as coordinate transformations, dimensionality, indexing conventions, and matrix transposition.
+lessonType: video
+interactiveLab: none
 duration: 26
+course: python
+chapter: Python Basics & Linear Algebra
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Introduction to Matrices

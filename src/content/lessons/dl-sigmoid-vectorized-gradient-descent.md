@@ -1,13 +1,14 @@
 ---
-title: "Vectorized Multi-Feature Gradient Descent in Python"
-description: "Generalizing the Sigmoid Neuron class to arbitrary feature dimensions using vectorized matrix-vector dot products and batch gradient accumulations."
-lessonType: "video"
-interactiveLab: "none"
+title: Vectorized Multi-Feature Gradient Descent in Python
+description: Generalizing the Sigmoid Neuron class to arbitrary feature dimensions using vectorized matrix-vector dot products and batch gradient accumulations.
+lessonType: video
+interactiveLab: none
 duration: 32
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Deep Learning Labs & Contests
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Vectorized Multi-Feature Gradient Descent

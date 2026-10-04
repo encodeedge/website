@@ -1,13 +1,14 @@
 ---
-title: "Multi-Panel Faceted Visualizations, Pair Plots & Boxen Plots"
-description: "Scaling visualization to high dimensions: FacetGrid subplots across categorical factors, pairwise scatter distributions with pair plots, and letter-value boxen plots."
-lessonType: "video"
-interactiveLab: "none"
+title: Multi-Panel Faceted Visualizations, Pair Plots & Boxen Plots
+description: 'Scaling visualization to high dimensions: FacetGrid subplots across categorical factors, pairwise scatter distributions with pair plots, and letter-value boxen plots.'
+lessonType: video
+interactiveLab: none
 duration: 32
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Visualisation
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Joint Distributions

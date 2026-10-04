@@ -1,13 +1,14 @@
 ---
-title: "Chi-Square Goodness-of-Fit Tests & Categorical Independence"
-description: "Testing categorical hypotheses: observed vs expected frequencies, Chi-Square statistic sum((O - E)^2 / E), critical values, and p-value decision thresholds."
-lessonType: "video"
-interactiveLab: "none"
+title: Chi-Square Goodness-of-Fit Tests & Categorical Independence
+description: 'Testing categorical hypotheses: observed vs expected frequencies, Chi-Square statistic sum((O - E)^2 / E), critical values, and p-value decision thresholds.'
+lessonType: video
+interactiveLab: none
 duration: 35
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Chi-Square Distribution
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Goodness-of-Fit Testing

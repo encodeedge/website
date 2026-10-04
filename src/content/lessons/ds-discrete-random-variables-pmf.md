@@ -1,13 +1,14 @@
 ---
-title: "Discrete Random Variables: Probability Mass Functions (PMF) & Expectations"
-description: "Mapping outcomes to real numbers: discrete random variables X, PMF valid conditions, expected value E[X], variance Var(X), and expectations of transformed variables."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Discrete Random Variables: Probability Mass Functions (PMF) & Expectations'
+description: 'Mapping outcomes to real numbers: discrete random variables X, PMF valid conditions, expected value E[X], variance Var(X), and expectations of transformed variables.'
+lessonType: video
+interactiveLab: none
 duration: 34
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Random Variables
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Random Variables Definition

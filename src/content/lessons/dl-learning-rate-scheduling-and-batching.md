@@ -1,13 +1,14 @@
 ---
-title: "Learning Rate Schedules, Mini-Batching & Convergence Diagnostics"
-description: "Implementing learning rate decay schedules, mini-batch vs full-batch updates, and diagnosing gradient vanishing or exploding during training."
-lessonType: "video"
-interactiveLab: "none"
+title: Learning Rate Schedules, Mini-Batching & Convergence Diagnostics
+description: Implementing learning rate decay schedules, mini-batch vs full-batch updates, and diagnosing gradient vanishing or exploding during training.
+lessonType: video
+interactiveLab: none
 duration: 30
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Deep Learning Labs & Contests
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Learning Rate Decay Schedules (Step, Exponential, Cosine)

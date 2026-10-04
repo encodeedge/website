@@ -1,13 +1,14 @@
 ---
-title: "Conditional Probability, Total Probability Law & Bayes' Rule"
-description: "Updating beliefs given evidence: conditional probability P(A|B), statistical independence, partition of sample spaces, law of total probability, and Bayes' Theorem."
-lessonType: "video"
-interactiveLab: "none"
+title: Conditional Probability, Total Probability Law & Bayes' Rule
+description: 'Updating beliefs given evidence: conditional probability P(A|B), statistical independence, partition of sample spaces, law of total probability, and Bayes'' Theorem.'
+lessonType: video
+interactiveLab: none
 duration: 38
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Sample Spaces & Events
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Conditional Probability

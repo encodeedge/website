@@ -1,13 +1,14 @@
 ---
-title: "Control Flow: If-Else, For, While Blocks & Writing Reusable Functions"
-description: "Implementing conditional branching, loop iterations, accumulator patterns, modular function definitions, parameter passing, and return signatures."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Control Flow: If-Else, For, While Blocks & Writing Reusable Functions'
+description: Implementing conditional branching, loop iterations, accumulator patterns, modular function definitions, parameter passing, and return signatures.
+lessonType: video
+interactiveLab: none
 duration: 34
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Introduction to Python
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - If, For, While Blocks

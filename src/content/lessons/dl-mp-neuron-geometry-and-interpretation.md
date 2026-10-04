@@ -1,13 +1,14 @@
 ---
-title: "Geometric Interpretation & Linear Separability of MP Neurons"
-description: "The decision boundary hyperplane in binary input space, orthogonal vector geometry, and linear separability limitations."
-lessonType: "video"
-interactiveLab: "none"
+title: Geometric Interpretation & Linear Separability of MP Neurons
+description: The decision boundary hyperplane in binary input space, orthogonal vector geometry, and linear separability limitations.
+lessonType: video
+interactiveLab: none
 duration: 24
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: MP Neuron
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - MP Neuron Geometry Basics

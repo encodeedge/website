@@ -1637,9 +1637,27 @@ export default config({
       path: 'src/content/lessons/*',
       previewUrl: `${previewBase}/preview/?branch={branch}&to=/lessons/{slug}`,
       format: { contentField: 'content' },
+      columns: ['course', 'chapter', 'lessonType', 'order'],
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
         description: fields.text({ label: 'Description', multiline: true }),
+        course: fields.select({
+          label: 'Course',
+          description: 'Course this lesson belongs to (helps filter and segregate lessons)',
+          options: [
+            { label: 'Deep Learning', value: 'deep-learning' },
+            { label: 'Foundations of Data Science', value: 'foundations-of-data-science' },
+            { label: 'Python & Linear Algebra', value: 'python' },
+            { label: 'Machine Learning', value: 'machine-learning' },
+            { label: 'LLM & Generative AI', value: 'llm' },
+            { label: 'Standalone / Other', value: 'standalone' },
+          ],
+          defaultValue: 'deep-learning'
+        }),
+        chapter: fields.text({
+          label: 'Chapter / Module',
+          description: 'Chapter or module name (e.g. "MP Neuron", "Perceptron", "Introduction")',
+        }),
         lessonType: fields.select({
           label: 'Lesson Type',
           options: [

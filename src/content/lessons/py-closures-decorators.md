@@ -1,9 +1,11 @@
 ---
-title: "Closures, Decorator Factories & functools.wraps"
-description: "Cell objects, free variables, creating parameterized decorators, and preserving function introspection metadata."
-lessonType: "video"
-videoUrl: "https://www.youtube.com/embed/r7Dtus7N4pI"
+title: Closures, Decorator Factories & functools.wraps
+description: Cell objects, free variables, creating parameterized decorators, and preserving function introspection metadata.
+lessonType: video
+videoUrl: https://www.youtube.com/embed/r7Dtus7N4pI
 duration: 26
+course: python
+chapter: Advanced Python
 ---
 A closure is a function object that remembers values in enclosing lexical scopes even if they are no longer in memory.
 

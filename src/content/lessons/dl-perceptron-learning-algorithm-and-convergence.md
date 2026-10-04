@@ -1,13 +1,14 @@
 ---
-title: "Perceptron Learning Algorithm: Convergence Proof & Limitations"
-description: "Step-by-step update rule w ← w + y·x, geometric convergence proof on linearly separable data, and failure on non-linear data (XOR)."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Perceptron Learning Algorithm: Convergence Proof & Limitations'
+description: Step-by-step update rule w ← w + y·x, geometric convergence proof on linearly separable data, and failure on non-linear data (XOR).
+lessonType: video
+interactiveLab: none
 duration: 36
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Perceptron
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Perceptron Learning Algorithm

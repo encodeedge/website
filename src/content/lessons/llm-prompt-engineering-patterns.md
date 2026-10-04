@@ -1,9 +1,11 @@
 ---
-title: "System Prompts, Few-Shot In-Context Learning & Structured Outputs"
-description: "Designing deterministic prompts, JSON Schema enforcement, Chain-of-Thought (CoT), and guardrails."
-lessonType: "video"
-videoUrl: "https://www.youtube.com/embed/jC4v5AS4RIM"
+title: System Prompts, Few-Shot In-Context Learning & Structured Outputs
+description: Designing deterministic prompts, JSON Schema enforcement, Chain-of-Thought (CoT), and guardrails.
+lessonType: video
+videoUrl: https://www.youtube.com/embed/jC4v5AS4RIM
 duration: 27
+course: llm
+chapter: LLMs & AI Engineering
 ---
 Prompt engineering is structured interface design for non-deterministic inference engines. We cover:
 - System Persona Framing

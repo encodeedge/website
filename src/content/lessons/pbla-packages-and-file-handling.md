@@ -1,11 +1,12 @@
 ---
-title: "Packages, Modules & File Handling"
-description: "Managing Python environments, importing external libraries, reading and writing files from local storage and cloud environments."
-lessonType: "video"
-interactiveLab: "none"
+title: Packages, Modules & File Handling
+description: Managing Python environments, importing external libraries, reading and writing files from local storage and cloud environments.
+lessonType: video
+interactiveLab: none
 duration: 25
+course: python
+chapter: Python Basics & Linear Algebra
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Basic: Packages

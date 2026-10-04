@@ -1,13 +1,14 @@
 ---
-title: "Sampling Distributions, Standard Errors & Unbiased Estimators"
-description: "Understanding the distribution of sample statistics across repeated sampling, standard error of the mean (SE = sigma/sqrt(n)), and Bessel's correction for sample variance."
-lessonType: "video"
-interactiveLab: "none"
+title: Sampling Distributions, Standard Errors & Unbiased Estimators
+description: Understanding the distribution of sample statistics across repeated sampling, standard error of the mean (SE = sigma/sqrt(n)), and Bessel's correction for sample variance.
+lessonType: video
+interactiveLab: none
 duration: 35
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Distributions of Sample Statistics
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Distribution of Sample Statistics

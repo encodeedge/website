@@ -1,13 +1,14 @@
 ---
-title: "Perceptron Loss Function & The General Learning Recipe"
-description: "Formulating the Perceptron criterion loss on misclassified points and deriving the iterative parameter adjustment recipe."
-lessonType: "video"
-interactiveLab: "none"
+title: Perceptron Loss Function & The General Learning Recipe
+description: Formulating the Perceptron criterion loss on misclassified points and deriving the iterative parameter adjustment recipe.
+lessonType: video
+interactiveLab: none
 duration: 28
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Perceptron
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Perceptron Loss Function

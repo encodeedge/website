@@ -1,13 +1,14 @@
 ---
-title: "Set Theory, Probability Axioms & Compound Event Spaces"
-description: "Modeling chance: sample space omega, elementary outcomes, set operations (union, intersection, complement), and Kolmogorov's three axioms of probability."
-lessonType: "video"
-interactiveLab: "none"
+title: Set Theory, Probability Axioms & Compound Event Spaces
+description: 'Modeling chance: sample space omega, elementary outcomes, set operations (union, intersection, complement), and Kolmogorov''s three axioms of probability.'
+lessonType: video
+interactiveLab: none
 duration: 32
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Sample Spaces & Events
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - The Element of Chance

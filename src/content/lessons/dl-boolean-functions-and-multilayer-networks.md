@@ -1,13 +1,14 @@
 ---
-title: "Implementing Complex Boolean Functions with Layered Neurons"
-description: "Why single neurons cannot solve XOR and non-linearly separable problems, and how stacking layers of neurons implements arbitrary Boolean functions."
-lessonType: "video"
-interactiveLab: "none"
+title: Implementing Complex Boolean Functions with Layered Neurons
+description: Why single neurons cannot solve XOR and non-linearly separable problems, and how stacking layers of neurons implements arbitrary Boolean functions.
+lessonType: video
+interactiveLab: none
 duration: 30
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Representation Power of Functions
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Minsky & Papert's XOR Problem Proof

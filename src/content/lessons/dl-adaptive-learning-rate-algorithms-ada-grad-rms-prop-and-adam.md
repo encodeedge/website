@@ -1,8 +1,6 @@
 ---
 title: 'Adaptive Learning Rate Algorithms: AdaGrad, RMSProp & Adam'
-description: >-
-  Per-parameter learning rates, historical squared gradient accumulation in
-  AdaGrad, exponential moving average in RMSProp, and bias-corrected Adam.
+description: Per-parameter learning rates, historical squared gradient accumulation in AdaGrad, exponential moving average in RMSProp, and bias-corrected Adam.
 lessonType: video
 interactiveLab: none
 duration: 38
@@ -10,6 +8,8 @@ isFree: false
 comingSoon: true
 draft: false
 tags: []
+course: deep-learning
+chapter: Optimization Algorithms in Deep Learning
 ---
 ### Curriculum Objectives
 

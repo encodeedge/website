@@ -1,13 +1,14 @@
 ---
-title: "Engineering Aspects & System Perspectives of Data Science"
-description: "Viewing data science beyond standalone scripts: production architecture pipelines, data contracts, scalability bottlenecks, and engineering rigor."
-lessonType: "video"
-interactiveLab: "none"
+title: Engineering Aspects & System Perspectives of Data Science
+description: 'Viewing data science beyond standalone scripts: production architecture pipelines, data contracts, scalability bottlenecks, and engineering rigor.'
+lessonType: video
+interactiveLab: none
 duration: 25
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Engineering Data Science Systems
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Engineering Aspects of Data Science

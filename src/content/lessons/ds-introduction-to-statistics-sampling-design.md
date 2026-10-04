@@ -1,13 +1,14 @@
 ---
-title: "Introduction to Statistics: Selecting Samples & Designing Experiments"
-description: "Statistical inference foundations: defining populations vs samples, sampling bias, randomized control trials, and sound experimental design."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Introduction to Statistics: Selecting Samples & Designing Experiments'
+description: 'Statistical inference foundations: defining populations vs samples, sampling bias, randomized control trials, and sound experimental design.'
+lessonType: video
+interactiveLab: none
 duration: 30
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Statistics
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Introduction to Statistics

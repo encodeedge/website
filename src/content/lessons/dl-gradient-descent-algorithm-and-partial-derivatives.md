@@ -1,13 +1,14 @@
 ---
-title: "Computing Analytical Gradients: Partial Derivatives for Weights and Bias"
-description: "Applying the calculus chain rule to derive dL/dw and dL/db, Sigmoid derivative properties, and the complete learning algorithm."
-lessonType: "video"
-interactiveLab: "none"
+title: 'Computing Analytical Gradients: Partial Derivatives for Weights and Bias'
+description: Applying the calculus chain rule to derive dL/dw and dL/db, Sigmoid derivative properties, and the complete learning algorithm.
+lessonType: video
+interactiveLab: none
 duration: 35
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: Sigmoid Neuron, Gradient Descent
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Learning: The complete learning algorithm

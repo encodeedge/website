@@ -1,13 +1,14 @@
 ---
-title: "Tuples, Hash Sets & Key-Value Dictionaries in Data Processing"
-description: "Working with immutable tuples, set union/intersection lookups, key-value dictionary mappings, and applying design thinking to algorithmic challenges."
-lessonType: "video"
-interactiveLab: "none"
+title: Tuples, Hash Sets & Key-Value Dictionaries in Data Processing
+description: Working with immutable tuples, set union/intersection lookups, key-value dictionary mappings, and applying design thinking to algorithmic challenges.
+lessonType: video
+interactiveLab: none
 duration: 36
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Data Science Practice
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Tuples & Sets

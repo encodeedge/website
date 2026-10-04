@@ -1,13 +1,14 @@
 ---
-title: "Vectorized Series Operations & The NIFTY Financial Case Study"
-description: "Element-wise transformations, handling index mismatches, and analyzing real-world historical stock index data from the NIFTY50 market benchmark."
-lessonType: "video"
-interactiveLab: "none"
+title: Vectorized Series Operations & The NIFTY Financial Case Study
+description: Element-wise transformations, handling index mismatches, and analyzing real-world historical stock index data from the NIFTY50 market benchmark.
+lessonType: video
+interactiveLab: none
 duration: 35
 comingSoon: true
 draft: false
+course: foundations-of-data-science
+chapter: Pandas
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Simple Operations

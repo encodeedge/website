@@ -24,16 +24,16 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-expert-systems-to-machine-learning
+          lessonRef: dl-expert-systems-to-machine-learning
       - discriminant: lesson
         value:
-          lessonRef: dlfn-six-jars-framework-data-and-tasks
+          lessonRef: dl-six-jars-framework-data-and-tasks
       - discriminant: lesson
         value:
-          lessonRef: dlfn-six-jars-models-and-loss-functions
+          lessonRef: dl-six-jars-models-and-loss-functions
       - discriminant: lesson
         value:
-          lessonRef: dlfn-six-jars-learning-and-evaluation
+          lessonRef: dl-six-jars-learning-and-evaluation
   - title: MP Neuron
     description: >-
       McCulloch-Pitts artificial neuron model: biological motivation, boolean
@@ -41,13 +41,13 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-mp-neuron-model-and-data
+          lessonRef: dl-mp-neuron-model-and-data
       - discriminant: lesson
         value:
-          lessonRef: dlfn-mp-neuron-loss-learning-evaluation
+          lessonRef: dl-mp-neuron-loss-learning-evaluation
       - discriminant: lesson
         value:
-          lessonRef: dlfn-mp-neuron-geometry-and-interpretation
+          lessonRef: dl-mp-neuron-geometry-and-interpretation
   - title: Perceptron
     description: >-
       Rosenblatt's Perceptron: real-valued feature spaces, hyperplanes,
@@ -55,28 +55,28 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-perceptron-model-and-geometry
+          lessonRef: dl-perceptron-model-and-geometry
       - discriminant: lesson
         value:
-          lessonRef: dlfn-perceptron-loss-and-learning-recipe
+          lessonRef: dl-perceptron-loss-and-learning-recipe
       - discriminant: lesson
         value:
-          lessonRef: dlfn-perceptron-learning-algorithm-and-convergence
+          lessonRef: dl-perceptron-learning-algorithm-and-convergence
   - title: 'Python: MP Neuron, Perceptron'
     description: Writing MP Neuron and Perceptron classes from scratch in Python.
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-data-preparation-binarisation-train-test
+          lessonRef: dl-data-preparation-binarisation-train-test
       - discriminant: lesson
         value:
-          lessonRef: dlfn-implementing-mp-neuron-class
+          lessonRef: dl-implementing-mp-neuron-class
       - discriminant: lesson
         value:
-          lessonRef: dlfn-implementing-perceptron-class
+          lessonRef: dl-implementing-perceptron-class
       - discriminant: lesson
         value:
-          lessonRef: dlfn-perceptron-training-epochs-checkpointing-animation
+          lessonRef: dl-perceptron-training-epochs-checkpointing-animation
   - title: Sigmoid Neuron, Gradient Descent
     description: >-
       Smooth logistic activations, continuous probability outputs, Taylor series
@@ -84,34 +84,34 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-limitations-of-perceptron-motivation-for-sigmoid
+          lessonRef: dl-limitations-of-perceptron-motivation-for-sigmoid
       - discriminant: lesson
         value:
-          lessonRef: dlfn-sigmoid-neuron-model-and-data-tasks
+          lessonRef: dl-sigmoid-neuron-model-and-data-tasks
       - discriminant: quiz
         value:
           quizRef: dlfn-sigmoid-model-and-data-quiz
       - discriminant: lesson
         value:
-          lessonRef: dlfn-loss-functions-and-error-surfaces
+          lessonRef: dl-loss-functions-and-error-surfaces
       - discriminant: quiz
         value:
           quizRef: dlfn-sigmoid-loss-function-quiz
       - discriminant: lesson
         value:
-          lessonRef: dlfn-taylor-series-and-gradient-descent-derivation
+          lessonRef: dl-taylor-series-and-gradient-descent-derivation
       - discriminant: quiz
         value:
           quizRef: dlfn-taylor-series-quiz
       - discriminant: lesson
         value:
-          lessonRef: dlfn-gradient-descent-algorithm-and-partial-derivatives
+          lessonRef: dl-gradient-descent-algorithm-and-partial-derivatives
       - discriminant: quiz
         value:
           quizRef: dlfn-sigmoid-gradient-descent-quiz
       - discriminant: lesson
         value:
-          lessonRef: dlfn-sigmoid-multi-parameter-and-evaluation
+          lessonRef: dl-sigmoid-multi-parameter-and-evaluation
       - discriminant: quiz
         value:
           quizRef: dlfn-sigmoid-evaluation-quiz
@@ -122,13 +122,13 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-visualizing-sigmoid-and-loss-surfaces
+          lessonRef: dl-visualizing-sigmoid-and-loss-surfaces
       - discriminant: lesson
         value:
-          lessonRef: dlfn-implementing-sigmoid-neuron-class
+          lessonRef: dl-implementing-sigmoid-neuron-class
       - discriminant: lesson
         value:
-          lessonRef: dlfn-fitting-toy-data-and-gradient-trajectories
+          lessonRef: dl-fitting-toy-data-and-gradient-trajectories
   - title: Representation Power of Functions
     description: >-
       Universal Approximation Theorem, why deep architectures can approximate
@@ -136,10 +136,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-boolean-functions-and-multilayer-networks
+          lessonRef: dl-boolean-functions-and-multilayer-networks
       - discriminant: lesson
         value:
-          lessonRef: dlfn-universal-approximation-theorem
+          lessonRef: dl-universal-approximation-theorem
   - title: Feedforward Neural Networks
     description: >-
       Deep multilayer perceptrons, layer notation, batched matrix forward
@@ -147,10 +147,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-fnn-architecture-and-matrix-math
+          lessonRef: dl-fnn-architecture-and-matrix-math
       - discriminant: lesson
         value:
-          lessonRef: dlfn-fnn-loss-and-softmax-multiclass
+          lessonRef: dl-fnn-loss-and-softmax-multiclass
       - discriminant: quiz
         value:
           quizRef: dlfn-fnn-architecture-quiz
@@ -162,10 +162,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-backprop-computation-graphs-and-chain-rule
+          lessonRef: dl-computation-graphs-and-the-multivariate-chain-rule
       - discriminant: lesson
         value:
-          lessonRef: dlfn-backprop-derivation-and-gradient-equations
+          lessonRef: dl-backprop-derivation-and-gradient-equations
       - discriminant: quiz
         value:
           quizRef: dlfn-backprop-quiz
@@ -176,10 +176,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-implementing-fnn-from-scratch
+          lessonRef: dl-implementing-fnn-from-scratch
       - discriminant: lesson
         value:
-          lessonRef: dlfn-training-fnn-on-mnist
+          lessonRef: dl-training-fnn-on-mnist
   - title: Optimization Algorithms in Deep Learning
     description: >-
       Mastering modern optimizers: ill-conditioned curvature ravines, Momentum,
@@ -187,10 +187,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-momentum-and-nesterov-accelerated-gradient
+          lessonRef: dl-momentum-and-nesterov-accelerated-gradient
       - discriminant: lesson
         value:
-          lessonRef: dlfn-adaptive-learning-rates-rmsprop-adam
+          lessonRef: dl-adaptive-learning-rate-algorithms-ada-grad-rms-prop-and-adam
       - discriminant: quiz
         value:
           quizRef: dlfn-optimization-algorithms-quiz
@@ -202,10 +202,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-implementing-momentum-rmsprop-adam
+          lessonRef: dl-implementing-momentum-rmsprop-adam
       - discriminant: lesson
         value:
-          lessonRef: dlfn-visualizing-optimizer-loss-trajectories
+          lessonRef: dl-visualizing-optimizer-loss-trajectories
   - title: Vanishing and Exploding Gradients
     description: >-
       Understanding gradient flow pathologies in deep networks: Sigmoid
@@ -214,10 +214,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-saturation-relu-and-weight-initialization
+          lessonRef: dl-saturation-relu-and-weight-initialization
       - discriminant: lesson
         value:
-          lessonRef: dlfn-batch-normalization-mechanics
+          lessonRef: dl-batch-normalization
   - title: Convolutional Neural Networks (CNNs)
     description: >-
       Computer vision with spatial convolutions: kernel filtering, padding,
@@ -226,10 +226,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-cnn-spatial-features-convolutions-pooling
+          lessonRef: dl-cnn-spatial-features-convolutions-pooling
       - discriminant: lesson
         value:
-          lessonRef: dlfn-classic-cnn-architectures-lenet-resnet
+          lessonRef: dl-classic-cnn-architectures-lenet-resnet
       - discriminant: quiz
         value:
           quizRef: dlfn-cnn-quiz
@@ -240,10 +240,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-building-cnns-with-pytorch
+          lessonRef: dl-building-cnns-with-pytorch
       - discriminant: lesson
         value:
-          lessonRef: dlfn-visualizing-cnn-filters-and-feature-maps
+          lessonRef: dl-visualizing-cnn-filters-and-feature-maps
   - title: Recurrent Neural Networks (RNNs)
     description: >-
       Sequence modeling across time: recurrent feedback cells, Backpropagation
@@ -251,10 +251,10 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-recurrent-networks-bptt-and-sequence-modeling
+          lessonRef: dl-recurrent-networks-bptt-and-sequence-modeling
       - discriminant: lesson
         value:
-          lessonRef: dlfn-lstms-and-grus-gated-memory
+          lessonRef: dl-lstms-and-grus-gated-memory
   - title: 'Python: Sequence Models with PyTorch'
     description: >-
       Implementing character-level RNNs, sequence embeddings, and text
@@ -262,7 +262,7 @@ chapters:
     items:
       - discriminant: lesson
         value:
-          lessonRef: dlfn-implementing-rnn-lstm-in-pytorch
+          lessonRef: dl-implementing-rnn-lstm-in-pytorch
 enrollmentMode: free
 prerequisites: []
 featured: false

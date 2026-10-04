@@ -1,13 +1,14 @@
 ---
-title: "Training & Validation on Image Benchmarks (MNIST / FashionMNIST)"
-description: "Training the custom neural network on MNIST digit classification: loss logging, epoch progress bars, validation accuracy, and confusion matrix analysis."
-lessonType: "video"
-interactiveLab: "none"
+title: Training & Validation on Image Benchmarks (MNIST / FashionMNIST)
+description: 'Training the custom neural network on MNIST digit classification: loss logging, epoch progress bars, validation accuracy, and confusion matrix analysis.'
+lessonType: video
+interactiveLab: none
 duration: 35
 comingSoon: true
 draft: false
+course: deep-learning
+chapter: 'Python: Feedforward Neural Networks'
 ---
-
 ### Curriculum Objectives
 This lesson covers the core engineering concepts and implementations for:
 - Loading and Normalizing MNIST / FashionMNIST Image Arrays

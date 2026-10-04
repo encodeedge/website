@@ -17,6 +17,11 @@ chapters:
       - discriminant: lesson
         value:
           lessonRef: dl-faq-on-course
+  - title: Python Basics
+    items:
+      - discriminant: lesson
+        value:
+          lessonRef: py-python-basics-about-this-chapter
   - title: Expert Systems
     description: >-
       The paradigm shift from heuristic expert systems to data-driven learning
@@ -27,13 +32,13 @@ chapters:
           lessonRef: dl-expert-systems-to-machine-learning
       - discriminant: lesson
         value:
-          lessonRef: dl-data-and-tasks
+          lessonRef: dl-six-jars-framework-data-and-tasks
       - discriminant: lesson
         value:
-          lessonRef: dl-models-and-loss-functions
+          lessonRef: dl-six-jars-models-and-loss-functions
       - discriminant: lesson
         value:
-          lessonRef: dl-learning-algorithms-and-evaluation
+          lessonRef: dl-six-jars-learning-and-evaluation
   - title: MP Neuron
     description: >-
       McCulloch-Pitts artificial neuron model: biological motivation, boolean

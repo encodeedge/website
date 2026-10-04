@@ -14,6 +14,9 @@ chapters:
       - discriminant: lesson
         value:
           lessonRef: dl-welcome
+      - discriminant: lesson
+        value:
+          lessonRef: dl-faq-on-course
   - title: Expert Systems
     description: >-
       The paradigm shift from heuristic expert systems to data-driven learning

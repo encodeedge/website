@@ -9,6 +9,11 @@ instructor: atul-jha
 level: intermediate
 status: published
 chapters:
+  - title: Welcome
+    items:
+      - discriminant: lesson
+        value:
+          lessonRef: dl-welcome
   - title: Expert Systems
     description: >-
       The paradigm shift from heuristic expert systems to data-driven learning

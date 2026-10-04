@@ -130,7 +130,14 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
     }
   }, [currentChapterIndex, currentLesson.id]);
 
-  // Auto-scroll the sidebar container to center on the active lesson without visible blip or jump
+  // Save manual sidebar scrolling to session storage
+  const handleSidebarScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    try {
+      sessionStorage.setItem(`sidebar_scroll_${courseId}`, String(e.currentTarget.scrollTop));
+    } catch {}
+  };
+
+  // Auto-scroll the sidebar container to center on the active lesson only when currentLesson changes
   useEffect(() => {
     // 1. Immediately restore saved scroll position if available
     try {
@@ -149,7 +156,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
         const targetRect = target.getBoundingClientRect();
 
         // If active lesson is already visible in the viewport (e.g. user just clicked it),
-        // DO NOT scroll at all! This prevents any jarring jump or scroll blip under the user's eyes.
+        // DO NOT scroll at all! This prevents any jarring jump or scroll blip.
         const isAlreadyVisible = (
           targetRect.top >= containerRect.top + 24 &&
           targetRect.bottom <= containerRect.bottom - 24
@@ -185,7 +192,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
     return () => {
       cancelAnimationFrame(rId);
     };
-  }, [currentLesson.id, currentChapterIndex, openChapters, sidebarOpen, courseId]);
+  }, [currentLesson.id, courseId]);
   
   // Progress & Completion state
   const [completedItems, setCompletedItems] = useState<string[]>([]);
@@ -399,15 +406,6 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
       window.removeEventListener('lms_progress_updated', loadState);
     };
   }, [courseId, currentLesson.id]);
-
-  // Auto-expand the chapter containing current lesson
-  useEffect(() => {
-    chapters.forEach((ch, idx) => {
-      if (ch.items.some(it => it.id === currentLesson.id)) {
-        setOpenChapters(prev => ({ ...prev, [idx]: true }));
-      }
-    });
-  }, [currentLesson.id, chapters]);
 
   // Auto-collapse sidebar on mobile screens on mount
   useEffect(() => {
@@ -903,6 +901,7 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
           {/* Curriculum Chapters Accordion */}
           <div 
             ref={sidebarScrollRef}
+            onScroll={handleSidebarScroll}
             className="flex-1 min-h-0 overflow-y-auto divide-y divide-border/40 overscroll-contain lesson-list-scroll"
           >
             {filteredChapters.map((chapter, chIdx) => {

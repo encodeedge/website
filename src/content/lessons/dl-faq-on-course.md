@@ -10,8 +10,6 @@ isFree: false
 comingSoon: false
 draft: false
 tags: []
-course: deep-learning
-chapter: Welcome
 ---
 ## **Prerequisites :**
 

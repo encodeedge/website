@@ -114,37 +114,80 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
   const notesSaveTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Fullscreen state
+  const studioRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+      const active = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
+      setIsFullscreen(active);
+      if (active) {
+        document.body.classList.add('in-course-fullscreen');
+        document.documentElement.classList.add('in-course-fullscreen');
+      } else {
+        document.body.classList.remove('in-course-fullscreen');
+        document.documentElement.classList.remove('in-course-fullscreen');
+      }
     };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isFullscreen) {
+        if (document.fullscreenElement || (document as any).webkitFullscreenElement) {
+          if (document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+          } else if ((document as any).webkitExitFullscreen) {
+            (document as any).webkitExitFullscreen();
+          }
+        }
+        setIsFullscreen(false);
+        document.body.classList.remove('in-course-fullscreen');
+        document.documentElement.classList.remove('in-course-fullscreen');
+      }
+    };
+
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    window.addEventListener('keydown', handleKeyDown);
+
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
       document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.classList.remove('in-course-fullscreen');
+      document.documentElement.classList.remove('in-course-fullscreen');
     };
-  }, []);
+  }, [isFullscreen]);
 
   const toggleFullscreen = async () => {
     try {
-      if (!document.fullscreenElement) {
-        if (document.documentElement.requestFullscreen) {
-          await document.documentElement.requestFullscreen();
-        } else if ((document.documentElement as any).webkitRequestFullscreen) {
-          await (document.documentElement as any).webkitRequestFullscreen();
+      const isCurrentlyFs = !!(document.fullscreenElement || (document as any).webkitFullscreenElement) || isFullscreen;
+
+      if (!isCurrentlyFs) {
+        setIsFullscreen(true);
+        document.body.classList.add('in-course-fullscreen');
+        document.documentElement.classList.add('in-course-fullscreen');
+
+        const el = studioRef.current || document.documentElement;
+        if (el.requestFullscreen) {
+          await el.requestFullscreen();
+        } else if ((el as any).webkitRequestFullscreen) {
+          await (el as any).webkitRequestFullscreen();
         }
       } else {
-        if (document.exitFullscreen) {
-          await document.exitFullscreen();
-        } else if ((document as any).webkitExitFullscreen) {
-          await (document as any).webkitExitFullscreen();
+        setIsFullscreen(false);
+        document.body.classList.remove('in-course-fullscreen');
+        document.documentElement.classList.remove('in-course-fullscreen');
+
+        if (document.fullscreenElement || (document as any).webkitFullscreenElement) {
+          if (document.exitFullscreen) {
+            await document.exitFullscreen();
+          } else if ((document as any).webkitExitFullscreen) {
+            await (document as any).webkitExitFullscreen();
+          }
         }
       }
     } catch (err) {
-      console.error('Failed to toggle fullscreen:', err);
+      console.warn('Fullscreen toggle issue, CSS fullscreen active:', err);
     }
   };
 
@@ -386,10 +429,18 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
   }, [chapters, searchQuery, modeTab, totalPracticeCount]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-[#E5E795]/30 selection:text-foreground">
+    <div 
+      ref={studioRef}
+      id="course-learning-studio"
+      className={`min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-[#E5E795]/30 selection:text-foreground ${
+        isFullscreen ? 'fixed inset-0 z-[99999] w-screen h-screen overflow-y-auto course-studio-fullscreen' : ''
+      }`}
+    >
       
       {/* ── Top Header Navigation Bar ────────────────────────────────────────── */}
-      <header className="h-14 border-b border-border bg-card/90 px-4 flex items-center justify-between sticky top-[var(--site-header-height,3.5rem)] z-40 backdrop-blur-md">
+      <header className={`h-14 border-b border-border bg-card/90 px-4 flex items-center justify-between sticky ${
+        isFullscreen ? 'top-0' : 'top-[var(--site-header-height,3.5rem)]'
+      } z-40 backdrop-blur-md course-studio-header`}>
         <div className="flex items-center gap-3 min-w-0">
           <a
             href={`/courses/${courseId}`}
@@ -458,7 +509,9 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
       {/* Mobile Backdrop Overlay when Drawer is open */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 top-[calc(var(--site-header-height,3.5rem)+3.5rem)] bg-background/60 backdrop-blur-xs z-25 md:hidden"
+          className={`fixed inset-0 ${
+            isFullscreen ? 'top-14' : 'top-[calc(var(--site-header-height,3.5rem)+3.5rem)]'
+          } bg-background/60 backdrop-blur-xs z-25 md:hidden`}
           onClick={() => setSidebarOpen(false)}
           aria-hidden="true"
         />
@@ -469,7 +522,11 @@ export const CourseLearningStudio: React.FC<CourseLearningStudioProps> = ({
 
         {/* ── Left Sidebar (Curriculum Drawer) ────────────────────────────────── */}
         <aside 
-          className={`sticky top-[calc(var(--site-header-height,3.5rem)+3.5rem)] h-[calc(100vh-var(--site-header-height,3.5rem)-3.5rem)] max-h-[calc(100vh-var(--site-header-height,3.5rem)-3.5rem)] flex flex-col shrink-0 z-30 border-r border-border bg-card/95 backdrop-blur-md transition-all duration-300 ease-in-out ${
+          className={`sticky ${
+            isFullscreen 
+              ? 'top-14 h-[calc(100vh-3.5rem)] max-h-[calc(100vh-3.5rem)]' 
+              : 'top-[calc(var(--site-header-height,3.5rem)+3.5rem)] h-[calc(100vh-var(--site-header-height,3.5rem)-3.5rem)] max-h-[calc(100vh-var(--site-header-height,3.5rem)-3.5rem)]'
+          } flex flex-col shrink-0 z-30 border-r border-border bg-card/95 backdrop-blur-md transition-all duration-300 ease-in-out ${
             sidebarOpen ? 'w-84 max-w-[85vw] md:w-88 lg:w-96' : 'w-0 -translate-x-full overflow-hidden border-none pointer-events-none'
           }`}
         >

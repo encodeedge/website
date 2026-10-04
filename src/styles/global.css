@@ -593,5 +593,47 @@ body {
   background-color: rgba(156, 163, 175, 0.7);
 }
 
+/* ── Course / Learning Studio Fullscreen Mode ────────────────────────────────── */
+:root:fullscreen .site-navbar-container,
+:root:fullscreen .site-announcement-container,
+:root:fullscreen .site-footer-container,
+:root:fullscreen .floating-widget,
+:root:fullscreen header:not(.course-studio-header),
+:root:fullscreen footer,
+:root:fullscreen [data-floating],
+:root:fullscreen button[aria-label="Open Achievements"],
+:root:fullscreen button[aria-label="Open Study Rooms"],
+:root:fullscreen aside[aria-label="Buy Me a Coffee Support"],
+:root:fullscreen aside[role="dialog"][aria-labelledby="coffee-popup-title"],
+:root.in-course-fullscreen .site-navbar-container,
+:root.in-course-fullscreen .site-announcement-container,
+:root.in-course-fullscreen .site-footer-container,
+:root.in-course-fullscreen .floating-widget,
+:root.in-course-fullscreen header:not(.course-studio-header),
+:root.in-course-fullscreen footer,
+:root.in-course-fullscreen [data-floating],
+:root.in-course-fullscreen button[aria-label="Open Achievements"],
+:root.in-course-fullscreen button[aria-label="Open Study Rooms"],
+:root.in-course-fullscreen aside[aria-label="Buy Me a Coffee Support"],
+:root.in-course-fullscreen aside[role="dialog"][aria-labelledby="coffee-popup-title"],
+body.in-course-fullscreen .site-navbar-container,
+body.in-course-fullscreen .site-announcement-container,
+body.in-course-fullscreen .site-footer-container,
+body.in-course-fullscreen .floating-widget,
+body.in-course-fullscreen header:not(.course-studio-header),
+body.in-course-fullscreen footer,
+body.in-course-fullscreen [data-floating],
+body.in-course-fullscreen button[aria-label="Open Achievements"],
+body.in-course-fullscreen button[aria-label="Open Study Rooms"],
+body.in-course-fullscreen aside[aria-label="Buy Me a Coffee Support"],
+body.in-course-fullscreen aside[role="dialog"][aria-labelledby="coffee-popup-title"] {
+  display: none !important;
+}
 
-
+#course-learning-studio:fullscreen,
+.course-studio-fullscreen:fullscreen {
+  overflow-y: auto !important;
+  background-color: var(--background, #000000) !important;
+  width: 100vw !important;
+  height: 100vh !important;
+}

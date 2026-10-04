@@ -85,33 +85,40 @@ const coffeeWidget = await getCoffeeWidgetSettings();
         <!-- Google Tag Manager (noscript body fallback) -->
         <GoogleTagManager part="body" />
         {announcement.enabled && (
-          <AnnouncementBanner
-            client:load
-            enabled={announcement.enabled}
-            message={announcement.message}
-            linkText={announcement.linkText}
-            linkUrl={announcement.linkUrl}
-            style={announcement.style}
-            dismissible={announcement.dismissible}
-            bannerId="keystatic-announcement"
-          />
+          <div class="site-announcement-container">
+            <AnnouncementBanner
+              client:load
+              enabled={announcement.enabled}
+              message={announcement.message}
+              linkText={announcement.linkText}
+              linkUrl={announcement.linkUrl}
+              style={announcement.style}
+              dismissible={announcement.dismissible}
+              bannerId="keystatic-announcement"
+            />
+          </div>
         )}
-        <Navbar
-          client:load
-          navLinks={navSettings.navLinks}
-          enableSearch={navSettings.showSearch && flags.globalSearch.enabled}
-          enableLive={flags.liveClasses.showInNav}
-          showSubscribeButton={navSettings.showSubscribeButton}
-          subscribeButtonText={navSettings.subscribeButtonText}
-          subscribeButtonUrl={navSettings.subscribeButtonUrl}
-          showCoffeeButton={navSettings.showCoffeeButton}
-          coffeeButtonText={navSettings.coffeeButtonText}
-          coffeeButtonUrl={navSettings.coffeeButtonUrl}
-        />
+        <div id="site-navbar-wrapper" class="site-navbar-container">
+          <Navbar
+            client:load
+            navLinks={navSettings.navLinks}
+            enableSearch={navSettings.showSearch && flags.globalSearch.enabled}
+            enableLive={flags.liveClasses.showInNav}
+            showSubscribeButton={navSettings.showSubscribeButton}
+            subscribeButtonText={navSettings.subscribeButtonText}
+            subscribeButtonUrl={navSettings.subscribeButtonUrl}
+            showCoffeeButton={navSettings.showCoffeeButton}
+            coffeeButtonText={navSettings.coffeeButtonText}
+            coffeeButtonUrl={navSettings.coffeeButtonUrl}
+          />
+        </div>
         <script is:inline>
           (function() {
             function syncHeaderHeight() {
-              var header = document.querySelector('header');
+              if (document.body.classList.contains('in-course-fullscreen') || document.fullscreenElement) {
+                return;
+              }
+              var header = document.querySelector('.site-navbar-container header') || document.querySelector('header:not(.course-studio-header)');
               if (header) {
                 var h = Math.round(header.getBoundingClientRect().height || header.offsetHeight);
                 if (h > 0) {
@@ -127,33 +134,47 @@ const coffeeWidget = await getCoffeeWidgetSettings();
           })();
         </script>
         <main class="flex-1"><slot /></main>
-        {flags.gamification.enabled && <AchievementsTrigger client:load />}
+        {flags.gamification.enabled && (
+          <div class="floating-widget">
+            <AchievementsTrigger client:load />
+          </div>
+        )}
         {flags.newsletterBanner.enabled && (
-          <NewsletterBanner
-            client:load
-            headline={flags.newsletterBanner.headline}
-            subtext={flags.newsletterBanner.subtext}
-            buttonLabel={flags.newsletterBanner.buttonLabel}
-            delaySeconds={flags.newsletterBanner.delaySeconds}
-          />
+          <div class="floating-widget">
+            <NewsletterBanner
+              client:load
+              headline={flags.newsletterBanner.headline}
+              subtext={flags.newsletterBanner.subtext}
+              buttonLabel={flags.newsletterBanner.buttonLabel}
+              delaySeconds={flags.newsletterBanner.delaySeconds}
+            />
+          </div>
         )}
-        {flags.peerStudyRooms.enabled && <PeerStudyRooms client:load />}
+        {flags.peerStudyRooms.enabled && (
+          <div class="floating-widget">
+            <PeerStudyRooms client:load />
+          </div>
+        )}
         {coffeeWidget.enabled && (
-          <BuyMeCoffeePopup
-            client:load
-            enabled={coffeeWidget.enabled}
-            coffeeUrl={coffeeWidget.coffeeUrl}
-            title={coffeeWidget.title}
-            message={coffeeWidget.message}
-            triggerPageViews={coffeeWidget.triggerPageViews}
-            delaySeconds={coffeeWidget.delaySeconds}
-            dismissDays={coffeeWidget.dismissDays}
-            presetAmounts={coffeeWidget.presetAmounts}
-            showFloatingButtonWhenDismissed={coffeeWidget.showFloatingButtonWhenDismissed}
-            position={coffeeWidget.position}
-          />
+          <div class="floating-widget">
+            <BuyMeCoffeePopup
+              client:load
+              enabled={coffeeWidget.enabled}
+              coffeeUrl={coffeeWidget.coffeeUrl}
+              title={coffeeWidget.title}
+              message={coffeeWidget.message}
+              triggerPageViews={coffeeWidget.triggerPageViews}
+              delaySeconds={coffeeWidget.delaySeconds}
+              dismissDays={coffeeWidget.dismissDays}
+              presetAmounts={coffeeWidget.presetAmounts}
+              showFloatingButtonWhenDismissed={coffeeWidget.showFloatingButtonWhenDismissed}
+              position={coffeeWidget.position}
+            />
+          </div>
         )}
-        <Footer />
+        <div class="site-footer-container">
+          <Footer />
+        </div>
         <script type="module" src="/scripts/cookieconsent-config.js"></script>
     </body>
 </html>

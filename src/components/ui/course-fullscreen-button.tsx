@@ -6,35 +6,74 @@ export const CourseFullscreenButton: React.FC = () => {
 
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+      const active = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
+      setIsFullscreen(active);
+      if (active) {
+        document.body.classList.add('in-course-fullscreen');
+        document.documentElement.classList.add('in-course-fullscreen');
+      } else {
+        document.body.classList.remove('in-course-fullscreen');
+        document.documentElement.classList.remove('in-course-fullscreen');
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isFullscreen) {
+        if (document.fullscreenElement || (document as any).webkitFullscreenElement) {
+          if (document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+          } else if ((document as any).webkitExitFullscreen) {
+            (document as any).webkitExitFullscreen();
+          }
+        }
+        setIsFullscreen(false);
+        document.body.classList.remove('in-course-fullscreen');
+        document.documentElement.classList.remove('in-course-fullscreen');
+      }
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
       document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.classList.remove('in-course-fullscreen');
+      document.documentElement.classList.remove('in-course-fullscreen');
     };
-  }, []);
+  }, [isFullscreen]);
 
   const toggleFullscreen = async () => {
     try {
-      if (!document.fullscreenElement) {
+      const isCurrentlyFs = !!(document.fullscreenElement || (document as any).webkitFullscreenElement) || isFullscreen;
+
+      if (!isCurrentlyFs) {
+        setIsFullscreen(true);
+        document.body.classList.add('in-course-fullscreen');
+        document.documentElement.classList.add('in-course-fullscreen');
+
         if (document.documentElement.requestFullscreen) {
           await document.documentElement.requestFullscreen();
         } else if ((document.documentElement as any).webkitRequestFullscreen) {
           await (document.documentElement as any).webkitRequestFullscreen();
         }
       } else {
-        if (document.exitFullscreen) {
-          await document.exitFullscreen();
-        } else if ((document as any).webkitExitFullscreen) {
-          await (document as any).webkitExitFullscreen();
+        setIsFullscreen(false);
+        document.body.classList.remove('in-course-fullscreen');
+        document.documentElement.classList.remove('in-course-fullscreen');
+
+        if (document.fullscreenElement || (document as any).webkitFullscreenElement) {
+          if (document.exitFullscreen) {
+            await document.exitFullscreen();
+          } else if ((document as any).webkitExitFullscreen) {
+            await (document as any).webkitExitFullscreen();
+          }
         }
       }
     } catch (err) {
-      console.error('Failed to toggle fullscreen:', err);
+      console.warn('Fullscreen toggle issue, CSS fallback active:', err);
     }
   };
 

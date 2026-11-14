@@ -1,8 +1,8 @@
 ---
 import { Background } from '@/components/background';
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { Badge } from "@/components/ui/badge";
 import EditorialPostCover from '@/components/ui/EditorialPostCover.astro';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
 
 const notebooks = await Astro.glob<any>('./*.astro');
 const filteredNotebooks = notebooks

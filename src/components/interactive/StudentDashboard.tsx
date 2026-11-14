@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+
 import { 
   Flame, 
   Award, 
@@ -22,9 +23,11 @@ import {
   RefreshCw,
   Database
 } from 'lucide-react';
-import { persistentStorage } from '@/lib/storage';
+
 import { CourseCertificateModal } from './CourseCertificateModal';
+
 import { useMembership } from '@/lib/membership';
+import { persistentStorage } from '@/lib/storage';
 
 interface ChapterItem {
   discriminant: 'lesson' | 'quiz' | 'assignment';

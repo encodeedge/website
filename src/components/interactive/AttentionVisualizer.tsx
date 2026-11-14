@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+
 import { Sparkles, Eye, Sliders, Layers, Info, RotateCcw, Cpu, Network } from 'lucide-react';
 
 interface AttentionVisualizerProps {

@@ -1,7 +1,7 @@
-import { ChevronRight, ArrowUpRight } from "lucide-react";
-import { format } from "date-fns";
-
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { format } from "date-fns";
+import { ChevronRight, ArrowUpRight } from "lucide-react";
+
 
 
 const allPosts = await getCollection('blog');

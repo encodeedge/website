@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import { 
   Award, 
   X, 
@@ -13,11 +14,12 @@ import {
   Lock,
   AlertTriangle
 } from 'lucide-react';
-import { persistentStorage } from '@/lib/storage';
+
 import { 
   signCertificatePayload, 
   buildVerifiedCertificateUrl 
 } from '@/lib/certificate-security';
+import { persistentStorage } from '@/lib/storage';
 
 interface CourseCertificateModalProps {
   courseTitle: string;

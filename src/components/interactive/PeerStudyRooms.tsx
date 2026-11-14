@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+
 import { Users, Plus, MessageSquare, X, Send, Wifi, WifiOff, Copy, Check, Lock, Globe, Hash, Trash2, Settings, Crown, Circle } from 'lucide-react';
+import { createPortal } from 'react-dom';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface Member {

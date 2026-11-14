@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { useMembership } from '@/lib/membership';
+
 import { Lock, Sparkles, Check, Key, ShieldCheck, ArrowRight } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useMembership } from '@/lib/membership';
 
 interface PaywallGuardProps {
   children: React.ReactNode;

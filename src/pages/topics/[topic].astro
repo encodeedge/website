@@ -2,9 +2,6 @@
 // src/pages/topics/[topic].astro
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { format } from 'date-fns';
-import { SITE_TITLE } from '@/consts';
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
-import { slugify } from '@/utils/slugs';
 import { 
   ArrowRight, 
   Sparkles, 
@@ -21,8 +18,12 @@ import {
   BookOpen,
   Layers
 } from 'lucide-react';
-import { TOPIC_METADATA } from '@/lib/topics';
+
 import EditorialPostCover from '@/components/ui/EditorialPostCover.astro';
+import { SITE_TITLE } from '@/consts';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { TOPIC_METADATA } from '@/lib/topics';
+import { slugify } from '@/utils/slugs';
 
 export async function getStaticPaths() {
   const allPosts = await getCollection('blog');

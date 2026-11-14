@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+
 import { 
   Trophy, 
   Search, 
@@ -23,6 +24,7 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
+
 import { 
   ACTIVE_COMPETITIONS, 
   PLATFORMS, 

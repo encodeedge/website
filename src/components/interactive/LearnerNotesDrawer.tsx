@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+
 import { PenLine, X, Download, Trash2, Check, Sparkles, ShieldCheck } from 'lucide-react';
+
 import { persistentStorage } from '@/lib/storage';
 
 interface LearnerNotesDrawerProps {

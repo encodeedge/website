@@ -1,10 +1,12 @@
 ---
 import { getCollection, render } from 'astro:content';
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { Briefcase, CheckCircle2, Download, ExternalLink, Code } from 'lucide-react';
+
 import { CourseLearningStudio } from '@/components/interactive/CourseLearningStudio';
 import { AssignmentSubmissionCard } from '@/components/ui/assignment-submission-card';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { getCoursesMap } from '@/utils/course-map';
-import { Briefcase, CheckCircle2, Download, ExternalLink, Code } from 'lucide-react';
+
 
 export async function getStaticPaths() {
   const assignments = await getCollection('assignments');

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+
 import { Calendar, Clock, Video, Users, Bell, BellOff, CheckCircle2, X, ExternalLink, ChevronLeft, ChevronRight, Sparkles, MapPin, PlayCircle, BookOpen } from 'lucide-react';
+import { createPortal } from 'react-dom';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface LiveClass {

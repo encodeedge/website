@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+
 import { Award, Download, Share2, Check, X, QrCode, ExternalLink, Sparkles, Shield, Copy } from 'lucide-react';
-import { persistentStorage } from '@/lib/storage';
+import { createPortal } from 'react-dom';
+
 import { signCertificatePayload, buildVerifiedCertificateUrl } from '@/lib/certificate-security';
+import { persistentStorage } from '@/lib/storage';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface CertificateData {

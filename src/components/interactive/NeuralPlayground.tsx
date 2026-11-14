@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import { Sparkles, Sliders, Activity, RotateCcw } from 'lucide-react';
 
 type ActivationType = 'relu' | 'sigmoid' | 'tanh' | 'gelu' | 'leaky_relu' | 'linear';

@@ -1,8 +1,6 @@
 ---
 // src/pages/topics/index.astro
 import { getCollection } from 'astro:content';
-import { SITE_TITLE } from '@/consts';
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { 
   ArrowRight, 
   Sparkles, 
@@ -17,6 +15,9 @@ import {
   BookOpen, 
   Layers 
 } from 'lucide-react';
+
+import { SITE_TITLE } from '@/consts';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { TOPIC_LIST } from '@/lib/topics';
 
 const allPosts = await getCollection('blog');

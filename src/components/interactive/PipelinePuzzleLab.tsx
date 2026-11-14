@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import { 
   Network, 
   Sparkles, 
@@ -28,6 +29,7 @@ import {
   Activity,
   Plus
 } from 'lucide-react';
+
 import { trackBlueprintValidate, trackBlueprintScenarioSelect, trackEvent } from '@/lib/analytics';
 
 export type ServiceDomain = 'compute' | 'storage' | 'ml' | 'streaming' | 'security' | 'gateway';

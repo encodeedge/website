@@ -1,8 +1,9 @@
 ---
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
-import { PipelinePuzzleLab } from '@/components/interactive/PipelinePuzzleLab';
 import { getCollection } from 'astro:content';
 import { Puzzle } from 'lucide-react';
+
+import { PipelinePuzzleLab } from '@/components/interactive/PipelinePuzzleLab';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
 
 const title = 'ML System Design Pipeline Ordering Challenge | EncodeEdge';
 const description = 'Interactive drag-and-drop learning game: assemble production RAG chains, recommendation engines, attention heads, and MLOps gates into the optimal order to earn XP and level up.';

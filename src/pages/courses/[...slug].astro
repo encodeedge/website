@@ -1,14 +1,5 @@
 ---
 import { getCollection, render } from 'astro:content';
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
-import { CourseCurriculumAccordion } from '@/components/ui/course-curriculum-accordion';
-import { CourseProgressCard } from '@/components/ui/course-progress-card';
-import { CourseFlashcardsDrawer } from '@/components/interactive/CourseFlashcardsDrawer';
-import { CourseCertificate } from '@/components/interactive/CourseCertificate';
-import { CourseCompletionBanner } from '@/components/ui/course-completion-banner';
-import { CourseFullscreenButton } from '@/components/ui/course-fullscreen-button';
-import { getFeatureFlags } from '@/lib/settings';
-import { findMatchingLesson } from '@/lib/lesson-matcher.js';
 import { 
   Clock, 
   BookOpen, 
@@ -21,6 +12,17 @@ import {
   ShieldCheck,
   GraduationCap
 } from 'lucide-react';
+
+import { CourseCertificate } from '@/components/interactive/CourseCertificate';
+import { CourseFlashcardsDrawer } from '@/components/interactive/CourseFlashcardsDrawer';
+import { CourseCompletionBanner } from '@/components/ui/course-completion-banner';
+import { CourseCurriculumAccordion } from '@/components/ui/course-curriculum-accordion';
+import { CourseFullscreenButton } from '@/components/ui/course-fullscreen-button';
+import { CourseProgressCard } from '@/components/ui/course-progress-card';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { findMatchingLesson } from '@/lib/lesson-matcher.js';
+import { getFeatureFlags } from '@/lib/settings';
+
 
 export async function getStaticPaths() {
   const courses = await getCollection('courses');
@@ -71,7 +73,7 @@ const structuredChapters = (course.data.chapters || []).map((chapter, chIdx) => 
     if (item.discriminant === 'lesson' && item.value.lessonRef) {
       type = 'lesson';
       id = item.value.lessonRef;
-      let lesson = allLessons.find(l => l.id === id);
+      let lesson = allLessons.find(l => l.id === id || l.id.endsWith('/' + id));
       if (!lesson) {
         lesson = findMatchingLesson(id, allLessons);
         if (lesson) id = lesson.id;

@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
+
 import { Play, RotateCcw, Copy, Check, Terminal, Code2, Sparkles, CheckCircle2, BookOpen, ChevronDown, Layers } from 'lucide-react';
+
+import { trackCodeExecution, trackCodeCopy, trackEvent } from '@/lib/analytics';
 import { 
   CONTENT_SNIPPETS, 
   getSnippetForContent, 
@@ -7,7 +10,6 @@ import {
   getSnippetsForCategory, 
   type CodeSnippet 
 } from '@/lib/code-snippets';
-import { trackCodeExecution, trackCodeCopy, trackEvent } from '@/lib/analytics';
 
 interface CodeSandboxRunnerProps {
   contentId?: string;

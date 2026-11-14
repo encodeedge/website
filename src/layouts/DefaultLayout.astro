@@ -1,15 +1,16 @@
 ---
+import { ClientRouter } from 'astro:transitions';
+
+import GoogleAnalytics from '@/components/analytics/GoogleAnalytics.astro';
+import GoogleTagManager from '@/components/analytics/GoogleTagManager.astro';
 import BaseHead from '@/components/BaseHead.astro';
 import { Footer } from '@/components/blocks/footer';
 import { Navbar } from '@/components/blocks/navbar';
+import { PeerStudyRooms } from '@/components/interactive/PeerStudyRooms';
 import { AchievementsTrigger } from '@/components/ui/achievements-panel';
-import { NewsletterBanner } from '@/components/ui/newsletter-banner';
 import { AnnouncementBanner } from '@/components/ui/announcement-banner';
 import { BuyMeCoffeePopup } from '@/components/ui/buy-me-coffee-popup';
-import { PeerStudyRooms } from '@/components/interactive/PeerStudyRooms';
-import GoogleAnalytics from '@/components/analytics/GoogleAnalytics.astro';
-import GoogleTagManager from '@/components/analytics/GoogleTagManager.astro';
-import { ClientRouter } from 'astro:transitions';
+import { NewsletterBanner } from '@/components/ui/newsletter-banner';
 import { getFeatureFlags, getAnnouncementBanner, getSiteSettings, getNavigationSettings, getCoffeeWidgetSettings } from '@/lib/settings';
 
 interface Props {

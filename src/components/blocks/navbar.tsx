@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
+
 import { 
   X, 
   Menu, 
@@ -16,10 +16,12 @@ import {
   GraduationCap,
   Coffee
 } from "lucide-react";
+import { createPortal } from "react-dom";
+
 import { ThemeToggle } from "@/components/theme-toggle";
+import { GlobalSearch } from "@/components/ui/global-search";
 import { GITHUB_URL } from "@/consts";
 import { cn } from "@/lib/utils";
-import { GlobalSearch } from "@/components/ui/global-search";
 
 export interface NavChildItem {
   label: string;

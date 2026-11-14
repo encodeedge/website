@@ -1,8 +1,5 @@
 ---
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
-import { SystemDesignStudio } from '@/components/interactive/SystemDesignStudio';
 import { getCollection } from 'astro:content';
-import { getSystemDesignPageSettings } from '@/lib/settings';
 import { 
   Network, 
   Cpu, 
@@ -14,6 +11,11 @@ import {
   Layers, 
   BookOpen
 } from 'lucide-react';
+
+import { SystemDesignStudio } from '@/components/interactive/SystemDesignStudio';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { getSystemDesignPageSettings } from '@/lib/settings';
+
 
 const pageSettings = await getSystemDesignPageSettings();
 

@@ -103,8 +103,9 @@ const lessons = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
-    course: z.enum(['deep-learning', 'foundations-of-data-science', 'python', 'machine-learning', 'llm', 'standalone']).optional(),
+    course: z.string().optional(),
     chapter: z.string().optional(),
+    order: z.number().optional().default(0),
     lessonType: z.enum(['video', 'article', 'lab', 'quiz']).default('video'),
     interactiveLab: z.enum(['none', 'memory-explorer', 'neural-playground', 'gradient-descent', 'code-sandbox', 'custom-sandbox', 'attention-visualizer', 'convolution-visualizer']).optional().default('none'),
     interactiveLabTitle: z.string().optional(),
@@ -117,6 +118,7 @@ const lessons = defineCollection({
     comingSoon: z.boolean().optional().default(false),
     draft: z.boolean().optional().default(false),
     comingSoonMessage: z.string().optional(),
+    tags: z.array(z.string()).optional(),
   }),
 });
 
@@ -138,6 +140,17 @@ const courses = defineCollection({
         z.object({ discriminant: z.literal("assignment"), value: z.object({ assignmentRef: z.string().optional() }) }),
       ])).optional(),
     })).optional(),
+    enrollmentMode: z.enum(['free', 'paid', 'waitlist', 'invite']).optional().default('free'),
+    price: z.number().optional(),
+    stripeProductId: z.string().optional(),
+    waitlistUrl: z.string().optional(),
+    maxEnrollments: z.number().optional().default(0),
+    prerequisites: z.array(z.string()).optional(),
+    featured: z.boolean().optional().default(false),
+    tags: z.array(z.string()).optional(),
+    topics: z.array(z.string()).optional(),
+    estimatedDuration: z.string().optional(),
+    seoDescription: z.string().optional(),
   }),
 });
 

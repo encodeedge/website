@@ -3,8 +3,8 @@ import { type CollectionEntry, getCollection } from 'astro:content';
 import { render } from 'astro:content';
 
 import BlogPost from '@/components/blocks/BlogPost.astro';
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox, MathFormula, PaywallGuard } from '@/components/mdx';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('blog');

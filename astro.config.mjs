@@ -1,23 +1,24 @@
 // @ts-check
+import cloudflare from "@astrojs/cloudflare";
+import markdoc from "@astrojs/markdoc";
 import mdx from "@astrojs/mdx";
+import partytown from "@astrojs/partytown";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
+import vercel from "@astrojs/vercel";
+import keystatic from '@keystatic/astro'
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
-import keystatic from '@keystatic/astro'
-import markdoc from "@astrojs/markdoc";
-import vercel from "@astrojs/vercel";
-import remarkMath from 'remark-math'
-import remarkUnescapeBracesMath from './src/remark/remark-unescape-braces-math.js'
-import rehypeKatex from 'rehype-katex'
-import rehypeUnescapeBracesMath from './src/rehype/rehype-unescape-braces-math.js'
-import partytown from "@astrojs/partytown";
-import cloudflare from "@astrojs/cloudflare";
-
-
 import fs from 'node:fs';
 import path from 'node:path';
+import rehypeKatex from 'rehype-katex'
+import remarkMath from 'remark-math'
+
 import { syncCourseLessons } from './src/lib/sync-course-lessons.js';
+import rehypeUnescapeBracesMath from './src/rehype/rehype-unescape-braces-math.js'
+import remarkUnescapeBracesMath from './src/remark/remark-unescape-braces-math.js'
+
+
 
 const copyAssetFiles = [
   {

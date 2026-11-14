@@ -5,7 +5,8 @@
  */
 export function normalizeSlug(str) {
   if (!str) return '';
-  return String(str)
+  const leaf = String(str).split('/').pop() || String(str);
+  return leaf
     .toLowerCase()
     .trim()
     .replace(/^(dlfn|fds|pbla|dl|ds|py|ml|llm)-+/, '')

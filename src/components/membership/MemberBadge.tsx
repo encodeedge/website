@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { useMembership } from '@/lib/membership';
+
 import { Sparkles, ShieldCheck, Key, LogOut } from 'lucide-react';
+
+import { useMembership } from '@/lib/membership';
 
 export const MemberBadge: React.FC = () => {
   const { isPro, profile, mounted, resetMembership } = useMembership();

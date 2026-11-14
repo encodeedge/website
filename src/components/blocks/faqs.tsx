@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Accordion } from "@/components/ui/accordion";
 import FAQItem from "@/components/ui/FAQItem";
 

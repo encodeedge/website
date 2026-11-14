@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import { Flame, Zap, Award, Sparkles, Trophy, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface Badge {

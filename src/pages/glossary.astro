@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import { MathDecoder } from '@/components/interactive/MathDecoder';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { MATH_GLOSSARY_ITEMS } from '@/lib/math-glossary-data';
+
+const glossaryEntries = await getCollection('glossary');
+
+const cmsGlossaryItems = glossaryEntries.map(entry => ({
+  id: entry.id,
+  name: entry.data.name,
+  glyph: entry.data.glyph,
+  latex: entry.data.latex || '',
+  pronunciation: entry.data.pronunciation || '',
+  category: entry.data.category,
+  meaning: entry.data.meaning,
+  example: entry.data.example || '',
+  ambiguity: entry.data.ambiguity || '',
+  relatedLabId: entry.data.relatedLabId || '',
+  relatedLabTitle: entry.data.relatedLabTitle || '',
+  featured: entry.data.featured ?? true,
+}));
+
+const cmsIds = new Set(cmsGlossaryItems.map(i => i.id));
+const glossaryItems = [
+  ...cmsGlossaryItems,
+  ...MATH_GLOSSARY_ITEMS.filter(i => !cmsIds.has(i.id))
+];
+
+const pageTitle = "AI & Mathematics Glossary | EncodeEdge";
+const pageDescription = "Comprehensive glossary of mathematical symbols, deep learning notations, linear algebra terms, and AI algorithms.";
+---
+
+<DefaultLayout 
+  title={pageTitle}
+  description={pageDescription}
+>
+  <div class="py-8 md:py-16 container mx-auto px-4 max-w-6xl space-y-10">
+    <div class="text-center max-w-3xl mx-auto space-y-4">
+      <h1 class="text-3xl md:text-5xl font-black tracking-tight">AI & Mathematical Notation Glossary</h1>
+      <p class="text-muted-foreground text-base md:text-lg">
+        Demystifying complex notation in machine learning, linear algebra, calculus, and neural network research papers.
+      </p>
+    </div>
+    <MathDecoder items={glossaryItems} client:load />
+  </div>
+</DefaultLayout>

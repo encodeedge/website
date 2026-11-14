@@ -1,8 +1,9 @@
 ---
 import { getCollection, render } from 'astro:content';
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
 
 export async function getStaticPaths() {
   const instructors = await getCollection('instructors');

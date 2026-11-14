@@ -1,4 +1,3 @@
-import Marquee from "react-fast-marquee";
 import {
   Brain,
   GitBranch,
@@ -10,6 +9,7 @@ import {
   Sparkles,
   Server,
 } from "lucide-react";
+import Marquee from "react-fast-marquee";
 
 import { cn } from "@/lib/utils";
 

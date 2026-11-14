@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import { Play, SkipForward, RotateCcw, AlertTriangle, CheckCircle2, TrendingDown } from 'lucide-react';
 
 export const GradientDescentLab: React.FC = () => {

@@ -1,5 +1,7 @@
 import { useEffect } from "react";
+
 import { Mail } from "lucide-react";
+
 import { trackNewsletterSubscribe } from "@/lib/analytics";
 
 export const Newsletter = () => {

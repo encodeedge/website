@@ -1,9 +1,10 @@
 ---
 import { getCollection } from 'astro:content';
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
-import { LiveClassScheduler } from '@/components/interactive/LiveClassScheduler';
-import { CourseLeaderboard } from '@/components/interactive/CourseLeaderboard';
 import { Calendar, Trophy, AlertCircle } from 'lucide-react';
+
+import { CourseLeaderboard } from '@/components/interactive/CourseLeaderboard';
+import { LiveClassScheduler } from '@/components/interactive/LiveClassScheduler';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { getFeatureFlags } from '@/lib/settings';
 
 const flags = await getFeatureFlags();

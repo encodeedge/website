@@ -1,7 +1,8 @@
 ---
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
-import { StudentDashboard } from '@/components/interactive/StudentDashboard';
 import { getCollection } from 'astro:content';
+
+import { StudentDashboard } from '@/components/interactive/StudentDashboard';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
 
 const coursesRaw = await getCollection('courses');
 const courses = coursesRaw.map(c => ({

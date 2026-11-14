@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import { Check, Copy, Code2 } from "lucide-react";
 
 interface CodeSnippetProps {

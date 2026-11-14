@@ -1,7 +1,8 @@
 ---
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
-import { LabsHub } from '@/components/interactive/LabsHub';
 import { getCollection } from 'astro:content';
+
+import { LabsHub } from '@/components/interactive/LabsHub';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
 
 const labsEntries = await getCollection('labs');
 const glossaryEntries = await getCollection('glossary');

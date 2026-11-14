@@ -1,10 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
+
 import { format } from 'date-fns';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { slugify } from '@/utils/slugs';
-import { TOPIC_METADATA } from '@/lib/topics';
-import { TechnicalBlueprintCover } from '@/components/ui/TechnicalBlueprintCover';
-import { trackNewsletterSubscribe } from '@/lib/analytics';
 import { 
   Search, 
   X, 
@@ -19,6 +15,12 @@ import {
   Send,
   CheckCircle2
 } from 'lucide-react';
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { TechnicalBlueprintCover } from '@/components/ui/TechnicalBlueprintCover';
+import { trackNewsletterSubscribe } from '@/lib/analytics';
+import { TOPIC_METADATA } from '@/lib/topics';
+import { slugify } from '@/utils/slugs';
 
 // Helper function to format topic slug into a human-readable name
 const formatSlug = (slug: string) => {

@@ -1,4 +1,5 @@
 import React from "react";
+
 import { ArrowUpRight, Compass, Layers, Sparkles } from "lucide-react";
 
 const pastelColors = [

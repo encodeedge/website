@@ -1,12 +1,13 @@
 import React from 'react';
-import { NeuralPlayground } from '@/components/interactive/NeuralPlayground';
-import { GradientDescentLab } from '@/components/interactive/GradientDescentLab';
-import { MemoryExplorer } from '@/components/interactive/MemoryExplorer';
-import { PipelinePuzzleLab } from '@/components/interactive/PipelinePuzzleLab';
+
 import { AttentionVisualizer } from '@/components/interactive/AttentionVisualizer';
 import { ConvolutionVisualizer } from '@/components/interactive/ConvolutionVisualizer';
-import { ModelRouterLab } from '@/components/interactive/ModelRouterLab';
+import { GradientDescentLab } from '@/components/interactive/GradientDescentLab';
 import { MathDecoder } from '@/components/interactive/MathDecoder';
+import { MemoryExplorer } from '@/components/interactive/MemoryExplorer';
+import { ModelRouterLab } from '@/components/interactive/ModelRouterLab';
+import { NeuralPlayground } from '@/components/interactive/NeuralPlayground';
+import { PipelinePuzzleLab } from '@/components/interactive/PipelinePuzzleLab';
 
 export type InteractiveLabType = 
   | 'neural-playground' 

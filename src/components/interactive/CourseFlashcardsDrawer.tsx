@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import { Layers, X, RotateCw, CheckCircle2, ChevronLeft, ChevronRight, Sparkles, Brain, Award } from 'lucide-react';
 
 interface Flashcard {

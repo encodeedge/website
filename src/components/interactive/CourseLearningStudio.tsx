@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+
 import { 
   PlayCircle, 
   FileText, 
@@ -36,10 +37,9 @@ import {
   Keyboard,
   X,
 } from 'lucide-react';
-import { persistentStorage } from '@/lib/storage';
-import PostComments from '@/components/ui/PostComments';
+
 import { CodeSandboxRunner } from '@/components/interactive/CodeSandboxRunner';
-import { hasSnippetForContent } from '@/lib/code-snippets';
+import PostComments from '@/components/ui/PostComments';
 import {
   trackLessonCompletion,
   trackLessonRating,
@@ -48,6 +48,8 @@ import {
   trackNotesExport,
   trackEvent,
 } from '@/lib/analytics';
+import { hasSnippetForContent } from '@/lib/code-snippets';
+import { persistentStorage } from '@/lib/storage';
 
 export interface CurriculumItem {
   id: string;

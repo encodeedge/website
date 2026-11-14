@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import { Cpu, ArrowRight, CornerDownRight, Check, AlertCircle, RefreshCw } from 'lucide-react';
 
 type ScenarioType = 'interning' | 'mutable_default' | 'refcount';

@@ -1,5 +1,7 @@
 import React from "react";
+
 import { TrendingUp } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
 interface StatCardProps {

@@ -1,13 +1,14 @@
 ---
 import { getCollection, render } from 'astro:content';
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
-import { CourseLearningStudio } from '@/components/interactive/CourseLearningStudio';
+
 import { CodeSandboxRunner } from '@/components/interactive/CodeSandboxRunner';
-import { hasSnippetForContent } from '@/lib/code-snippets';
-import { NeuralPlayground } from '@/components/interactive/NeuralPlayground';
+import { CourseLearningStudio } from '@/components/interactive/CourseLearningStudio';
 import { GradientDescentLab } from '@/components/interactive/GradientDescentLab';
 import { MemoryExplorer } from '@/components/interactive/MemoryExplorer';
+import { NeuralPlayground } from '@/components/interactive/NeuralPlayground';
 import { Callout, VideoEmbed, AudioPlayer, QuizBlock, NewsletterCTA, StatCard, CodeSnippet, ReferenceCard, InteractiveLab, CodeSandbox, MathFormula, PaywallGuard } from '@/components/mdx';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { hasSnippetForContent } from '@/lib/code-snippets';
 import { findMatchingLesson } from '@/lib/lesson-matcher.js';
 
 export async function getStaticPaths() {
@@ -19,8 +20,14 @@ export async function getStaticPaths() {
   for (const lesson of lessons) {
     pathMap.set(lesson.id, lesson);
 
+    // If lesson is nested in a folder (e.g. deep-learning/my-lesson), also allow direct flat route
+    if (lesson.id.includes('/')) {
+      const leafSlug = lesson.id.split('/').pop()!;
+      if (!pathMap.has(leafSlug)) pathMap.set(leafSlug, lesson);
+    }
+
     // Prefix variants (with and without prefix)
-    const baseId = lesson.id.replace(/^(dlfn|fds|pbla|dl|ds|py|ml|llm)-+/, '');
+    const baseId = (lesson.id.includes('/') ? lesson.id.split('/').pop()! : lesson.id).replace(/^(dlfn|fds|pbla|dl|ds|py|ml|llm)-+/, '');
     if (baseId && baseId !== lesson.id) {
       if (!pathMap.has(baseId)) pathMap.set(baseId, lesson);
     }

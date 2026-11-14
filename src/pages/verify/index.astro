@@ -1,6 +1,6 @@
 ---
 export const prerender = false;
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { getCollection } from 'astro:content';
 import { 
   ShieldCheck, 
   Search, 
@@ -11,7 +11,8 @@ import {
   ExternalLink,
   GraduationCap
 } from 'lucide-react';
-import { getCollection } from 'astro:content';
+
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
 
 const url = new URL(Astro.request.url);
 const searchId = url.searchParams.get('id') || '';

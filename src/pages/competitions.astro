@@ -1,8 +1,9 @@
 ---
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
-import { CompetitionsHub } from '@/components/interactive/CompetitionsHub';
-import { Trophy, Sparkles, Flame, ExternalLink, Rss } from 'lucide-react';
 import { getCollection } from 'astro:content';
+import { Trophy, Sparkles, Flame, ExternalLink, Rss } from 'lucide-react';
+
+import { CompetitionsHub } from '@/components/interactive/CompetitionsHub';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { getAggregatedCompetitions, type Competition } from '@/lib/competitions';
 
 // Load Keystatic curated competitions

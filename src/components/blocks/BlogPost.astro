@@ -1,14 +1,15 @@
 ---
 import { format } from "date-fns";
-import { slugify } from "@/utils/slugs";
+
 import FAQs from "@/components/blocks/faqs";
 import References from "@/components/blocks/references";
-import { TOPIC_METADATA } from "@/lib/topics";
 import { CodeSandboxRunner } from "@/components/interactive/CodeSandboxRunner";
-import { hasSnippetForContent } from "@/lib/code-snippets";
-import EditorialPostCover from "@/components/ui/EditorialPostCover.astro";
 import { ArticleAI } from "@/components/ui/article-ai";
+import EditorialPostCover from "@/components/ui/EditorialPostCover.astro";
+import { hasSnippetForContent } from "@/lib/code-snippets";
 import { getFeatureFlags } from "@/lib/settings";
+import { TOPIC_METADATA } from "@/lib/topics";
+import { slugify } from "@/utils/slugs";
 
 const flags = await getFeatureFlags();
 

@@ -1,5 +1,7 @@
 import React from "react";
+
 import { Mail, Sparkles } from "lucide-react";
+
 import { trackNewsletterSubscribe } from "@/lib/analytics";
 
 interface NewsletterCTAProps {

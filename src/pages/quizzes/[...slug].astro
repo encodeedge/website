@@ -1,10 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
+
 import { CourseLearningStudio } from '@/components/interactive/CourseLearningStudio';
 import { InteractiveQuiz } from '@/components/ui/interactive-quiz';
-import { getCoursesMap } from '@/utils/course-map';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { getFeatureFlags } from '@/lib/settings';
+import { getCoursesMap } from '@/utils/course-map';
 
 export async function getStaticPaths() {
   const quizzes = await getCollection('quizzes');

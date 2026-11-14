@@ -1,20 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
+
 import { format } from "date-fns";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import PostComments from "@/components/ui/PostComments.tsx";
-import { slugify } from "@/utils/slugs";
-import FAQs from "@/components/blocks/faqs";
-import References from "@/components/blocks/references";
-import { TOPIC_METADATA } from "@/lib/topics";
-import { ArticleAI } from "@/components/ui/article-ai";
-import {
-  trackArticleReaction,
-  trackArticleBookmark,
-  trackArticleHighlight,
-  trackArticleShare,
-  trackTocClick,
-  trackEvent,
-} from "@/lib/analytics";
 import {
   Clock,
   Calendar,
@@ -45,6 +31,23 @@ import {
   Hash,
   Link2,
 } from "lucide-react";
+
+import FAQs from "@/components/blocks/faqs";
+import References from "@/components/blocks/references";
+import { ArticleAI } from "@/components/ui/article-ai";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import PostComments from "@/components/ui/PostComments.tsx";
+import {
+  trackArticleReaction,
+  trackArticleBookmark,
+  trackArticleHighlight,
+  trackArticleShare,
+  trackTocClick,
+  trackEvent,
+} from "@/lib/analytics";
+import { TOPIC_METADATA } from "@/lib/topics";
+import { slugify } from "@/utils/slugs";
+
 
 interface PostData {
   title: string;

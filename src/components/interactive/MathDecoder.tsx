@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+
 import katex from 'katex';
 import { 
   Search, 
@@ -11,6 +12,7 @@ import {
   ArrowRight,
   FlaskConical
 } from 'lucide-react';
+
 import { MATH_GLOSSARY_ITEMS, type MathSymbolItem } from '@/lib/math-glossary-data';
 
 interface MathDecoderProps {

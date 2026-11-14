@@ -1,5 +1,10 @@
+import { useMemo } from 'react';
+
 import { ArrowRight, CheckCircle, Target, Zap, TrendingUp, Cpu, Code } from "lucide-react";
+import { Database, Activity, UserPlus } from "lucide-react";
+
 import { DashedLine } from "../dashed-line";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -10,7 +15,6 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
-import { useMemo } from 'react';
 
 // Helper function to generate a consistent color based on a string
 const stringToColor = (str: string) => {
@@ -138,7 +142,6 @@ const items = [
 ];
 
 // Need these Lucide icons for the achievement list
-import { Database, Activity, UserPlus } from "lucide-react";
 
 
 export const Testimonials = ({

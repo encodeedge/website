@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+
 import { Eye, Sliders, Layers, Sparkles, RotateCcw, Calculator, ArrowRight, Grid3X3 } from 'lucide-react';
 
 interface ConvolutionVisualizerProps {

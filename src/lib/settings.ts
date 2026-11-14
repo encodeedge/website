@@ -1,4 +1,5 @@
 import { createReader } from '@keystatic/core/reader';
+
 import keystaticConfig from '../../keystatic.config.ts';
 
 let readerInstance: ReturnType<typeof createReader> | null = null;

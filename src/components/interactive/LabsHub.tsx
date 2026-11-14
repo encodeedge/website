@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import { 
   FlaskConical, 
   BookOpen, 
@@ -14,14 +15,16 @@ import {
   Search,
   ArrowRight
 } from 'lucide-react';
+
 import { AttentionVisualizer } from './AttentionVisualizer';
 import { ConvolutionVisualizer } from './ConvolutionVisualizer';
-import { NeuralPlayground } from './NeuralPlayground';
 import { GradientDescentLab } from './GradientDescentLab';
+import { MathDecoder } from './MathDecoder';
 import { MemoryExplorer } from './MemoryExplorer';
 import { ModelRouterLab } from './ModelRouterLab';
-import { MathDecoder } from './MathDecoder';
+import { NeuralPlayground } from './NeuralPlayground';
 import { PipelinePuzzleLab } from './PipelinePuzzleLab';
+
 import { trackLabView, trackEvent } from '@/lib/analytics';
 
 export interface LabMeta {

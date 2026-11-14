@@ -1,10 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import { format } from 'date-fns';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
-import { slugify } from '@/utils/slugs';
-import { TOPIC_METADATA } from '@/lib/topics';
 import { 
   ArrowRight, 
   Sparkles, 
@@ -15,7 +11,13 @@ import {
   Clock, 
   GraduationCap
 } from 'lucide-react';
+
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+
 import EditorialPostCover from '@/components/ui/EditorialPostCover.astro';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
+import { TOPIC_METADATA } from '@/lib/topics';
+import { slugify } from '@/utils/slugs';
 
 const rawPosts = await getCollection('blog');
 const allPosts = rawPosts.filter((p) => import.meta.env.DEV || !p.data.draft);

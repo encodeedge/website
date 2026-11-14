@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+
 import { 
   Network, 
   Cpu, 
@@ -19,8 +20,9 @@ import {
   Sliders,
   ExternalLink
 } from 'lucide-react';
-import { SystemDesignSimulator, type SimulatorProblem } from './SystemDesignSimulator';
+
 import { PipelinePuzzleLab, type PuzzleScenario } from './PipelinePuzzleLab';
+import { SystemDesignSimulator, type SimulatorProblem } from './SystemDesignSimulator';
 
 export type SystemDesignMode = 'simulator' | 'puzzle' | 'reference' | 'principles';
 

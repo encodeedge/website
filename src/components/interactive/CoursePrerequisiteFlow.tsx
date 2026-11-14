@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { ArrowRight, CheckCircle2, ChevronRight, Compass, Sparkles, BookOpen, GraduationCap, Target } from 'lucide-react';
 
 interface PrerequisiteNode {

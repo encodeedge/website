@@ -1,5 +1,6 @@
 // keystatic.config.ts
 import React from 'react';
+
 import { config, fields, collection, singleton } from '@keystatic/core';
 import { block, wrapper } from '@keystatic/core/content-components';
 
@@ -220,18 +221,54 @@ export default config({
       },
     },
     navigation: {
-      'Site Settings': ['siteSettings', 'featureFlags', 'announcementBanner', 'coffeeWidget'],
-      'Competition Feeds': ['sources'],
-      'Design & Navigation': ['navigationSettings', 'footerSettings'],
-      'Marketing': ['seoSettings', 'integrationsSettings'],
-      'Content': ['blogs', 'faqs', 'roadmaps', 'glossary', 'systemDesignArchitectures'],
-      'Labs & Competitions': ['labs', 'competitions', 'systemDesignScenarios', 'systemDesignProblems'],
-      'Components': ['components'],
-      'LMS Core': ['courses', 'batches', 'instructors', 'liveClasses'],
-      'LMS Material': ['lessons', 'quizzes', 'assignments'],
-      'LMS Administration': ['certificates'],
-      'AI Assistant': ['aiBlogGenerator'],
-      'Page Settings': ['pageCoursesSettings', 'pageBlogSettings', 'pageLabsSettings', 'pageRoadmapsSettings', 'pageTopicsSettings', 'pageLiveClassesSettings', 'pageDashboardSettings', 'pageSystemDesignSettings'],
+      'Courses & Learning': [
+        'courses',
+        'lessons',
+        'quizzes',
+        'assignments',
+        'batches',
+        'liveClasses',
+        'instructors',
+        'certificates',
+      ],
+      'Content & Articles': [
+        'blogs',
+        'roadmaps',
+        'faqs',
+        'glossary',
+      ],
+      'Labs & System Design': [
+        'labs',
+        'competitions',
+        'systemDesignArchitectures',
+        'systemDesignScenarios',
+        'systemDesignProblems',
+      ],
+      'Components & AI': [
+        'components',
+        'aiBlogGenerator',
+      ],
+      'Site Settings': [
+        'siteSettings',
+        'navigationSettings',
+        'footerSettings',
+        'seoSettings',
+        'featureFlags',
+        'announcementBanner',
+        'coffeeWidget',
+        'integrationsSettings',
+        'sources',
+      ],
+      'Page Settings': [
+        'pageCoursesSettings',
+        'pageBlogSettings',
+        'pageLabsSettings',
+        'pageRoadmapsSettings',
+        'pageTopicsSettings',
+        'pageLiveClassesSettings',
+        'pageDashboardSettings',
+        'pageSystemDesignSettings',
+      ],
     }
 
 
@@ -1212,6 +1249,7 @@ export default config({
       path: 'src/content/blog/*',
       previewUrl: `${previewBase}/preview/?branch={branch}&to=/blog/{slug}`,
       format: { contentField: 'content' },
+      columns: ['pubDate', 'readTime', 'featured', 'draft'],
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
         description: fields.text({ label: 'Description' , validation: { isRequired: true }} ),
@@ -1418,6 +1456,7 @@ export default config({
       path: 'src/content/courses/*',
       previewUrl: `${previewBase}/preview/?branch={branch}&to=/courses/{slug}`,
       format: { contentField: 'about' },
+      columns: ['status', 'level', 'instructor', 'enrollmentMode'],
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
         shortDescription: fields.text({ label: 'Short Description', multiline: true }),
@@ -1449,8 +1488,8 @@ export default config({
         }),
         chapters: fields.array(
           fields.object({
-            title: fields.text({ label: 'Chapter Title' }),
-            description: fields.text({ label: 'Chapter Description' }),
+            title: fields.text({ label: 'Section / Chapter Title', description: 'Name of this module or section' }),
+            description: fields.text({ label: 'Section / Chapter Description', multiline: true }),
             items: fields.blocks(
               {
                 lesson: {
@@ -1538,6 +1577,7 @@ export default config({
       path: 'src/content/batches/*',
       previewUrl: `${previewBase}/batches`,
       format: { contentField: 'content' },
+      columns: ['course', 'status', 'startDate', 'capacity'],
       schema: {
         title: fields.slug({ name: { label: 'Batch Title' } }),
         course: fields.relationship({ label: 'Course', collection: 'courses' }),
@@ -1603,6 +1643,7 @@ export default config({
       slugField: 'title',
       path: 'src/content/live-classes/*',
       format: { data: 'yaml' },
+      columns: ['course', 'instructor', 'status', 'scheduledAt'],
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
         description: fields.text({ label: 'Description', multiline: true }),
@@ -1634,29 +1675,26 @@ export default config({
     lessons: collection({
       label: 'Lessons',
       slugField: 'title',
-      path: 'src/content/lessons/*',
+      path: 'src/content/lessons/**',
       previewUrl: `${previewBase}/preview/?branch={branch}&to=/lessons/{slug}`,
       format: { contentField: 'content' },
-      columns: ['course', 'chapter', 'lessonType', 'order'],
+      columns: ['course', 'chapter', 'order', 'lessonType', 'duration'],
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
         description: fields.text({ label: 'Description', multiline: true }),
-        course: fields.select({
-          label: 'Course',
-          description: 'Course this lesson belongs to (can be chosen manually or automatically synced when assigned in a Course curriculum)',
-          options: [
-            { label: 'Unassigned / Standalone', value: 'standalone' },
-            { label: 'Deep Learning', value: 'deep-learning' },
-            { label: 'Foundations of Data Science', value: 'foundations-of-data-science' },
-            { label: 'Python & Linear Algebra', value: 'python' },
-            { label: 'Machine Learning', value: 'machine-learning' },
-            { label: 'LLM & Generative AI', value: 'llm' },
-          ],
-          defaultValue: 'standalone'
+        course: fields.relationship({
+          label: 'Assigned Course',
+          description: 'Select the course this lesson belongs to (can be chosen here or synced when placed in a Course curriculum)',
+          collection: 'courses',
         }),
         chapter: fields.text({
-          label: 'Chapter / Module',
-          description: 'Chapter or module name (automatically synced when assigned in a Course curriculum)',
+          label: 'Section / Chapter',
+          description: 'Section, folder, or module name within the course (e.g. "Chapter 1: Neural Networks", "Python Basics")',
+        }),
+        order: fields.number({
+          label: 'Order within Section',
+          description: 'Sequence order number within this section or chapter (e.g. 1, 2, 3...)',
+          defaultValue: 0,
         }),
         lessonType: fields.select({
           label: 'Lesson Type',
@@ -1701,7 +1739,6 @@ export default config({
         }),
         videoUrl: fields.text({ label: 'Video URL', description: 'YouTube or Vimeo embed URL' }),
         duration: fields.number({ label: 'Duration (in minutes)' }),
-        order: fields.number({ label: 'Sort Order', description: 'Order within its chapter (lower = first)', defaultValue: 0 }),
         isFree: fields.checkbox({ label: 'Free Preview Lesson', description: 'Allow non-enrolled users to preview this lesson', defaultValue: false }),
         comingSoon: fields.checkbox({ 
           label: 'Coming Soon / In Preparation', 
@@ -1731,6 +1768,7 @@ export default config({
       path: 'src/content/quizzes/*',
       previewUrl: `${previewBase}/quizzes/{slug}`,
       format: { data: 'yaml' },
+      columns: ['passingScorePercentage', 'markCompletedOnAttempt'],
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
         description: fields.text({ label: 'Description', multiline: true }),

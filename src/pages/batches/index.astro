@@ -1,6 +1,7 @@
 ---
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { getCollection } from 'astro:content';
+
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
 
 const allBatches = await getCollection('batches');
 const allCourses = await getCollection('courses');

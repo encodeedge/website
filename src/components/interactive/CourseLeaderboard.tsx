@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+
 import { Trophy, Flame, Star, Zap, ChevronUp, ChevronDown, Award, Crown, Medal, RefreshCw } from 'lucide-react';
+
 import { getXP, computeXPState, getStreak } from '@/lib/achievements';
 
 // ─── Types ───────────────────────────────────────────────────────────────────

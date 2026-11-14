@@ -1,9 +1,10 @@
 ---
-import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { getCollection } from 'astro:content';
 import { BookOpen, Award, CheckCircle, Clock, Users, Sparkles, ArrowRight, ShieldCheck, Code, Layers } from 'lucide-react';
-import { LearnerGamificationBar } from '@/components/interactive/LearnerGamificationBar';
+
 import { CourseFlashcardsDrawer } from '@/components/interactive/CourseFlashcardsDrawer';
+import { LearnerGamificationBar } from '@/components/interactive/LearnerGamificationBar';
+import DefaultLayout from '@/layouts/DefaultLayout.astro';
 import { getCoursesPageSettings } from '@/lib/settings';
 
 const pageSettings = await getCoursesPageSettings();
@@ -28,7 +29,7 @@ const coursesWithMeta = publishedCourses.map(course => {
     ch.items?.forEach(item => {
       if (item.discriminant === 'lesson') {
         lessonCount++;
-        const l = allLessons.find(les => les.id === item.value.lessonRef);
+        const l = allLessons.find(les => les.id === item.value.lessonRef || les.id.endsWith('/' + item.value.lessonRef));
         if (l?.data.duration) totalDurationMinutes += l.data.duration;
       } else if (item.discriminant === 'quiz') {
         quizCount++;

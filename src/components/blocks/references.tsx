@@ -1,4 +1,5 @@
 import React from "react";
+
 import ReferenceItem from "@/components/ui/ReferenceItem";
 
 export const References = ({ items, title = "References" }: { items: { title: string; url: string; description?: string; type?: string; affiliate?: string; image?: string }[]; title?: string; }) => {
